@@ -40,6 +40,14 @@ A full-stack wallet application built with React and Express.
 pnpm install
 ```
 
+### Decrypt environment files
+
+Environment files are encrypted in the repository. Decrypt them before running:
+
+```bash
+pnpm run env:decrypt
+```
+
 ### Development
 
 Run both frontend and backend in development mode:
@@ -110,6 +118,24 @@ my-wallet/
 ├── lint-staged.config.js  # Lint-staged config
 ├── eslint.config.js       # ESLint config
 └── package.json           # Root package.json
+```
+
+## Environment Files
+
+Environment files (`.env`) are encrypted using GPG for secure storage in the repository.
+
+### Decrypt
+
+```bash
+pnpm run env:decrypt
+```
+
+### Encrypt
+
+Before committing changes to environment files:
+
+```bash
+pnpm run env:encrypt
 ```
 
 ## Commit Convention
