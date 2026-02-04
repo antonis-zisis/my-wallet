@@ -29,7 +29,7 @@ A full-stack wallet application built with React and Express.
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 24+
 - pnpm 9+
 
 ## Getting Started
@@ -79,6 +79,12 @@ pnpm lint
 pnpm format
 ```
 
+## Features
+
+- **Transaction Management**: Add income and expense transactions with categories
+- **Category Support**: Pre-defined categories for both income (Salary, Freelance, Investment, Gift, Other) and expenses (Food, Transport, Utilities, Entertainment, Shopping, Health, Other)
+- **Transaction List**: View all transactions sorted by date with color-coded amounts
+
 ## Project Structure
 
 ```text
@@ -86,6 +92,11 @@ my-wallet/
 ├── packages/
 │   ├── frontend/          # React + Vite frontend
 │   │   ├── src/
+│   │   │   ├── components/
+│   │   │   │   ├── TransactionForm.tsx
+│   │   │   │   └── TransactionList.tsx
+│   │   │   ├── types/
+│   │   │   │   └── transaction.ts
 │   │   │   ├── App.tsx
 │   │   │   ├── main.tsx
 │   │   │   └── index.css
