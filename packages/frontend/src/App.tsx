@@ -11,9 +11,9 @@ export default function App() {
   }, []);
 
   return (
-    <div className="app">
-      <h1>My Wallet</h1>
-      <p>Backend status: {message}</p>
+    <div className="mx-auto max-w-3xl p-8 text-center">
+      <h1 className="mb-4 text-3xl font-bold text-gray-800">My Wallet</h1>
+      <p className="text-gray-600">Backend status: {message}</p>
     </div>
   );
 }
