@@ -1,5 +1,7 @@
+import 'dotenv/config';
 import express, { type Express, type Request, type Response } from 'express';
 import cors from 'cors';
+import { connectDatabase } from './lib/prisma.js';
 
 interface Transaction {
   id: string;
@@ -61,8 +63,18 @@ app.post('/api/transactions', (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+async function startServer() {
+  const dbConnected = await connectDatabase();
+
+  if (!dbConnected) {
+    console.warn('Server starting without database connection');
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer();
 
 export default app;
