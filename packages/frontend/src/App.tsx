@@ -1,18 +1,25 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client/react';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import { Transaction } from './types/transaction';
+import { HEALTH_QUERY } from './graphql/operations';
 
 export default function App() {
-  const [message, setMessage] = useState<string>('Loading...');
+  const { data, loading, error } = useQuery<{ health: string }>(HEALTH_QUERY);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
+  const [message, setMessage] = useState<string>('Loading...');
+
   useEffect(() => {
-    fetch('/api/health')
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch(() => setMessage('Failed to connect to backend'));
-  }, []);
+    if (loading) {
+      setMessage('Loading...');
+    } else if (error) {
+      setMessage('Failed to connect to GraphQL server');
+    } else if (data) {
+      setMessage(data.health);
+    }
+  }, [data, loading, error]);
 
   const handleTransactionAdded = (transaction: Transaction) => {
     setTransactions((prev) => [...prev, transaction]);
@@ -25,7 +32,7 @@ export default function App() {
           My Wallet
         </h1>
         <p className="mb-8 text-center text-sm text-gray-500">
-          Backend status: {message}
+          GraphQL status: {message}
         </p>
 
         <div className="space-y-6">
