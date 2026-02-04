@@ -1,6 +1,17 @@
-import { PrismaClient } from '../generated/prisma/client.js';
+import 'dotenv/config';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../generated/prisma/client';
 
-const prisma = new PrismaClient();
+const host = process.env['PG_HOST'] || 'localhost';
+const port = process.env['PG_PORT'] || '5432';
+const user = process.env['PG_USER'];
+const password = process.env['PG_PASSWORD'];
+const database = process.env['PG_DATABASE'];
+
+const connectionString = `postgresql://${user}:${password}@${host}:${port}/${database}?schema=public`;
+
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 export async function connectDatabase(): Promise<boolean> {
   try {

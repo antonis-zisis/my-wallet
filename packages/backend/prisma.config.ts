@@ -7,7 +7,7 @@ const user = process.env['PG_USER'];
 const password = process.env['PG_PASSWORD'];
 const database = process.env['PG_DATABASE'];
 
-const databaseUrl = `postgresql://${user}:${password}@${host}:${port}/${database}?schema=public`;
+const connectionString = `postgresql://${user}:${password}@${host}:${port}/${database}?schema=public`;
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -15,6 +15,6 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    url: databaseUrl,
+    url: connectionString,
   },
 });

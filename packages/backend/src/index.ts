@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express, { type Express, type Request, type Response } from 'express';
 import cors from 'cors';
-import { connectDatabase } from './lib/prisma.js';
+import { connectDatabase } from './lib/prisma';
 
 interface Transaction {
   id: string;
