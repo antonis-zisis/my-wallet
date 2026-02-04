@@ -1,18 +1,21 @@
 import { useState } from 'react';
-import {
-  Transaction,
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
-} from '../types/transaction';
+import { useMutation } from '@apollo/client/react';
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../types/transaction';
+import { CREATE_TRANSACTION, GET_TRANSACTIONS } from '../graphql/operations';
 
-interface TransactionFormProps {
-  onTransactionAdded: (transaction: Transaction) => void;
+interface TransactionResult {
+  id: string;
+  type: 'INCOME' | 'EXPENSE';
+  amount: number;
+  description: string;
+  category: string;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export default function TransactionForm({
-  onTransactionAdded,
-}: TransactionFormProps) {
-  const [type, setType] = useState<'income' | 'expense'>('expense');
+export default function TransactionForm() {
+  const [type, setType] = useState<'INCOME' | 'EXPENSE'>('EXPENSE');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -20,10 +23,21 @@ export default function TransactionForm({
     () => new Date().toISOString().split('T')[0]
   );
   const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [createTransaction, { loading: isSubmitting }] = useMutation<{
+    createTransaction: TransactionResult;
+  }>(CREATE_TRANSACTION, {
+    refetchQueries: [{ query: GET_TRANSACTIONS }],
+    onCompleted: () => {
+      resetForm();
+    },
+    onError: (err) => {
+      setError(err.message || 'Failed to save transaction. Please try again.');
+    },
+  });
 
   const categories =
-    type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+    type === 'EXPENSE' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
 
   const resetForm = () => {
     setAmount('');
@@ -33,7 +47,7 @@ export default function TransactionForm({
     setError('');
   };
 
-  const handleTypeChange = (newType: 'income' | 'expense') => {
+  const handleTypeChange = (newType: 'INCOME' | 'EXPENSE') => {
     setType(newType);
     setCategory('');
   };
@@ -55,35 +69,17 @@ export default function TransactionForm({
       return;
     }
 
-    const transaction: Transaction = {
-      id: crypto.randomUUID(),
-      type,
-      amount: parseFloat(amount),
-      description: description.trim(),
-      category,
-      date,
-    };
-
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transaction),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save transaction');
-      }
-
-      onTransactionAdded(transaction);
-      resetForm();
-    } catch {
-      setError('Failed to save transaction. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    await createTransaction({
+      variables: {
+        input: {
+          type,
+          amount: parseFloat(amount),
+          description: description.trim(),
+          category,
+          date,
+        },
+      },
+    });
   };
 
   return (
@@ -96,9 +92,9 @@ export default function TransactionForm({
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => handleTypeChange('income')}
+            onClick={() => handleTypeChange('INCOME')}
             className={`flex-1 rounded-lg px-4 py-2 font-medium transition-colors ${
-              type === 'income'
+              type === 'INCOME'
                 ? 'bg-green-500 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
@@ -107,9 +103,9 @@ export default function TransactionForm({
           </button>
           <button
             type="button"
-            onClick={() => handleTypeChange('expense')}
+            onClick={() => handleTypeChange('EXPENSE')}
             className={`flex-1 rounded-lg px-4 py-2 font-medium transition-colors ${
-              type === 'expense'
+              type === 'EXPENSE'
                 ? 'bg-red-500 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}

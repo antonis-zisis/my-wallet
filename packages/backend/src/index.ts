@@ -3,8 +3,8 @@ import express, { type Express } from 'express';
 import cors from 'cors';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
-import { connectDatabase } from './lib/prisma.js';
-import { typeDefs, resolvers } from './graphql/index.js';
+import { connectDatabase } from './lib/prisma';
+import { typeDefs, resolvers } from './graphql/index';
 
 const app: Express = express();
 const PORT = process.env.PORT || 4000;
@@ -16,19 +16,12 @@ async function startServer() {
     console.warn('Server starting without database connection');
   }
 
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-  });
+  const server = new ApolloServer({ typeDefs, resolvers });
 
   await server.start();
 
   app.use(cors());
   app.use(express.json());
-
-  app.get('/api/health', (_req, res) => {
-    res.json({ message: 'Backend is running!' });
-  });
 
   app.use('/graphql', expressMiddleware(server));
 

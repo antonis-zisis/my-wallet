@@ -1,19 +1,24 @@
-import { Transaction } from '../types/transaction';
+import { useQuery } from '@apollo/client/react';
+import { GET_TRANSACTIONS } from '../graphql/operations';
 
-interface TransactionListProps {
+interface Transaction {
+  id: string;
+  type: 'INCOME' | 'EXPENSE';
+  amount: number;
+  description: string;
+  category: string;
+  date: string;
+}
+
+interface TransactionsData {
   transactions: Transaction[];
 }
 
-export default function TransactionList({
-  transactions,
-}: TransactionListProps) {
-  const sortedTransactions = [...transactions].sort(
-    (first, second) =>
-      new Date(second.date).getTime() - new Date(first.date).getTime()
-  );
+export default function TransactionList() {
+  const { data, loading, error } = useQuery<TransactionsData>(GET_TRANSACTIONS);
 
   const formatAmount = (transaction: Transaction) => {
-    const sign = transaction.type === 'income' ? '+' : '-';
+    const sign = transaction.type === 'INCOME' ? '+' : '-';
     return `${sign}$${transaction.amount.toFixed(2)}`;
   };
 
@@ -24,6 +29,37 @@ export default function TransactionList({
       day: 'numeric',
     });
   };
+
+  if (loading) {
+    return (
+      <div className="rounded-lg bg-white p-6 shadow-md">
+        <h2 className="mb-4 text-xl font-semibold text-gray-800">
+          Transactions
+        </h2>
+        <p className="text-center text-gray-500">Loading transactions...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-lg bg-white p-6 shadow-md">
+        <h2 className="mb-4 text-xl font-semibold text-gray-800">
+          Transactions
+        </h2>
+        <p className="text-center text-red-500">
+          Failed to load transactions: {error.message}
+        </p>
+      </div>
+    );
+  }
+
+  const transactions = data?.transactions ?? [];
+
+  const sortedTransactions = [...transactions].sort(
+    (first, second) =>
+      new Date(second.date).getTime() - new Date(first.date).getTime()
+  );
 
   if (transactions.length === 0) {
     return (
@@ -67,12 +103,12 @@ export default function TransactionList({
                 <td className="py-3 pr-4">
                   <span
                     className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
-                      transaction.type === 'income'
+                      transaction.type === 'INCOME'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-red-100 text-red-700'
                     }`}
                   >
-                    {transaction.type === 'income' ? 'Income' : 'Expense'}
+                    {transaction.type === 'INCOME' ? 'Income' : 'Expense'}
                   </span>
                 </td>
                 <td className="py-3 pr-4 text-sm text-gray-600">
@@ -83,7 +119,7 @@ export default function TransactionList({
                 </td>
                 <td
                   className={`py-3 text-right text-sm font-medium ${
-                    transaction.type === 'income'
+                    transaction.type === 'INCOME'
                       ? 'text-green-600'
                       : 'text-red-600'
                   }`}
