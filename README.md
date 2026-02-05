@@ -10,11 +10,13 @@ A full-stack wallet application built with React and Express.
 - Vite 7
 - Tailwind CSS 4
 - TypeScript
+- Apollo Client (GraphQL)
 - Vitest
 
 ### Backend
 
 - Express 5
+- Apollo Server (GraphQL)
 - TypeScript
 - Vitest
 
@@ -103,6 +105,10 @@ my-wallet/
 │   │   │   ├── components/
 │   │   │   │   ├── TransactionForm.tsx
 │   │   │   │   └── TransactionList.tsx
+│   │   │   ├── graphql/
+│   │   │   │   └── operations.ts
+│   │   │   ├── lib/
+│   │   │   │   └── apollo.ts
 │   │   │   ├── types/
 │   │   │   │   └── transaction.ts
 │   │   │   ├── App.tsx
@@ -110,8 +116,11 @@ my-wallet/
 │   │   │   └── index.css
 │   │   ├── index.html
 │   │   └── vite.config.ts
-│   └── backend/           # Express backend
+│   └── backend/           # Express + Apollo Server backend
 │       └── src/
+│           ├── graphql/
+│           │   ├── schema.ts
+│           │   └── resolvers.ts
 │           └── index.ts
 ├── .husky/                # Git hooks
 ├── commitlint.config.js   # Conventional commits config
@@ -119,6 +128,25 @@ my-wallet/
 ├── eslint.config.js       # ESLint config
 └── package.json           # Root package.json
 ```
+
+## GraphQL API
+
+The backend exposes a GraphQL endpoint at `/graphql`.
+
+### Queries
+
+- `health` - Check server status
+- `transactions` - Get all transactions
+- `transaction(id: ID!)` - Get a single transaction
+
+### Mutations
+
+- `createTransaction(input: CreateTransactionInput!)` - Create a new transaction
+- `deleteTransaction(id: ID!)` - Delete a transaction
+
+### Development
+
+When running in development mode, you can access the Apollo Sandbox at `http://localhost:4000/graphql`.
 
 ## Environment Files
 
