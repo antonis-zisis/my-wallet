@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MockedProvider, MockedResponse } from '../test/apollo-test-utils';
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from '../test/apollo-test-utils';
 import TransactionList from './TransactionList';
 import { GET_TRANSACTIONS } from '../graphql/operations';
 import { GraphQLError } from 'graphql';
@@ -38,7 +39,7 @@ const mockTransactions = [
   },
 ];
 
-const mockGetTransactionsWithData: MockedResponse = {
+const mockGetTransactionsWithData: MockLink.MockedResponse = {
   request: {
     query: GET_TRANSACTIONS,
   },
@@ -49,7 +50,7 @@ const mockGetTransactionsWithData: MockedResponse = {
   },
 };
 
-const mockGetTransactionsEmpty: MockedResponse = {
+const mockGetTransactionsEmpty: MockLink.MockedResponse = {
   request: {
     query: GET_TRANSACTIONS,
   },
@@ -60,7 +61,7 @@ const mockGetTransactionsEmpty: MockedResponse = {
   },
 };
 
-const mockGetTransactionsError: MockedResponse = {
+const mockGetTransactionsError: MockLink.MockedResponse = {
   request: {
     query: GET_TRANSACTIONS,
   },
@@ -69,9 +70,9 @@ const mockGetTransactionsError: MockedResponse = {
   },
 };
 
-const renderWithApollo = (mocks: MockedResponse[]) => {
+const renderWithApollo = (mocks: MockLink.MockedResponse[]) => {
   return render(
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={mocks}>
       <TransactionList />
     </MockedProvider>
   );

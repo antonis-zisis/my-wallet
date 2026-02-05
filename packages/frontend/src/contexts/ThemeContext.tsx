@@ -3,7 +3,7 @@ import {
   useContext,
   useEffect,
   useState,
-  ReactNode,
+  type ReactNode,
 } from 'react';
 
 type Theme = 'light' | 'dark';
@@ -52,15 +52,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement;
+
     if (theme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
+
     try {
       localStorage.setItem('theme', theme);
-    } catch {
-      // localStorage not available
+    } catch (error) {
+      console.error('Failed to save theme preference: ', error);
     }
   }, [theme]);
 
@@ -79,10 +81,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           setTheme(event.matches ? 'dark' : 'light');
         }
       };
+
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
-    } catch {
-      // matchMedia not available
+    } catch (error) {
+      console.error('Failed to set up theme change listener: ', error);
     }
   }, []);
 
