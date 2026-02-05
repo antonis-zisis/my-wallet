@@ -32,19 +32,21 @@ export default function TransactionList() {
 
   if (loading) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-xl font-semibold text-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+        <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">
           Transactions
         </h2>
-        <p className="text-center text-gray-500">Loading transactions...</p>
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Loading transactions...
+        </p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-xl font-semibold text-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+        <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">
           Transactions
         </h2>
         <p className="text-center text-red-500">
@@ -63,11 +65,11 @@ export default function TransactionList() {
 
   if (transactions.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-xl font-semibold text-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+        <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">
           Transactions
         </h2>
-        <p className="text-center text-gray-500">
+        <p className="text-center text-gray-500 dark:text-gray-400">
           No transactions yet. Add your first one above!
         </p>
       </div>
@@ -75,13 +77,15 @@ export default function TransactionList() {
   }
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md">
-      <h2 className="mb-4 text-xl font-semibold text-gray-800">Transactions</h2>
+    <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+      <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">
+        Transactions
+      </h2>
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200 text-left text-sm font-medium text-gray-500">
+            <tr className="border-b border-gray-200 text-left text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
               <th className="pb-3 pr-4">Date</th>
               <th className="pb-3 pr-4">Type</th>
               <th className="pb-3 pr-4">Category</th>
@@ -93,35 +97,37 @@ export default function TransactionList() {
             {sortedTransactions.map((transaction, index) => (
               <tr
                 key={transaction.id}
-                className={`border-b border-gray-100 ${
-                  index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                className={`border-b border-gray-100 dark:border-gray-700 ${
+                  index % 2 === 0
+                    ? 'bg-gray-50 dark:bg-gray-900'
+                    : 'bg-white dark:bg-gray-800'
                 }`}
               >
-                <td className="py-3 pr-4 text-sm text-gray-600">
+                <td className="py-3 pr-4 text-sm text-gray-600 dark:text-gray-300">
                   {formatDate(transaction.date)}
                 </td>
                 <td className="py-3 pr-4">
                   <span
                     className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
                       transaction.type === 'INCOME'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                        : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
                     }`}
                   >
                     {transaction.type === 'INCOME' ? 'Income' : 'Expense'}
                   </span>
                 </td>
-                <td className="py-3 pr-4 text-sm text-gray-600">
+                <td className="py-3 pr-4 text-sm text-gray-600 dark:text-gray-300">
                   {transaction.category}
                 </td>
-                <td className="py-3 pr-4 text-sm text-gray-800">
+                <td className="py-3 pr-4 text-sm text-gray-800 dark:text-gray-200">
                   {transaction.description}
                 </td>
                 <td
                   className={`py-3 text-right text-sm font-medium ${
                     transaction.type === 'INCOME'
-                      ? 'text-green-600'
-                      : 'text-red-600'
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-red-600 dark:text-red-400'
                   }`}
                 >
                   {formatAmount(transaction)}

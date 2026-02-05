@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider, MockedResponse } from '../test/apollo-test-utils';
+import { ThemeProvider } from '../contexts/ThemeContext';
 import Home from './Home';
 import { HEALTH_QUERY, GET_TRANSACTIONS } from '../graphql/operations';
 import { GraphQLError } from 'graphql';
@@ -39,11 +40,13 @@ const mockHealthQueryError: MockedResponse = {
 
 const renderHome = (mocks: MockedResponse[]) => {
   return render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <MemoryRouter>
-        <Home />
-      </MemoryRouter>
-    </MockedProvider>
+    <ThemeProvider>
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <MemoryRouter>
+          <Home />
+        </MemoryRouter>
+      </MockedProvider>
+    </ThemeProvider>
   );
 };
 
