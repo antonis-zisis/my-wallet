@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { MockedProvider, MockedResponse } from '../test/apollo-test-utils';
-import { ThemeProvider } from '../contexts/ThemeContext';
-import { Home } from './Home';
-import { HEALTH_QUERY, GET_TRANSACTIONS } from '../graphql/operations';
+import { MockLink } from '@apollo/client/testing';
 import { GraphQLError } from 'graphql';
+import { MemoryRouter } from 'react-router-dom';
+import { MockedProvider } from '../test/apollo-test-utils';
+import { ThemeProvider } from '../contexts/ThemeContext';
+import { HEALTH_QUERY } from '../graphql/operations';
+import { Home } from './Home';
 
-const mockHealthQuery: MockedResponse = {
+const mockHealthQuery: MockLink.MockedResponse = {
   request: {
     query: HEALTH_QUERY,
   },
@@ -18,18 +19,7 @@ const mockHealthQuery: MockedResponse = {
   },
 };
 
-const mockGetTransactions: MockedResponse = {
-  request: {
-    query: GET_TRANSACTIONS,
-  },
-  result: {
-    data: {
-      transactions: [],
-    },
-  },
-};
-
-const mockHealthQueryError: MockedResponse = {
+const mockHealthQueryError: MockLink.MockedResponse = {
   request: {
     query: HEALTH_QUERY,
   },
@@ -38,7 +28,7 @@ const mockHealthQueryError: MockedResponse = {
   },
 };
 
-const renderHome = (mocks: MockedResponse[]) => {
+const renderHome = (mocks: MockLink.MockedResponse[]) => {
   return render(
     <ThemeProvider>
       <MockedProvider mocks={mocks} addTypename={false}>
@@ -52,12 +42,12 @@ const renderHome = (mocks: MockedResponse[]) => {
 
 describe('Home', () => {
   it('shows connecting status initially', () => {
-    renderHome([mockHealthQuery, mockGetTransactions]);
+    renderHome([mockHealthQuery]);
     expect(screen.getByText('Status: Connecting...')).toBeInTheDocument();
   });
 
   it('shows connected status after health query succeeds', async () => {
-    renderHome([mockHealthQuery, mockGetTransactions]);
+    renderHome([mockHealthQuery]);
 
     expect(
       await screen.findByText('Status: GraphQL server is running!')
@@ -65,24 +55,10 @@ describe('Home', () => {
   });
 
   it('shows error status when health query fails', async () => {
-    renderHome([mockHealthQueryError, mockGetTransactions]);
+    renderHome([mockHealthQueryError]);
 
     expect(
       await screen.findByText('Status: Failed to connect to server')
-    ).toBeInTheDocument();
-  });
-
-  it('renders TransactionForm', () => {
-    renderHome([mockHealthQuery, mockGetTransactions]);
-    expect(
-      screen.getByRole('heading', { name: 'Add Transaction' })
-    ).toBeInTheDocument();
-  });
-
-  it('renders TransactionList', () => {
-    renderHome([mockHealthQuery, mockGetTransactions]);
-    expect(
-      screen.getByRole('heading', { name: 'Transactions' })
     ).toBeInTheDocument();
   });
 });
