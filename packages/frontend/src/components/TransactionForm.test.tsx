@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MockedProvider, MockedResponse } from '../test/apollo-test-utils';
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from '../test/apollo-test-utils';
 import TransactionForm from './TransactionForm';
 import { CREATE_TRANSACTION, GET_TRANSACTIONS } from '../graphql/operations';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../types/transaction';
@@ -16,7 +17,7 @@ const createMockCreateTransaction = (
     category: string;
   },
   options?: { delay?: number; error?: string }
-): MockedResponse => {
+): MockLink.MockedResponse => {
   const base = {
     request: {
       query: CREATE_TRANSACTION,
@@ -53,7 +54,7 @@ const createMockCreateTransaction = (
   };
 };
 
-const mockGetTransactions: MockedResponse = {
+const mockGetTransactions: MockLink.MockedResponse = {
   request: {
     query: GET_TRANSACTIONS,
   },
@@ -64,7 +65,7 @@ const mockGetTransactions: MockedResponse = {
   },
 };
 
-const renderWithApollo = (mocks: MockedResponse[] = []) => {
+const renderWithApollo = (mocks: MockLink.MockedResponse[] = []) => {
   return render(
     <MockedProvider mocks={[mockGetTransactions, ...mocks]} addTypename={false}>
       <TransactionForm />
