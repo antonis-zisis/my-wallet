@@ -67,7 +67,7 @@ const mockGetTransactions: MockLink.MockedResponse = {
 
 const renderWithApollo = (mocks: MockLink.MockedResponse[] = []) => {
   return render(
-    <MockedProvider mocks={[mockGetTransactions, ...mocks]} addTypename={false}>
+    <MockedProvider mocks={[mockGetTransactions, ...mocks]}>
       <TransactionForm />
     </MockedProvider>
   );

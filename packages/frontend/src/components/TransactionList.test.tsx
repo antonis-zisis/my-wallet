@@ -72,7 +72,7 @@ const mockGetTransactionsError: MockLink.MockedResponse = {
 
 const renderWithApollo = (mocks: MockLink.MockedResponse[]) => {
   return render(
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={mocks}>
       <TransactionList />
     </MockedProvider>
   );

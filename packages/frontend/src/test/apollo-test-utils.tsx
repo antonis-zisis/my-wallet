@@ -5,20 +5,15 @@ import { MockLink } from '@apollo/client/testing';
 
 interface MockedProviderProps {
   mocks?: MockLink.MockedResponse[];
-  addTypename?: boolean;
   children: ReactNode;
 }
 
-export function MockedProvider({
-  mocks = [],
-  addTypename = true,
-  children,
-}: MockedProviderProps) {
-  const mockLink = new MockLink(mocks, addTypename);
+export function MockedProvider({ mocks = [], children }: MockedProviderProps) {
+  const mockLink = new MockLink(mocks);
 
   const client = new ApolloClient({
     link: mockLink,
-    cache: new InMemoryCache({ addTypename }),
+    cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
         fetchPolicy: 'no-cache',

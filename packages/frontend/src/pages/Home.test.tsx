@@ -31,7 +31,7 @@ const mockHealthQueryError: MockLink.MockedResponse = {
 const renderHome = (mocks: MockLink.MockedResponse[]) => {
   return render(
     <ThemeProvider>
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider mocks={mocks}>
         <MemoryRouter>
           <Home />
         </MemoryRouter>
