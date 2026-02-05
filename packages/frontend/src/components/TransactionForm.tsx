@@ -83,8 +83,8 @@ export default function TransactionForm() {
   };
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md">
-      <h2 className="mb-4 text-xl font-semibold text-gray-800">
+    <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+      <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">
         Add Transaction
       </h2>
 
@@ -96,7 +96,7 @@ export default function TransactionForm() {
             className={`flex-1 rounded-lg px-4 py-2 font-medium transition-colors ${
               type === 'INCOME'
                 ? 'bg-green-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
             }`}
           >
             Income
@@ -107,7 +107,7 @@ export default function TransactionForm() {
             className={`flex-1 rounded-lg px-4 py-2 font-medium transition-colors ${
               type === 'EXPENSE'
                 ? 'bg-red-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
             }`}
           >
             Expense
@@ -117,7 +117,7 @@ export default function TransactionForm() {
         <div>
           <label
             htmlFor="amount"
-            className="mb-1 block text-sm font-medium text-gray-700"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Amount
           </label>
@@ -129,14 +129,14 @@ export default function TransactionForm() {
             placeholder="0.00"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400"
           />
         </div>
 
         <div>
           <label
             htmlFor="description"
-            className="mb-1 block text-sm font-medium text-gray-700"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Description
           </label>
@@ -146,14 +146,14 @@ export default function TransactionForm() {
             placeholder="Enter description"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400"
           />
         </div>
 
         <div>
           <label
             htmlFor="category"
-            className="mb-1 block text-sm font-medium text-gray-700"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Category
           </label>
@@ -161,7 +161,7 @@ export default function TransactionForm() {
             id="category"
             value={category}
             onChange={(event) => setCategory(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           >
             <option value="">Select a category</option>
             {categories.map((cat) => (
@@ -175,7 +175,7 @@ export default function TransactionForm() {
         <div>
           <label
             htmlFor="date"
-            className="mb-1 block text-sm font-medium text-gray-700"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Date
           </label>
@@ -184,7 +184,7 @@ export default function TransactionForm() {
             type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           />
         </div>
 
