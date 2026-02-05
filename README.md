@@ -1,12 +1,13 @@
 # My Wallet
 
-A full-stack wallet application built with React and Express.
+A full-stack Wallet application to help with budgeting built with React and Express.
 
 ## Tech Stack
 
 ### Frontend
 
 - React 19
+- React Router 7
 - Vite 7
 - Tailwind CSS 4
 - TypeScript
@@ -17,6 +18,8 @@ A full-stack wallet application built with React and Express.
 
 - Express 5
 - Apollo Server (GraphQL)
+- Prisma (ORM)
+- PostgreSQL
 - TypeScript
 - Vitest
 
@@ -32,7 +35,7 @@ A full-stack wallet application built with React and Express.
 ## Prerequisites
 
 - Node.js 24+
-- pnpm 9+
+- pnpm 10+
 
 ## Getting Started
 
@@ -49,6 +52,20 @@ Environment files are encrypted in the repository. Decrypt them before running:
 ```bash
 pnpm run env:decrypt
 ```
+
+### Set up the database
+
+Run the bootstrap script to create the database, user, and run migrations:
+
+```bash
+./scripts/bootstrap-db.sh
+```
+
+This script will prompt for the PostgreSQL superuser password and automatically:
+
+- Create the database user and database
+- Generate the Prisma client
+- Run any pending migrations
 
 ### Development
 
@@ -109,9 +126,12 @@ my-wallet/
 │   │   │   │   └── operations.ts
 │   │   │   ├── lib/
 │   │   │   │   └── apollo.ts
+│   │   │   ├── pages/
+│   │   │   │   └── Home.tsx
 │   │   │   ├── types/
 │   │   │   │   └── transaction.ts
 │   │   │   ├── App.tsx
+│   │   │   ├── router.tsx
 │   │   │   ├── main.tsx
 │   │   │   └── index.css
 │   │   ├── index.html
