@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MockedProvider, MockedResponse } from './test/apollo-test-utils';
-import App from './App';
-import { HEALTH_QUERY, GET_TRANSACTIONS } from './graphql/operations';
+import { MemoryRouter } from 'react-router-dom';
+import { MockedProvider, MockedResponse } from '../test/apollo-test-utils';
+import Home from './Home';
+import { HEALTH_QUERY, GET_TRANSACTIONS } from '../graphql/operations';
 import { GraphQLError } from 'graphql';
 
 const mockHealthQuery: MockedResponse = {
@@ -36,27 +37,29 @@ const mockHealthQueryError: MockedResponse = {
   },
 };
 
-const renderWithApollo = (mocks: MockedResponse[]) => {
+const renderHome = (mocks: MockedResponse[]) => {
   return render(
     <MockedProvider mocks={mocks} addTypename={false}>
-      <App />
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>
     </MockedProvider>
   );
 };
 
-describe('App', () => {
+describe('Home', () => {
   it('renders the title', () => {
-    renderWithApollo([mockHealthQuery, mockGetTransactions]);
+    renderHome([mockHealthQuery, mockGetTransactions]);
     expect(screen.getByText('My Wallet')).toBeInTheDocument();
   });
 
   it('shows connecting status initially', () => {
-    renderWithApollo([mockHealthQuery, mockGetTransactions]);
+    renderHome([mockHealthQuery, mockGetTransactions]);
     expect(screen.getByText('Status: Connecting...')).toBeInTheDocument();
   });
 
   it('shows connected status after health query succeeds', async () => {
-    renderWithApollo([mockHealthQuery, mockGetTransactions]);
+    renderHome([mockHealthQuery, mockGetTransactions]);
 
     expect(
       await screen.findByText('Status: GraphQL server is running!')
@@ -64,7 +67,7 @@ describe('App', () => {
   });
 
   it('shows error status when health query fails', async () => {
-    renderWithApollo([mockHealthQueryError, mockGetTransactions]);
+    renderHome([mockHealthQueryError, mockGetTransactions]);
 
     expect(
       await screen.findByText('Status: Failed to connect to server')
@@ -72,14 +75,14 @@ describe('App', () => {
   });
 
   it('renders TransactionForm', () => {
-    renderWithApollo([mockHealthQuery, mockGetTransactions]);
+    renderHome([mockHealthQuery, mockGetTransactions]);
     expect(
       screen.getByRole('heading', { name: 'Add Transaction' })
     ).toBeInTheDocument();
   });
 
   it('renders TransactionList', () => {
-    renderWithApollo([mockHealthQuery, mockGetTransactions]);
+    renderHome([mockHealthQuery, mockGetTransactions]);
     expect(
       screen.getByRole('heading', { name: 'Transactions' })
     ).toBeInTheDocument();
