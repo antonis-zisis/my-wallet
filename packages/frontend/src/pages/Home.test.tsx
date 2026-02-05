@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider, MockedResponse } from '../test/apollo-test-utils';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import Home from './Home';
+import { Home } from './Home';
 import { HEALTH_QUERY, GET_TRANSACTIONS } from '../graphql/operations';
 import { GraphQLError } from 'graphql';
 
@@ -51,11 +51,6 @@ const renderHome = (mocks: MockedResponse[]) => {
 };
 
 describe('Home', () => {
-  it('renders the title', () => {
-    renderHome([mockHealthQuery, mockGetTransactions]);
-    expect(screen.getByText('My Wallet')).toBeInTheDocument();
-  });
-
   it('shows connecting status initially', () => {
     renderHome([mockHealthQuery, mockGetTransactions]);
     expect(screen.getByText('Status: Connecting...')).toBeInTheDocument();
