@@ -1,19 +1,84 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MockedProvider, MockedResponse } from '../test/apollo-test-utils';
 import TransactionForm from './TransactionForm';
+import { CREATE_TRANSACTION, GET_TRANSACTIONS } from '../graphql/operations';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../types/transaction';
 
-describe('TransactionForm', () => {
-  const mockOnTransactionAdded = vi.fn();
+const getTodayDate = () => new Date().toISOString().split('T')[0];
 
+const createMockCreateTransaction = (
+  variables: {
+    type: 'INCOME' | 'EXPENSE';
+    amount: number;
+    description: string;
+    category: string;
+  },
+  options?: { delay?: number; error?: string }
+): MockedResponse => {
+  const base = {
+    request: {
+      query: CREATE_TRANSACTION,
+      variables: {
+        input: {
+          ...variables,
+          date: getTodayDate(),
+        },
+      },
+    },
+    ...(options?.delay && { delay: options.delay }),
+  };
+
+  if (options?.error) {
+    return {
+      ...base,
+      error: new Error(options.error),
+    };
+  }
+
+  return {
+    ...base,
+    result: {
+      data: {
+        createTransaction: {
+          id: '123',
+          ...variables,
+          date: getTodayDate(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      },
+    },
+  };
+};
+
+const mockGetTransactions: MockedResponse = {
+  request: {
+    query: GET_TRANSACTIONS,
+  },
+  result: {
+    data: {
+      transactions: [],
+    },
+  },
+};
+
+const renderWithApollo = (mocks: MockedResponse[] = []) => {
+  return render(
+    <MockedProvider mocks={[mockGetTransactions, ...mocks]} addTypename={false}>
+      <TransactionForm />
+    </MockedProvider>
+  );
+};
+
+describe('TransactionForm', () => {
   beforeEach(() => {
-    mockOnTransactionAdded.mockClear();
     vi.restoreAllMocks();
   });
 
   it('renders the form with all fields', () => {
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     expect(
       screen.getByRole('heading', { name: 'Add Transaction' })
@@ -30,7 +95,7 @@ describe('TransactionForm', () => {
   });
 
   it('defaults to expense type', () => {
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     const expenseButton = screen.getByRole('button', { name: 'Expense' });
     expect(expenseButton).toHaveClass('bg-red-500');
@@ -38,7 +103,7 @@ describe('TransactionForm', () => {
 
   it('switches between income and expense types', async () => {
     const user = userEvent.setup();
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     const incomeButton = screen.getByRole('button', { name: 'Income' });
     const expenseButton = screen.getByRole('button', { name: 'Expense' });
@@ -53,7 +118,7 @@ describe('TransactionForm', () => {
   });
 
   it('shows expense categories by default', () => {
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     const categorySelect = screen.getByLabelText(
       'Category'
@@ -69,7 +134,7 @@ describe('TransactionForm', () => {
 
   it('shows income categories when income type is selected', async () => {
     const user = userEvent.setup();
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     await user.click(screen.getByRole('button', { name: 'Income' }));
 
@@ -87,7 +152,7 @@ describe('TransactionForm', () => {
 
   it('resets category when switching types', async () => {
     const user = userEvent.setup();
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     const categorySelect = screen.getByLabelText('Category');
     await user.selectOptions(categorySelect, 'Food');
@@ -99,17 +164,16 @@ describe('TransactionForm', () => {
 
   it('shows error when submitting without amount', async () => {
     const user = userEvent.setup();
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     await user.click(screen.getByRole('button', { name: 'Add Transaction' }));
 
     expect(screen.getByText('Please enter a valid amount')).toBeInTheDocument();
-    expect(mockOnTransactionAdded).not.toHaveBeenCalled();
   });
 
   it('shows error when submitting with zero amount', async () => {
     const user = userEvent.setup();
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     await user.type(screen.getByLabelText('Amount'), '0');
     await user.click(screen.getByRole('button', { name: 'Add Transaction' }));
@@ -119,7 +183,7 @@ describe('TransactionForm', () => {
 
   it('shows error when submitting without description', async () => {
     const user = userEvent.setup();
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     await user.type(screen.getByLabelText('Amount'), '100');
     await user.click(screen.getByRole('button', { name: 'Add Transaction' }));
@@ -129,7 +193,7 @@ describe('TransactionForm', () => {
 
   it('shows error when submitting without category', async () => {
     const user = userEvent.setup();
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo();
 
     await user.type(screen.getByLabelText('Amount'), '100');
     await user.type(screen.getByLabelText('Description'), 'Test transaction');
@@ -138,14 +202,15 @@ describe('TransactionForm', () => {
     expect(screen.getByText('Please select a category')).toBeInTheDocument();
   });
 
-  it('submits the form successfully and calls onTransactionAdded', async () => {
+  it('submits the form successfully via GraphQL mutation', async () => {
     const user = userEvent.setup();
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
+    const mock = createMockCreateTransaction({
+      type: 'EXPENSE',
+      amount: 50.25,
+      description: 'Grocery shopping',
+      category: 'Food',
     });
-
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo([mock]);
 
     await user.type(screen.getByLabelText('Amount'), '50.25');
     await user.type(screen.getByLabelText('Description'), 'Grocery shopping');
@@ -153,30 +218,22 @@ describe('TransactionForm', () => {
     await user.click(screen.getByRole('button', { name: 'Add Transaction' }));
 
     await waitFor(() => {
-      expect(mockOnTransactionAdded).toHaveBeenCalledTimes(1);
+      expect(screen.getByLabelText('Amount')).toHaveValue(null);
     });
-
-    const addedTransaction = mockOnTransactionAdded.mock.calls[0][0];
-    expect(addedTransaction).toMatchObject({
-      type: 'expense',
-      amount: 50.25,
-      description: 'Grocery shopping',
-      category: 'Food',
-    });
-    expect(addedTransaction.id).toBeDefined();
   });
 
   it('resets form after successful submission', async () => {
     const user = userEvent.setup();
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
+    const mock = createMockCreateTransaction({
+      type: 'EXPENSE',
+      amount: 50.25,
+      description: 'Grocery shopping',
+      category: 'Food',
     });
+    renderWithApollo([mock]);
 
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
-
-    await user.type(screen.getByLabelText('Amount'), '100');
-    await user.type(screen.getByLabelText('Description'), 'Test');
+    await user.type(screen.getByLabelText('Amount'), '50.25');
+    await user.type(screen.getByLabelText('Description'), 'Grocery shopping');
     await user.selectOptions(screen.getByLabelText('Category'), 'Food');
     await user.click(screen.getByRole('button', { name: 'Add Transaction' }));
 
@@ -187,13 +244,19 @@ describe('TransactionForm', () => {
     });
   });
 
-  it('shows error message when API call fails', async () => {
+  it('shows error message when GraphQL mutation fails', async () => {
     const user = userEvent.setup();
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-    });
+    const mock = createMockCreateTransaction(
+      {
+        type: 'EXPENSE',
+        amount: 100,
+        description: 'Test',
+        category: 'Food',
+      },
+      { error: 'Failed to create transaction' }
+    );
 
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo([mock]);
 
     await user.type(screen.getByLabelText('Amount'), '100');
     await user.type(screen.getByLabelText('Description'), 'Test');
@@ -202,24 +265,24 @@ describe('TransactionForm', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('Failed to save transaction. Please try again.')
+        screen.getByText('Failed to create transaction')
       ).toBeInTheDocument();
     });
-
-    expect(mockOnTransactionAdded).not.toHaveBeenCalled();
   });
 
   it('disables submit button while submitting', async () => {
     const user = userEvent.setup();
-    let resolvePromise: (value: unknown) => void;
-    globalThis.fetch = vi.fn().mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolvePromise = resolve;
-        })
+    const mock = createMockCreateTransaction(
+      {
+        type: 'EXPENSE',
+        amount: 100,
+        description: 'Test',
+        category: 'Food',
+      },
+      { delay: 100 }
     );
 
-    render(<TransactionForm onTransactionAdded={mockOnTransactionAdded} />);
+    renderWithApollo([mock]);
 
     await user.type(screen.getByLabelText('Amount'), '100');
     await user.type(screen.getByLabelText('Description'), 'Test');
@@ -227,11 +290,6 @@ describe('TransactionForm', () => {
     await user.click(screen.getByRole('button', { name: 'Add Transaction' }));
 
     expect(screen.getByRole('button', { name: 'Adding...' })).toBeDisabled();
-
-    resolvePromise!({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    });
 
     await waitFor(() => {
       expect(

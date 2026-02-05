@@ -2,186 +2,202 @@ import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import app from './index';
 
-describe('Backend API', () => {
-  describe('GET /api/health', () => {
+describe('GraphQL API', () => {
+  describe('health query', () => {
     it('returns health status', async () => {
-      const response = await request(app).get('/api/health');
+      const response = await request(app).post('/graphql').send({
+        query: '{ health }',
+      });
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ message: 'Backend is running!' });
+      expect(response.body.data.health).toBe('GraphQL server is running!');
     });
   });
 
-  describe('POST /api/transactions', () => {
-    const validTransaction = {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      type: 'expense',
+  describe('transactions query', () => {
+    it('returns empty array when no transactions', async () => {
+      const response = await request(app)
+        .post('/graphql')
+        .send({
+          query: `
+            query {
+              transactions {
+                id
+                type
+                amount
+                description
+                category
+                date
+              }
+            }
+          `,
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.transactions).toEqual([]);
+    });
+  });
+
+  describe('transaction query', () => {
+    it('returns null for non-existent transaction', async () => {
+      const response = await request(app)
+        .post('/graphql')
+        .send({
+          query: `
+            query GetTransaction($id: ID!) {
+              transaction(id: $id) {
+                id
+                type
+                amount
+              }
+            }
+          `,
+          variables: { id: 'non-existent-id' },
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.transaction).toBeNull();
+    });
+  });
+
+  describe('createTransaction mutation', () => {
+    const validInput = {
+      type: 'EXPENSE',
       amount: 50.25,
       description: 'Grocery shopping',
       category: 'Food',
       date: '2024-01-15',
     };
 
-    it('accepts a valid expense transaction', async () => {
+    it('creates an expense transaction', async () => {
       const response = await request(app)
-        .post('/api/transactions')
-        .send(validTransaction);
+        .post('/graphql')
+        .send({
+          query: `
+            mutation CreateTransaction($input: CreateTransactionInput!) {
+              createTransaction(input: $input) {
+                id
+                type
+                amount
+                description
+                category
+                date
+                createdAt
+                updatedAt
+              }
+            }
+          `,
+          variables: { input: validInput },
+        });
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ success: true });
+      expect(response.body.errors).toBeUndefined();
+
+      const transaction = response.body.data.createTransaction;
+      expect(transaction.id).toBeDefined();
+      expect(transaction.type).toBe('EXPENSE');
+      expect(transaction.amount).toBe(50.25);
+      expect(transaction.description).toBe('Grocery shopping');
+      expect(transaction.category).toBe('Food');
+      expect(transaction.date).toBe('2024-01-15');
+      expect(transaction.createdAt).toBeDefined();
+      expect(transaction.updatedAt).toBeDefined();
     });
 
-    it('accepts a valid income transaction', async () => {
-      const incomeTransaction = {
-        ...validTransaction,
-        type: 'income',
+    it('creates an income transaction', async () => {
+      const incomeInput = {
+        type: 'INCOME',
+        amount: 1000,
         description: 'Monthly salary',
         category: 'Salary',
+        date: '2024-01-01',
       };
 
       const response = await request(app)
-        .post('/api/transactions')
-        .send(incomeTransaction);
+        .post('/graphql')
+        .send({
+          query: `
+            mutation CreateTransaction($input: CreateTransactionInput!) {
+              createTransaction(input: $input) {
+                id
+                type
+                amount
+                description
+                category
+              }
+            }
+          `,
+          variables: { input: incomeInput },
+        });
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ success: true });
+      expect(response.body.errors).toBeUndefined();
+
+      const transaction = response.body.data.createTransaction;
+      expect(transaction.type).toBe('INCOME');
+      expect(transaction.amount).toBe(1000);
+      expect(transaction.description).toBe('Monthly salary');
     });
 
-    it('rejects transaction without id', async () => {
-      const response = await request(app).post('/api/transactions').send({
-        type: validTransaction.type,
-        amount: validTransaction.amount,
-        description: validTransaction.description,
-        category: validTransaction.category,
-        date: validTransaction.date,
-      });
-
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({ error: 'Invalid or missing id' });
-    });
-
-    it('rejects transaction with invalid type', async () => {
+    it('rejects invalid transaction type', async () => {
       const response = await request(app)
-        .post('/api/transactions')
-        .send({ ...validTransaction, type: 'invalid' });
+        .post('/graphql')
+        .send({
+          query: `
+            mutation CreateTransaction($input: CreateTransactionInput!) {
+              createTransaction(input: $input) {
+                id
+              }
+            }
+          `,
+          variables: {
+            input: { ...validInput, type: 'INVALID' },
+          },
+        });
 
+      // GraphQL validation errors return 400
       expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        error: 'Type must be "income" or "expense"',
-      });
+      expect(response.body.errors).toBeDefined();
     });
 
-    it('rejects transaction without type', async () => {
-      const response = await request(app).post('/api/transactions').send({
-        id: validTransaction.id,
-        amount: validTransaction.amount,
-        description: validTransaction.description,
-        category: validTransaction.category,
-        date: validTransaction.date,
-      });
-
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        error: 'Type must be "income" or "expense"',
-      });
-    });
-
-    it('rejects transaction with non-positive amount', async () => {
+    it('requires all input fields', async () => {
       const response = await request(app)
-        .post('/api/transactions')
-        .send({ ...validTransaction, amount: 0 });
+        .post('/graphql')
+        .send({
+          query: `
+            mutation CreateTransaction($input: CreateTransactionInput!) {
+              createTransaction(input: $input) {
+                id
+              }
+            }
+          `,
+          variables: {
+            input: { type: 'EXPENSE' },
+          },
+        });
 
+      // GraphQL validation errors return 400
       expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        error: 'Amount must be a positive number',
-      });
+      expect(response.body.errors).toBeDefined();
     });
+  });
 
-    it('rejects transaction with negative amount', async () => {
+  describe('deleteTransaction mutation', () => {
+    it('returns true when deleting a transaction', async () => {
       const response = await request(app)
-        .post('/api/transactions')
-        .send({ ...validTransaction, amount: -10 });
-
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        error: 'Amount must be a positive number',
-      });
-    });
-
-    it('rejects transaction without amount', async () => {
-      const response = await request(app).post('/api/transactions').send({
-        id: validTransaction.id,
-        type: validTransaction.type,
-        description: validTransaction.description,
-        category: validTransaction.category,
-        date: validTransaction.date,
-      });
-
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        error: 'Amount must be a positive number',
-      });
-    });
-
-    it('rejects transaction without description', async () => {
-      const response = await request(app).post('/api/transactions').send({
-        id: validTransaction.id,
-        type: validTransaction.type,
-        amount: validTransaction.amount,
-        category: validTransaction.category,
-        date: validTransaction.date,
-      });
-
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        error: 'Invalid or missing description',
-      });
-    });
-
-    it('rejects transaction with empty description', async () => {
-      const response = await request(app)
-        .post('/api/transactions')
-        .send({ ...validTransaction, description: '' });
-
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        error: 'Invalid or missing description',
-      });
-    });
-
-    it('rejects transaction without category', async () => {
-      const response = await request(app).post('/api/transactions').send({
-        id: validTransaction.id,
-        type: validTransaction.type,
-        amount: validTransaction.amount,
-        description: validTransaction.description,
-        date: validTransaction.date,
-      });
-
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({ error: 'Invalid or missing category' });
-    });
-
-    it('rejects transaction without date', async () => {
-      const response = await request(app).post('/api/transactions').send({
-        id: validTransaction.id,
-        type: validTransaction.type,
-        amount: validTransaction.amount,
-        description: validTransaction.description,
-        category: validTransaction.category,
-      });
-
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({ error: 'Invalid or missing date' });
-    });
-
-    it('accepts transaction with decimal amount', async () => {
-      const response = await request(app)
-        .post('/api/transactions')
-        .send({ ...validTransaction, amount: 99.99 });
+        .post('/graphql')
+        .send({
+          query: `
+            mutation DeleteTransaction($id: ID!) {
+              deleteTransaction(id: $id)
+            }
+          `,
+          variables: { id: 'some-id' },
+        });
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ success: true });
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.deleteTransaction).toBe(true);
     });
   });
 });
