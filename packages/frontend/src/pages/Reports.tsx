@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Input, Modal } from '../components/ui';
+import { formatDate } from '../utils/formatDate';
 
 interface Report {
   id: string;
@@ -34,14 +35,6 @@ export function Reports() {
   const [reports, setReports] = useState<Report[]>(initialReports);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newReportTitle, setNewReportTitle] = useState('');
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   const handleCreateReport = () => {
     if (!newReportTitle.trim()) {

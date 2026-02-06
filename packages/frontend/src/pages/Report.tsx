@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Button, Input, Select, Modal } from '../components/ui';
+import { Badge, Button, Input, Select, Modal } from '../components/ui';
+import { formatDate } from '../utils/formatDate';
 
 interface Transaction {
   id: string;
@@ -112,14 +113,6 @@ export function Report() {
     return `${sign}${transaction.amount.toFixed(2)} €`;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const handleCreateTransaction = () => {
     if (
       !newTransaction.amount ||
@@ -209,15 +202,13 @@ export function Report() {
                       </td>
 
                       <td className="py-3 pr-4">
-                        <span
-                          className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
-                            transaction.type === 'INCOME'
-                              ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
-                              : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                          }`}
+                        <Badge
+                          variant={
+                            transaction.type === 'INCOME' ? 'success' : 'danger'
+                          }
                         >
                           {transaction.type === 'INCOME' ? 'Income' : 'Expense'}
-                        </span>
+                        </Badge>
                       </td>
 
                       <td className="py-3 pr-4 text-sm text-gray-600 dark:text-gray-300">
