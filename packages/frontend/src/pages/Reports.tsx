@@ -1,23 +1,32 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Input, Modal } from '../components/ui';
 
 interface Report {
   id: string;
   title: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const initialReports: Report[] = [
   {
     id: '1',
-    title: 'Monthly Budget Summary',
+    title: 'December 2025',
     createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15'),
   },
-  { id: '2', title: 'Q4 Expense Analysis', createdAt: new Date('2024-01-10') },
+  {
+    id: '2',
+    title: 'January 2026',
+    createdAt: new Date('2024-01-10'),
+    updatedAt: new Date('2024-01-10'),
+  },
   {
     id: '3',
-    title: 'Annual Financial Review',
+    title: 'February 2026',
     createdAt: new Date('2024-01-05'),
+    updatedAt: new Date('2024-01-05'),
   },
 ];
 
@@ -43,6 +52,7 @@ export function Reports() {
       id: crypto.randomUUID(),
       title: newReportTitle.trim(),
       createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     setReports([newReport, ...reports]);
@@ -62,7 +72,7 @@ export function Reports() {
           <Button onClick={() => setIsModalOpen(true)}>Create Report</Button>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
           {reports.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400">
               No reports yet. Create your first one!
@@ -70,17 +80,19 @@ export function Reports() {
           ) : (
             <ul className="divide-y divide-gray-200 dark:divide-gray-700">
               {reports.map((report) => (
-                <li
-                  key={report.id}
-                  className="flex items-center justify-between py-4"
-                >
-                  <span className="font-medium text-gray-800 dark:text-gray-100">
-                    {report.title}
-                  </span>
+                <li key={report.id}>
+                  <Link
+                    to={`/reports/${report.id}`}
+                    className="flex items-center justify-between px-1 py-2 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <span className="font-medium text-gray-800 dark:text-gray-100">
+                      {report.title}
+                    </span>
 
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {formatDate(report.createdAt)}
-                  </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(report.createdAt)}
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>
