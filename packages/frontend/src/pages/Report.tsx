@@ -1,36 +1,12 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Badge, Button, Input, Select, Modal } from '../components/ui';
+import {
+  Transaction,
+  EXPENSE_CATEGORIES,
+  INCOME_CATEGORIES,
+} from '../types/transaction';
 import { formatDate } from '../utils/formatDate';
-
-interface Transaction {
-  id: string;
-  type: 'INCOME' | 'EXPENSE';
-  amount: number;
-  description: string;
-  category: string;
-  date: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const EXPENSE_CATEGORIES = [
-  'Food',
-  'Transport',
-  'Utilities',
-  'Entertainment',
-  'Shopping',
-  'Health',
-  'Other',
-];
-
-const INCOME_CATEGORIES = [
-  'Salary',
-  'Freelance',
-  'Investment',
-  'Gift',
-  'Other',
-];
 
 const mockReports: Record<
   string,
@@ -41,33 +17,36 @@ const mockReports: Record<
     transactions: [
       {
         id: '1',
+        reportId: '1',
         type: 'EXPENSE',
         amount: 50.0,
         description: 'Groceries',
         category: 'Food',
         date: '2024-01-14',
-        createdAt: new Date('2024-01-14'),
-        updatedAt: new Date('2024-01-14'),
+        createdAt: '2024-01-14',
+        updatedAt: '2024-01-14',
       },
       {
         id: '2',
+        reportId: '1',
         type: 'INCOME',
         amount: 3000.0,
         description: 'January Salary',
         category: 'Salary',
         date: '2024-01-01',
-        createdAt: new Date('2024-01-14'),
-        updatedAt: new Date('2024-01-14'),
+        createdAt: '2024-01-14',
+        updatedAt: '2024-01-14',
       },
       {
         id: '3',
+        reportId: '1',
         type: 'EXPENSE',
         amount: 120.0,
         description: 'Electric Bill',
         category: 'Utilities',
         date: '2024-01-10',
-        createdAt: new Date('2024-01-14'),
-        updatedAt: new Date('2024-01-14'),
+        createdAt: '2024-01-14',
+        updatedAt: '2024-01-14',
       },
     ],
   },
@@ -76,13 +55,14 @@ const mockReports: Record<
     transactions: [
       {
         id: '4',
+        reportId: '2',
         type: 'EXPENSE',
         amount: 200.0,
         description: 'Holiday Shopping',
         category: 'Shopping',
         date: '2024-01-08',
-        createdAt: new Date('2024-01-14'),
-        updatedAt: new Date('2024-01-14'),
+        createdAt: '2024-01-14',
+        updatedAt: '2024-01-14',
       },
     ],
   },
@@ -124,13 +104,14 @@ export function Report() {
 
     const transaction: Transaction = {
       id: crypto.randomUUID(),
+      reportId: id || '',
       type: newTransaction.type,
       amount: parseFloat(newTransaction.amount),
       description: newTransaction.description,
       category: newTransaction.category,
       date: newTransaction.date,
-      createdAt: new Date('2024-01-14'),
-      updatedAt: new Date('2024-01-14'),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     setTransactions([transaction, ...transactions]);

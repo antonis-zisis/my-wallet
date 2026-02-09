@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client/react';
-import { HEALTH_QUERY } from '../graphql/operations';
+import { HEALTH_QUERY } from '../graphql/health';
 
 export function Home() {
   const { data, loading, error } = useQuery<{ health: string }>(HEALTH_QUERY);

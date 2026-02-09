@@ -1,33 +1,27 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Input, Modal } from '../components/ui';
+import { Report } from '../types/report';
 import { formatDate } from '../utils/formatDate';
-
-interface Report {
-  id: string;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 const initialReports: Report[] = [
   {
     id: '1',
     title: 'December 2025',
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
+    createdAt: '2024-01-15',
+    updatedAt: '2024-01-15',
   },
   {
     id: '2',
     title: 'January 2026',
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-10'),
+    createdAt: '2024-01-10',
+    updatedAt: '2024-01-10',
   },
   {
     id: '3',
     title: 'February 2026',
-    createdAt: new Date('2024-01-05'),
-    updatedAt: new Date('2024-01-05'),
+    createdAt: '2024-01-05',
+    updatedAt: '2024-01-05',
   },
 ];
 
@@ -44,8 +38,8 @@ export function Reports() {
     const newReport: Report = {
       id: crypto.randomUUID(),
       title: newReportTitle.trim(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     setReports([newReport, ...reports]);

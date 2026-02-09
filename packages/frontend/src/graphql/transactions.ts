@@ -1,15 +1,10 @@
 import { gql } from '@apollo/client';
 
-export const HEALTH_QUERY = gql`
-  query Health {
-    health
-  }
-`;
-
 export const GET_TRANSACTIONS = gql`
   query GetTransactions {
     transactions {
       id
+      reportId
       type
       amount
       description
@@ -25,6 +20,7 @@ export const GET_TRANSACTION = gql`
   query GetTransaction($id: ID!) {
     transaction(id: $id) {
       id
+      reportId
       type
       amount
       description
@@ -40,6 +36,7 @@ export const CREATE_TRANSACTION = gql`
   mutation CreateTransaction($input: CreateTransactionInput!) {
     createTransaction(input: $input) {
       id
+      reportId
       type
       amount
       description

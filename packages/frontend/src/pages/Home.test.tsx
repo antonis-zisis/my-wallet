@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { HEALTH_QUERY } from '../graphql/operations';
+import { HEALTH_QUERY } from '../graphql/health';
 import { Home } from './Home';
 
 const mockHealthQuery: MockLink.MockedResponse = {
