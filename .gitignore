@@ -8,3 +8,4 @@ coverage
 .claude
 
 packages/backend/src/generated/prisma
+tsconfig.tsbuildinfo
