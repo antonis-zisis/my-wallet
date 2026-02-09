@@ -1,48 +1,27 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { Button, Input, Modal } from '../components/ui';
+import { GET_REPORTS, CREATE_REPORT } from '../graphql/reports';
 import { Report } from '../types/report';
 import { formatDate } from '../utils/formatDate';
 
-const initialReports: Report[] = [
-  {
-    id: '1',
-    title: 'December 2025',
-    createdAt: '2024-01-15',
-    updatedAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    title: 'January 2026',
-    createdAt: '2024-01-10',
-    updatedAt: '2024-01-10',
-  },
-  {
-    id: '3',
-    title: 'February 2026',
-    createdAt: '2024-01-05',
-    updatedAt: '2024-01-05',
-  },
-];
-
 export function Reports() {
-  const [reports, setReports] = useState<Report[]>(initialReports);
+  const { data, loading, error } = useQuery<{ reports: Report[] }>(GET_REPORTS);
+  const [createReport] = useMutation(CREATE_REPORT, {
+    refetchQueries: [{ query: GET_REPORTS }],
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newReportTitle, setNewReportTitle] = useState('');
 
-  const handleCreateReport = () => {
+  const handleCreateReport = async () => {
     if (!newReportTitle.trim()) {
       return;
     }
 
-    const newReport: Report = {
-      id: crypto.randomUUID(),
-      title: newReportTitle.trim(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setReports([newReport, ...reports]);
+    await createReport({
+      variables: { input: { title: newReportTitle.trim() } },
+    });
     setNewReportTitle('');
     setIsModalOpen(false);
   };
@@ -52,6 +31,8 @@ export function Reports() {
     setNewReportTitle('');
   };
 
+  const reports = data?.reports ?? [];
+
   return (
     <div className="py-8">
       <div className="mx-auto max-w-3xl px-4">
@@ -60,7 +41,13 @@ export function Reports() {
         </div>
 
         <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
-          {reports.length === 0 ? (
+          {loading ? (
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              Loading reports...
+            </p>
+          ) : error ? (
+            <p className="text-center text-red-500">Failed to load reports.</p>
+          ) : reports.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400">
               No reports yet. Create your first one!
             </p>
