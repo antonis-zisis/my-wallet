@@ -32,3 +32,14 @@ export const GET_REPORT = gql`
     }
   }
 `;
+
+export const CREATE_REPORT = gql`
+  mutation CreateReport($input: CreateReportInput!) {
+    createReport(input: $input) {
+      id
+      title
+      createdAt
+      updatedAt
+    }
+  }
+`;

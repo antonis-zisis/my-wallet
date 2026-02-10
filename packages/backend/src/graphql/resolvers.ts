@@ -1,9 +1,15 @@
+import prisma from '../lib/prisma';
+
 interface CreateTransactionInput {
   type: 'INCOME' | 'EXPENSE';
   amount: number;
   description: string;
   category: string;
   date: string;
+}
+
+interface CreateReportInput {
+  title: string;
 }
 
 export const resolvers = {
@@ -16,6 +22,12 @@ export const resolvers = {
       // TODO: Fetch from database
       console.log('Fetching transaction:', id);
       return null;
+    },
+    reports: async () => {
+      return prisma.report.findMany({ orderBy: { createdAt: 'desc' } });
+    },
+    report: async (_parent: unknown, { id }: { id: string }) => {
+      return prisma.report.findUnique({ where: { id } });
     },
     health: () => {
       return 'GraphQL server is running!';
@@ -44,6 +56,12 @@ export const resolvers = {
       // TODO: Delete from database
       console.log('Deleting transaction:', id);
       return true;
+    },
+    createReport: async (
+      _parent: unknown,
+      { input }: { input: CreateReportInput }
+    ) => {
+      return prisma.report.create({ data: { title: input.title } });
     },
   },
 };
