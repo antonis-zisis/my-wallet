@@ -1,82 +1,30 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { Badge, Button, Input, Select, Modal } from '../components/ui';
+import { GET_REPORT } from '../graphql/reports';
+import { CREATE_TRANSACTION } from '../graphql/transactions';
 import {
   Transaction,
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
 } from '../types/transaction';
+import { Report as ReportType } from '../types/report';
 import { formatDate } from '../utils/formatDate';
 
-const mockReports: Record<
-  string,
-  { title: string; transactions: Transaction[] }
-> = {
-  '1': {
-    title: 'Monthly Budget Summary',
-    transactions: [
-      {
-        id: '1',
-        reportId: '1',
-        type: 'EXPENSE',
-        amount: 50.0,
-        description: 'Groceries',
-        category: 'Food',
-        date: '2024-01-14',
-        createdAt: '2024-01-14',
-        updatedAt: '2024-01-14',
-      },
-      {
-        id: '2',
-        reportId: '1',
-        type: 'INCOME',
-        amount: 3000.0,
-        description: 'January Salary',
-        category: 'Salary',
-        date: '2024-01-01',
-        createdAt: '2024-01-14',
-        updatedAt: '2024-01-14',
-      },
-      {
-        id: '3',
-        reportId: '1',
-        type: 'EXPENSE',
-        amount: 120.0,
-        description: 'Electric Bill',
-        category: 'Utilities',
-        date: '2024-01-10',
-        createdAt: '2024-01-14',
-        updatedAt: '2024-01-14',
-      },
-    ],
-  },
-  '2': {
-    title: 'Q4 Expense Analysis',
-    transactions: [
-      {
-        id: '4',
-        reportId: '2',
-        type: 'EXPENSE',
-        amount: 200.0,
-        description: 'Holiday Shopping',
-        category: 'Shopping',
-        date: '2024-01-08',
-        createdAt: '2024-01-14',
-        updatedAt: '2024-01-14',
-      },
-    ],
-  },
-  '3': {
-    title: 'Annual Financial Review',
-    transactions: [],
-  },
-};
+interface ReportData {
+  report: ReportType & { transactions: Transaction[] };
+}
 
 export function Report() {
   const { id } = useParams<{ id: string }>();
-  const [transactions, setTransactions] = useState<Transaction[]>(
-    mockReports[id || '']?.transactions || []
-  );
+  const { data, loading, error } = useQuery<ReportData>(GET_REPORT, {
+    variables: { id },
+  });
+  const [createTransaction] = useMutation(CREATE_TRANSACTION, {
+    refetchQueries: [{ query: GET_REPORT, variables: { id } }],
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
     type: 'EXPENSE' as 'INCOME' | 'EXPENSE',
@@ -86,14 +34,15 @@ export function Report() {
     date: new Date().toISOString().split('T')[0],
   });
 
-  const reportTitle = mockReports[id || '']?.title || 'Report Not Found';
+  const report = data?.report;
+  const transactions = report?.transactions ?? [];
 
   const formatAmount = (transaction: Transaction) => {
     const sign = transaction.type === 'INCOME' ? '+' : '-';
     return `${sign}${transaction.amount.toFixed(2)} €`;
   };
 
-  const handleCreateTransaction = () => {
+  const handleCreateTransaction = async () => {
     if (
       !newTransaction.amount ||
       !newTransaction.description ||
@@ -102,19 +51,18 @@ export function Report() {
       return;
     }
 
-    const transaction: Transaction = {
-      id: crypto.randomUUID(),
-      reportId: id || '',
-      type: newTransaction.type,
-      amount: parseFloat(newTransaction.amount),
-      description: newTransaction.description,
-      category: newTransaction.category,
-      date: newTransaction.date,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setTransactions([transaction, ...transactions]);
+    await createTransaction({
+      variables: {
+        input: {
+          reportId: id,
+          type: newTransaction.type,
+          amount: parseFloat(newTransaction.amount),
+          description: newTransaction.description,
+          category: newTransaction.category,
+          date: newTransaction.date,
+        },
+      },
+    });
     handleCloseModal();
   };
 
@@ -132,6 +80,38 @@ export function Report() {
   const categories =
     newTransaction.type === 'EXPENSE' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
 
+  if (loading) {
+    return (
+      <div className="py-8">
+        <div className="mx-auto max-w-3xl px-4">
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            Loading report...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !report) {
+    return (
+      <div className="py-8">
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="mb-6">
+            <Link
+              to="/reports"
+              className="text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              ← Back to Reports
+            </Link>
+          </div>
+          <p className="text-center text-red-500">
+            {error ? 'Failed to load report.' : 'Report not found.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="py-8">
       <div className="mx-auto max-w-3xl px-4">
@@ -146,7 +126,7 @@ export function Report() {
 
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-            {reportTitle}
+            {report.title}
           </h1>
           <Button onClick={() => setIsModalOpen(true)}>Add Transaction</Button>
         </div>

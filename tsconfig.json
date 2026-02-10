@@ -10,9 +10,5 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true
-  },
-  "references": [
-    { "path": "./packages/frontend" },
-    { "path": "./packages/backend" }
-  ]
+  }
 }

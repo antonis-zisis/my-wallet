@@ -21,7 +21,7 @@ export function Home() {
       <div className="mx-auto max-w-3xl px-4">
         <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            Status: {getStatusMessage()}
+            {getStatusMessage()}
           </p>
         </div>
       </div>
