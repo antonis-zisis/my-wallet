@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle';
 const navLinks = [
   { to: '/', label: 'Dashboard' },
   { to: '/reports', label: 'Reports' },
+  { to: '/net-worth', label: 'Net Worth' },
 ];
 
 const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
