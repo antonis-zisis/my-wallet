@@ -108,61 +108,29 @@ pnpm format
 
 ## Features
 
-- **Transaction Management**: Add income and expense transactions with categories
+- **Reports**: Create and manage budget reports, each containing its own set of transactions
+- **Transaction Management**: Add income and expense transactions with categories within a report
 - **Category Support**: Pre-defined categories for both income (Salary, Freelance, Investment, Gift, Other) and expenses (Food, Transport, Utilities, Entertainment, Shopping, Health, Other)
-- **Transaction List**: View all transactions sorted by date with color-coded amounts
+- **Dark Mode**: Theme toggle with local storage persistence
 
 ## Project Structure
 
 ```text
 my-wallet/
-├── packages/
-│   ├── frontend/          # React + Vite frontend
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   │   ├── TransactionForm.tsx
-│   │   │   │   └── TransactionList.tsx
-│   │   │   ├── graphql/
-│   │   │   │   └── operations.ts
-│   │   │   ├── lib/
-│   │   │   │   └── apollo.ts
-│   │   │   ├── pages/
-│   │   │   │   └── Home.tsx
-│   │   │   ├── types/
-│   │   │   │   └── transaction.ts
-│   │   │   ├── App.tsx
-│   │   │   ├── router.tsx
-│   │   │   ├── main.tsx
-│   │   │   └── index.css
-│   │   ├── index.html
-│   │   └── vite.config.ts
-│   └── backend/           # Express + Apollo Server backend
-│       └── src/
-│           ├── graphql/
-│           │   ├── schema.ts
-│           │   └── resolvers.ts
-│           └── index.ts
 ├── .husky/                # Git hooks
+├── packages/
+│   ├── backend/           # Express + Apollo Server backend app
+│   └── frontend/          # React + Vite web app
+├── scripts/               # Bootstrap and Utility scripts
 ├── commitlint.config.js   # Conventional commits config
-├── lint-staged.config.js  # Lint-staged config
 ├── eslint.config.js       # ESLint config
+├── lint-staged.config.js  # Lint-staged config
 └── package.json           # Root package.json
 ```
 
 ## GraphQL API
 
 The backend exposes a GraphQL endpoint at `/graphql`.
-
-### Queries
-
-- `health` - Check server status
-- `transactions` - Get all transactions
-- `transaction(id: ID!)` - Get a single transaction
-
-### Mutations
-
-- `createTransaction(input: CreateTransactionInput!)` - Create a new transaction
-- `deleteTransaction(id: ID!)` - Delete a transaction
 
 ### Development
 
