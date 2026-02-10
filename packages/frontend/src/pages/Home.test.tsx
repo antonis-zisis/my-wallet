@@ -1,11 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
 import { MockLink } from '@apollo/client/testing';
+import { render, screen } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
-import { MockedProvider } from '../test/apollo-test-utils';
+import { describe, expect, it } from 'vitest';
+
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { HEALTH_QUERY } from '../graphql/health';
+import { MockedProvider } from '../test/apollo-test-utils';
 import { Home } from './Home';
 
 const mockHealthQuery: MockLink.MockedResponse = {

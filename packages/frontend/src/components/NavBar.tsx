@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+
 import ThemeToggle from './ThemeToggle';
 
 const navLinks = [

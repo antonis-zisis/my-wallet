@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
+import { ReactNode } from 'react';
 
 interface MockedProviderProps {
   mocks?: MockLink.MockedResponse[];

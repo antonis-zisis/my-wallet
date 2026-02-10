@@ -1,8 +1,9 @@
+import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery, useMutation } from '@apollo/client/react';
+
 import { Button, Input, Modal } from '../components/ui';
-import { GET_REPORTS, CREATE_REPORT } from '../graphql/reports';
+import { CREATE_REPORT, GET_REPORTS } from '../graphql/reports';
 import { Report } from '../types/report';
 import { formatDate } from '../utils/formatDate';
 

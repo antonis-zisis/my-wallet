@@ -1,10 +1,12 @@
 import 'dotenv/config';
-import express, { type Express } from 'express';
-import cors from 'cors';
+
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
+import cors from 'cors';
+import express, { type Express } from 'express';
+
+import { resolvers, typeDefs } from './graphql/index';
 import { connectDatabase } from './lib/prisma';
-import { typeDefs, resolvers } from './graphql/index';
 
 const app: Express = express();
 const PORT = process.env.PORT || 4000;

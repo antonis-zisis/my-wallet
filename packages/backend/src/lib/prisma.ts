@@ -1,5 +1,7 @@
 import 'dotenv/config';
+
 import { PrismaPg } from '@prisma/adapter-pg';
+
 import { PrismaClient } from '../generated/prisma/client';
 
 const host = process.env['PG_HOST'] || 'localhost';
