@@ -43,8 +43,8 @@ pnpm run env:encrypt      # Encrypt before committing
 **Frontend** (React 19 + Vite 7 + Tailwind CSS 4):
 
 - Entry: `main.tsx` → wraps app in `ThemeProvider` → `ApolloProvider` → `RouterProvider`
-- Routing: React Router 7 with `createBrowserRouter` in `router.tsx`. `App.tsx` is the root layout with `NavBar` + `<Outlet />`
-- GraphQL: Apollo Client 4 configured in `lib/apollo.ts`. Queries/mutations defined in `graphql/*.ts` using `gql` tagged templates. The Apollo client uses a relative `/graphql` URI — Vite proxies this to the backend in dev
+- Routing: React Router 7 with `createBrowserRouter` in `router.tsx`. `App.tsx` is the root layout with `NavBar` + `<Outlet />`. Routes: `/` (Home), `/reports` (Reports list), `/reports/:id` (single Report)
+- GraphQL: Apollo Client 4 configured in `lib/apollo.ts`. Queries/mutations defined per domain in `graphql/health.ts`, `graphql/transactions.ts`, `graphql/reports.ts` using `gql` tagged templates. The Apollo client uses a relative `/graphql` URI — Vite proxies this to the backend in dev
 - UI components: Reusable primitives in `components/ui/` (Button, Input, Select, Modal, Badge), re-exported from `components/ui/index.ts`
 - Theming: `contexts/ThemeContext.tsx` provides `useTheme()` hook; toggles dark class on `<html>`, persists to localStorage
 
@@ -63,5 +63,5 @@ pnpm run env:encrypt      # Encrypt before committing
 
 - **Commits:** Conventional Commits enforced by commitlint + husky. Format: `type(scope): description`
 - **Lint-staged:** On commit, runs ESLint + Prettier on `*.{ts,tsx,js,jsx}` and Prettier on `*.{json,md,css,html}`
-- **ESLint:** `id-length` rule requires identifiers of at least 2 characters (exceptions: `_`). Unused vars prefixed with `_` are allowed
+- **ESLint:** `id-length` rule requires identifiers of at least 2 characters (exceptions: `_`). Unused vars prefixed with `_` are allowed. `eslint-plugin-simple-import-sort` enforces sorted imports and exports
 - **Prettier:** Uses `prettier-plugin-tailwindcss` for class sorting

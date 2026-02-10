@@ -1,4 +1,5 @@
 import 'dotenv/config';
+
 import { defineConfig } from 'prisma/config';
 
 const host = process.env['PG_HOST'] || 'localhost';
