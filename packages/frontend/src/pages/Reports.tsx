@@ -7,7 +7,9 @@ import { Report } from '../types/report';
 import { formatDate } from '../utils/formatDate';
 
 export function Reports() {
-  const { data, loading, error } = useQuery<{ reports: Report[] }>(GET_REPORTS);
+  const { data, loading, error } = useQuery<{
+    reports: { items: Report[]; totalCount: number };
+  }>(GET_REPORTS);
   const [createReport] = useMutation(CREATE_REPORT, {
     refetchQueries: [{ query: GET_REPORTS }],
   });
@@ -31,7 +33,8 @@ export function Reports() {
     setNewReportTitle('');
   };
 
-  const reports = data?.reports ?? [];
+  const reports = data?.reports.items ?? [];
+  const totalCount = data?.reports.totalCount ?? 0;
 
   return (
     <div className="py-8">
@@ -72,6 +75,12 @@ export function Reports() {
             </ul>
           )}
         </div>
+
+        {!loading && !error && totalCount > 0 && (
+          <p className="mt-2 text-right text-xs text-gray-500 dark:text-gray-400">
+            Showing 1 - {reports.length} of {totalCount}
+          </p>
+        )}
       </div>
 
       <Modal

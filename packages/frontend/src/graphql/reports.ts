@@ -3,10 +3,13 @@ import { gql } from '@apollo/client';
 export const GET_REPORTS = gql`
   query GetReports {
     reports {
-      id
-      title
-      createdAt
-      updatedAt
+      items {
+        id
+        title
+        createdAt
+        updatedAt
+      }
+      totalCount
     }
   }
 `;

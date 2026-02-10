@@ -24,6 +24,11 @@ export const typeDefs = `#graphql
     updatedAt: String!
   }
 
+  type ReportsResult {
+    items: [Report!]!
+    totalCount: Int!
+  }
+
   input CreateTransactionInput {
     reportId: ID!
     type: TransactionType!
@@ -40,7 +45,7 @@ export const typeDefs = `#graphql
   type Query {
     transactions: [Transaction!]!
     transaction(id: ID!): Transaction
-    reports: [Report!]!
+    reports: ReportsResult!
     report(id: ID!): Report
     health: String!
   }

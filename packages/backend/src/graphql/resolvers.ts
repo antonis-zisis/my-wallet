@@ -22,7 +22,11 @@ export const resolvers = {
       return prisma.transaction.findUnique({ where: { id } });
     },
     reports: async () => {
-      return prisma.report.findMany({ orderBy: { createdAt: 'desc' } });
+      const [items, totalCount] = await Promise.all([
+        prisma.report.findMany({ orderBy: { createdAt: 'desc' } }),
+        prisma.report.count(),
+      ]);
+      return { items, totalCount };
     },
     report: async (_parent: unknown, { id }: { id: string }) => {
       return prisma.report.findUnique({
