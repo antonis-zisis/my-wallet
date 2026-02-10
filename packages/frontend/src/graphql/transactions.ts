@@ -36,7 +36,6 @@ export const CREATE_TRANSACTION = gql`
   mutation CreateTransaction($input: CreateTransactionInput!) {
     createTransaction(input: $input) {
       id
-      reportId
       type
       amount
       description

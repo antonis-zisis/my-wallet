@@ -6,6 +6,7 @@ export const typeDefs = `#graphql
 
   type Transaction {
     id: ID!
+    reportId: ID!
     type: TransactionType!
     amount: Float!
     description: String!
@@ -18,11 +19,13 @@ export const typeDefs = `#graphql
   type Report {
     id: ID!
     title: String!
+    transactions: [Transaction!]!
     createdAt: String!
     updatedAt: String!
   }
 
   input CreateTransactionInput {
+    reportId: ID!
     type: TransactionType!
     amount: Float!
     description: String!

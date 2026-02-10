@@ -1,6 +1,7 @@
 import prisma from '../lib/prisma';
 
 interface CreateTransactionInput {
+  reportId: string;
   type: 'INCOME' | 'EXPENSE';
   amount: number;
   description: string;
@@ -14,47 +15,43 @@ interface CreateReportInput {
 
 export const resolvers = {
   Query: {
-    transactions: () => {
-      // TODO: Fetch from database
-      return [];
+    transactions: async () => {
+      return prisma.transaction.findMany({ orderBy: { date: 'desc' } });
     },
-    transaction: (_parent: unknown, { id }: { id: string }) => {
-      // TODO: Fetch from database
-      console.log('Fetching transaction:', id);
-      return null;
+    transaction: async (_parent: unknown, { id }: { id: string }) => {
+      return prisma.transaction.findUnique({ where: { id } });
     },
     reports: async () => {
       return prisma.report.findMany({ orderBy: { createdAt: 'desc' } });
     },
     report: async (_parent: unknown, { id }: { id: string }) => {
-      return prisma.report.findUnique({ where: { id } });
+      return prisma.report.findUnique({
+        where: { id },
+        include: { transactions: { orderBy: { date: 'desc' } } },
+      });
     },
     health: () => {
       return 'GraphQL server is running!';
     },
   },
   Mutation: {
-    createTransaction: (
+    createTransaction: async (
       _parent: unknown,
       { input }: { input: CreateTransactionInput }
     ) => {
-      // TODO: Save to database
-      console.log('Creating transaction:', input);
-      const now = new Date().toISOString();
-      return {
-        id: crypto.randomUUID(),
-        type: input.type,
-        amount: input.amount,
-        description: input.description,
-        category: input.category,
-        date: input.date,
-        createdAt: now,
-        updatedAt: now,
-      };
+      return prisma.transaction.create({
+        data: {
+          reportId: input.reportId,
+          type: input.type,
+          amount: input.amount,
+          description: input.description,
+          category: input.category,
+          date: new Date(input.date),
+        },
+      });
     },
-    deleteTransaction: (_parent: unknown, { id }: { id: string }) => {
-      // TODO: Delete from database
-      console.log('Deleting transaction:', id);
+    deleteTransaction: async (_parent: unknown, { id }: { id: string }) => {
+      await prisma.transaction.delete({ where: { id } });
       return true;
     },
     createReport: async (
