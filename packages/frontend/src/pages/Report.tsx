@@ -1,15 +1,16 @@
+import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery, useMutation } from '@apollo/client/react';
-import { Badge, Button, Input, Select, Modal } from '../components/ui';
+import { Link, useParams } from 'react-router-dom';
+
+import { Badge, Button, Input, Modal, Select } from '../components/ui';
 import { GET_REPORT } from '../graphql/reports';
 import { CREATE_TRANSACTION } from '../graphql/transactions';
+import { Report as ReportType } from '../types/report';
 import {
-  Transaction,
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
+  Transaction,
 } from '../types/transaction';
-import { Report as ReportType } from '../types/report';
 import { formatDate } from '../utils/formatDate';
 
 interface ReportData {
