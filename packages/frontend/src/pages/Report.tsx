@@ -2,7 +2,14 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { Badge, Button, Input, Modal, Select } from '../components/ui';
+import {
+  Badge,
+  Button,
+  Dropdown,
+  Input,
+  Modal,
+  Select,
+} from '../components/ui';
 import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
 import { CREATE_TRANSACTION } from '../graphql/transactions';
 import { Report as ReportType } from '../types/report';
@@ -210,13 +217,15 @@ export function Report() {
             <Button onClick={() => setIsModalOpen(true)}>
               Add Transaction
             </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={() => setIsDeleteModalOpen(true)}
-            >
-              Delete Report
-            </Button>
+            <Dropdown
+              items={[
+                {
+                  label: 'Delete Report',
+                  onClick: () => setIsDeleteModalOpen(true),
+                  variant: 'danger',
+                },
+              ]}
+            />
           </div>
         </div>
 
