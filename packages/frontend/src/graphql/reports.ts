@@ -46,3 +46,13 @@ export const CREATE_REPORT = gql`
     }
   }
 `;
+
+export const UPDATE_REPORT = gql`
+  mutation UpdateReport($input: UpdateReportInput!) {
+    updateReport(input: $input) {
+      id
+      title
+      updatedAt
+    }
+  }
+`;

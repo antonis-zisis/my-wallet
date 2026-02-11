@@ -33,6 +33,7 @@ vi.mock('../../lib/prisma', () => ({
       findUnique: vi.fn(),
       count: vi.fn(),
       create: vi.fn(),
+      update: vi.fn(),
     },
   },
 }));
@@ -110,6 +111,28 @@ describe('reportResolvers', () => {
         data: { title: 'January Budget' },
       });
       expect(result).toEqual(mockReport);
+    });
+  });
+
+  describe('Mutation.updateReport', () => {
+    it('updates a report title', async () => {
+      const updatedReport = {
+        ...mockReport,
+        title: 'February Budget',
+        updatedAt: new Date('2024-01-02T10:00:00Z'),
+      };
+      vi.mocked(prisma.report.update).mockResolvedValue(updatedReport);
+
+      const result = await reportResolvers.Mutation.updateReport(
+        undefined as unknown,
+        { input: { id: 'report-1', title: 'February Budget' } }
+      );
+
+      expect(prisma.report.update).toHaveBeenCalledWith({
+        where: { id: 'report-1' },
+        data: { title: 'February Budget' },
+      });
+      expect(result).toEqual(updatedReport);
     });
   });
 });
