@@ -4,6 +4,11 @@ export interface CreateReportInput {
   title: string;
 }
 
+export interface UpdateReportInput {
+  id: string;
+  title: string;
+}
+
 export const reportResolvers = {
   Query: {
     reports: async () => {
@@ -26,6 +31,15 @@ export const reportResolvers = {
       { input }: { input: CreateReportInput }
     ) => {
       return prisma.report.create({ data: { title: input.title } });
+    },
+    updateReport: async (
+      _parent: unknown,
+      { input }: { input: UpdateReportInput }
+    ) => {
+      return prisma.report.update({
+        where: { id: input.id },
+        data: { title: input.title },
+      });
     },
   },
 };

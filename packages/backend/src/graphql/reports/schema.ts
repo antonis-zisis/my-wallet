@@ -16,6 +16,11 @@ export const reportTypeDefs = `#graphql
     title: String!
   }
 
+  input UpdateReportInput {
+    id: ID!
+    title: String!
+  }
+
   extend type Query {
     reports: ReportsResult!
     report(id: ID!): Report
@@ -23,5 +28,6 @@ export const reportTypeDefs = `#graphql
 
   extend type Mutation {
     createReport(input: CreateReportInput!): Report!
+    updateReport(input: UpdateReportInput!): Report!
   }
 `;
