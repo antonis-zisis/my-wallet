@@ -31,7 +31,7 @@ model Transaction {
   category    String
   date        DateTime
   reportId    String   @map("report_id")
-  report      Report   @relation(fields: [reportId], references: [id])
+  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 

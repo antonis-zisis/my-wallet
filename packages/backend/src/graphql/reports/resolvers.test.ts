@@ -34,6 +34,7 @@ vi.mock('../../lib/prisma', () => ({
       count: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
   },
 }));
@@ -133,6 +134,22 @@ describe('reportResolvers', () => {
         data: { title: 'February Budget' },
       });
       expect(result).toEqual(updatedReport);
+    });
+  });
+
+  describe('Mutation.deleteReport', () => {
+    it('deletes a report and returns true', async () => {
+      vi.mocked(prisma.report.delete).mockResolvedValue(mockReport);
+
+      const result = await reportResolvers.Mutation.deleteReport(
+        undefined as unknown,
+        { id: 'report-1' }
+      );
+
+      expect(prisma.report.delete).toHaveBeenCalledWith({
+        where: { id: 'report-1' },
+      });
+      expect(result).toBe(true);
     });
   });
 });
