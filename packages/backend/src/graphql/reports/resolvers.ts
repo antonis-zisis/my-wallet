@@ -41,5 +41,9 @@ export const reportResolvers = {
         data: { title: input.title },
       });
     },
+    deleteReport: async (_parent: unknown, { id }: { id: string }) => {
+      await prisma.report.delete({ where: { id } });
+      return true;
+    },
   },
 };

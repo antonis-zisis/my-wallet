@@ -29,5 +29,6 @@ export const reportTypeDefs = `#graphql
   extend type Mutation {
     createReport(input: CreateReportInput!): Report!
     updateReport(input: UpdateReportInput!): Report!
+    deleteReport(id: ID!): Boolean!
   }
 `;

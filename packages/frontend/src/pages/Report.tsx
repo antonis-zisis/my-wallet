@@ -1,9 +1,16 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { Badge, Button, Input, Modal, Select } from '../components/ui';
-import { GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
+import {
+  Badge,
+  Button,
+  Dropdown,
+  Input,
+  Modal,
+  Select,
+} from '../components/ui';
+import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
 import { CREATE_TRANSACTION } from '../graphql/transactions';
 import { Report as ReportType } from '../types/report';
 import {
@@ -19,6 +26,7 @@ interface ReportData {
 
 export function Report() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data, loading, error } = useQuery<ReportData>(GET_REPORT, {
     variables: { id },
   });
@@ -28,10 +36,12 @@ export function Report() {
   const [updateReport] = useMutation(UPDATE_REPORT, {
     refetchQueries: [{ query: GET_REPORT, variables: { id } }],
   });
+  const [deleteReport, { loading: isDeleting }] = useMutation(DELETE_REPORT);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
     type: 'EXPENSE' as 'INCOME' | 'EXPENSE',
     amount: '',
@@ -109,6 +119,11 @@ export function Report() {
     } else if (event.key === 'Escape') {
       handleCancelEditing();
     }
+  };
+
+  const handleDeleteReport = async () => {
+    await deleteReport({ variables: { id } });
+    navigate('/reports');
   };
 
   const categories =
@@ -198,7 +213,20 @@ export function Report() {
               </button>
             </div>
           )}
-          <Button onClick={() => setIsModalOpen(true)}>Add Transaction</Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setIsModalOpen(true)}>
+              Add Transaction
+            </Button>
+            <Dropdown
+              items={[
+                {
+                  label: 'Delete Report',
+                  onClick: () => setIsDeleteModalOpen(true),
+                  variant: 'danger',
+                },
+              ]}
+            />
+          </div>
         </div>
 
         <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
@@ -379,6 +407,35 @@ export function Report() {
             }
           />
         </div>
+      </Modal>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Report"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setIsDeleteModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDeleteReport}
+              isLoading={isDeleting}
+            >
+              Delete
+            </Button>
+          </>
+        }
+      >
+        <p className="text-gray-600 dark:text-gray-300">
+          Are you sure you want to delete{' '}
+          <span className="font-semibold">{report.title}</span>? All
+          transactions in this report will be permanently deleted.
+        </p>
       </Modal>
     </div>
   );
