@@ -32,6 +32,28 @@ const mockReportQuery: MockLink.MockedResponse = {
             createdAt: '2024-01-15T00:00:00.000Z',
             updatedAt: '2024-01-15T00:00:00.000Z',
           },
+          {
+            id: 't2',
+            reportId: '1',
+            type: 'EXPENSE',
+            amount: 250.5,
+            description: 'Groceries',
+            category: 'Food',
+            date: '2024-01-16T00:00:00.000Z',
+            createdAt: '2024-01-16T00:00:00.000Z',
+            updatedAt: '2024-01-16T00:00:00.000Z',
+          },
+          {
+            id: 't3',
+            reportId: '1',
+            type: 'EXPENSE',
+            amount: 49.5,
+            description: 'Bus pass',
+            category: 'Transport',
+            date: '2024-01-17T00:00:00.000Z',
+            createdAt: '2024-01-17T00:00:00.000Z',
+            updatedAt: '2024-01-17T00:00:00.000Z',
+          },
         ],
       },
     },
@@ -71,6 +93,19 @@ describe('Report', () => {
     expect(await screen.findByText('January Budget')).toBeInTheDocument();
     expect(screen.getByText('Monthly salary')).toBeInTheDocument();
     expect(screen.getByText('+1500.00 €')).toBeInTheDocument();
+    expect(screen.getByText('Groceries')).toBeInTheDocument();
+    expect(screen.getByText('Bus pass')).toBeInTheDocument();
+  });
+
+  it('renders summary cards with correct totals', async () => {
+    renderReport([mockReportQuery]);
+    await screen.findByText('January Budget');
+
+    expect(screen.getByText('Total Income')).toBeInTheDocument();
+    expect(screen.getByText('1500.00 €')).toBeInTheDocument();
+
+    expect(screen.getByText('Total Expenses')).toBeInTheDocument();
+    expect(screen.getByText('300.00 €')).toBeInTheDocument();
   });
 
   it('shows error state on query failure', async () => {
