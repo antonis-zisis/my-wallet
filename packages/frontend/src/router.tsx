@@ -6,6 +6,7 @@ import { Login } from './pages/Login';
 import { NetWorth } from './pages/NetWorth';
 import { Report } from './pages/Report';
 import { Reports } from './pages/Reports';
+import { Subscriptions } from './pages/Subscriptions';
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'reports', element: <Reports /> },
       { path: 'reports/:id', element: <Report /> },
+      { path: 'subscriptions', element: <Subscriptions /> },
       { path: 'net-worth', element: <NetWorth /> },
     ],
   },

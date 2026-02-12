@@ -28,6 +28,12 @@ describe('NavBar', () => {
     expect(link.closest('a')).toHaveAttribute('href', '/reports');
   });
 
+  it('renders Subscriptions link', () => {
+    renderNavBar();
+    const link = screen.getByText('Subscriptions');
+    expect(link.closest('a')).toHaveAttribute('href', '/subscriptions');
+  });
+
   it('renders Net Worth link', () => {
     renderNavBar();
     const link = screen.getByText('Net Worth');
