@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { HEALTH_QUERY } from '../graphql/health';
+import { GET_REPORTS } from '../graphql/reports';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Home } from './Home';
 
@@ -29,10 +30,19 @@ const mockHealthQueryError: MockLink.MockedResponse = {
   },
 };
 
+const mockReportsQuery: MockLink.MockedResponse = {
+  request: { query: GET_REPORTS },
+  result: {
+    data: {
+      reports: { items: [], totalCount: 0 },
+    },
+  },
+};
+
 const renderHome = (mocks: MockLink.MockedResponse[]) => {
   return render(
     <ThemeProvider>
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[...mocks, mockReportsQuery]}>
         <MemoryRouter>
           <Home />
         </MemoryRouter>
@@ -44,14 +54,14 @@ const renderHome = (mocks: MockLink.MockedResponse[]) => {
 describe('Home', () => {
   it('shows connecting status initially', () => {
     renderHome([mockHealthQuery]);
-    expect(screen.getByText('Status: Connecting...')).toBeInTheDocument();
+    expect(screen.getByText('Connecting...')).toBeInTheDocument();
   });
 
   it('shows connected status after health query succeeds', async () => {
     renderHome([mockHealthQuery]);
 
     expect(
-      await screen.findByText('Status: GraphQL server is running!')
+      await screen.findByText('GraphQL server is running!')
     ).toBeInTheDocument();
   });
 
@@ -59,7 +69,7 @@ describe('Home', () => {
     renderHome([mockHealthQueryError]);
 
     expect(
-      await screen.findByText('Status: Failed to connect to server')
+      await screen.findByText('Failed to connect to server')
     ).toBeInTheDocument();
   });
 });
