@@ -47,6 +47,21 @@ export const CREATE_TRANSACTION = gql`
   }
 `;
 
+export const UPDATE_TRANSACTION = gql`
+  mutation UpdateTransaction($input: UpdateTransactionInput!) {
+    updateTransaction(input: $input) {
+      id
+      type
+      amount
+      description
+      category
+      date
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const DELETE_TRANSACTION = gql`
   mutation DeleteTransaction($id: ID!) {
     deleteTransaction(id: $id)

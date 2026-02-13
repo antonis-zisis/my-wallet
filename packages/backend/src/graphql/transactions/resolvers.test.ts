@@ -20,6 +20,7 @@ vi.mock('../../lib/prisma', () => ({
       findMany: vi.fn(),
       findUnique: vi.fn(),
       create: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
     },
   },
@@ -106,6 +107,46 @@ describe('transactionResolvers', () => {
         },
       });
       expect(result).toEqual(mockTransaction);
+    });
+  });
+
+  describe('Mutation.updateTransaction', () => {
+    it('updates a transaction with correct data', async () => {
+      const input = {
+        id: 'tx-1',
+        type: 'INCOME' as const,
+        amount: 100.0,
+        description: 'Updated description',
+        category: 'Salary',
+        date: '2024-02-01',
+      };
+
+      const updatedTransaction = {
+        ...mockTransaction,
+        ...input,
+        date: new Date('2024-02-01'),
+      };
+
+      vi.mocked(prisma.transaction.update).mockResolvedValue(
+        updatedTransaction
+      );
+
+      const result = await transactionResolvers.Mutation.updateTransaction(
+        undefined as unknown,
+        { input }
+      );
+
+      expect(prisma.transaction.update).toHaveBeenCalledWith({
+        where: { id: 'tx-1' },
+        data: {
+          type: 'INCOME',
+          amount: 100.0,
+          description: 'Updated description',
+          category: 'Salary',
+          date: new Date('2024-02-01'),
+        },
+      });
+      expect(result).toEqual(updatedTransaction);
     });
   });
 
