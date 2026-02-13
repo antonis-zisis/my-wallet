@@ -38,7 +38,7 @@ function formFromTransaction(transaction: Transaction) {
     amount: String(transaction.amount),
     description: transaction.description,
     category: transaction.category,
-    date: transaction.date.split('T')[0],
+    date: new Date(Number(transaction.date)).toISOString().split('T')[0],
   };
 }
 
