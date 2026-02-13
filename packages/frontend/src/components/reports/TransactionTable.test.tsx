@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Transaction } from '../../types/transaction';
 import { TransactionTable } from './TransactionTable';
@@ -63,5 +64,37 @@ describe('TransactionTable', () => {
     render(<TransactionTable transactions={mockTransactions} />);
     expect(screen.getByText('Income')).toBeInTheDocument();
     expect(screen.getByText('Expense')).toBeInTheDocument();
+  });
+
+  it('renders dropdown menu trigger in each row', () => {
+    render(<TransactionTable transactions={mockTransactions} />);
+    const buttons = screen.getAllByLabelText('Options');
+    expect(buttons).toHaveLength(2);
+  });
+
+  it('calls onEdit with the correct transaction when Edit is clicked', async () => {
+    const onEdit = vi.fn();
+    render(
+      <TransactionTable transactions={mockTransactions} onEdit={onEdit} />
+    );
+
+    const buttons = screen.getAllByLabelText('Options');
+    await userEvent.click(buttons[0]);
+    await userEvent.click(screen.getByText('Edit'));
+
+    expect(onEdit).toHaveBeenCalledWith(mockTransactions[0]);
+  });
+
+  it('calls onDelete with the correct transaction when Delete is clicked', async () => {
+    const onDelete = vi.fn();
+    render(
+      <TransactionTable transactions={mockTransactions} onDelete={onDelete} />
+    );
+
+    const buttons = screen.getAllByLabelText('Options');
+    await userEvent.click(buttons[1]);
+    await userEvent.click(screen.getByText('Delete'));
+
+    expect(onDelete).toHaveBeenCalledWith(mockTransactions[1]);
   });
 });

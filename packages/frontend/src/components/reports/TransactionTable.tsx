@@ -1,9 +1,11 @@
 import { Transaction } from '../../types/transaction';
 import { formatDate } from '../../utils/formatDate';
-import { Badge } from '../ui';
+import { Badge, Dropdown } from '../ui';
 
 interface TransactionTableProps {
   transactions: Transaction[];
+  onEdit?: (transaction: Transaction) => void;
+  onDelete?: (transaction: Transaction) => void;
 }
 
 function formatAmount(transaction: Transaction) {
@@ -11,7 +13,11 @@ function formatAmount(transaction: Transaction) {
   return `${sign}${transaction.amount.toFixed(2)} €`;
 }
 
-export function TransactionTable({ transactions }: TransactionTableProps) {
+export function TransactionTable({
+  transactions,
+  onEdit,
+  onDelete,
+}: TransactionTableProps) {
   if (transactions.length === 0) {
     return (
       <p className="text-center text-gray-500 dark:text-gray-400">
@@ -30,6 +36,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
             <th className="pr-4 pb-3">Category</th>
             <th className="pr-4 pb-3">Description</th>
             <th className="pb-3 text-right">Amount</th>
+            <th className="pb-3"></th>
           </tr>
         </thead>
         <tbody>
@@ -70,6 +77,22 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
                 }`}
               >
                 {formatAmount(transaction)}
+              </td>
+
+              <td className="py-3 pl-2">
+                <Dropdown
+                  items={[
+                    {
+                      label: 'Edit',
+                      onClick: () => onEdit?.(transaction),
+                    },
+                    {
+                      label: 'Delete',
+                      variant: 'danger' as const,
+                      onClick: () => onDelete?.(transaction),
+                    },
+                  ]}
+                />
               </td>
             </tr>
           ))}

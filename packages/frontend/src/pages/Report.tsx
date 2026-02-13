@@ -6,11 +6,17 @@ import {
   AddTransactionModal,
   CreateTransactionInput,
   DeleteReportModal,
+  DeleteTransactionModal,
   ReportHeader,
   ReportSummary,
+  TransactionFormModal,
   TransactionTable,
 } from '../components/reports';
 import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
+import {
+  DELETE_TRANSACTION,
+  UPDATE_TRANSACTION,
+} from '../graphql/transactions';
 import { CREATE_TRANSACTION } from '../graphql/transactions';
 import { Report as ReportType } from '../types/report';
 import { Transaction } from '../types/transaction';
@@ -28,6 +34,15 @@ export function Report() {
   const [createTransaction] = useMutation(CREATE_TRANSACTION, {
     refetchQueries: [{ query: GET_REPORT, variables: { id } }],
   });
+  const [updateTransaction] = useMutation(UPDATE_TRANSACTION, {
+    refetchQueries: [{ query: GET_REPORT, variables: { id } }],
+  });
+  const [deleteTransaction, { loading: isDeletingTransaction }] = useMutation(
+    DELETE_TRANSACTION,
+    {
+      refetchQueries: [{ query: GET_REPORT, variables: { id } }],
+    }
+  );
   const [updateReport] = useMutation(UPDATE_REPORT, {
     refetchQueries: [{ query: GET_REPORT, variables: { id } }],
   });
@@ -35,6 +50,10 @@ export function Report() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
+  const [deletingTransaction, setDeletingTransaction] =
+    useState<Transaction | null>(null);
 
   const report = data?.report;
   const transactions = report?.transactions ?? [];
@@ -48,6 +67,24 @@ export function Report() {
       variables: { input: { ...input, reportId: id } },
     });
     setIsModalOpen(false);
+  };
+
+  const handleUpdateTransaction = async (input: CreateTransactionInput) => {
+    if (!editingTransaction) return;
+    await updateTransaction({
+      variables: {
+        input: { ...input, id: editingTransaction.id },
+      },
+    });
+    setEditingTransaction(null);
+  };
+
+  const handleDeleteTransaction = async () => {
+    if (!deletingTransaction) return;
+    await deleteTransaction({
+      variables: { id: deletingTransaction.id },
+    });
+    setDeletingTransaction(null);
   };
 
   const handleDeleteReport = async () => {
@@ -109,7 +146,11 @@ export function Report() {
         <ReportSummary transactions={transactions} />
 
         <div className="mt-4 rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
-          <TransactionTable transactions={transactions} />
+          <TransactionTable
+            transactions={transactions}
+            onEdit={setEditingTransaction}
+            onDelete={setDeletingTransaction}
+          />
         </div>
       </div>
 
@@ -117,6 +158,22 @@ export function Report() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTransaction}
+      />
+
+      <TransactionFormModal
+        isOpen={editingTransaction !== null}
+        onClose={() => setEditingTransaction(null)}
+        onSubmit={handleUpdateTransaction}
+        mode="edit"
+        transaction={editingTransaction ?? undefined}
+      />
+
+      <DeleteTransactionModal
+        isOpen={deletingTransaction !== null}
+        onClose={() => setDeletingTransaction(null)}
+        onConfirm={handleDeleteTransaction}
+        transactionDescription={deletingTransaction?.description ?? ''}
+        isDeleting={isDeletingTransaction}
       />
 
       <DeleteReportModal
