@@ -7,6 +7,7 @@ import {
   CreateTransactionInput,
   DeleteReportModal,
   ReportHeader,
+  ReportSummary,
   TransactionTable,
 } from '../components/reports';
 import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
@@ -105,7 +106,9 @@ export function Report() {
           onDeleteReport={() => setIsDeleteModalOpen(true)}
         />
 
-        <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+        <ReportSummary transactions={transactions} />
+
+        <div className="mt-4 rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
           <TransactionTable transactions={transactions} />
         </div>
       </div>
