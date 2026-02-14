@@ -1,15 +1,32 @@
-import { SubmitEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { type FormEvent, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
 import ThemeToggle from '../components/ThemeToggle';
 import { Button, Input } from '../components/ui';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Login() {
-  const navigate = useNavigate();
+  const { session, signIn } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (event: SubmitEvent) => {
+  if (session) {
+    return <Navigate to="/" replace />;
+  }
+
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    navigate('/');
+    setError('');
+    setSubmitting(true);
+
+    const { error: signInError } = await signIn(email, password);
+
+    if (signInError) {
+      setError(signInError.message);
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -24,11 +41,33 @@ export function Login() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input id="email" type="email" label="Email" />
-          <Input id="password" type="password" label="Password" />
+          <Input
+            id="email"
+            type="email"
+            label="Email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+          />
 
-          <Button type="submit" variant="primary" className="w-full">
-            Log in
+          <Input
+            id="password"
+            type="password"
+            label="Password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+          />
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-full"
+            disabled={submitting}
+          >
+            {submitting ? 'Logging in...' : 'Log in'}
           </Button>
         </form>
       </div>

@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
+import { useAuth } from '../contexts/AuthContext';
 import ThemeToggle from './ThemeToggle';
 
 const navLinks = [
@@ -16,6 +17,8 @@ const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
   }`;
 
 export function NavBar() {
+  const { signOut } = useAuth();
+
   return (
     <nav className="bg-white shadow-md dark:bg-gray-800">
       <div className="mx-auto max-w-3xl px-4">
@@ -28,7 +31,16 @@ export function NavBar() {
             ))}
           </div>
 
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+
+            <button
+              onClick={signOut}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+            >
+              Log out
+            </button>
+          </div>
         </div>
       </div>
     </nav>

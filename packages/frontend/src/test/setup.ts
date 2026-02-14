@@ -1,5 +1,21 @@
 import '@testing-library/jest-dom';
 
+import { vi } from 'vitest';
+
+// mock Supabase client for all tests
+vi.mock('../lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+      onAuthStateChange: vi.fn().mockReturnValue({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      }),
+      signInWithPassword: vi.fn().mockResolvedValue({ error: null }),
+      signOut: vi.fn().mockResolvedValue({ error: null }),
+    },
+  },
+}));
+
 // mock matchMedia for tests
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
