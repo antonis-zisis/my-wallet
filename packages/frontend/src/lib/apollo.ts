@@ -1,5 +1,5 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+import { SetContextLink } from '@apollo/client/link/context';
 
 import { supabase } from './supabase';
 
@@ -7,7 +7,7 @@ const httpLink = new HttpLink({
   uri: '/graphql',
 });
 
-const authLink = setContext(async (_, { headers }) => {
+const authLink = new SetContextLink(async ({ headers }, _operation) => {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
 

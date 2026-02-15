@@ -12,6 +12,7 @@ A full-stack Wallet application to help with budgeting built with React and Expr
 - Tailwind CSS 4
 - TypeScript
 - Apollo Client (GraphQL)
+- Supabase Auth
 - Vitest
 
 ### Backend
@@ -20,6 +21,7 @@ A full-stack Wallet application to help with budgeting built with React and Expr
 - Apollo Server (GraphQL)
 - Prisma (ORM)
 - PostgreSQL
+- Supabase (JWT verification)
 - TypeScript
 - Vitest
 
@@ -111,6 +113,7 @@ pnpm format
 - **Reports**: Create and manage budget reports, each containing its own set of transactions
 - **Transaction Management**: Add income and expense transactions with categories within a report
 - **Category Support**: Pre-defined categories for both income (Salary, Freelance, Investment, Gift, Other) and expenses (Food, Transport, Utilities, Entertainment, Shopping, Health, Other)
+- **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
 - **Dark Mode**: Theme toggle with local storage persistence
 
 ## Project Structure
@@ -153,6 +156,13 @@ Before committing changes to environment files:
 ```bash
 pnpm run env:encrypt
 ```
+
+### Required Supabase Variables
+
+The following environment variables must be set for authentication (see `.env.sample` files):
+
+- **Backend**: `SUPABASE_URL`, `SUPABASE_SECRET_KEY`
+- **Frontend**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
 ## Commit Convention
 

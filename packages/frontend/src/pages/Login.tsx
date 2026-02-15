@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react';
+import { type SyntheticEvent, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import ThemeToggle from '../components/ThemeToggle';
@@ -16,7 +16,7 @@ export function Login() {
     return <Navigate to="/" replace />;
   }
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
     setError('');
     setSubmitting(true);
