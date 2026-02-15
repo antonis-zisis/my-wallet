@@ -7,6 +7,7 @@ import express, { type Express } from 'express';
 
 import { resolvers, typeDefs } from './graphql/index';
 import { connectDatabase } from './lib/prisma';
+import { authMiddleware } from './middleware/auth';
 
 const app: Express = express();
 const PORT = process.env.PORT || 4000;
@@ -25,7 +26,7 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
 
-  app.use('/graphql', expressMiddleware(server));
+  app.use('/graphql', authMiddleware, expressMiddleware(server));
 
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
