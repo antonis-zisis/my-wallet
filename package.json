@@ -10,6 +10,7 @@
     "build": "pnpm run --parallel build",
     "test": "pnpm run --parallel test",
     "lint": "pnpm run --parallel lint",
+    "typecheck": "pnpm run --parallel typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "prepare": "husky",
     "env:encrypt": "./scripts/encrypt-envs.sh",

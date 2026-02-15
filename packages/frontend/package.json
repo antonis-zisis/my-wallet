@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
     "@apollo/client": "^4.1.3",
