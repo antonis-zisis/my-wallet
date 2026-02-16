@@ -1,46 +1,10 @@
 import { useQuery } from '@apollo/client/react';
 
-import { ArrowDownIcon, ArrowUpIcon } from '../components/icons';
-import { Badge, Card } from '../components/ui';
+import { ReportCard } from '../components/home';
+import { Card } from '../components/ui';
 import { HEALTH_QUERY } from '../graphql/health';
 import { GET_REPORT, GET_REPORTS } from '../graphql/reports';
 import { Report, ReportsData } from '../types/report';
-import { formatMoney } from '../utils/formatMoney';
-
-function ReportCard({ label, report }: { label: string; report: Report }) {
-  const transactions = report.transactions ?? [];
-  const totalIncome = transactions
-    .filter((tx) => tx.type === 'INCOME')
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const totalExpenses = transactions
-    .filter((tx) => tx.type === 'EXPENSE')
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  return (
-    <Card>
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
-          {report.title}
-        </span>
-
-        <Badge variant="info">{label}</Badge>
-      </div>
-
-      <div className="mt-2 flex items-center gap-3">
-        <p className="flex items-center gap-1 text-sm font-semibold text-green-600 dark:text-green-400">
-          <ArrowUpIcon className="size-4" />
-          {formatMoney(totalIncome)} &euro;
-        </p>
-
-        <p className="flex items-center gap-1 text-sm font-semibold text-red-600 dark:text-red-400">
-          <ArrowDownIcon className="size-4" />
-          {formatMoney(totalExpenses)} &euro;
-        </p>
-      </div>
-    </Card>
-  );
-}
 
 export function Home() {
   const { data, loading, error } = useQuery<{ health: string }>(HEALTH_QUERY);
@@ -90,28 +54,28 @@ export function Home() {
             </p>
           </Card>
 
-          {currentLoading && (
+          {currentLoading && !currentData ? (
             <Card>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Loading...
               </p>
             </Card>
+          ) : (
+            currentData?.report && (
+              <ReportCard label="Current" report={currentData.report} />
+            )
           )}
 
-          {currentData?.report && (
-            <ReportCard label="Current" report={currentData.report} />
-          )}
-
-          {previousLoading && (
+          {previousLoading && !previousData ? (
             <Card>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Loading...
               </p>
             </Card>
-          )}
-
-          {previousData?.report && (
-            <ReportCard label="Previous" report={previousData.report} />
+          ) : (
+            previousData?.report && (
+              <ReportCard label="Previous" report={previousData.report} />
+            )
           )}
         </div>
       </div>
