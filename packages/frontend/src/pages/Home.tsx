@@ -5,6 +5,7 @@ import { Badge, Card } from '../components/ui';
 import { HEALTH_QUERY } from '../graphql/health';
 import { GET_REPORT, GET_REPORTS } from '../graphql/reports';
 import { Transaction } from '../types/transaction';
+import { formatMoney } from '../utils/formatMoney';
 
 interface Report {
   id: string;
@@ -46,14 +47,14 @@ function ReportCard({ label, report }: { label: string; report: Report }) {
       </div>
 
       <div className="mt-2 flex items-center gap-3">
-        <p className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+        <p className="flex items-center gap-1 text-sm font-semibold text-green-600 dark:text-green-400">
           <ArrowUpIcon className="size-4" />
-          {totalIncome.toFixed(2)} &euro;
+          {formatMoney(totalIncome)} &euro;
         </p>
 
-        <p className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400">
+        <p className="flex items-center gap-1 text-sm font-semibold text-red-600 dark:text-red-400">
           <ArrowDownIcon className="size-4" />
-          {totalExpenses.toFixed(2)} &euro;
+          {formatMoney(totalExpenses)} &euro;
         </p>
       </div>
     </Card>
