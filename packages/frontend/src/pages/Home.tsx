@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 
+import { ArrowDownIcon, ArrowUpIcon } from '../components/icons';
 import { Badge, Card } from '../components/ui';
 import { HEALTH_QUERY } from '../graphql/health';
 import { GET_REPORT, GET_REPORTS } from '../graphql/reports';
@@ -44,13 +45,15 @@ function ReportCard({ label, report }: { label: string; report: Report }) {
         <Badge variant="info">{label}</Badge>
       </div>
 
-      <div className="mt-2 space-y-1">
-        <p className="text-sm text-green-600 dark:text-green-400">
-          Income: {totalIncome.toFixed(2)} &euro;
+      <div className="mt-2 flex items-center gap-3">
+        <p className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+          <ArrowUpIcon className="size-4" />
+          {totalIncome.toFixed(2)} &euro;
         </p>
 
-        <p className="text-sm text-red-600 dark:text-red-400">
-          Expenses: {totalExpenses.toFixed(2)} &euro;
+        <p className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400">
+          <ArrowDownIcon className="size-4" />
+          {totalExpenses.toFixed(2)} &euro;
         </p>
       </div>
     </Card>
