@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 
-import { Badge } from '../components/ui';
+import { Badge, Card } from '../components/ui';
 import { HEALTH_QUERY } from '../graphql/health';
 import { GET_REPORT, GET_REPORTS } from '../graphql/reports';
 import { Transaction } from '../types/transaction';
@@ -35,12 +35,14 @@ function ReportCard({ label, report }: { label: string; report: Report }) {
     .reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
-    <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
-      <Badge variant="info">{label}</Badge>
+    <Card>
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+          {report.title}
+        </span>
 
-      <p className="mt-2 font-semibold text-gray-800 dark:text-gray-100">
-        {report.title}
-      </p>
+        <Badge variant="info">{label}</Badge>
+      </div>
 
       <div className="mt-2 space-y-1">
         <p className="text-sm text-green-600 dark:text-green-400">
@@ -51,7 +53,7 @@ function ReportCard({ label, report }: { label: string; report: Report }) {
           Expenses: {totalExpenses.toFixed(2)} &euro;
         </p>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -86,14 +88,14 @@ export function Home() {
   return (
     <div className="py-8">
       <div className="mx-auto max-w-3xl px-4">
-        <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+        <Card>
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
             {getStatusMessage()}
           </p>
-        </div>
+        </Card>
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+          <Card>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Total Reports
             </p>
@@ -101,14 +103,14 @@ export function Home() {
             <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
               {reportsData?.reports.totalCount ?? '-'}
             </p>
-          </div>
+          </Card>
 
           {currentLoading && (
-            <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+            <Card>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Loading...
               </p>
-            </div>
+            </Card>
           )}
 
           {currentData?.report && (
@@ -116,11 +118,11 @@ export function Home() {
           )}
 
           {previousLoading && (
-            <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+            <Card>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Loading...
               </p>
-            </div>
+            </Card>
           )}
 
           {previousData?.report && (
