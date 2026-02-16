@@ -4,35 +4,16 @@ import { ArrowDownIcon, ArrowUpIcon } from '../components/icons';
 import { Badge, Card } from '../components/ui';
 import { HEALTH_QUERY } from '../graphql/health';
 import { GET_REPORT, GET_REPORTS } from '../graphql/reports';
-import { Transaction } from '../types/transaction';
+import { Report, ReportsData } from '../types/report';
 import { formatMoney } from '../utils/formatMoney';
 
-interface Report {
-  id: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-  transactions: Transaction[];
-}
-
-interface ReportsData {
-  reports: {
-    items: {
-      id: string;
-      title: string;
-      createdAt: string;
-      updatedAt: string;
-    }[];
-    totalCount: number;
-  };
-}
-
 function ReportCard({ label, report }: { label: string; report: Report }) {
-  const totalIncome = report.transactions
+  const transactions = report.transactions ?? [];
+  const totalIncome = transactions
     .filter((tx) => tx.type === 'INCOME')
     .reduce((sum, tx) => sum + tx.amount, 0);
 
-  const totalExpenses = report.transactions
+  const totalExpenses = transactions
     .filter((tx) => tx.type === 'EXPENSE')
     .reduce((sum, tx) => sum + tx.amount, 0);
 
