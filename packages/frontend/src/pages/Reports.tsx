@@ -4,12 +4,10 @@ import { useState } from 'react';
 import { CreateReportModal, ReportList } from '../components/reports';
 import { Button } from '../components/ui';
 import { CREATE_REPORT, GET_REPORTS } from '../graphql/reports';
-import { Report } from '../types/report';
+import { ReportsData } from '../types/report';
 
 export function Reports() {
-  const { data, loading, error } = useQuery<{
-    reports: { items: Report[]; totalCount: number };
-  }>(GET_REPORTS);
+  const { data, loading, error } = useQuery<ReportsData>(GET_REPORTS);
   const [createReport] = useMutation(CREATE_REPORT, {
     refetchQueries: [{ query: GET_REPORTS }],
   });
