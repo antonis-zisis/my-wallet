@@ -108,12 +108,19 @@ pnpm lint
 pnpm format
 ```
 
+### Type Checking
+
+```bash
+pnpm typecheck
+```
+
 ## Features
 
 - **Reports**: Create and manage budget reports, each containing its own set of transactions
 - **Transaction Management**: Add income and expense transactions with categories within a report
 - **Category Support**: Pre-defined categories for both income (Salary, Freelance, Investment, Gift, Other) and expenses (Food, Transport, Utilities, Entertainment, Shopping, Health, Other)
 - **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
+- **Net Worth**: Track and view your net worth
 - **Dark Mode**: Theme toggle with local storage persistence
 
 ## Project Structure
@@ -163,6 +170,15 @@ The following environment variables must be set for authentication (see `.env.sa
 
 - **Backend**: `SUPABASE_URL`, `SUPABASE_SECRET_KEY`
 - **Frontend**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+
+## Deployment
+
+Deployment is handled via GitHub Actions (`.github/workflows/deploy.yml`), triggered on GitHub release:
+
+1. **Test** — lint, typecheck, and run tests
+2. **Migrate** — run Prisma database migrations
+3. **Deploy backend** — build Docker image and deploy to Google Cloud Run
+4. **Deploy frontend** — build and deploy to Netlify
 
 ## Commit Convention
 
