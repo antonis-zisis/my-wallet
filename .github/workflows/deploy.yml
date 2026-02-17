@@ -1,0 +1,133 @@
+name: Deploy
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ secrets.GCP_REGION }}
+  CLOUD_RUN_SERVICE: ${{ secrets.CLOUD_RUN_SERVICE }}
+
+jobs:
+  test:
+    name: Lint, Typecheck & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test -- --run
+
+  migrate:
+    name: Run Database Migrations
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter backend db:generate
+
+      - name: Deploy migrations
+        run: pnpm --filter backend db:migrate:deploy
+        env:
+          PG_HOST: ${{ secrets.PG_HOST }}
+          PG_PORT: ${{ secrets.PG_PORT }}
+          PG_USER: ${{ secrets.PG_USER }}
+          PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+          PG_DATABASE: ${{ secrets.PG_DATABASE }}
+
+  deploy-backend:
+    name: Deploy Backend to Cloud Run
+    needs: migrate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and push to Artifact Registry
+        run: |
+          gcloud builds submit . --config - <<'EOF'
+          steps:
+            - name: 'gcr.io/cloud-builders/docker'
+              args:
+                - 'build'
+                - '-f'
+                - 'packages/backend/Dockerfile'
+                - '-t'
+                - '${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/my-wallet/backend:${{ github.event.release.tag_name }}'
+                - '.'
+          images:
+            - '${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/my-wallet/backend:${{ github.event.release.tag_name }}'
+          EOF
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "${{ env.CLOUD_RUN_SERVICE }}" \
+            --image "${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/my-wallet/backend:${{ github.event.release.tag_name }}" \
+            --region "${{ env.GCP_REGION }}" \
+            --allow-unauthenticated
+
+  deploy-frontend:
+    name: Deploy Frontend to Netlify
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        run: pnpm --filter frontend build
+        env:
+          VITE_GRAPHQL_URL: ${{ secrets.VITE_GRAPHQL_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY }}
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: packages/frontend/dist
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

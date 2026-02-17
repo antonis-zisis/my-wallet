@@ -1,0 +1,36 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'packages/backend/Dockerfile'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:$TAG_NAME'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:latest'
+      - '.'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE}'
+      - '--image'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:$TAG_NAME'
+      - '--region'
+      - '${_REGION}'
+      - '--port'
+      - '4000'
+      - '--allow-unauthenticated'
+
+images:
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:$TAG_NAME'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:latest'
+
+substitutions:
+  _REGION: europe-west1
+  _SERVICE: my-wallet-backend
+
+options:
+  logging: CLOUD_LOGGING_ONLY

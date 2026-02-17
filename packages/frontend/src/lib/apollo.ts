@@ -4,7 +4,7 @@ import { SetContextLink } from '@apollo/client/link/context';
 import { supabase } from './supabase';
 
 const httpLink = new HttpLink({
-  uri: '/graphql',
+  uri: import.meta.env.VITE_GRAPHQL_URL || '/graphql',
 });
 
 const authLink = new SetContextLink(async ({ headers }, _operation) => {
