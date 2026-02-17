@@ -23,7 +23,13 @@ async function startServer() {
 
   await server.start();
 
-  app.use(cors());
+  const allowedOrigins = [
+    'https://my-wallet.antoniszisis.com/',
+    'https://az-my-wallet.netlify.app',
+    'http://localhost:3000',
+  ];
+
+  app.use(cors({ origin: allowedOrigins }));
   app.use(express.json());
 
   app.use('/graphql', authMiddleware, expressMiddleware(server));
