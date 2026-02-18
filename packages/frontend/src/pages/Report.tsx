@@ -2,6 +2,8 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import { ExpenseBreakdownChart } from '../components/charts';
+import { ChevronDownIcon, ChevronUpIcon } from '../components/icons';
 import {
   AddTransactionModal,
   CreateTransactionInput,
@@ -12,6 +14,7 @@ import {
   TransactionFormModal,
   TransactionTable,
 } from '../components/reports';
+import { Card } from '../components/ui';
 import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
 import {
   DELETE_TRANSACTION,
@@ -48,6 +51,7 @@ export function Report() {
   });
   const [deleteReport, { loading: isDeleting }] = useMutation(DELETE_REPORT);
 
+  const [isChartOpen, setIsChartOpen] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] =
@@ -144,6 +148,30 @@ export function Report() {
         />
 
         <ReportSummary transactions={transactions} />
+
+        <Card className="mt-4">
+          <button
+            type="button"
+            className="flex w-full cursor-pointer items-center justify-between"
+            onClick={() => setIsChartOpen((prev) => !prev)}
+          >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Expense Breakdown
+            </h2>
+
+            {isChartOpen ? (
+              <ChevronUpIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            ) : (
+              <ChevronDownIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            )}
+          </button>
+
+          {isChartOpen && (
+            <div className="mt-2">
+              <ExpenseBreakdownChart transactions={transactions} />
+            </div>
+          )}
+        </Card>
 
         <div className="mt-4 rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
           <TransactionTable
