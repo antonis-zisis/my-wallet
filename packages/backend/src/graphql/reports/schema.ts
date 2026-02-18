@@ -22,7 +22,7 @@ export const reportTypeDefs = `#graphql
   }
 
   extend type Query {
-    reports: ReportsResult!
+    reports(page: Int): ReportsResult!
     report(id: ID!): Report
   }
 

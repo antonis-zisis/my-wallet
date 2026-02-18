@@ -2,6 +2,8 @@ import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
 
+const PAGE_SIZE = 20;
+
 export interface CreateReportInput {
   title: string;
 }
@@ -15,13 +17,16 @@ export const reportResolvers = {
   Query: {
     reports: async (
       _parent: unknown,
-      _args: unknown,
+      { page = 1 }: { page?: number },
       { userId }: { userId: string }
     ) => {
+      const skip = (page - 1) * PAGE_SIZE;
       const [items, totalCount] = await Promise.all([
         prisma.report.findMany({
           where: { userId },
           orderBy: { createdAt: 'desc' },
+          skip,
+          take: PAGE_SIZE,
         }),
         prisma.report.count({ where: { userId } }),
       ]);

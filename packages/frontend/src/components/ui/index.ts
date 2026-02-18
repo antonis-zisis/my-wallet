@@ -4,4 +4,5 @@ export { Card } from './Card';
 export { Dropdown } from './Dropdown';
 export { Input } from './Input';
 export { Modal } from './Modal';
+export { Pagination } from './Pagination';
 export { Select } from './Select';
