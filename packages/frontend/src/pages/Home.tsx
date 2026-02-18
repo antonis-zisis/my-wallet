@@ -60,10 +60,17 @@ export function Home() {
                 Loading...
               </p>
             </Card>
+          ) : currentData?.report ? (
+            <ReportCard label="Current" report={currentData.report} />
           ) : (
-            currentData?.report && (
-              <ReportCard label="Current" report={currentData.report} />
-            )
+            <Card>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Current
+              </p>
+              <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
+                Add a report to view summary
+              </p>
+            </Card>
           )}
 
           {previousLoading && !previousData ? (
@@ -72,10 +79,17 @@ export function Home() {
                 Loading...
               </p>
             </Card>
+          ) : previousData?.report ? (
+            <ReportCard label="Previous" report={previousData.report} />
           ) : (
-            previousData?.report && (
-              <ReportCard label="Previous" report={previousData.report} />
-            )
+            <Card>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Previous
+              </p>
+              <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
+                Add a report to view summary
+              </p>
+            </Card>
           )}
         </div>
       </div>

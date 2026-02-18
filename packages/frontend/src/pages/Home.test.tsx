@@ -64,6 +64,25 @@ const mockReportsWithItems: MockLink.MockedResponse = {
   },
 };
 
+const mockReportsOneItem: MockLink.MockedResponse = {
+  request: { query: GET_REPORTS },
+  result: {
+    data: {
+      reports: {
+        items: [
+          {
+            id: '1',
+            title: 'February 2026',
+            createdAt: '2026-02-01T00:00:00.000Z',
+            updatedAt: '2026-02-01T00:00:00.000Z',
+          },
+        ],
+        totalCount: 1,
+      },
+    },
+  },
+};
+
 const mockCurrentReport: MockLink.MockedResponse = {
   request: { query: GET_REPORT, variables: { id: '1' } },
   result: {
@@ -182,5 +201,46 @@ describe('Home', () => {
 
     expect(screen.queryByText('February 2026')).not.toBeInTheDocument();
     expect(screen.queryByText('January 2026')).not.toBeInTheDocument();
+  });
+
+  describe('placeholder cards', () => {
+    it('shows placeholder cards for both slots when there are no reports', async () => {
+      renderHome([mockHealthQuery, mockReportsEmpty]);
+
+      // wait for GET_REPORTS to settle (totalCount changes from '-' to '0')
+      expect(await screen.findByText('0')).toBeInTheDocument();
+
+      const placeholders = screen.getAllByText('Add a report to view summary');
+      expect(placeholders).toHaveLength(2);
+      expect(screen.getByText('Current')).toBeInTheDocument();
+      expect(screen.getByText('Previous')).toBeInTheDocument();
+    });
+
+    it('shows a placeholder for previous when only one report exists', async () => {
+      renderHome([mockHealthQuery, mockReportsOneItem, mockCurrentReport]);
+
+      // wait for the current report card to appear
+      expect(await screen.findByText('February 2026')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Add a report to view summary')
+      ).toBeInTheDocument();
+      expect(screen.getByText('Previous')).toBeInTheDocument();
+    });
+
+    it('shows no placeholder cards when two reports exist', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsWithItems,
+        mockCurrentReport,
+        mockPreviousReport,
+      ]);
+
+      expect(await screen.findByText('February 2026')).toBeInTheDocument();
+      expect(await screen.findByText('January 2026')).toBeInTheDocument();
+      expect(
+        screen.queryByText('Add a report to view summary')
+      ).not.toBeInTheDocument();
+    });
   });
 });
