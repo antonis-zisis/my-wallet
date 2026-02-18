@@ -2,22 +2,29 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
 import { CreateReportModal, ReportList } from '../components/reports';
-import { Button } from '../components/ui';
+import { Button, Pagination } from '../components/ui';
 import { CREATE_REPORT, GET_REPORTS } from '../graphql/reports';
 import { ReportsData } from '../types/report';
 
+const PAGE_SIZE = 20;
+
 export function Reports() {
-  const { data, loading, error } = useQuery<ReportsData>(GET_REPORTS);
+  const [page, setPage] = useState(1);
+  const { data, loading, error } = useQuery<ReportsData>(GET_REPORTS, {
+    variables: { page },
+  });
   const [createReport] = useMutation(CREATE_REPORT, {
-    refetchQueries: [{ query: GET_REPORTS }],
+    refetchQueries: [{ query: GET_REPORTS, variables: { page: 1 } }],
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const reports = data?.reports.items ?? [];
   const totalCount = data?.reports.totalCount ?? 0;
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   const handleCreateReport = async (title: string) => {
     await createReport({ variables: { input: { title } } });
+    setPage(1);
     setIsModalOpen(false);
   };
 
@@ -33,9 +40,14 @@ export function Reports() {
         </div>
 
         {!loading && !error && totalCount > 0 && (
-          <p className="mt-2 text-right text-xs text-gray-500 dark:text-gray-400">
-            Showing 1 - {reports.length} of {totalCount}
-          </p>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            totalCount={totalCount}
+            pageSize={PAGE_SIZE}
+            itemCount={reports.length}
+            onPageChange={setPage}
+          />
         )}
       </div>
 

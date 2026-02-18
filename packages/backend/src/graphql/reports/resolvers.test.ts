@@ -52,24 +52,55 @@ beforeEach(async () => {
 
 describe('reportResolvers', () => {
   describe('Query.reports', () => {
-    it('returns items and totalCount', async () => {
+    it('returns items and totalCount for page 1', async () => {
       vi.mocked(prisma.report.findMany).mockResolvedValue([mockReport]);
       vi.mocked(prisma.report.count).mockResolvedValue(1);
 
       const result = await reportResolvers.Query.reports(
         undefined as unknown,
-        undefined as unknown,
+        { page: 1 },
         CTX
       );
 
       expect(prisma.report.findMany).toHaveBeenCalledWith({
         where: { userId: USER_ID },
         orderBy: { createdAt: 'desc' },
+        skip: 0,
+        take: 20,
       });
       expect(prisma.report.count).toHaveBeenCalledWith({
         where: { userId: USER_ID },
       });
       expect(result).toEqual({ items: [mockReport], totalCount: 1 });
+    });
+
+    it('skips 20 items for page 2', async () => {
+      vi.mocked(prisma.report.findMany).mockResolvedValue([mockReport]);
+      vi.mocked(prisma.report.count).mockResolvedValue(21);
+
+      await reportResolvers.Query.reports(
+        undefined as unknown,
+        { page: 2 },
+        CTX
+      );
+
+      expect(prisma.report.findMany).toHaveBeenCalledWith({
+        where: { userId: USER_ID },
+        orderBy: { createdAt: 'desc' },
+        skip: 20,
+        take: 20,
+      });
+    });
+
+    it('defaults to page 1 when page is not provided', async () => {
+      vi.mocked(prisma.report.findMany).mockResolvedValue([]);
+      vi.mocked(prisma.report.count).mockResolvedValue(0);
+
+      await reportResolvers.Query.reports(undefined as unknown, {}, CTX);
+
+      expect(prisma.report.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ skip: 0, take: 20 })
+      );
     });
 
     it('returns empty items with zero count', async () => {
@@ -78,7 +109,7 @@ describe('reportResolvers', () => {
 
       const result = await reportResolvers.Query.reports(
         undefined as unknown,
-        undefined as unknown,
+        { page: 1 },
         CTX
       );
 
