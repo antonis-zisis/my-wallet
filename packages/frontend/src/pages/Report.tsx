@@ -51,7 +51,7 @@ export function Report() {
   });
   const [deleteReport, { loading: isDeleting }] = useMutation(DELETE_REPORT);
 
-  const [isChartOpen, setIsChartOpen] = useState(true);
+  const [isChartOpen, setIsChartOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] =
