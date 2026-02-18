@@ -3,7 +3,7 @@ import {
   Legend,
   Pie,
   PieChart,
-  type PieSectorDataItem,
+  type PieSectorShapeProps,
   Sector,
   Tooltip,
 } from 'recharts';
@@ -32,7 +32,7 @@ interface ChartDataItem {
   fill: string;
 }
 
-const renderActiveShape = ({
+const renderShape = ({
   cx,
   cy,
   midAngle,
@@ -44,7 +44,21 @@ const renderActiveShape = ({
   payload,
   percent,
   value,
-}: PieSectorDataItem) => {
+  isActive,
+}: PieSectorShapeProps) => {
+  if (!isActive) {
+    return (
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+    );
+  }
   const sin = Math.sin(-RADIAN * (midAngle ?? 0));
   const cos = Math.cos(-RADIAN * (midAngle ?? 0));
   const sx = (cx ?? 0) + ((outerRadius ?? 0) + 10) * cos;
@@ -155,7 +169,7 @@ export function ExpenseBreakdownChart({
       margin={{ top: 20, right: 140, bottom: 20, left: 140 }}
     >
       <Pie
-        activeShape={renderActiveShape}
+        shape={renderShape}
         data={chartData}
         cx="50%"
         cy="50%"
@@ -164,7 +178,7 @@ export function ExpenseBreakdownChart({
         dataKey="value"
         stroke="none"
       />
-      <Tooltip content={() => null} defaultIndex={0} />
+      <Tooltip content={() => null} defaultIndex={0} active />
       <Legend />
     </PieChart>
   );
