@@ -2,6 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { transactionResolvers } from './resolvers';
 
+const USER_ID = 'user-1';
+const CTX = { userId: USER_ID };
+
 const mockTransaction = {
   id: 'tx-1',
   reportId: 'report-1',
@@ -14,11 +17,22 @@ const mockTransaction = {
   updatedAt: new Date('2024-01-15T10:00:00Z'),
 };
 
+const mockReport = {
+  id: 'report-1',
+  title: 'January Budget',
+  userId: USER_ID,
+  createdAt: new Date('2024-01-01T10:00:00Z'),
+  updatedAt: new Date('2024-01-01T10:00:00Z'),
+};
+
 vi.mock('../../lib/prisma', () => ({
   default: {
+    report: {
+      findFirst: vi.fn(),
+    },
     transaction: {
       findMany: vi.fn(),
-      findUnique: vi.fn(),
+      findFirst: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
@@ -40,9 +54,14 @@ describe('transactionResolvers', () => {
         mockTransaction,
       ]);
 
-      const result = await transactionResolvers.Query.transactions();
+      const result = await transactionResolvers.Query.transactions(
+        undefined as unknown,
+        undefined as unknown,
+        CTX
+      );
 
       expect(prisma.transaction.findMany).toHaveBeenCalledWith({
+        where: { report: { userId: USER_ID } },
         orderBy: { date: 'desc' },
       });
       expect(result).toEqual([mockTransaction]);
@@ -51,27 +70,29 @@ describe('transactionResolvers', () => {
 
   describe('Query.transaction', () => {
     it('returns a single transaction by id', async () => {
-      vi.mocked(prisma.transaction.findUnique).mockResolvedValue(
+      vi.mocked(prisma.transaction.findFirst).mockResolvedValue(
         mockTransaction
       );
 
       const result = await transactionResolvers.Query.transaction(
         undefined as unknown,
-        { id: 'tx-1' }
+        { id: 'tx-1' },
+        CTX
       );
 
-      expect(prisma.transaction.findUnique).toHaveBeenCalledWith({
-        where: { id: 'tx-1' },
+      expect(prisma.transaction.findFirst).toHaveBeenCalledWith({
+        where: { id: 'tx-1', report: { userId: USER_ID } },
       });
       expect(result).toEqual(mockTransaction);
     });
 
     it('returns null for non-existent transaction', async () => {
-      vi.mocked(prisma.transaction.findUnique).mockResolvedValue(null);
+      vi.mocked(prisma.transaction.findFirst).mockResolvedValue(null);
 
       const result = await transactionResolvers.Query.transaction(
         undefined as unknown,
-        { id: 'non-existent' }
+        { id: 'non-existent' },
+        CTX
       );
 
       expect(result).toBeNull();
@@ -89,13 +110,18 @@ describe('transactionResolvers', () => {
         date: '2024-01-15',
       };
 
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(mockReport);
       vi.mocked(prisma.transaction.create).mockResolvedValue(mockTransaction);
 
       const result = await transactionResolvers.Mutation.createTransaction(
         undefined as unknown,
-        { input }
+        { input },
+        CTX
       );
 
+      expect(prisma.report.findFirst).toHaveBeenCalledWith({
+        where: { id: 'report-1', userId: USER_ID },
+      });
       expect(prisma.transaction.create).toHaveBeenCalledWith({
         data: {
           reportId: 'report-1',
@@ -127,15 +153,22 @@ describe('transactionResolvers', () => {
         date: new Date('2024-02-01'),
       };
 
+      vi.mocked(prisma.transaction.findFirst).mockResolvedValue(
+        mockTransaction
+      );
       vi.mocked(prisma.transaction.update).mockResolvedValue(
         updatedTransaction
       );
 
       const result = await transactionResolvers.Mutation.updateTransaction(
         undefined as unknown,
-        { input }
+        { input },
+        CTX
       );
 
+      expect(prisma.transaction.findFirst).toHaveBeenCalledWith({
+        where: { id: 'tx-1', report: { userId: USER_ID } },
+      });
       expect(prisma.transaction.update).toHaveBeenCalledWith({
         where: { id: 'tx-1' },
         data: {
@@ -152,13 +185,20 @@ describe('transactionResolvers', () => {
 
   describe('Mutation.deleteTransaction', () => {
     it('deletes a transaction and returns true', async () => {
+      vi.mocked(prisma.transaction.findFirst).mockResolvedValue(
+        mockTransaction
+      );
       vi.mocked(prisma.transaction.delete).mockResolvedValue(mockTransaction);
 
       const result = await transactionResolvers.Mutation.deleteTransaction(
         undefined as unknown,
-        { id: 'tx-1' }
+        { id: 'tx-1' },
+        CTX
       );
 
+      expect(prisma.transaction.findFirst).toHaveBeenCalledWith({
+        where: { id: 'tx-1', report: { userId: USER_ID } },
+      });
       expect(prisma.transaction.delete).toHaveBeenCalledWith({
         where: { id: 'tx-1' },
       });

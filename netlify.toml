@@ -2,6 +2,7 @@
   base = "packages/frontend"
   command = "pnpm build"
   publish = "dist"
+  ignore = "[ $CONTEXT != 'deploy-preview' ] && exit 0 || exit 1"
 
 [[redirects]]
   from = "/*"

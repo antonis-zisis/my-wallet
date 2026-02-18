@@ -16,6 +16,7 @@ datasource db {
 model Report {
   id           String        @id @default(uuid())
   title        String
+  userId       String        @map("user_id")
   transactions Transaction[]
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
