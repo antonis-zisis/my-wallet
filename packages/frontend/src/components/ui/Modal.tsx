@@ -8,6 +8,7 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   footer?: ReactNode;
+  size?: 'md' | 'lg';
 }
 
 export function Modal({
@@ -16,6 +17,7 @@ export function Modal({
   title,
   children,
   footer,
+  size = 'md',
 }: ModalProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -46,7 +48,9 @@ export function Modal({
         onClick={onClose}
       />
 
-      <div className="relative z-50 w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
+      <div
+        className={`relative z-50 w-full rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800 ${size === 'lg' ? 'max-w-2xl' : 'max-w-md'}`}
+      >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
             {title}

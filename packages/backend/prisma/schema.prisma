@@ -38,3 +38,28 @@ model Transaction {
 
   @@map("transactions")
 }
+
+model NetWorthSnapshot {
+  id        String          @id @default(uuid())
+  title     String
+  userId    String          @map("user_id")
+  entries   NetWorthEntry[]
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@map("net_worth_snapshots")
+}
+
+model NetWorthEntry {
+  id         String           @id @default(uuid())
+  type       String
+  label      String
+  amount     Float
+  category   String
+  snapshotId String           @map("snapshot_id")
+  snapshot   NetWorthSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @updatedAt @map("updated_at")
+
+  @@map("net_worth_entries")
+}
