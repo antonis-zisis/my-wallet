@@ -36,6 +36,21 @@ export const GET_REPORT = gql`
   }
 `;
 
+export const GET_REPORTS_SUMMARY = gql`
+  query GetReportsSummary {
+    reports {
+      items {
+        id
+        title
+        transactions {
+          type
+          amount
+        }
+      }
+    }
+  }
+`;
+
 export const CREATE_REPORT = gql`
   mutation CreateReport($input: CreateReportInput!) {
     createReport(input: $input) {
