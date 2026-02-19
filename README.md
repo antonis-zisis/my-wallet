@@ -14,6 +14,7 @@ A full-stack Wallet application to help with budgeting built with React and Expr
 - Tailwind CSS 4
 - TypeScript
 - Apollo Client (GraphQL)
+- Recharts (charts)
 - Supabase Auth
 - Vitest
 
@@ -123,6 +124,7 @@ pnpm typecheck
 - **Category Support**: Pre-defined categories for both income (Salary, Freelance, Investment, Gift, Other) and expenses (Food, Transport, Utilities, Entertainment, Shopping, Health, Other)
 - **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
 - **Net Worth**: Track and view your net worth
+- **Charts**: Income & expenses grouped bar chart on the Home dashboard (last 12 reports); expense breakdown pie chart on the Report page
 - **Dark Mode**: Theme toggle with local storage persistence
 
 ## Project Structure

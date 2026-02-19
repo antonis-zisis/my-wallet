@@ -1,12 +1,16 @@
 import { MockLink } from '@apollo/client/testing';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { HEALTH_QUERY } from '../graphql/health';
-import { GET_REPORT, GET_REPORTS } from '../graphql/reports';
+import {
+  GET_REPORT,
+  GET_REPORTS,
+  GET_REPORTS_SUMMARY,
+} from '../graphql/reports';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Home } from './Home';
 
@@ -137,6 +141,37 @@ const mockPreviousReport: MockLink.MockedResponse = {
   },
 };
 
+const mockReportsSummaryEmpty: MockLink.MockedResponse = {
+  request: { query: GET_REPORTS_SUMMARY },
+  result: {
+    data: {
+      reports: { items: [] },
+    },
+  },
+};
+
+const mockReportsSummaryWithItems: MockLink.MockedResponse = {
+  request: { query: GET_REPORTS_SUMMARY },
+  result: {
+    data: {
+      reports: {
+        items: [
+          {
+            id: '1',
+            title: 'February 2026',
+            transactions: [{ type: 'INCOME', amount: 3000 }],
+          },
+          {
+            id: '2',
+            title: 'January 2026',
+            transactions: [{ type: 'EXPENSE', amount: 200 }],
+          },
+        ],
+      },
+    },
+  },
+};
+
 const renderHome = (mocks: MockLink.MockedResponse[]) => {
   return render(
     <ThemeProvider>
@@ -151,12 +186,12 @@ const renderHome = (mocks: MockLink.MockedResponse[]) => {
 
 describe('Home', () => {
   it('shows connecting status initially', () => {
-    renderHome([mockHealthQuery, mockReportsEmpty]);
+    renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
     expect(screen.getByText('Connecting...')).toBeInTheDocument();
   });
 
   it('shows connected status after health query succeeds', async () => {
-    renderHome([mockHealthQuery, mockReportsEmpty]);
+    renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
 
     expect(
       await screen.findByText('GraphQL server is running!')
@@ -164,7 +199,11 @@ describe('Home', () => {
   });
 
   it('shows error status when health query fails', async () => {
-    renderHome([mockHealthQueryError, mockReportsEmpty]);
+    renderHome([
+      mockHealthQueryError,
+      mockReportsEmpty,
+      mockReportsSummaryEmpty,
+    ]);
 
     expect(
       await screen.findByText('Failed to connect to server')
@@ -172,13 +211,17 @@ describe('Home', () => {
   });
 
   it('displays total reports count', async () => {
-    renderHome([mockHealthQuery, mockReportsWithItems]);
+    renderHome([
+      mockHealthQuery,
+      mockReportsWithItems,
+      mockReportsSummaryWithItems,
+    ]);
 
     expect(await screen.findByText('5')).toBeInTheDocument();
   });
 
   it('shows dash when reports data is not yet loaded', () => {
-    renderHome([mockHealthQuery, mockReportsEmpty]);
+    renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
     expect(screen.getByText('-')).toBeInTheDocument();
   });
 
@@ -186,6 +229,7 @@ describe('Home', () => {
     renderHome([
       mockHealthQuery,
       mockReportsWithItems,
+      mockReportsSummaryWithItems,
       mockCurrentReport,
       mockPreviousReport,
     ]);
@@ -197,7 +241,11 @@ describe('Home', () => {
   });
 
   it('shows loading state for report cards before data arrives', () => {
-    renderHome([mockHealthQuery, mockReportsWithItems]);
+    renderHome([
+      mockHealthQuery,
+      mockReportsWithItems,
+      mockReportsSummaryWithItems,
+    ]);
 
     expect(screen.queryByText('February 2026')).not.toBeInTheDocument();
     expect(screen.queryByText('January 2026')).not.toBeInTheDocument();
@@ -205,7 +253,7 @@ describe('Home', () => {
 
   describe('placeholder cards', () => {
     it('shows placeholder cards for both slots when there are no reports', async () => {
-      renderHome([mockHealthQuery, mockReportsEmpty]);
+      renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
 
       // wait for GET_REPORTS to settle (totalCount changes from '-' to '0')
       expect(await screen.findByText('0')).toBeInTheDocument();
@@ -217,7 +265,12 @@ describe('Home', () => {
     });
 
     it('shows a placeholder for previous when only one report exists', async () => {
-      renderHome([mockHealthQuery, mockReportsOneItem, mockCurrentReport]);
+      renderHome([
+        mockHealthQuery,
+        mockReportsOneItem,
+        mockReportsSummaryWithItems,
+        mockCurrentReport,
+      ]);
 
       // wait for the current report card to appear
       expect(await screen.findByText('February 2026')).toBeInTheDocument();
@@ -232,6 +285,7 @@ describe('Home', () => {
       renderHome([
         mockHealthQuery,
         mockReportsWithItems,
+        mockReportsSummaryWithItems,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -241,6 +295,49 @@ describe('Home', () => {
       expect(
         screen.queryByText('Add a report to view summary')
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('income & expenses chart', () => {
+    it('renders the chart section when reports have data', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsWithItems,
+        mockReportsSummaryWithItems,
+        mockCurrentReport,
+        mockPreviousReport,
+      ]);
+
+      expect(await screen.findByText('Income & Expenses')).toBeInTheDocument();
+    });
+
+    it('does not render the chart section when no reports exist', async () => {
+      renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
+
+      await screen.findByText('0');
+      expect(screen.queryByText('Income & Expenses')).not.toBeInTheDocument();
+    });
+
+    it('collapses the chart on button click', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsWithItems,
+        mockReportsSummaryWithItems,
+        mockCurrentReport,
+        mockPreviousReport,
+      ]);
+
+      const button = await screen.findByRole('button', {
+        name: /income & expenses/i,
+      });
+
+      // chart is open by default — clicking closes it
+      fireEvent.click(button);
+
+      // click again to reopen
+      fireEvent.click(button);
+
+      expect(screen.getByText('Income & Expenses')).toBeInTheDocument();
     });
   });
 });

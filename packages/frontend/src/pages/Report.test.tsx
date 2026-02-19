@@ -1,12 +1,16 @@
 import { MockLink } from '@apollo/client/testing';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { GET_REPORT } from '../graphql/reports';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Report } from './Report';
+
+vi.mock('../components/charts', () => ({
+  ExpenseBreakdownChart: () => <div data-testid="expense-breakdown-chart" />,
+}));
 
 const mockReportQuery: MockLink.MockedResponse = {
   request: {
@@ -119,5 +123,50 @@ describe('Report', () => {
     renderReport([mockReportQuery]);
     const link = await screen.findByText('← Back to Reports');
     expect(link.closest('a')).toHaveAttribute('href', '/reports');
+  });
+
+  describe('expense breakdown chart', () => {
+    it('renders the Expense Breakdown section heading', async () => {
+      renderReport([mockReportQuery]);
+      await screen.findByText('January Budget');
+
+      expect(
+        screen.getByRole('button', { name: /expense breakdown/i })
+      ).toBeInTheDocument();
+    });
+
+    it('is collapsed by default', async () => {
+      renderReport([mockReportQuery]);
+      await screen.findByText('January Budget');
+
+      expect(
+        screen.queryByTestId('expense-breakdown-chart')
+      ).not.toBeInTheDocument();
+    });
+
+    it('expands when the section button is clicked', async () => {
+      renderReport([mockReportQuery]);
+      const button = await screen.findByRole('button', {
+        name: /expense breakdown/i,
+      });
+
+      fireEvent.click(button);
+
+      expect(screen.getByTestId('expense-breakdown-chart')).toBeInTheDocument();
+    });
+
+    it('collapses when the section button is clicked again', async () => {
+      renderReport([mockReportQuery]);
+      const button = await screen.findByRole('button', {
+        name: /expense breakdown/i,
+      });
+
+      fireEvent.click(button); // open
+      fireEvent.click(button); // close
+
+      expect(
+        screen.queryByTestId('expense-breakdown-chart')
+      ).not.toBeInTheDocument();
+    });
   });
 });
