@@ -22,7 +22,9 @@ export function CreateReportModal({
 
   const handleSubmit = () => {
     const trimmed = title.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      return;
+    }
     onSubmit(trimmed);
     setTitle('');
   };

@@ -20,7 +20,9 @@ export const reportResolvers = {
       id: string;
       transactions?: Transaction[];
     }) => {
-      if (parent.transactions !== undefined) return parent.transactions;
+      if (parent.transactions !== undefined) {
+        return parent.transactions;
+      }
       return prisma.transaction.findMany({
         where: { reportId: parent.id },
         orderBy: { date: 'desc' },

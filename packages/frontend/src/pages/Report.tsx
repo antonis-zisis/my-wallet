@@ -74,7 +74,9 @@ export function Report() {
   };
 
   const handleUpdateTransaction = async (input: CreateTransactionInput) => {
-    if (!editingTransaction) return;
+    if (!editingTransaction) {
+      return;
+    }
     await updateTransaction({
       variables: {
         input: { ...input, id: editingTransaction.id },
@@ -84,7 +86,9 @@ export function Report() {
   };
 
   const handleDeleteTransaction = async () => {
-    if (!deletingTransaction) return;
+    if (!deletingTransaction) {
+      return;
+    }
     await deleteTransaction({
       variables: { id: deletingTransaction.id },
     });
