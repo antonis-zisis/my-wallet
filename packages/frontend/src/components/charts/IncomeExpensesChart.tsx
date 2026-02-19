@@ -15,12 +15,16 @@ import { formatMoney } from '../../utils/formatMoney';
 
 interface IncomeExpensesChartProps {
   reports: Report[];
+  limit?: number;
 }
 
-export function IncomeExpensesChart({ reports }: IncomeExpensesChartProps) {
+export function IncomeExpensesChart({
+  reports,
+  limit = 12,
+}: IncomeExpensesChartProps) {
   const chartData = useMemo(() => {
     return [...reports]
-      .slice(0, 12)
+      .slice(0, limit)
       .reverse()
       .map((report) => {
         const income = (report.transactions ?? [])
@@ -35,7 +39,7 @@ export function IncomeExpensesChart({ reports }: IncomeExpensesChartProps) {
             : report.title;
         return { name, income, expenses };
       });
-  }, [reports]);
+  }, [reports, limit]);
 
   if (chartData.length === 0) {
     return null;

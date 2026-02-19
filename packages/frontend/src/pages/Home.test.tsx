@@ -318,7 +318,7 @@ describe('Home', () => {
       expect(screen.queryByText('Income & Expenses')).not.toBeInTheDocument();
     });
 
-    it('collapses the chart on button click', async () => {
+    it('collapses and reopens the chart on title button click', async () => {
       renderHome([
         mockHealthQuery,
         mockReportsWithItems,
@@ -327,17 +327,81 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      const button = await screen.findByRole('button', {
+      const titleButton = await screen.findByRole('button', {
         name: /income & expenses/i,
       });
 
       // chart is open by default — clicking closes it
-      fireEvent.click(button);
+      fireEvent.click(titleButton);
+      // limit buttons disappear when collapsed
+      expect(
+        screen.queryByRole('button', { name: '12' })
+      ).not.toBeInTheDocument();
 
       // click again to reopen
-      fireEvent.click(button);
-
+      fireEvent.click(titleButton);
       expect(screen.getByText('Income & Expenses')).toBeInTheDocument();
+    });
+
+    it('shows limit control buttons when chart is open', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsWithItems,
+        mockReportsSummaryWithItems,
+        mockCurrentReport,
+        mockPreviousReport,
+      ]);
+
+      await screen.findByText('Income & Expenses');
+
+      expect(screen.getByRole('button', { name: '3' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '6' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '9' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '12' })).toBeInTheDocument();
+    });
+
+    it('hides limit control buttons when chart is collapsed', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsWithItems,
+        mockReportsSummaryWithItems,
+        mockCurrentReport,
+        mockPreviousReport,
+      ]);
+
+      const titleButton = await screen.findByRole('button', {
+        name: /income & expenses/i,
+      });
+      fireEvent.click(titleButton);
+
+      expect(
+        screen.queryByRole('button', { name: '3' })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: '12' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('updates the active limit when a limit button is clicked', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsWithItems,
+        mockReportsSummaryWithItems,
+        mockCurrentReport,
+        mockPreviousReport,
+      ]);
+
+      await screen.findByText('Income & Expenses');
+
+      fireEvent.click(screen.getByRole('button', { name: '6' }));
+
+      // the 6 button should now be active (blue) and 12 inactive
+      expect(screen.getByRole('button', { name: '6' })).toHaveClass(
+        'bg-blue-600'
+      );
+      expect(screen.getByRole('button', { name: '12' })).not.toHaveClass(
+        'bg-blue-600'
+      );
     });
   });
 });
