@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 
 import { type Transaction } from '../../types/transaction';
+import { formatMoney } from '../../utils/formatMoney';
 
 interface ExpenseBreakdownChartProps {
   transactions: Transaction[];
@@ -120,7 +121,7 @@ const renderShape = ({
         fontSize={13}
         fontWeight={600}
       >
-        {`€${(value ?? 0).toFixed(2)}`}
+        {`${formatMoney(value ?? 0)} €`}
       </text>
 
       <text

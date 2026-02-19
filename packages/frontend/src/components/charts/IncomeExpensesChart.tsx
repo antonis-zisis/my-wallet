@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 
 import { type Report } from '../../types/report';
+import { formatMoney } from '../../utils/formatMoney';
 
 interface IncomeExpensesChartProps {
   reports: Report[];
@@ -49,13 +50,13 @@ export function IncomeExpensesChart({ reports }: IncomeExpensesChartProps) {
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
         <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6b7280' }} />
         <YAxis
-          tickFormatter={(value: number) => `€${value}`}
+          tickFormatter={(value: number) => `${formatMoney(value)}€`}
           tick={{ fontSize: 12, fill: '#6b7280' }}
           width={64}
         />
         <Tooltip
           formatter={(value: number | undefined, name: string | undefined) => [
-            `€${(value ?? 0).toFixed(2)}`,
+            `${formatMoney(value ?? 0)} €`,
             (name ?? '').charAt(0).toUpperCase() + (name ?? '').slice(1),
           ]}
           contentStyle={{

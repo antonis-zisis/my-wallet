@@ -96,7 +96,7 @@ describe('Report', () => {
     renderReport([mockReportQuery]);
     expect(await screen.findByText('January Budget')).toBeInTheDocument();
     expect(screen.getByText('Monthly salary')).toBeInTheDocument();
-    expect(screen.getByText('+1500.00 €')).toBeInTheDocument();
+    expect(screen.getByText('+1.500,00 €')).toBeInTheDocument();
     expect(screen.getByText('Groceries')).toBeInTheDocument();
     expect(screen.getByText('Bus pass')).toBeInTheDocument();
   });
@@ -106,10 +106,10 @@ describe('Report', () => {
     await screen.findByText('January Budget');
 
     expect(screen.getByText('Total Income')).toBeInTheDocument();
-    expect(screen.getByText('1500.00 €')).toBeInTheDocument();
+    expect(screen.getByText('1.500,00 €')).toBeInTheDocument();
 
     expect(screen.getByText('Total Expenses')).toBeInTheDocument();
-    expect(screen.getByText('300.00 €')).toBeInTheDocument();
+    expect(screen.getByText('300,00 €')).toBeInTheDocument();
   });
 
   it('shows error state on query failure', async () => {

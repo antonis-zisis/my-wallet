@@ -1,5 +1,6 @@
 import { Transaction } from '../../types/transaction';
 import { formatDate } from '../../utils/formatDate';
+import { formatMoney } from '../../utils/formatMoney';
 import { Badge, Dropdown } from '../ui';
 
 interface TransactionTableProps {
@@ -10,7 +11,7 @@ interface TransactionTableProps {
 
 function formatAmount(transaction: Transaction) {
   const sign = transaction.type === 'INCOME' ? '+' : '-';
-  return `${sign}${transaction.amount.toFixed(2)} €`;
+  return `${sign}${formatMoney(transaction.amount)} €`;
 }
 
 export function TransactionTable({

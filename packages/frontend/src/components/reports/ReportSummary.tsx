@@ -1,4 +1,5 @@
 import { Transaction } from '../../types/transaction';
+import { formatMoney } from '../../utils/formatMoney';
 
 interface ReportSummaryProps {
   transactions: Transaction[];
@@ -19,7 +20,7 @@ export function ReportSummary({ transactions }: ReportSummaryProps) {
         <p className="text-sm text-gray-500 dark:text-gray-400">Total Income</p>
 
         <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-          {totalIncome.toFixed(2)} &euro;
+          {formatMoney(totalIncome)} &euro;
         </p>
       </div>
 
@@ -29,7 +30,7 @@ export function ReportSummary({ transactions }: ReportSummaryProps) {
         </p>
 
         <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-          {totalExpenses.toFixed(2)} &euro;
+          {formatMoney(totalExpenses)} &euro;
         </p>
       </div>
     </div>
