@@ -8,6 +8,9 @@ import { transactionTypeDefs } from './transactions/schema';
 export const typeDefs = [baseTypeDefs, transactionTypeDefs, reportTypeDefs];
 
 export const resolvers = {
+  Report: {
+    ...reportResolvers.Report,
+  },
   Query: {
     ...baseResolvers.Query,
     ...transactionResolvers.Query,
