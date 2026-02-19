@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql';
 
+import { Transaction } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
 
 const PAGE_SIZE = 20;
@@ -14,6 +15,18 @@ export interface UpdateReportInput {
 }
 
 export const reportResolvers = {
+  Report: {
+    transactions: async (parent: {
+      id: string;
+      transactions?: Transaction[];
+    }) => {
+      if (parent.transactions !== undefined) return parent.transactions;
+      return prisma.transaction.findMany({
+        where: { reportId: parent.id },
+        orderBy: { date: 'desc' },
+      });
+    },
+  },
   Query: {
     reports: async (
       _parent: unknown,

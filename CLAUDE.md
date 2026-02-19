@@ -46,6 +46,7 @@ pnpm run env:encrypt      # Encrypt before committing
 - Routing: React Router 7 with `createBrowserRouter` in `router.tsx`. `App.tsx` is the root layout with `NavBar` + `<Outlet />`. Public route: `/login`. Protected routes (via `ProtectedRoute`): `/` (Home), `/reports` (Reports list), `/reports/:id` (single Report), `/net-worth` (Net Worth)
 - GraphQL: Apollo Client 4 configured in `lib/apollo.ts`. Queries/mutations defined per domain in `graphql/health.ts`, `graphql/transactions.ts`, `graphql/reports.ts` using `gql` tagged templates. The Apollo client uses a relative `/graphql` URI — Vite proxies this to the backend in dev
 - UI components: Reusable primitives in `components/ui/` (Badge, Button, Card, Dropdown, Input, Modal, Select), re-exported from `components/ui/index.ts`
+- Charts: Recharts-based components in `components/charts/` — `ExpenseBreakdownChart` (PieChart, used on the Report page) and `IncomeExpensesChart` (grouped BarChart, used on the Home page for the last 12 reports), re-exported from `components/charts/index.ts`. Charts are rendered in collapsible Card sections
 - Theming: `contexts/ThemeContext.tsx` provides `useTheme()` hook; toggles dark class on `<html>`, persists to localStorage
 
 **Backend** (Express 5 + Apollo Server 5):

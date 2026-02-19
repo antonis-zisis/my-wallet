@@ -40,6 +40,9 @@ vi.mock('../../lib/prisma', () => ({
       update: vi.fn(),
       delete: vi.fn(),
     },
+    transaction: {
+      findMany: vi.fn(),
+    },
   },
 }));
 
@@ -114,6 +117,31 @@ describe('reportResolvers', () => {
       );
 
       expect(result).toEqual({ items: [], totalCount: 0 });
+    });
+  });
+
+  describe('Report.transactions', () => {
+    it('returns pre-loaded transactions from the parent without querying the DB', async () => {
+      const result = await reportResolvers.Report.transactions(
+        mockReportWithTransactions
+      );
+
+      expect(prisma.transaction.findMany).not.toHaveBeenCalled();
+      expect(result).toEqual(mockReportWithTransactions.transactions);
+    });
+
+    it('fetches transactions from the DB when parent has none loaded', async () => {
+      vi.mocked(prisma.transaction.findMany).mockResolvedValue(
+        mockReportWithTransactions.transactions as never
+      );
+
+      const result = await reportResolvers.Report.transactions(mockReport);
+
+      expect(prisma.transaction.findMany).toHaveBeenCalledWith({
+        where: { reportId: mockReport.id },
+        orderBy: { date: 'desc' },
+      });
+      expect(result).toEqual(mockReportWithTransactions.transactions);
     });
   });
 

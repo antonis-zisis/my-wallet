@@ -1,14 +1,35 @@
 import { useQuery } from '@apollo/client/react';
+import { useState } from 'react';
 
+import { IncomeExpensesChart } from '../components/charts';
 import { ReportCard } from '../components/home';
+import { ChevronDownIcon, ChevronUpIcon } from '../components/icons';
 import { Card } from '../components/ui';
 import { HEALTH_QUERY } from '../graphql/health';
-import { GET_REPORT, GET_REPORTS } from '../graphql/reports';
+import {
+  GET_REPORT,
+  GET_REPORTS,
+  GET_REPORTS_SUMMARY,
+} from '../graphql/reports';
 import { Report, ReportsData } from '../types/report';
 
+interface ReportsSummaryData {
+  reports: {
+    items: Report[];
+  };
+}
+
+const LIMIT_OPTIONS = [3, 6, 9, 12] as const;
+type LimitOption = (typeof LIMIT_OPTIONS)[number];
+
 export function Home() {
+  const [isChartOpen, setIsChartOpen] = useState(true);
+  const [limit, setLimit] = useState<LimitOption>(12);
+
   const { data, loading, error } = useQuery<{ health: string }>(HEALTH_QUERY);
   const { data: reportsData } = useQuery<ReportsData>(GET_REPORTS);
+  const { data: summaryData } =
+    useQuery<ReportsSummaryData>(GET_REPORTS_SUMMARY);
 
   const reportItems = reportsData?.reports.items ?? [];
   const currentId = reportItems[0]?.id;
@@ -33,6 +54,8 @@ export function Home() {
 
     return data?.health ?? 'Connected';
   };
+
+  const chartReports = summaryData?.reports.items ?? [];
 
   return (
     <div className="py-8">
@@ -92,6 +115,61 @@ export function Home() {
             </Card>
           )}
         </div>
+
+        {chartReports.length > 0 && (
+          <Card className="mt-4">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                className="flex flex-1 cursor-pointer items-center"
+                onClick={() => setIsChartOpen((prev) => !prev)}
+              >
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  Income & Expenses
+                </h2>
+              </button>
+
+              <div className="flex items-center gap-2">
+                {isChartOpen && (
+                  <div className="flex overflow-hidden rounded-md border border-gray-200 dark:border-gray-700">
+                    {LIMIT_OPTIONS.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => setLimit(option)}
+                        className={`cursor-pointer border-l border-gray-200 px-2.5 py-1 text-xs font-medium transition-colors first:border-l-0 dark:border-gray-700 ${
+                          limit === option
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setIsChartOpen((prev) => !prev)}
+                  className="cursor-pointer"
+                >
+                  {isChartOpen ? (
+                    <ChevronUpIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                  ) : (
+                    <ChevronDownIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {isChartOpen && (
+              <div className="mt-4">
+                <IncomeExpensesChart reports={chartReports} limit={limit} />
+              </div>
+            )}
+          </Card>
+        )}
       </div>
     </div>
   );

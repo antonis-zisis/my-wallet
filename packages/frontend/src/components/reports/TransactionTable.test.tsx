@@ -46,12 +46,12 @@ describe('TransactionTable', () => {
 
   it('formats income amounts with + sign', () => {
     render(<TransactionTable transactions={mockTransactions} />);
-    expect(screen.getByText('+1500.00 €')).toBeInTheDocument();
+    expect(screen.getByText('+1.500,00 €')).toBeInTheDocument();
   });
 
   it('formats expense amounts with - sign', () => {
     render(<TransactionTable transactions={mockTransactions} />);
-    expect(screen.getByText('-42.50 €')).toBeInTheDocument();
+    expect(screen.getByText('-42,50 €')).toBeInTheDocument();
   });
 
   it('displays transaction categories', () => {
