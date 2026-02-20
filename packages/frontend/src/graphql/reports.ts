@@ -47,6 +47,7 @@ export const GET_REPORTS_SUMMARY = gql`
           amount
         }
       }
+      totalCount
     }
   }
 `;

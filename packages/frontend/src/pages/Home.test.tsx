@@ -146,7 +146,7 @@ const mockReportsSummaryEmpty: MockLink.MockedResponse = {
   request: { query: GET_REPORTS_SUMMARY },
   result: {
     data: {
-      reports: { items: [] },
+      reports: { items: [], totalCount: 0 },
     },
   },
 };
@@ -180,6 +180,7 @@ const mockReportsSummaryWithItems: MockLink.MockedResponse = {
             transactions: [{ type: 'EXPENSE', amount: 200 }],
           },
         ],
+        totalCount: 2,
       },
     },
   },
