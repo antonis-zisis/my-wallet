@@ -21,12 +21,12 @@ interface CreateNetWorthSnapshotModalProps {
   onClose: () => void;
   onSubmit: (input: {
     title: string;
-    entries: {
+    entries: Array<{
       type: string;
       label: string;
       amount: number;
       category: string;
-    }[];
+    }>;
   }) => void;
 }
 
@@ -49,7 +49,9 @@ export function CreateNetWorthSnapshotModal({
   onSubmit,
 }: CreateNetWorthSnapshotModalProps) {
   const [title, setTitle] = useState('');
-  const [entries, setEntries] = useState<EntryDraft[]>([makeEntry('ASSET')]);
+  const [entries, setEntries] = useState<Array<EntryDraft>>([
+    makeEntry('ASSET'),
+  ]);
   const entriesContainerRef = useRef<HTMLDivElement>(null);
   const prevEntriesLengthRef = useRef(entries.length);
 

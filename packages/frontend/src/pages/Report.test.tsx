@@ -74,7 +74,7 @@ const mockReportQueryError: MockLink.MockedResponse = {
   },
 };
 
-const renderReport = (mocks: MockLink.MockedResponse[]) => {
+const renderReport = (mocks: Array<MockLink.MockedResponse>) => {
   return render(
     <MockedProvider mocks={mocks}>
       <MemoryRouter initialEntries={['/reports/1']}>

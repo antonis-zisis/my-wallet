@@ -64,7 +64,7 @@ const mockSnapshotQueryNull: MockLink.MockedResponse = {
   },
 };
 
-const renderPage = (mocks: MockLink.MockedResponse[]) => {
+const renderPage = (mocks: Array<MockLink.MockedResponse>) => {
   return render(
     <MockedProvider mocks={mocks}>
       <MemoryRouter initialEntries={['/net-worth/1']}>

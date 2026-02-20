@@ -5,12 +5,12 @@ export interface Report {
   title: string;
   createdAt: string;
   updatedAt: string;
-  transactions?: Transaction[];
+  transactions?: Array<Transaction>;
 }
 
 export interface ReportsData {
   reports: {
-    items: Report[];
+    items: Array<Report>;
     totalCount: number;
   };
 }

@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { Report } from '../../types/report';
 import { ReportList } from './ReportList';
 
-const mockReports: Report[] = [
+const mockReports: Array<Report> = [
   {
     id: '1',
     title: 'January Budget',
@@ -21,7 +21,7 @@ const mockReports: Report[] = [
 ];
 
 const renderReportList = (props: {
-  reports: Report[];
+  reports: Array<Report>;
   loading: boolean;
   error: boolean;
 }) => {

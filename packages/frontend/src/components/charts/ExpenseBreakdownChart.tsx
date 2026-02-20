@@ -12,7 +12,7 @@ import { type Transaction } from '../../types/transaction';
 import { formatMoney } from '../../utils/formatMoney';
 
 interface ExpenseBreakdownChartProps {
-  transactions: Transaction[];
+  transactions: Array<Transaction>;
 }
 
 const COLORS = [
@@ -145,7 +145,9 @@ export function ExpenseBreakdownChart({
     const expensesByCategory = new Map<string, number>();
 
     for (const tx of transactions) {
-      if (tx.type !== 'EXPENSE') continue;
+      if (tx.type !== 'EXPENSE') {
+        continue;
+      }
       const current = expensesByCategory.get(tx.category) ?? 0;
       expensesByCategory.set(tx.category, current + tx.amount);
     }

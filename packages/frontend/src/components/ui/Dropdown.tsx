@@ -9,7 +9,7 @@ export interface DropdownItem {
 }
 
 interface DropdownProps {
-  items: DropdownItem[];
+  items: Array<DropdownItem>;
   trigger?: ReactNode;
 }
 

@@ -75,7 +75,7 @@ const mockPage2: MockLink.MockedResponse = {
   },
 };
 
-const renderReports = (mocks: MockLink.MockedResponse[]) => {
+const renderReports = (mocks: Array<MockLink.MockedResponse>) => {
   return render(
     <MockedProvider mocks={mocks}>
       <MemoryRouter>

@@ -25,7 +25,7 @@ import { Report as ReportType } from '../types/report';
 import { Transaction } from '../types/transaction';
 
 interface ReportData {
-  report: ReportType & { transactions: Transaction[] };
+  report: ReportType & { transactions: Array<Transaction> };
 }
 
 export function Report() {
@@ -74,7 +74,9 @@ export function Report() {
   };
 
   const handleUpdateTransaction = async (input: CreateTransactionInput) => {
-    if (!editingTransaction) return;
+    if (!editingTransaction) {
+      return;
+    }
     await updateTransaction({
       variables: {
         input: { ...input, id: editingTransaction.id },
@@ -84,7 +86,9 @@ export function Report() {
   };
 
   const handleDeleteTransaction = async () => {
-    if (!deletingTransaction) return;
+    if (!deletingTransaction) {
+      return;
+    }
     await deleteTransaction({
       variables: { id: deletingTransaction.id },
     });

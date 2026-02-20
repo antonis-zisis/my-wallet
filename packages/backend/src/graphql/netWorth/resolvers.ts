@@ -14,12 +14,12 @@ interface NetWorthEntryInput {
 
 export interface CreateNetWorthSnapshotInput {
   title: string;
-  entries: NetWorthEntryInput[];
+  entries: Array<NetWorthEntryInput>;
 }
 
 type SnapshotParent = {
   id: string;
-  entries?: NetWorthEntry[];
+  entries?: Array<NetWorthEntry>;
 };
 
 export const netWorthResolvers = {

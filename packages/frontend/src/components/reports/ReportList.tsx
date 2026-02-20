@@ -4,7 +4,7 @@ import { Report } from '../../types/report';
 import { formatDate } from '../../utils/formatDate';
 
 interface ReportListProps {
-  reports: Report[];
+  reports: Array<Report>;
   loading: boolean;
   error: boolean;
 }

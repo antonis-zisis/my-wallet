@@ -46,12 +46,12 @@ export function NetWorth() {
 
   const handleCreate = async (input: {
     title: string;
-    entries: {
+    entries: Array<{
       type: string;
       label: string;
       amount: number;
       category: string;
-    }[];
+    }>;
   }) => {
     await createSnapshot({ variables: { input } });
     setPage(1);

@@ -15,7 +15,7 @@ import { Report, ReportsData } from '../types/report';
 
 interface ReportsSummaryData {
   reports: {
-    items: Report[];
+    items: Array<Report>;
   };
 }
 

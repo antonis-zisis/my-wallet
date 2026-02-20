@@ -11,11 +11,13 @@ export default tseslint.config(
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      '@typescript-eslint/array-type': ['error', { default: 'generic' }],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_' },
       ],
 
+      curly: ['error', 'all'],
       'id-length': ['warn', { min: 2, exceptions: ['_'] }],
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',

@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { Transaction } from '../../types/transaction';
 import { TransactionTable } from './TransactionTable';
 
-const mockTransactions: Transaction[] = [
+const mockTransactions: Array<Transaction> = [
   {
     id: '1',
     reportId: 'r1',
