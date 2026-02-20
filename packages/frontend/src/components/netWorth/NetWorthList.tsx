@@ -70,7 +70,7 @@ export function NetWorthList({
             </Link>
             <button
               onClick={() => onDelete(snapshot)}
-              className="ml-2 px-2 py-3 text-sm text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+              className="ml-2 cursor-pointer px-2 py-3 text-sm text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
               aria-label={`Delete ${snapshot.title}`}
             >
               ✕

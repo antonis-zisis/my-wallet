@@ -123,7 +123,7 @@ pnpm typecheck
 - **Transaction Management**: Add income and expense transactions with categories within a report
 - **Category Support**: Pre-defined categories for both income (Salary, Freelance, Investment, Gift, Other) and expenses (Food, Transport, Utilities, Entertainment, Shopping, Health, Other)
 - **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
-- **Net Worth**: Track and view your net worth
+- **Net Worth**: Track your financial position by creating snapshots of assets and liabilities, with automatic net worth calculation and paginated snapshot history
 - **Charts**: Income & expenses grouped bar chart on the Home dashboard (last 12 reports); expense breakdown pie chart on the Report page
 - **Dark Mode**: Theme toggle with local storage persistence
 

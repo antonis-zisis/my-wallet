@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   ASSET_CATEGORIES,
@@ -50,6 +50,19 @@ export function CreateNetWorthSnapshotModal({
 }: CreateNetWorthSnapshotModalProps) {
   const [title, setTitle] = useState('');
   const [entries, setEntries] = useState<EntryDraft[]>([makeEntry('ASSET')]);
+  const entriesContainerRef = useRef<HTMLDivElement>(null);
+  const prevEntriesLengthRef = useRef(entries.length);
+
+  useEffect(() => {
+    if (
+      entries.length > prevEntriesLengthRef.current &&
+      entriesContainerRef.current
+    ) {
+      entriesContainerRef.current.scrollTop =
+        entriesContainerRef.current.scrollHeight;
+    }
+    prevEntriesLengthRef.current = entries.length;
+  }, [entries.length]);
 
   const handleClose = () => {
     setTitle('');
@@ -156,7 +169,10 @@ export function CreateNetWorthSnapshotModal({
             Entries
           </p>
 
-          <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
+          <div
+            ref={entriesContainerRef}
+            className="max-h-72 space-y-2 overflow-y-auto pr-1"
+          >
             {entries.map((entry) => {
               const categoryOptions = (
                 entry.type === 'ASSET' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES
@@ -219,7 +235,7 @@ export function CreateNetWorthSnapshotModal({
 
                   <button
                     onClick={() => removeEntry(entry.key)}
-                    className="mb-0.5 shrink-0 p-2 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+                    className="mb-0.5 shrink-0 cursor-pointer p-2 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
                     aria-label="Remove entry"
                     disabled={entries.length === 1}
                   >
