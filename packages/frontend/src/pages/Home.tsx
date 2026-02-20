@@ -1,17 +1,22 @@
 import { useQuery } from '@apollo/client/react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { IncomeExpensesChart } from '../components/charts';
 import { ReportCard } from '../components/home';
 import { ChevronDownIcon, ChevronUpIcon } from '../components/icons';
 import { Card } from '../components/ui';
 import { HEALTH_QUERY } from '../graphql/health';
+import { GET_NET_WORTH_SNAPSHOTS } from '../graphql/netWorth';
 import {
   GET_REPORT,
   GET_REPORTS,
   GET_REPORTS_SUMMARY,
 } from '../graphql/reports';
+import { NetWorthSnapshotsData } from '../types/netWorth';
 import { Report, ReportsData } from '../types/report';
+import { formatDate } from '../utils/formatDate';
+import { formatMoney } from '../utils/formatMoney';
 
 interface ReportsSummaryData {
   reports: {
@@ -24,12 +29,17 @@ type LimitOption = (typeof LIMIT_OPTIONS)[number];
 
 export function Home() {
   const [isChartOpen, setIsChartOpen] = useState(true);
+  const [isNetWorthOpen, setIsNetWorthOpen] = useState(false);
   const [limit, setLimit] = useState<LimitOption>(12);
 
   const { data, loading, error } = useQuery<{ health: string }>(HEALTH_QUERY);
   const { data: reportsData } = useQuery<ReportsData>(GET_REPORTS);
   const { data: summaryData } =
     useQuery<ReportsSummaryData>(GET_REPORTS_SUMMARY);
+  const { data: netWorthData } = useQuery<NetWorthSnapshotsData>(
+    GET_NET_WORTH_SNAPSHOTS,
+    { variables: { page: 1 } }
+  );
 
   const reportItems = reportsData?.reports.items ?? [];
   const currentId = reportItems[0]?.id;
@@ -56,6 +66,7 @@ export function Home() {
   };
 
   const chartReports = summaryData?.reports.items ?? [];
+  const lastSnapshot = netWorthData?.netWorthSnapshots.items[0] ?? null;
 
   return (
     <div className="py-8">
@@ -170,6 +181,91 @@ export function Home() {
             )}
           </Card>
         )}
+
+        {lastSnapshot &&
+          (() => {
+            const isPositive = lastSnapshot.netWorth >= 0;
+            const sign = isPositive ? '' : '-';
+            const netWorthColor = isPositive
+              ? 'text-green-600'
+              : 'text-red-600';
+
+            return (
+              <Card className="mt-4">
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    className="flex flex-1 cursor-pointer items-center gap-3"
+                    onClick={() => setIsNetWorthOpen((prev) => !prev)}
+                  >
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      Net Worth
+                    </h2>
+                    <span className={`text-sm font-semibold ${netWorthColor}`}>
+                      {sign}
+                      {formatMoney(Math.abs(lastSnapshot.netWorth))} €
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsNetWorthOpen((prev) => !prev)}
+                    className="cursor-pointer"
+                  >
+                    {isNetWorthOpen ? (
+                      <ChevronUpIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                    ) : (
+                      <ChevronDownIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                    )}
+                  </button>
+                </div>
+
+                {isNetWorthOpen && (
+                  <div className="mt-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <Link
+                        to={`/net-worth/${lastSnapshot.id}`}
+                        className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                      >
+                        {lastSnapshot.title}
+                      </Link>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {formatDate(lastSnapshot.createdAt)}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Assets
+                        </p>
+                        <p className="font-semibold text-green-600">
+                          {formatMoney(lastSnapshot.totalAssets)} €
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Liabilities
+                        </p>
+                        <p className="font-semibold text-red-600">
+                          {formatMoney(lastSnapshot.totalLiabilities)} €
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Net Worth
+                        </p>
+                        <p className={`font-bold ${netWorthColor}`}>
+                          {sign}
+                          {formatMoney(Math.abs(lastSnapshot.netWorth))} €
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
       </div>
     </div>
   );
