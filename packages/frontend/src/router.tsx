@@ -5,6 +5,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { NetWorth } from './pages/NetWorth';
+import { NetWorthSnapshotPage } from './pages/NetWorthSnapshotPage';
 import { Report } from './pages/Report';
 import { Reports } from './pages/Reports';
 
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
           { path: 'reports', element: <Reports /> },
           { path: 'reports/:id', element: <Report /> },
           { path: 'net-worth', element: <NetWorth /> },
+          { path: 'net-worth/:id', element: <NetWorthSnapshotPage /> },
         ],
       },
     ],
