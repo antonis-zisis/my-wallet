@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { HEALTH_QUERY } from '../graphql/health';
+import { GET_NET_WORTH_SNAPSHOTS } from '../graphql/netWorth';
 import {
   GET_REPORT,
   GET_REPORTS,
@@ -150,6 +151,18 @@ const mockReportsSummaryEmpty: MockLink.MockedResponse = {
   },
 };
 
+const mockNetWorthSnapshotsEmpty: MockLink.MockedResponse = {
+  request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+  result: {
+    data: {
+      netWorthSnapshots: {
+        items: [],
+        totalCount: 0,
+      },
+    },
+  },
+};
+
 const mockReportsSummaryWithItems: MockLink.MockedResponse = {
   request: { query: GET_REPORTS_SUMMARY },
   result: {
@@ -186,12 +199,22 @@ const renderHome = (mocks: Array<MockLink.MockedResponse>) => {
 
 describe('Home', () => {
   it('shows connecting status initially', () => {
-    renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
+    renderHome([
+      mockHealthQuery,
+      mockReportsEmpty,
+      mockReportsSummaryEmpty,
+      mockNetWorthSnapshotsEmpty,
+    ]);
     expect(screen.getByText('Connecting...')).toBeInTheDocument();
   });
 
   it('shows connected status after health query succeeds', async () => {
-    renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
+    renderHome([
+      mockHealthQuery,
+      mockReportsEmpty,
+      mockReportsSummaryEmpty,
+      mockNetWorthSnapshotsEmpty,
+    ]);
 
     expect(
       await screen.findByText('GraphQL server is running!')
@@ -203,6 +226,7 @@ describe('Home', () => {
       mockHealthQueryError,
       mockReportsEmpty,
       mockReportsSummaryEmpty,
+      mockNetWorthSnapshotsEmpty,
     ]);
 
     expect(
@@ -215,13 +239,19 @@ describe('Home', () => {
       mockHealthQuery,
       mockReportsWithItems,
       mockReportsSummaryWithItems,
+      mockNetWorthSnapshotsEmpty,
     ]);
 
     expect(await screen.findByText('5')).toBeInTheDocument();
   });
 
   it('shows dash when reports data is not yet loaded', () => {
-    renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
+    renderHome([
+      mockHealthQuery,
+      mockReportsEmpty,
+      mockReportsSummaryEmpty,
+      mockNetWorthSnapshotsEmpty,
+    ]);
     expect(screen.getByText('-')).toBeInTheDocument();
   });
 
@@ -230,6 +260,7 @@ describe('Home', () => {
       mockHealthQuery,
       mockReportsWithItems,
       mockReportsSummaryWithItems,
+      mockNetWorthSnapshotsEmpty,
       mockCurrentReport,
       mockPreviousReport,
     ]);
@@ -245,6 +276,7 @@ describe('Home', () => {
       mockHealthQuery,
       mockReportsWithItems,
       mockReportsSummaryWithItems,
+      mockNetWorthSnapshotsEmpty,
     ]);
 
     expect(screen.queryByText('February 2026')).not.toBeInTheDocument();
@@ -253,7 +285,12 @@ describe('Home', () => {
 
   describe('placeholder cards', () => {
     it('shows placeholder cards for both slots when there are no reports', async () => {
-      renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsEmpty,
+      ]);
 
       // wait for GET_REPORTS to settle (totalCount changes from '-' to '0')
       expect(await screen.findByText('0')).toBeInTheDocument();
@@ -269,6 +306,7 @@ describe('Home', () => {
         mockHealthQuery,
         mockReportsOneItem,
         mockReportsSummaryWithItems,
+        mockNetWorthSnapshotsEmpty,
         mockCurrentReport,
       ]);
 
@@ -286,6 +324,7 @@ describe('Home', () => {
         mockHealthQuery,
         mockReportsWithItems,
         mockReportsSummaryWithItems,
+        mockNetWorthSnapshotsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -304,6 +343,7 @@ describe('Home', () => {
         mockHealthQuery,
         mockReportsWithItems,
         mockReportsSummaryWithItems,
+        mockNetWorthSnapshotsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -312,7 +352,12 @@ describe('Home', () => {
     });
 
     it('does not render the chart section when no reports exist', async () => {
-      renderHome([mockHealthQuery, mockReportsEmpty, mockReportsSummaryEmpty]);
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsEmpty,
+      ]);
 
       await screen.findByText('0');
       expect(screen.queryByText('Income & Expenses')).not.toBeInTheDocument();
@@ -323,6 +368,7 @@ describe('Home', () => {
         mockHealthQuery,
         mockReportsWithItems,
         mockReportsSummaryWithItems,
+        mockNetWorthSnapshotsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -348,6 +394,7 @@ describe('Home', () => {
         mockHealthQuery,
         mockReportsWithItems,
         mockReportsSummaryWithItems,
+        mockNetWorthSnapshotsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -365,6 +412,7 @@ describe('Home', () => {
         mockHealthQuery,
         mockReportsWithItems,
         mockReportsSummaryWithItems,
+        mockNetWorthSnapshotsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -387,6 +435,7 @@ describe('Home', () => {
         mockHealthQuery,
         mockReportsWithItems,
         mockReportsSummaryWithItems,
+        mockNetWorthSnapshotsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -402,6 +451,149 @@ describe('Home', () => {
       expect(screen.getByRole('button', { name: '12' })).not.toHaveClass(
         'bg-blue-600'
       );
+    });
+  });
+
+  describe('net worth card', () => {
+    const mockNetWorthSnapshotsWithData: MockLink.MockedResponse = {
+      request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+      result: {
+        data: {
+          netWorthSnapshots: {
+            items: [
+              {
+                id: 'nw1',
+                title: 'February 2026',
+                totalAssets: 15000,
+                totalLiabilities: 3000,
+                netWorth: 12000,
+                createdAt: '2026-02-01T00:00:00.000Z',
+                updatedAt: '2026-02-01T00:00:00.000Z',
+              },
+            ],
+            totalCount: 1,
+          },
+        },
+      },
+    };
+
+    it('shows the net worth card when a snapshot exists', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsWithData,
+      ]);
+
+      expect(
+        await screen.findByRole('heading', { name: 'Net Worth' })
+      ).toBeInTheDocument();
+    });
+
+    it('shows the net worth value in the card header', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsWithData,
+      ]);
+
+      await screen.findByRole('heading', { name: 'Net Worth' });
+      // 12000 formatted with de-DE locale — appears in header span and expanded grid
+      const headerValues = screen.getAllByText(/12\.000,00 €/);
+      expect(headerValues.length).toBeGreaterThan(0);
+    });
+
+    it('shows the snapshot title when expanded', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsWithData,
+      ]);
+
+      const headerButton = await screen.findByRole('button', {
+        name: /net worth/i,
+      });
+      fireEvent.click(headerButton);
+
+      expect(screen.getByText('February 2026')).toBeInTheDocument();
+    });
+
+    it('shows totalAssets, totalLiabilities, and netWorth values when expanded', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsWithData,
+      ]);
+
+      const headerButton = await screen.findByRole('button', {
+        name: /net worth/i,
+      });
+      fireEvent.click(headerButton);
+
+      expect(screen.getByText('Assets')).toBeInTheDocument();
+      expect(screen.getByText(/15\.000,00 €/)).toBeInTheDocument();
+      expect(screen.getByText('Liabilities')).toBeInTheDocument();
+      expect(screen.getByText(/3\.000,00 €/)).toBeInTheDocument();
+    });
+
+    it('does not render the card when no snapshots exist', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsEmpty,
+      ]);
+
+      await screen.findByText('0');
+      expect(screen.queryByText('Net Worth')).not.toBeInTheDocument();
+    });
+
+    it('card is collapsed by default', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsWithData,
+      ]);
+
+      await screen.findByRole('heading', { name: 'Net Worth' });
+      expect(screen.queryByText('Assets')).not.toBeInTheDocument();
+    });
+
+    it('expands on header button click', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsWithData,
+      ]);
+
+      const headerButton = await screen.findByRole('button', {
+        name: /net worth/i,
+      });
+      fireEvent.click(headerButton);
+
+      expect(screen.getByText('Assets')).toBeInTheDocument();
+    });
+
+    it('collapses again on second click', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsWithData,
+      ]);
+
+      const headerButton = await screen.findByRole('button', {
+        name: /net worth/i,
+      });
+      fireEvent.click(headerButton);
+      fireEvent.click(headerButton);
+
+      expect(screen.queryByText('Assets')).not.toBeInTheDocument();
     });
   });
 });

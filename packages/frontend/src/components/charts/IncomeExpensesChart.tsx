@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Bar,
   BarChart,
@@ -22,6 +23,8 @@ export function IncomeExpensesChart({
   reports,
   limit = 12,
 }: IncomeExpensesChartProps) {
+  const navigate = useNavigate();
+
   const chartData = useMemo(() => {
     return [...reports]
       .slice(0, limit)
@@ -37,7 +40,7 @@ export function IncomeExpensesChart({
           report.title.length > 14
             ? report.title.slice(0, 14) + '…'
             : report.title;
-        return { name, income, expenses };
+        return { id: report.id, name, income, expenses };
       });
   }, [reports, limit]);
 
@@ -79,12 +82,16 @@ export function IncomeExpensesChart({
           name="income"
           fill="#10b981"
           radius={[4, 4, 0, 0]}
+          cursor="pointer"
+          onClick={(data) => navigate(`/reports/${data.payload.id}`)}
         />
         <Bar
           dataKey="expenses"
           name="expenses"
           fill="#ef4444"
           radius={[4, 4, 0, 0]}
+          cursor="pointer"
+          onClick={(data) => navigate(`/reports/${data.payload.id}`)}
         />
       </BarChart>
     </ResponsiveContainer>

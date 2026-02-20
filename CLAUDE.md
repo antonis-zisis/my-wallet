@@ -47,6 +47,7 @@ pnpm run env:encrypt      # Encrypt before committing
 - GraphQL: Apollo Client 4 configured in `lib/apollo.ts`. Queries/mutations defined per domain in `graphql/health.ts`, `graphql/transactions.ts`, `graphql/reports.ts`, `graphql/netWorth.ts` using `gql` tagged templates. The Apollo client uses a relative `/graphql` URI — Vite proxies this to the backend in dev
 - UI components: Reusable primitives in `components/ui/` (Badge, Button, Card, Dropdown, Input, Modal, Select), re-exported from `components/ui/index.ts`
 - Charts: Recharts-based components in `components/charts/` — `ExpenseBreakdownChart` (PieChart, used on the Report page) and `IncomeExpensesChart` (grouped BarChart, used on the Home page for the last 12 reports), re-exported from `components/charts/index.ts`. Charts are rendered in collapsible Card sections
+- Home page: shows report summary cards (current/previous), a collapsible Net Worth card (latest snapshot with assets/liabilities breakdown, links to `/net-worth/:id`), and the Income & Expenses chart
 - Net Worth components: `components/netWorth/` — `NetWorthList` (paginated snapshot list with delete on hover), `CreateNetWorthSnapshotModal` (multi-entry form with live totals and auto-scroll), `DeleteNetWorthSnapshotModal` (confirmation dialog), re-exported from `components/netWorth/index.ts`
 - Theming: `contexts/ThemeContext.tsx` provides `useTheme()` hook; toggles dark class on `<html>`, persists to localStorage
 
