@@ -35,6 +35,12 @@ describe('NavBar', () => {
     expect(link.closest('a')).toHaveAttribute('href', '/reports');
   });
 
+  it('renders Subscriptions link', async () => {
+    await renderNavBar();
+    const link = screen.getByText('Subscriptions');
+    expect(link.closest('a')).toHaveAttribute('href', '/subscriptions');
+  });
+
   it('renders Net Worth link', async () => {
     await renderNavBar();
     const link = screen.getByText('Net Worth');
