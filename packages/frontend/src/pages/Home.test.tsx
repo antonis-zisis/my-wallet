@@ -172,7 +172,7 @@ const mockReportsSummaryWithItems: MockLink.MockedResponse = {
   },
 };
 
-const renderHome = (mocks: MockLink.MockedResponse[]) => {
+const renderHome = (mocks: Array<MockLink.MockedResponse>) => {
   return render(
     <ThemeProvider>
       <MockedProvider mocks={mocks}>

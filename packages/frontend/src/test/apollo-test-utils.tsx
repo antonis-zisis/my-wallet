@@ -4,7 +4,7 @@ import { MockLink } from '@apollo/client/testing';
 import { ReactNode } from 'react';
 
 interface MockedProviderProps {
-  mocks?: MockLink.MockedResponse[];
+  mocks?: Array<MockLink.MockedResponse>;
   children: ReactNode;
 }
 

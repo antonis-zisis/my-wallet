@@ -16,6 +16,7 @@ export default tseslint.config(
         { argsIgnorePattern: '^_' },
       ],
 
+      '@typescript-eslint/array-type': ['error', { default: 'generic' }],
       curly: ['error', 'all'],
       'id-length': ['warn', { min: 2, exceptions: ['_'] }],
       'simple-import-sort/imports': 'error',

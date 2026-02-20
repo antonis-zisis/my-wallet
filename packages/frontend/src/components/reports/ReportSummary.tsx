@@ -2,7 +2,7 @@ import { Transaction } from '../../types/transaction';
 import { formatMoney } from '../../utils/formatMoney';
 
 interface ReportSummaryProps {
-  transactions: Transaction[];
+  transactions: Array<Transaction>;
 }
 
 export function ReportSummary({ transactions }: ReportSummaryProps) {

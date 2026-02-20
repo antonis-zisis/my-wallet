@@ -16,14 +16,14 @@ export interface NetWorthSnapshot {
   totalAssets: number;
   totalLiabilities: number;
   netWorth: number;
-  entries: NetWorthEntry[];
+  entries: Array<NetWorthEntry>;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface NetWorthSnapshotsData {
   netWorthSnapshots: {
-    items: NetWorthSnapshot[];
+    items: Array<NetWorthSnapshot>;
     totalCount: number;
   };
 }

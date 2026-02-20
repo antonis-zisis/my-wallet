@@ -53,7 +53,7 @@ const mockSnapshotsQueryError: MockLink.MockedResponse = {
   },
 };
 
-const renderNetWorth = (mocks: MockLink.MockedResponse[]) => {
+const renderNetWorth = (mocks: Array<MockLink.MockedResponse>) => {
   return render(
     <MockedProvider mocks={mocks}>
       <MemoryRouter>

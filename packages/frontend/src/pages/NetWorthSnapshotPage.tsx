@@ -16,7 +16,7 @@ function EntriesSection({
   colorClass,
 }: {
   title: string;
-  entries: NetWorthEntry[];
+  entries: Array<NetWorthEntry>;
   total: number;
   colorClass: string;
 }) {
@@ -24,7 +24,7 @@ function EntriesSection({
     return null;
   }
 
-  const byCategory = entries.reduce<Record<string, NetWorthEntry[]>>(
+  const byCategory = entries.reduce<Record<string, Array<NetWorthEntry>>>(
     (acc, entry) => {
       if (!acc[entry.category]) {
         acc[entry.category] = [];

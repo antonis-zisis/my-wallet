@@ -5,7 +5,7 @@ import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
 
 interface NetWorthListProps {
-  snapshots: NetWorthSnapshot[];
+  snapshots: Array<NetWorthSnapshot>;
   loading: boolean;
   error: boolean;
   onDelete: (snapshot: NetWorthSnapshot) => void;

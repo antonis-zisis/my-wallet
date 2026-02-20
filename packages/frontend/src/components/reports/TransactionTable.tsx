@@ -4,7 +4,7 @@ import { formatMoney } from '../../utils/formatMoney';
 import { Badge, Dropdown } from '../ui';
 
 interface TransactionTableProps {
-  transactions: Transaction[];
+  transactions: Array<Transaction>;
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (transaction: Transaction) => void;
 }

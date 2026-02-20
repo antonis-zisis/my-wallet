@@ -25,7 +25,7 @@ import { Report as ReportType } from '../types/report';
 import { Transaction } from '../types/transaction';
 
 interface ReportData {
-  report: ReportType & { transactions: Transaction[] };
+  report: ReportType & { transactions: Array<Transaction> };
 }
 
 export function Report() {

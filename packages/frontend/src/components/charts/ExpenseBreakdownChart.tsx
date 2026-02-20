@@ -12,7 +12,7 @@ import { type Transaction } from '../../types/transaction';
 import { formatMoney } from '../../utils/formatMoney';
 
 interface ExpenseBreakdownChartProps {
-  transactions: Transaction[];
+  transactions: Array<Transaction>;
 }
 
 const COLORS = [

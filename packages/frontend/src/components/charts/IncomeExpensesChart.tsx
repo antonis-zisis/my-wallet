@@ -14,7 +14,7 @@ import { type Report } from '../../types/report';
 import { formatMoney } from '../../utils/formatMoney';
 
 interface IncomeExpensesChartProps {
-  reports: Report[];
+  reports: Array<Report>;
   limit?: number;
 }
 
