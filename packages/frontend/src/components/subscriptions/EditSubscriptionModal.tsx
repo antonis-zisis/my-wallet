@@ -18,7 +18,12 @@ interface EditSubscriptionModalProps {
 }
 
 function formatDateForInput(dateString: string): string {
-  return dateString.slice(0, 10);
+  const value = /^\d+$/.test(dateString) ? Number(dateString) : dateString;
+  const parsed = new Date(value);
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 export function EditSubscriptionModal({
@@ -113,13 +118,6 @@ export function EditSubscriptionModal({
           type="date"
           value={startDate}
           onChange={(ev) => setStartDate(ev.target.value)}
-        />
-        <Input
-          label="End Date (optional)"
-          id="edit-subscription-end-date"
-          type="date"
-          value={endDate}
-          onChange={(ev) => setEndDate(ev.target.value)}
         />
       </div>
     </Modal>

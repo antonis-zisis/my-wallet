@@ -50,7 +50,7 @@ pnpm run env:encrypt      # Encrypt before committing
 - Home page: shows report summary cards (current/previous), a collapsible Net Worth card (latest snapshot with assets/liabilities breakdown, links to `/net-worth/:id`), and the Income & Expenses chart
 - Net Worth components: `components/netWorth/` — `NetWorthList` (paginated snapshot list with delete on hover), `CreateNetWorthSnapshotModal` (multi-entry form with live totals and auto-scroll), `DeleteNetWorthSnapshotModal` (confirmation dialog), re-exported from `components/netWorth/index.ts`
 - Subscriptions components: `components/subscriptions/` — `SubscriptionList` (list with Dropdown menu for edit/cancel/delete), `CreateSubscriptionModal`, `EditSubscriptionModal`, `CancelSubscriptionModal`, `DeleteSubscriptionModal`, re-exported from `components/subscriptions/index.ts`
-- Subscriptions page: dual-section layout with active (total monthly cost, pagination) and collapsible inactive subscriptions; supports monthly/yearly billing cycles
+- Subscriptions page: dual-section layout with active (total monthly cost, pagination) and collapsible inactive subscriptions; supports monthly/yearly billing cycles with next renewal date calculation and cost equivalents (yearly for monthly, monthly for yearly)
 - Theming: `contexts/ThemeContext.tsx` provides `useTheme()` hook; toggles dark class on `<html>`, persists to localStorage
 
 **Backend** (Express 5 + Apollo Server 5):

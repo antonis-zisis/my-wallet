@@ -155,6 +155,25 @@ describe('Subscriptions', () => {
     expect(screen.getByText('311,88 €')).toBeInTheDocument();
   });
 
+  it('shows next renewal date for active subscriptions', async () => {
+    renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
+    await screen.findByText('Netflix');
+    const renewalTexts = screen.getAllByText(/next renewal at/);
+    expect(renewalTexts.length).toBeGreaterThan(0);
+  });
+
+  it('shows yearly cost equivalent for monthly subscriptions', async () => {
+    renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
+    await screen.findByText('Netflix');
+    expect(screen.getByText('(191,88 €/yr)')).toBeInTheDocument();
+  });
+
+  it('shows monthly cost equivalent for yearly subscriptions', async () => {
+    renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
+    await screen.findByText('YouTube Premium');
+    expect(screen.getByText('(10,00 €/mo)')).toBeInTheDocument();
+  });
+
   it('shows empty state when no active subscriptions exist', async () => {
     renderSubscriptions([mockActiveQueryEmpty, mockInactiveQueryEmpty]);
     expect(

@@ -104,13 +104,6 @@ export function CreateSubscriptionModal({
           value={startDate}
           onChange={(ev) => setStartDate(ev.target.value)}
         />
-        <Input
-          label="End Date (optional)"
-          id="subscription-end-date"
-          type="date"
-          value={endDate}
-          onChange={(ev) => setEndDate(ev.target.value)}
-        />
       </div>
     </Modal>
   );

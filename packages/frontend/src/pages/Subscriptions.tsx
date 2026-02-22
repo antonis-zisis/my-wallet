@@ -183,6 +183,7 @@ export function Subscriptions() {
                 {formatMoney(totalMonthlyCost)} €
               </p>
             </div>
+
             <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Yearly cost

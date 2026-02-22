@@ -1,6 +1,7 @@
 import { Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
+import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { Badge, Dropdown } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
 
@@ -55,12 +56,14 @@ export function SubscriptionList({
             onClick: () => onEdit(subscription),
           });
         }
+
         if (onCancel) {
           dropdownItems.push({
             label: 'Cancel',
             onClick: () => onCancel(subscription),
           });
         }
+
         dropdownItems.push({
           label: 'Delete',
           onClick: () => onDelete(subscription),
@@ -87,19 +90,32 @@ export function SubscriptionList({
                       : 'Yearly'}
                   </Badge>
                 </div>
+
                 {subscription.isActive && (
                   <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                    {subscription.endDate
-                      ? `renews at ${formatDate(subscription.endDate)}`
-                      : `renews ${subscription.billingCycle === 'MONTHLY' ? 'monthly' : 'yearly'}`}
+                    next renewal at{' '}
+                    <span className="font-semibold">
+                      {formatDate(
+                        getNextRenewalDate(
+                          subscription.startDate,
+                          subscription.billingCycle
+                        )
+                      )}
+                    </span>
                   </p>
                 )}
               </div>
+
               <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 {formatMoney(subscription.amount)} €
                 {subscription.billingCycle === 'YEARLY' && (
                   <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
                     ({formatMoney(subscription.monthlyCost)} €/mo)
+                  </span>
+                )}
+                {subscription.billingCycle === 'MONTHLY' && (
+                  <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
+                    ({formatMoney(subscription.amount * 12)} €/yr)
                   </span>
                 )}
               </span>
