@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
 import { useUser } from '../contexts/UserContext';
+import { getInitials } from '../utils/getInitials';
 import ThemeToggle from './ThemeToggle';
 import { Dropdown } from './ui';
 
@@ -19,14 +20,9 @@ const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
       : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
   }`;
 
-function getInitial(user: { fullName: string | null; email: string }): string {
-  const source = user.fullName || user.email;
-  return source.charAt(0).toUpperCase();
-}
-
 export function NavBar() {
   const { signOut } = useAuth();
-  const { user } = useUser();
+  const { user, loading } = useUser();
   const navigate = useNavigate();
 
   return (
@@ -44,28 +40,32 @@ export function NavBar() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
 
-            {user && (
-              <Dropdown
-                items={[
-                  {
-                    label: 'Profile',
-                    onClick: () => navigate('/profile'),
-                  },
-                  {
-                    label: 'Log out',
-                    variant: 'danger',
-                    onClick: signOut,
-                  },
-                ]}
-                trigger={
-                  <button
-                    aria-label="User menu"
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-blue-500 text-sm font-medium text-white hover:bg-blue-600"
-                  >
-                    {getInitial(user)}
-                  </button>
-                }
-              />
+            {loading ? (
+              <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600" />
+            ) : (
+              user && (
+                <Dropdown
+                  items={[
+                    {
+                      label: 'Profile',
+                      onClick: () => navigate('/profile'),
+                    },
+                    {
+                      label: 'Log out',
+                      variant: 'danger',
+                      onClick: signOut,
+                    },
+                  ]}
+                  trigger={
+                    <button
+                      aria-label="User menu"
+                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-blue-500 text-xs font-medium text-white hover:bg-blue-600"
+                    >
+                      {getInitials(user)}
+                    </button>
+                  }
+                />
+              )
             )}
           </div>
         </div>

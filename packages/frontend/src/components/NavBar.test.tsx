@@ -80,10 +80,10 @@ describe('NavBar', () => {
   it('shows avatar with correct initial from fullName', async () => {
     await renderNavBar();
     const avatar = screen.getByLabelText('User menu');
-    expect(avatar).toHaveTextContent('J');
+    expect(avatar).toHaveTextContent('JD');
   });
 
-  it('shows avatar with email initial when fullName is null', async () => {
+  it('shows avatar with email initials when fullName is null', async () => {
     vi.mocked(useUser).mockReturnValue({
       user: { id: '1', email: 'test@example.com', fullName: null },
       loading: false,
@@ -92,7 +92,7 @@ describe('NavBar', () => {
 
     await renderNavBar();
     const avatar = screen.getByLabelText('User menu');
-    expect(avatar).toHaveTextContent('T');
+    expect(avatar).toHaveTextContent('TE');
   });
 
   it('does not show avatar when user is null', async () => {
