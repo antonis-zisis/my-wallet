@@ -9,7 +9,7 @@ const LIMIT_OPTIONS = [3, 6, 9, 12] as const;
 type LimitOption = (typeof LIMIT_OPTIONS)[number];
 
 export function IncomeExpensesSection({ reports }: { reports: Array<Report> }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [limit, setLimit] = useState<LimitOption>(12);
 
   if (reports.length === 0) {
