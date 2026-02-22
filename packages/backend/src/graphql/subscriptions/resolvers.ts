@@ -48,7 +48,7 @@ export const subscriptionResolvers = {
       const [items, totalCount] = await Promise.all([
         prisma.subscription.findMany({
           where,
-          orderBy: { createdAt: 'desc' },
+          orderBy: { name: 'asc' },
           skip,
           take: PAGE_SIZE,
         }),

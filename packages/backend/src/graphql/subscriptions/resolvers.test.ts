@@ -87,7 +87,7 @@ describe('subscriptionResolvers', () => {
 
       expect(prisma.subscription.findMany).toHaveBeenCalledWith({
         where: { userId: USER_ID },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { name: 'asc' },
         skip: 0,
         take: 20,
       });
