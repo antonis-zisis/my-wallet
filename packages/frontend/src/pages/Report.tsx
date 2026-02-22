@@ -6,6 +6,7 @@ import {
   BudgetBreakdownChart,
   ExpenseBreakdownChart,
 } from '../components/charts';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { ChevronDownIcon, ChevronUpIcon } from '../components/icons';
 import {
   AddTransactionModal,
@@ -176,7 +177,9 @@ export function Report() {
 
           {isChartOpen && (
             <div className="mt-2">
-              <ExpenseBreakdownChart transactions={transactions} />
+              <ErrorBoundary compact>
+                <ExpenseBreakdownChart transactions={transactions} />
+              </ErrorBoundary>
             </div>
           )}
         </Card>
@@ -200,7 +203,9 @@ export function Report() {
 
           {isBudgetChartOpen && (
             <div className="mt-2">
-              <BudgetBreakdownChart transactions={transactions} />
+              <ErrorBoundary compact>
+                <BudgetBreakdownChart transactions={transactions} />
+              </ErrorBoundary>
             </div>
           )}
         </Card>

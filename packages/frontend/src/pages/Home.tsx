@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import {
   IncomeExpensesSection,
   NetWorthSummaryCard,
@@ -88,7 +89,9 @@ export function Home() {
           previousLoading={previousLoading}
         />
 
-        <IncomeExpensesSection reports={chartReports} />
+        <ErrorBoundary compact>
+          <IncomeExpensesSection reports={chartReports} />
+        </ErrorBoundary>
 
         {activeSubscriptions.length > 0 && (
           <>
