@@ -5,6 +5,13 @@ import { supabase } from './supabase';
 
 const httpLink = new HttpLink({
   uri: import.meta.env.VITE_GRAPHQL_URL || '/graphql',
+  fetch: async (uri, options) => {
+    const response = await fetch(uri, options);
+    if (response.status === 401) {
+      supabase.auth.signOut();
+    }
+    return response;
+  },
 });
 
 const authLink = new SetContextLink(async ({ headers }, _operation) => {
