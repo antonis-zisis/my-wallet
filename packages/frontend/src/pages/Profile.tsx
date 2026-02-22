@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 
 import { Button, Card, Input } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +11,11 @@ export function Profile() {
   const { updatePassword } = useAuth();
 
   const [fullName, setFullName] = useState(user?.fullName ?? '');
+  useEffect(() => {
+    if (user?.fullName != null) {
+      setFullName(user.fullName);
+    }
+  }, [user?.fullName]);
   const [profileStatus, setProfileStatus] = useState<{
     type: 'success' | 'error';
     message: string;
