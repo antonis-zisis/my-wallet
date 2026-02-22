@@ -404,16 +404,15 @@ describe('Home', () => {
         name: /income & expenses/i,
       });
 
-      // chart is open by default — clicking closes it
+      // chart is collapsed by default — clicking opens it
       fireEvent.click(titleButton);
-      // limit buttons disappear when collapsed
+      expect(screen.getByRole('button', { name: '12' })).toBeInTheDocument();
+
+      // click again to collapse
+      fireEvent.click(titleButton);
       expect(
         screen.queryByRole('button', { name: '12' })
       ).not.toBeInTheDocument();
-
-      // click again to reopen
-      fireEvent.click(titleButton);
-      expect(screen.getByText('Income & Expenses')).toBeInTheDocument();
     });
 
     it('shows limit control buttons when chart is open', async () => {
@@ -427,7 +426,10 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      await screen.findByText('Income & Expenses');
+      const titleButton = await screen.findByRole('button', {
+        name: /income & expenses/i,
+      });
+      fireEvent.click(titleButton);
 
       expect(screen.getByRole('button', { name: '3' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: '6' })).toBeInTheDocument();
@@ -446,11 +448,9 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      const titleButton = await screen.findByRole('button', {
-        name: /income & expenses/i,
-      });
-      fireEvent.click(titleButton);
+      await screen.findByRole('button', { name: /income & expenses/i });
 
+      // collapsed by default — buttons should not be visible
       expect(
         screen.queryByRole('button', { name: '3' })
       ).not.toBeInTheDocument();
@@ -470,7 +470,10 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      await screen.findByText('Income & Expenses');
+      const titleButton = await screen.findByRole('button', {
+        name: /income & expenses/i,
+      });
+      fireEvent.click(titleButton);
 
       fireEvent.click(screen.getByRole('button', { name: '6' }));
 

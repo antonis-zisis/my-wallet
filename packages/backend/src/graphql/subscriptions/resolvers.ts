@@ -4,7 +4,7 @@ import prisma from '../../lib/prisma';
 
 const PAGE_SIZE = 20;
 
-interface CreateSubscriptionInput {
+export interface CreateSubscriptionInput {
   name: string;
   amount: number;
   billingCycle: string;
@@ -12,7 +12,7 @@ interface CreateSubscriptionInput {
   endDate?: string;
 }
 
-interface UpdateSubscriptionInput {
+export interface UpdateSubscriptionInput {
   id: string;
   name: string;
   amount: number;

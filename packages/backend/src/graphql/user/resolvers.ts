@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
 
-interface UpdateUserInput {
+export interface UpdateUserInput {
   fullName?: string;
 }
 

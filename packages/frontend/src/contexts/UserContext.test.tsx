@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing';
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -25,7 +26,7 @@ function TestConsumer() {
   );
 }
 
-const renderWithProviders = (mocks: Array<unknown> = []) => {
+const renderWithProviders = (mocks: Array<MockLink.MockedResponse> = []) => {
   return render(
     <AuthProvider>
       <MockedProvider mocks={mocks}>
