@@ -42,21 +42,27 @@ pnpm run env:encrypt      # Encrypt before committing
 
 **Frontend** (React 19 + Vite 7 + Tailwind CSS 4):
 
-- Entry: `main.tsx` → wraps app in `ThemeProvider` → `ApolloProvider` → `RouterProvider`
-- Routing: React Router 7 with `createBrowserRouter` in `router.tsx`. `App.tsx` is the root layout with `NavBar` + `<Outlet />`. Public route: `/login`. Protected routes (via `ProtectedRoute`): `/` (Home), `/reports` (Reports list), `/reports/:id` (single Report), `/subscriptions` (Subscriptions), `/net-worth` (Net Worth list), `/net-worth/:id` (Net Worth snapshot detail)
-- GraphQL: Apollo Client 4 configured in `lib/apollo.ts`. Queries/mutations defined per domain in `graphql/health.ts`, `graphql/transactions.ts`, `graphql/reports.ts`, `graphql/netWorth.ts`, `graphql/subscriptions.ts` using `gql` tagged templates. The Apollo client uses a relative `/graphql` URI — Vite proxies this to the backend in dev
+- Entry: `main.tsx` → wraps app in `ThemeProvider` → `AuthProvider` → `ApolloProvider` → `UserProvider` → `RouterProvider`
+- Routing: React Router 7 with `createBrowserRouter` in `router.tsx`. `App.tsx` is the root layout with `NavBar` + `<Outlet />`. Public route: `/login`. Protected routes (via `ProtectedRoute`): `/` (Home), `/reports` (Reports list), `/reports/:id` (single Report), `/subscriptions` (Subscriptions), `/net-worth` (Net Worth list), `/net-worth/:id` (Net Worth snapshot detail), `/profile` (Profile)
+- GraphQL: Apollo Client 4 configured in `lib/apollo.ts`. Queries/mutations defined per domain in `graphql/health.ts`, `graphql/transactions.ts`, `graphql/reports.ts`, `graphql/netWorth.ts`, `graphql/subscriptions.ts`, `graphql/user.ts` using `gql` tagged templates. The Apollo client uses a relative `/graphql` URI — Vite proxies this to the backend in dev
 - UI components: Reusable primitives in `components/ui/` (Badge, Button, Card, Dropdown, Input, Modal, Select), re-exported from `components/ui/index.ts`
 - Charts: Recharts-based components in `components/charts/` — `ExpenseBreakdownChart` (PieChart, used on the Report page) and `IncomeExpensesChart` (grouped BarChart, used on the Home page for the last 12 reports), re-exported from `components/charts/index.ts`. Charts are rendered in collapsible Card sections
-- Home page: shows report summary cards (current/previous), a collapsible Net Worth card (latest snapshot with assets/liabilities breakdown, links to `/net-worth/:id`), and the Income & Expenses chart
+- Home page: shows report summary cards (current/previous), Income & Expenses chart (open by default), subscription summary + Upcoming Renewals card (open by default), and a collapsible Net Worth card (latest snapshot with assets/liabilities breakdown, links to `/net-worth/:id`)
+- Profile page: edit full name, change password. Accessible via avatar dropdown in NavBar
+- Auth: `contexts/AuthContext.tsx` provides `useAuth()` hook (session, signIn, signOut, updatePassword) backed by Supabase Auth
+- User: `contexts/UserContext.tsx` provides `useUser()` hook (user, loading, updateUser). User record is lazily created in the DB on first `me` query via upsert
+- NavBar: navigation links + theme toggle + avatar dropdown (2-char initials) with Profile and Log out items. Shows pulse placeholder while user loads
 - Net Worth components: `components/netWorth/` — `NetWorthList` (paginated snapshot list with delete on hover), `CreateNetWorthSnapshotModal` (multi-entry form with live totals and auto-scroll), `DeleteNetWorthSnapshotModal` (confirmation dialog), re-exported from `components/netWorth/index.ts`
 - Subscriptions components: `components/subscriptions/` — `SubscriptionList` (list with Dropdown menu for edit/cancel/delete), `CreateSubscriptionModal`, `EditSubscriptionModal`, `CancelSubscriptionModal`, `DeleteSubscriptionModal`, re-exported from `components/subscriptions/index.ts`
 - Subscriptions page: dual-section layout with active (total monthly cost, pagination) and collapsible inactive subscriptions; supports monthly/yearly billing cycles with next renewal date calculation and cost equivalents (yearly for monthly, monthly for yearly)
 - Theming: `contexts/ThemeContext.tsx` provides `useTheme()` hook; toggles dark class on `<html>`, persists to localStorage
+- Utils: `utils/formatMoney.ts`, `utils/formatDate.ts`, `utils/getNextRenewalDate.ts`, `utils/getInitials.ts` — all with unit tests
 
 **Backend** (Express 5 + Apollo Server 5):
 
-- Entry: `src/index.ts` — Express app with Apollo Server mounted at `/graphql` via `@as-integrations/express5`. Auth middleware protects the GraphQL endpoint
-- GraphQL schema: SDL string in `graphql/schema.ts`, resolvers in `graphql/resolvers.ts`, re-exported from `graphql/index.ts`
+- Entry: `src/index.ts` — Express app with Apollo Server mounted at `/graphql` via `@as-integrations/express5`. Auth middleware validates Supabase JWT and extracts `userId` + `email` onto context
+- GraphQL schema: SDL strings and resolvers organized per domain in `graphql/` subdirectories (transactions, reports, netWorth, subscriptions, user), re-exported from `graphql/index.ts`
+- User model: lazily created via upsert on `me` query (maps Supabase auth user to DB user). Supports `updateMe` mutation for profile updates
 - Database: PostgreSQL via Prisma 7 with `@prisma/adapter-pg`. Prisma client generated to `src/generated/prisma/`. Connection config uses `PG_*` env vars in `lib/prisma.ts`
 - Build: tsup bundles the backend to `dist/` for production (`node dist/index.js`)
 

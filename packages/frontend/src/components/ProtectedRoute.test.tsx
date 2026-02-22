@@ -18,6 +18,7 @@ describe('ProtectedRoute', () => {
       loading: true,
       signIn: vi.fn(),
       signOut: vi.fn(),
+      updatePassword: vi.fn(),
     });
 
     render(
@@ -35,6 +36,7 @@ describe('ProtectedRoute', () => {
       loading: false,
       signIn: vi.fn(),
       signOut: vi.fn(),
+      updatePassword: vi.fn(),
     });
 
     render(
@@ -60,6 +62,7 @@ describe('ProtectedRoute', () => {
       loading: false,
       signIn: vi.fn(),
       signOut: vi.fn(),
+      updatePassword: vi.fn(),
     });
 
     render(

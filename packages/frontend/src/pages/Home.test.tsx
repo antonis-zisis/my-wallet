@@ -406,14 +406,13 @@ describe('Home', () => {
 
       // chart is open by default — clicking closes it
       fireEvent.click(titleButton);
-      // limit buttons disappear when collapsed
       expect(
         screen.queryByRole('button', { name: '12' })
       ).not.toBeInTheDocument();
 
       // click again to reopen
       fireEvent.click(titleButton);
-      expect(screen.getByText('Income & Expenses')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '12' })).toBeInTheDocument();
     });
 
     it('shows limit control buttons when chart is open', async () => {
@@ -715,7 +714,7 @@ describe('Home', () => {
       expect(percentCard.parentElement?.textContent).toContain('-');
     });
 
-    it('upcoming renewals card is collapsed by default', async () => {
+    it('upcoming renewals card is expanded by default', async () => {
       renderHome([
         mockHealthQuery,
         mockReportsEmpty,
@@ -727,10 +726,11 @@ describe('Home', () => {
       expect(
         await screen.findByRole('heading', { name: 'Upcoming Renewals' })
       ).toBeInTheDocument();
-      expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
+      expect(screen.getByText('Netflix')).toBeInTheDocument();
+      expect(screen.getByText('Spotify')).toBeInTheDocument();
     });
 
-    it('upcoming renewals card expands on click', async () => {
+    it('upcoming renewals card collapses on click', async () => {
       renderHome([
         mockHealthQuery,
         mockReportsEmpty,
@@ -744,8 +744,8 @@ describe('Home', () => {
       });
       fireEvent.click(headerButton);
 
-      expect(screen.getByText('Netflix')).toBeInTheDocument();
-      expect(screen.getByText('Spotify')).toBeInTheDocument();
+      expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
+      expect(screen.queryByText('Spotify')).not.toBeInTheDocument();
     });
 
     it('does not render section when no active subscriptions', async () => {

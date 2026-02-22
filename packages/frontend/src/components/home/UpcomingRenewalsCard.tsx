@@ -12,7 +12,7 @@ export function UpcomingRenewalsCard({
 }: {
   subscriptions: Array<Subscription>;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const sorted = [...subscriptions].sort((aa, bb) => {
     const dateA = getNextRenewalDate(aa.startDate, aa.billingCycle);

@@ -8,6 +8,8 @@ import { subscriptionResolvers } from './subscriptions/resolvers';
 import { subscriptionTypeDefs } from './subscriptions/schema';
 import { transactionResolvers } from './transactions/resolvers';
 import { transactionTypeDefs } from './transactions/schema';
+import { userResolvers } from './user/resolvers';
+import { userTypeDefs } from './user/schema';
 
 export const typeDefs = [
   baseTypeDefs,
@@ -15,6 +17,7 @@ export const typeDefs = [
   reportTypeDefs,
   netWorthTypeDefs,
   subscriptionTypeDefs,
+  userTypeDefs,
 ];
 
 export const resolvers = {
@@ -33,11 +36,13 @@ export const resolvers = {
     ...reportResolvers.Query,
     ...netWorthResolvers.Query,
     ...subscriptionResolvers.Query,
+    ...userResolvers.Query,
   },
   Mutation: {
     ...transactionResolvers.Mutation,
     ...reportResolvers.Mutation,
     ...netWorthResolvers.Mutation,
     ...subscriptionResolvers.Mutation,
+    ...userResolvers.Mutation,
   },
 };

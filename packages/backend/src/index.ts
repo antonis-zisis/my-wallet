@@ -38,6 +38,7 @@ async function startServer() {
     expressMiddleware(server, {
       context: async ({ req }) => ({
         userId: (req as AuthenticatedRequest).userId as string,
+        email: (req as AuthenticatedRequest).email as string,
       }),
     })
   );
