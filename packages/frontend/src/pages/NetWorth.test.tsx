@@ -205,9 +205,8 @@ describe('NetWorth', () => {
       renderNetWorth([mockSnapshotsQuery]);
       await screen.findByText('January 2026');
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Delete January 2026' })
-      );
+      await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
 
       expect(screen.getByText('Delete Snapshot')).toBeInTheDocument();
       expect(
@@ -219,9 +218,8 @@ describe('NetWorth', () => {
       renderNetWorth([mockSnapshotsQuery]);
       await screen.findByText('January 2026');
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Delete January 2026' })
-      );
+      await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
       await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
       expect(screen.queryByText('Delete Snapshot')).not.toBeInTheDocument();
@@ -250,9 +248,8 @@ describe('NetWorth', () => {
       renderNetWorth([mockSnapshotsQuery, deleteMock, refetchMock]);
       await screen.findByText('January 2026');
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Delete January 2026' })
-      );
+      await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
       await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
 
       await waitFor(() => {

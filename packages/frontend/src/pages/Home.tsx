@@ -4,6 +4,8 @@ import {
   IncomeExpensesSection,
   NetWorthSummaryCard,
   ReportSummaryGrid,
+  SubscriptionSummarySection,
+  UpcomingRenewalsCard,
 } from '../components/home';
 import { Card } from '../components/ui';
 import { HEALTH_QUERY } from '../graphql/health';
@@ -13,8 +15,10 @@ import {
   GET_REPORTS,
   GET_REPORTS_SUMMARY,
 } from '../graphql/reports';
+import { GET_SUBSCRIPTIONS } from '../graphql/subscriptions';
 import { NetWorthSnapshotsData } from '../types/netWorth';
 import { Report, ReportsData } from '../types/report';
+import { SubscriptionsData } from '../types/subscription';
 
 interface ReportsSummaryData {
   reports: {
@@ -30,6 +34,10 @@ export function Home() {
   const { data: netWorthData } = useQuery<NetWorthSnapshotsData>(
     GET_NET_WORTH_SNAPSHOTS,
     { variables: { page: 1 } }
+  );
+  const { data: subscriptionsData } = useQuery<SubscriptionsData>(
+    GET_SUBSCRIPTIONS,
+    { variables: { page: 1, active: true } }
   );
 
   const reportItems = reportsData?.reports.items ?? [];
@@ -58,6 +66,10 @@ export function Home() {
 
   const chartReports = summaryData?.reports.items ?? [];
   const lastSnapshot = netWorthData?.netWorthSnapshots.items[0] ?? null;
+  const activeSubscriptions = subscriptionsData?.subscriptions.items ?? [];
+  const currentIncome = (currentData?.report.transactions ?? [])
+    .filter((tx) => tx.type === 'INCOME')
+    .reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
     <div className="py-8">
@@ -77,6 +89,16 @@ export function Home() {
         />
 
         <IncomeExpensesSection reports={chartReports} />
+
+        {activeSubscriptions.length > 0 && (
+          <>
+            <SubscriptionSummarySection
+              subscriptions={activeSubscriptions}
+              currentIncome={currentIncome}
+            />
+            <UpcomingRenewalsCard subscriptions={activeSubscriptions} />
+          </>
+        )}
 
         {lastSnapshot && <NetWorthSummaryCard snapshot={lastSnapshot} />}
       </div>

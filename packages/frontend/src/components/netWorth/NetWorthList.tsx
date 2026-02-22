@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
+import { Dropdown } from '../ui/Dropdown';
 
 interface NetWorthListProps {
   snapshots: Array<NetWorthSnapshot>;
@@ -44,7 +45,7 @@ export function NetWorthList({
       {snapshots.map((snapshot) => {
         const isPositive = snapshot.netWorth >= 0;
         return (
-          <li key={snapshot.id} className="group flex items-center">
+          <li key={snapshot.id} className="flex items-center">
             <Link
               to={`/net-worth/${snapshot.id}`}
               className="flex min-w-0 flex-1 items-center justify-between px-1 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -68,13 +69,15 @@ export function NetWorthList({
                 </span>
               </div>
             </Link>
-            <button
-              onClick={() => onDelete(snapshot)}
-              className="ml-2 cursor-pointer px-2 py-3 text-sm text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
-              aria-label={`Delete ${snapshot.title}`}
-            >
-              ✕
-            </button>
+            <Dropdown
+              items={[
+                {
+                  label: 'Delete',
+                  onClick: () => onDelete(snapshot),
+                  variant: 'danger',
+                },
+              ]}
+            />
           </li>
         );
       })}

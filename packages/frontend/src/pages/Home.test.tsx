@@ -12,6 +12,7 @@ import {
   GET_REPORTS,
   GET_REPORTS_SUMMARY,
 } from '../graphql/reports';
+import { GET_SUBSCRIPTIONS } from '../graphql/subscriptions';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Home } from './Home';
 
@@ -163,6 +164,18 @@ const mockNetWorthSnapshotsEmpty: MockLink.MockedResponse = {
   },
 };
 
+const mockSubscriptionsEmpty: MockLink.MockedResponse = {
+  request: {
+    query: GET_SUBSCRIPTIONS,
+    variables: { page: 1, active: true },
+  },
+  result: {
+    data: {
+      subscriptions: { items: [], totalCount: 0 },
+    },
+  },
+};
+
 const mockReportsSummaryWithItems: MockLink.MockedResponse = {
   request: { query: GET_REPORTS_SUMMARY },
   result: {
@@ -205,6 +218,7 @@ describe('Home', () => {
       mockReportsEmpty,
       mockReportsSummaryEmpty,
       mockNetWorthSnapshotsEmpty,
+      mockSubscriptionsEmpty,
     ]);
     expect(screen.getByText('Connecting...')).toBeInTheDocument();
   });
@@ -215,6 +229,7 @@ describe('Home', () => {
       mockReportsEmpty,
       mockReportsSummaryEmpty,
       mockNetWorthSnapshotsEmpty,
+      mockSubscriptionsEmpty,
     ]);
 
     expect(
@@ -228,6 +243,7 @@ describe('Home', () => {
       mockReportsEmpty,
       mockReportsSummaryEmpty,
       mockNetWorthSnapshotsEmpty,
+      mockSubscriptionsEmpty,
     ]);
 
     expect(
@@ -241,6 +257,7 @@ describe('Home', () => {
       mockReportsWithItems,
       mockReportsSummaryWithItems,
       mockNetWorthSnapshotsEmpty,
+      mockSubscriptionsEmpty,
     ]);
 
     expect(await screen.findByText('5')).toBeInTheDocument();
@@ -252,6 +269,7 @@ describe('Home', () => {
       mockReportsEmpty,
       mockReportsSummaryEmpty,
       mockNetWorthSnapshotsEmpty,
+      mockSubscriptionsEmpty,
     ]);
     expect(screen.getByText('-')).toBeInTheDocument();
   });
@@ -262,6 +280,7 @@ describe('Home', () => {
       mockReportsWithItems,
       mockReportsSummaryWithItems,
       mockNetWorthSnapshotsEmpty,
+      mockSubscriptionsEmpty,
       mockCurrentReport,
       mockPreviousReport,
     ]);
@@ -278,6 +297,7 @@ describe('Home', () => {
       mockReportsWithItems,
       mockReportsSummaryWithItems,
       mockNetWorthSnapshotsEmpty,
+      mockSubscriptionsEmpty,
     ]);
 
     expect(screen.queryByText('February 2026')).not.toBeInTheDocument();
@@ -291,6 +311,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
       ]);
 
       // wait for GET_REPORTS to settle (totalCount changes from '-' to '0')
@@ -308,6 +329,7 @@ describe('Home', () => {
         mockReportsOneItem,
         mockReportsSummaryWithItems,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
         mockCurrentReport,
       ]);
 
@@ -326,6 +348,7 @@ describe('Home', () => {
         mockReportsWithItems,
         mockReportsSummaryWithItems,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -345,6 +368,7 @@ describe('Home', () => {
         mockReportsWithItems,
         mockReportsSummaryWithItems,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -358,6 +382,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
       ]);
 
       await screen.findByText('0');
@@ -370,6 +395,7 @@ describe('Home', () => {
         mockReportsWithItems,
         mockReportsSummaryWithItems,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -396,6 +422,7 @@ describe('Home', () => {
         mockReportsWithItems,
         mockReportsSummaryWithItems,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -414,6 +441,7 @@ describe('Home', () => {
         mockReportsWithItems,
         mockReportsSummaryWithItems,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -437,6 +465,7 @@ describe('Home', () => {
         mockReportsWithItems,
         mockReportsSummaryWithItems,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
         mockCurrentReport,
         mockPreviousReport,
       ]);
@@ -484,6 +513,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsWithData,
+        mockSubscriptionsEmpty,
       ]);
 
       expect(
@@ -497,6 +527,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsWithData,
+        mockSubscriptionsEmpty,
       ]);
 
       await screen.findByRole('heading', { name: 'Net Worth' });
@@ -511,6 +542,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsWithData,
+        mockSubscriptionsEmpty,
       ]);
 
       const headerButton = await screen.findByRole('button', {
@@ -527,6 +559,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsWithData,
+        mockSubscriptionsEmpty,
       ]);
 
       const headerButton = await screen.findByRole('button', {
@@ -546,6 +579,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
       ]);
 
       await screen.findByText('0');
@@ -558,6 +592,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsWithData,
+        mockSubscriptionsEmpty,
       ]);
 
       await screen.findByRole('heading', { name: 'Net Worth' });
@@ -570,6 +605,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsWithData,
+        mockSubscriptionsEmpty,
       ]);
 
       const headerButton = await screen.findByRole('button', {
@@ -586,6 +622,7 @@ describe('Home', () => {
         mockReportsEmpty,
         mockReportsSummaryEmpty,
         mockNetWorthSnapshotsWithData,
+        mockSubscriptionsEmpty,
       ]);
 
       const headerButton = await screen.findByRole('button', {
@@ -595,6 +632,136 @@ describe('Home', () => {
       fireEvent.click(headerButton);
 
       expect(screen.queryByText('Assets')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('subscriptions section', () => {
+    const mockSubscriptionsWithData: MockLink.MockedResponse = {
+      request: {
+        query: GET_SUBSCRIPTIONS,
+        variables: { page: 1, active: true },
+      },
+      result: {
+        data: {
+          subscriptions: {
+            items: [
+              {
+                id: 's1',
+                name: 'Netflix',
+                amount: 15.99,
+                billingCycle: 'MONTHLY',
+                isActive: true,
+                startDate: '2025-01-15T00:00:00.000Z',
+                endDate: null,
+                monthlyCost: 15.99,
+                createdAt: '2025-01-15T00:00:00.000Z',
+                updatedAt: '2025-01-15T00:00:00.000Z',
+              },
+              {
+                id: 's2',
+                name: 'Spotify',
+                amount: 9.99,
+                billingCycle: 'MONTHLY',
+                isActive: true,
+                startDate: '2025-03-01T00:00:00.000Z',
+                endDate: null,
+                monthlyCost: 9.99,
+                createdAt: '2025-03-01T00:00:00.000Z',
+                updatedAt: '2025-03-01T00:00:00.000Z',
+              },
+            ],
+            totalCount: 2,
+          },
+        },
+      },
+    };
+
+    it('shows summary cards with correct values', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsWithItems,
+        mockReportsSummaryWithItems,
+        mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsWithData,
+        mockCurrentReport,
+        mockPreviousReport,
+      ]);
+
+      expect(
+        await screen.findByText('Active Subscriptions')
+      ).toBeInTheDocument();
+      expect(screen.getByText('Monthly Cost')).toBeInTheDocument();
+      expect(screen.getByText(/25,98 €/)).toBeInTheDocument();
+      expect(screen.getByText('% of Income')).toBeInTheDocument();
+      // 25.98 / 3000 * 100 = 0.9% — wait for current report to resolve
+      expect(await screen.findByText('0.9%')).toBeInTheDocument();
+    });
+
+    it('shows dash for % of income when no income data', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsWithData,
+      ]);
+
+      expect(
+        await screen.findByText('Active Subscriptions')
+      ).toBeInTheDocument();
+      // No current report means no income — should show '-'
+      const percentCard = screen.getByText('% of Income');
+      // The dash is in the sibling element
+      expect(percentCard.parentElement?.textContent).toContain('-');
+    });
+
+    it('upcoming renewals card is collapsed by default', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsWithData,
+      ]);
+
+      expect(
+        await screen.findByRole('heading', { name: 'Upcoming Renewals' })
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
+    });
+
+    it('upcoming renewals card expands on click', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsWithData,
+      ]);
+
+      const headerButton = await screen.findByRole('button', {
+        name: /upcoming renewals/i,
+      });
+      fireEvent.click(headerButton);
+
+      expect(screen.getByText('Netflix')).toBeInTheDocument();
+      expect(screen.getByText('Spotify')).toBeInTheDocument();
+    });
+
+    it('does not render section when no active subscriptions', async () => {
+      renderHome([
+        mockHealthQuery,
+        mockReportsEmpty,
+        mockReportsSummaryEmpty,
+        mockNetWorthSnapshotsEmpty,
+        mockSubscriptionsEmpty,
+      ]);
+
+      await screen.findByText('0');
+      expect(
+        screen.queryByText('Active Subscriptions')
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText('Upcoming Renewals')).not.toBeInTheDocument();
     });
   });
 });
