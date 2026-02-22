@@ -70,35 +70,39 @@ export function SubscriptionList({
         return (
           <li key={subscription.id} className="flex items-center">
             <div className="flex min-w-0 flex-1 items-center justify-between px-1 py-3">
-              <div className="flex items-center gap-3">
-                <span className="font-medium text-gray-800 dark:text-gray-100">
-                  {subscription.name}
-                </span>
-                <Badge
-                  variant={
-                    subscription.billingCycle === 'MONTHLY' ? 'success' : 'info'
-                  }
-                >
-                  {subscription.billingCycle === 'MONTHLY'
-                    ? 'Monthly'
-                    : 'Yearly'}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  {formatMoney(subscription.amount)} €
-                  {subscription.billingCycle === 'YEARLY' && (
-                    <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
-                      ({formatMoney(subscription.monthlyCost)} €/mo)
-                    </span>
-                  )}
-                </span>
-                {subscription.endDate && (
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    until {formatDate(subscription.endDate)}
+              <div>
+                <div className="flex items-center gap-3">
+                  <span className="font-medium text-gray-800 dark:text-gray-100">
+                    {subscription.name}
                   </span>
+                  <Badge
+                    variant={
+                      subscription.billingCycle === 'MONTHLY'
+                        ? 'success'
+                        : 'info'
+                    }
+                  >
+                    {subscription.billingCycle === 'MONTHLY'
+                      ? 'Monthly'
+                      : 'Yearly'}
+                  </Badge>
+                </div>
+                {subscription.isActive && (
+                  <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {subscription.endDate
+                      ? `renews at ${formatDate(subscription.endDate)}`
+                      : `renews ${subscription.billingCycle === 'MONTHLY' ? 'monthly' : 'yearly'}`}
+                  </p>
                 )}
               </div>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {formatMoney(subscription.amount)} €
+                {subscription.billingCycle === 'YEARLY' && (
+                  <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
+                    ({formatMoney(subscription.monthlyCost)} €/mo)
+                  </span>
+                )}
+              </span>
             </div>
             <Dropdown items={dropdownItems} />
           </li>
