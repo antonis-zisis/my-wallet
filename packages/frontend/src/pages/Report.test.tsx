@@ -9,6 +9,7 @@ import { MockedProvider } from '../test/apollo-test-utils';
 import { Report } from './Report';
 
 vi.mock('../components/charts', () => ({
+  BudgetBreakdownChart: () => <div data-testid="budget-breakdown-chart" />,
   ExpenseBreakdownChart: () => <div data-testid="expense-breakdown-chart" />,
 }));
 
@@ -166,6 +167,51 @@ describe('Report', () => {
 
       expect(
         screen.queryByTestId('expense-breakdown-chart')
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('budget breakdown chart', () => {
+    it('renders the Budget Breakdown section heading', async () => {
+      renderReport([mockReportQuery]);
+      await screen.findByText('January Budget');
+
+      expect(
+        screen.getByRole('button', { name: /budget breakdown/i })
+      ).toBeInTheDocument();
+    });
+
+    it('is collapsed by default', async () => {
+      renderReport([mockReportQuery]);
+      await screen.findByText('January Budget');
+
+      expect(
+        screen.queryByTestId('budget-breakdown-chart')
+      ).not.toBeInTheDocument();
+    });
+
+    it('expands when the section button is clicked', async () => {
+      renderReport([mockReportQuery]);
+      const button = await screen.findByRole('button', {
+        name: /budget breakdown/i,
+      });
+
+      fireEvent.click(button);
+
+      expect(screen.getByTestId('budget-breakdown-chart')).toBeInTheDocument();
+    });
+
+    it('collapses when the section button is clicked again', async () => {
+      renderReport([mockReportQuery]);
+      const button = await screen.findByRole('button', {
+        name: /budget breakdown/i,
+      });
+
+      fireEvent.click(button); // open
+      fireEvent.click(button); // close
+
+      expect(
+        screen.queryByTestId('budget-breakdown-chart')
       ).not.toBeInTheDocument();
     });
   });
