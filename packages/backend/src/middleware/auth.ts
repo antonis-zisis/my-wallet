@@ -14,6 +14,7 @@ function getSupabaseAdmin() {
 
 export interface AuthenticatedRequest extends Request {
   userId?: string;
+  email?: string;
 }
 
 export async function authMiddleware(
@@ -40,6 +41,7 @@ export async function authMiddleware(
     }
 
     req.userId = data.user.id;
+    req.email = data.user.email;
     next();
   } catch {
     res.status(401).json({ error: 'Authentication failed' });

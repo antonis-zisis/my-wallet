@@ -7,6 +7,7 @@ import { RouterProvider } from 'react-router-dom';
 
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { UserProvider } from './contexts/UserContext';
 import { apolloClient } from './lib/apollo';
 import { router } from './router';
 
@@ -15,7 +16,9 @@ createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <AuthProvider>
         <ApolloProvider client={apolloClient}>
-          <RouterProvider router={router} />
+          <UserProvider>
+            <RouterProvider router={router} />
+          </UserProvider>
         </ApolloProvider>
       </AuthProvider>
     </ThemeProvider>

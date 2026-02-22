@@ -6,6 +6,7 @@ import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { NetWorth } from './pages/NetWorth';
 import { NetWorthSnapshotPage } from './pages/NetWorthSnapshotPage';
+import { Profile } from './pages/Profile';
 import { Report } from './pages/Report';
 import { Reports } from './pages/Reports';
 import { Subscriptions } from './pages/Subscriptions';
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
           { path: 'subscriptions', element: <Subscriptions /> },
           { path: 'net-worth', element: <NetWorth /> },
           { path: 'net-worth/:id', element: <NetWorthSnapshotPage /> },
+          { path: 'profile', element: <Profile /> },
         ],
       },
     ],

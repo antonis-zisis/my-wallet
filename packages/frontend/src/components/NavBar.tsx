@@ -1,8 +1,9 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
+import { useUser } from '../contexts/UserContext';
 import ThemeToggle from './ThemeToggle';
-import { Button } from './ui';
+import { Dropdown } from './ui';
 
 const navLinks = [
   { to: '/', label: 'Dashboard' },
@@ -18,8 +19,15 @@ const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
       : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
   }`;
 
+function getInitial(user: { fullName: string | null; email: string }): string {
+  const source = user.fullName || user.email;
+  return source.charAt(0).toUpperCase();
+}
+
 export function NavBar() {
   const { signOut } = useAuth();
+  const { user } = useUser();
+  const navigate = useNavigate();
 
   return (
     <nav className="bg-white shadow-md dark:bg-gray-800">
@@ -36,9 +44,29 @@ export function NavBar() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
 
-            <Button variant="ghost" size="sm" onClick={signOut}>
-              Log out
-            </Button>
+            {user && (
+              <Dropdown
+                items={[
+                  {
+                    label: 'Profile',
+                    onClick: () => navigate('/profile'),
+                  },
+                  {
+                    label: 'Log out',
+                    variant: 'danger',
+                    onClick: signOut,
+                  },
+                ]}
+                trigger={
+                  <button
+                    aria-label="User menu"
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-blue-500 text-sm font-medium text-white hover:bg-blue-600"
+                  >
+                    {getInitial(user)}
+                  </button>
+                }
+              />
+            )}
           </div>
         </div>
       </div>
