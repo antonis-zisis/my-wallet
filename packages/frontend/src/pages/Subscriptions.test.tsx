@@ -146,11 +146,13 @@ describe('Subscriptions', () => {
     expect(screen.getByText('Yearly')).toBeInTheDocument();
   });
 
-  it('shows total monthly cost', async () => {
+  it('shows total monthly and yearly cost cards', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
     await screen.findByText('Netflix');
-    expect(screen.getByText('Total monthly cost:')).toBeInTheDocument();
+    expect(screen.getByText('Monthly cost')).toBeInTheDocument();
     expect(screen.getByText('25,99 €')).toBeInTheDocument();
+    expect(screen.getByText('Yearly cost')).toBeInTheDocument();
+    expect(screen.getByText('311,88 €')).toBeInTheDocument();
   });
 
   it('shows empty state when no active subscriptions exist', async () => {
@@ -184,9 +186,8 @@ describe('Subscriptions', () => {
 
     it('expands inactive section on click', async () => {
       renderSubscriptions([mockActiveQuery, mockInactiveQuery]);
-      await screen.findByText('Netflix');
 
-      await userEvent.click(screen.getByText(/Inactive Subscriptions/));
+      await userEvent.click(await screen.findByText(/Inactive Subscriptions/));
 
       expect(await screen.findByText('Spotify')).toBeInTheDocument();
     });

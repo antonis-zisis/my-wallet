@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
+import { ChevronDownIcon, ChevronUpIcon } from '../components/icons';
 import {
   CancelSubscriptionModal,
   CreateSubscriptionModal,
@@ -117,6 +118,7 @@ export function Subscriptions() {
     (sum, sub) => sum + sub.monthlyCost,
     0
   );
+  const totalYearlyCost = totalMonthlyCost * 12;
 
   const handleCreate = async (input: {
     name: string;
@@ -165,21 +167,32 @@ export function Subscriptions() {
   return (
     <div className="py-8">
       <div className="mx-auto max-w-3xl px-4">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {!activeLoading && !activeError && activeTotalCount > 0 && (
-              <span>
-                Total monthly cost:{' '}
-                <span className="font-semibold text-gray-800 dark:text-gray-200">
-                  {formatMoney(totalMonthlyCost)} €
-                </span>
-              </span>
-            )}
-          </div>
+        <div className="mb-6 flex items-center justify-end">
           <Button onClick={() => setIsCreateOpen(true)}>
             New Subscription
           </Button>
         </div>
+
+        {!activeLoading && !activeError && activeTotalCount > 0 && (
+          <div className="mb-6 grid grid-cols-2 gap-4">
+            <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Monthly cost
+              </p>
+              <p className="mt-1 text-xl font-semibold text-gray-800 dark:text-gray-100">
+                {formatMoney(totalMonthlyCost)} €
+              </p>
+            </div>
+            <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Yearly cost
+              </p>
+              <p className="mt-1 text-xl font-semibold text-gray-800 dark:text-gray-100">
+                {formatMoney(totalYearlyCost)} €
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
           <SubscriptionList
@@ -204,17 +217,17 @@ export function Subscriptions() {
           />
         )}
 
-        {(inactiveTotalCount > 0 || inactiveLoading) && (
+        {!inactiveLoading && inactiveTotalCount > 0 && (
           <div className="mt-8">
             <button
               className="mb-4 flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
               onClick={() => setShowInactive(!showInactive)}
             >
-              <span
-                className={`transition-transform ${showInactive ? 'rotate-90' : ''}`}
-              >
-                ▶
-              </span>
+              {showInactive ? (
+                <ChevronUpIcon className="h-4 w-4" />
+              ) : (
+                <ChevronDownIcon className="h-4 w-4" />
+              )}
               Inactive Subscriptions ({inactiveTotalCount})
             </button>
 
