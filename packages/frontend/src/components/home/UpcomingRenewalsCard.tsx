@@ -48,7 +48,7 @@ export function UpcomingRenewalsCard({
 
       {isOpen && (
         <div className="mt-4 divide-y divide-gray-100 dark:divide-gray-700">
-          {sorted.map((sub) => {
+          {sorted.slice(0, 5).map((sub) => {
             const renewalDate = getNextRenewalDate(
               sub.startDate,
               sub.billingCycle

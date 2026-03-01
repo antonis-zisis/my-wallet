@@ -74,7 +74,7 @@ export function Home() {
 
   return (
     <div className="py-8">
-      <div className="mx-auto max-w-3xl px-4">
+      <div className="mx-auto max-w-5xl px-4">
         <Card>
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
             {getStatusMessage()}

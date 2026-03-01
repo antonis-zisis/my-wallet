@@ -30,7 +30,7 @@ export function Reports() {
 
   return (
     <div className="py-8">
-      <div className="mx-auto max-w-3xl px-4">
+      <div className="mx-auto max-w-5xl px-4">
         <div className="mb-6 flex items-center justify-end">
           <Button onClick={() => setIsModalOpen(true)}>Create Report</Button>
         </div>

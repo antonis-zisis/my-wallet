@@ -108,7 +108,7 @@ export function Report() {
   if (loading) {
     return (
       <div className="py-8">
-        <div className="mx-auto max-w-3xl px-4">
+        <div className="mx-auto max-w-5xl px-4">
           <p className="text-center text-gray-500 dark:text-gray-400">
             Loading report...
           </p>
@@ -120,7 +120,7 @@ export function Report() {
   if (error || !report) {
     return (
       <div className="py-8">
-        <div className="mx-auto max-w-3xl px-4">
+        <div className="mx-auto max-w-5xl px-4">
           <div className="mb-6">
             <Link
               to="/reports"
@@ -139,7 +139,7 @@ export function Report() {
 
   return (
     <div className="py-8">
-      <div className="mx-auto max-w-3xl px-4">
+      <div className="mx-auto max-w-5xl px-4">
         <div className="mb-6">
           <Link
             to="/reports"

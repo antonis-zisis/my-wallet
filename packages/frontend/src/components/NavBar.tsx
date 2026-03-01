@@ -27,7 +27,7 @@ export function NavBar() {
 
   return (
     <nav className="bg-white shadow-md dark:bg-gray-800">
-      <div className="mx-auto max-w-3xl px-4">
+      <div className="mx-auto max-w-5xl px-4">
         <div className="flex h-14 items-center justify-between">
           <div className="flex items-center gap-1">
             {navLinks.map((link) => (
