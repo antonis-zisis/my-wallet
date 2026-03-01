@@ -87,7 +87,7 @@ export function Profile() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 p-4">
+    <div className="mx-auto max-w-5xl space-y-6 p-4">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
         Profile
       </h1>

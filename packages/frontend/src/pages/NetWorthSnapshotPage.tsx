@@ -84,7 +84,7 @@ export function NetWorthSnapshotPage() {
   if (loading) {
     return (
       <div className="py-8">
-        <div className="mx-auto max-w-3xl px-4">
+        <div className="mx-auto max-w-5xl px-4">
           <p className="text-center text-gray-500 dark:text-gray-400">
             Loading...
           </p>
@@ -96,7 +96,7 @@ export function NetWorthSnapshotPage() {
   if (error || !data?.netWorthSnapshot) {
     return (
       <div className="py-8">
-        <div className="mx-auto max-w-3xl px-4">
+        <div className="mx-auto max-w-5xl px-4">
           <p className="text-center text-red-500">
             {error ? 'Failed to load snapshot.' : 'Snapshot not found.'}
           </p>
@@ -114,7 +114,7 @@ export function NetWorthSnapshotPage() {
 
   return (
     <div className="py-8">
-      <div className="mx-auto max-w-3xl space-y-6 px-4">
+      <div className="mx-auto max-w-5xl space-y-6 px-4">
         <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
           <h1 className="mb-4 text-2xl font-bold text-gray-800 dark:text-gray-100">
             {snapshot.title}
