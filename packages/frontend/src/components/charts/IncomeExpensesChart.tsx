@@ -62,9 +62,11 @@ export function IncomeExpensesChart({
           width={64}
         />
         <Tooltip
-          formatter={(value: number | undefined, name: string | undefined) => [
-            `${formatMoney(value ?? 0)} €`,
-            (name ?? '').charAt(0).toUpperCase() + (name ?? '').slice(1),
+          formatter={(value, name) => [
+            `${formatMoney(typeof value === 'number' ? value : 0)} €`,
+            String(name ?? '')
+              .charAt(0)
+              .toUpperCase() + String(name ?? '').slice(1),
           ]}
           contentStyle={{
             borderRadius: '8px',
