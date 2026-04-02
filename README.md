@@ -1,41 +1,19 @@
 # My Wallet
 
-A full-stack Wallet application to help with budgeting built with React and Express.
+A personal budgeting app built with React and Express.
 
 [my-wallet.antoniszisis.com](https://my-wallet.antoniszisis.com)
 
+> **Status:** The hosted app is currently invite-only while under active development. Public registration is not yet available.
+
 ## Tech Stack
 
-### Frontend
-
-- React 19
-- React Router 7
-- Vite 7
-- Tailwind CSS 4
-- TypeScript
-- Apollo Client (GraphQL)
-- Recharts (charts)
-- Supabase Auth
-- Vitest
-
-### Backend
-
-- Express 5
-- Apollo Server (GraphQL)
-- Prisma (ORM)
-- PostgreSQL
-- Supabase (JWT verification)
-- TypeScript
-- Vitest
-
-### Tooling
-
-- pnpm (monorepo with workspaces)
-- ESLint 9
-- Prettier
-- Husky (git hooks)
-- Commitlint (conventional commits)
-- Lint-staged
+|              |                                                                                |
+| ------------ | ------------------------------------------------------------------------------ |
+| **Frontend** | React 19 · React Router 7 · Vite 7 · Tailwind CSS 4 · Apollo Client · Recharts |
+| **Backend**  | Express 5 · Apollo Server · Prisma · PostgreSQL                                |
+| **Shared**   | TypeScript · Supabase · Vitest                                                 |
+| **Tooling**  | pnpm workspaces · ESLint 9 · Prettier · Husky · Commitlint · Lint-staged       |
 
 ## Prerequisites
 
@@ -50,13 +28,15 @@ A full-stack Wallet application to help with budgeting built with React and Expr
 pnpm install
 ```
 
-### Decrypt environment files
+### Set up environment files
 
-Environment files are encrypted in the repository. Decrypt them before running:
+**If you cloned this repo and have the GPG key:**
 
 ```bash
 pnpm run env:decrypt
 ```
+
+**If you are self-hosting a fork:** copy the `.env.sample` files in `packages/frontend` and `packages/backend` to `.env` and fill in your own values. See [Environment Variables](#environment-variables) below for what is required.
 
 ### Set up the database
 
@@ -121,12 +101,10 @@ pnpm typecheck
 
 - **Reports**: Create and manage budget reports, each containing its own set of transactions
 - **Transaction Management**: Add income and expense transactions with categories within a report
-- **Category Support**: Pre-defined categories for both income (Salary, Freelance, Investment, Gift, Other) and expenses (Food, Transport, Utilities, Entertainment, Shopping, Health, Other)
-- **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
-- **Net Worth**: Track your financial position by creating snapshots of assets and liabilities, with automatic net worth calculation and paginated snapshot history
 - **Subscriptions**: Track recurring payments (Netflix, Spotify, etc.) with monthly/yearly billing cycles, next renewal date calculation, cost equivalents (yearly for monthly, monthly for yearly), cancel or delete subscriptions, and view total monthly cost
+- **Net Worth**: Track your financial position by creating snapshots of assets and liabilities, with automatic net worth calculation and paginated snapshot history
 - **Charts**: Income & expenses grouped bar chart on the Home dashboard (last 12 reports); expense breakdown pie chart on the Report page
-- **Dark Mode**: Theme toggle with local storage persistence
+- **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
 
 ## Project Structure
 
@@ -136,7 +114,7 @@ my-wallet/
 ├── packages/
 │   ├── backend/           # Express + Apollo Server backend app
 │   └── frontend/          # React + Vite web app
-├── scripts/               # Bootstrap and Utility scripts
+├── scripts/               # Bootstrap and utility scripts
 ├── commitlint.config.js   # Conventional commits config
 ├── eslint.config.js       # ESLint config
 ├── lint-staged.config.js  # Lint-staged config
@@ -147,34 +125,22 @@ my-wallet/
 
 The backend exposes a GraphQL endpoint at `/graphql`.
 
-### Development
-
 When running in development mode, you can access the Apollo Sandbox at `http://localhost:4000/graphql`.
 
-## Environment Files
+## Environment Variables
 
-Environment files (`.env`) are encrypted using GPG for secure storage in the repository.
+Environment files (`.env`) are encrypted using GPG for secure storage in the repository. `.env.sample` files are provided in each package as a reference.
 
-### Decrypt
+### Required variables
 
-```bash
-pnpm run env:decrypt
-```
+- **Backend** (`packages/backend/.env`): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `PG_*` database connection variables
+- **Frontend** (`packages/frontend/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
-### Encrypt
-
-Before committing changes to environment files:
+### Encrypt before committing (repo maintainer only)
 
 ```bash
 pnpm run env:encrypt
 ```
-
-### Required Supabase Variables
-
-The following environment variables must be set for authentication (see `.env.sample` files):
-
-- **Backend**: `SUPABASE_URL`, `SUPABASE_SECRET_KEY`
-- **Frontend**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
 ## Deployment
 
@@ -204,3 +170,9 @@ Examples:
 - `feat: add user authentication`
 - `fix(frontend): resolve login form validation`
 - `docs: update README with setup instructions`
+
+## License
+
+This project is licensed under the [Elastic License 2.0](LICENSE).
+
+You are free to use, fork, and self-host this software for personal use. You may not sell it or offer it as a hosted service to others.

@@ -1,8 +1,11 @@
 {
   "name": "my-wallet",
   "version": "0.2.1",
-  "private": true,
   "type": "module",
+  "private": true,
+  "author": "Antonis Zisis",
+  "description": "A personal budgeting app.",
+  "license": "Elastic-2.0",
   "scripts": {
     "dev": "pnpm run --parallel dev",
     "dev:frontend": "pnpm --filter frontend dev",

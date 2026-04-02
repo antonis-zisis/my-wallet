@@ -5,7 +5,7 @@ dist
 *.log
 coverage
 .DS_Store
-.claude
 
 packages/backend/src/generated/prisma
 tsconfig.tsbuildinfo
+.claude/settings.local.json
