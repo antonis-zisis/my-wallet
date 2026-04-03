@@ -1,11 +1,27 @@
+# Dependencies
 node_modules
+
+# Build output
 dist
+
+# Environment files
 .env
 .env.local
-*.log
-coverage
-.DS_Store
-.claude
+.env.*.local
 
-packages/backend/src/generated/prisma
-tsconfig.tsbuildinfo
+# Logs
+*.log
+
+# Test coverage
+coverage
+
+# Generated files
+apps/server/src/generated/prisma
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/settings.local.json

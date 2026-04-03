@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-BACKEND_DIR="$ROOT_DIR/packages/backend"
+BACKEND_DIR="$ROOT_DIR/apps/server"
 ENV_FILE="$BACKEND_DIR/.env"
 
 # Colors for output

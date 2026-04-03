@@ -1,41 +1,19 @@
 # My Wallet
 
-A full-stack Wallet application to help with budgeting built with React and Express.
+A personal budgeting app built with React and Express.
 
 [my-wallet.antoniszisis.com](https://my-wallet.antoniszisis.com)
 
+> **Status:** The hosted app is currently invite-only while under active development. Public registration is not yet available.
+
 ## Tech Stack
 
-### Frontend
-
-- React 19
-- React Router 7
-- Vite 7
-- Tailwind CSS 4
-- TypeScript
-- Apollo Client (GraphQL)
-- Recharts (charts)
-- Supabase Auth
-- Vitest
-
-### Backend
-
-- Express 5
-- Apollo Server (GraphQL)
-- Prisma (ORM)
-- PostgreSQL
-- Supabase (JWT verification)
-- TypeScript
-- Vitest
-
-### Tooling
-
-- pnpm (monorepo with workspaces)
-- ESLint 9
-- Prettier
-- Husky (git hooks)
-- Commitlint (conventional commits)
-- Lint-staged
+|             |                                                                                |
+| ----------- | ------------------------------------------------------------------------------ |
+| **Web**     | React 19 · React Router 7 · Vite 7 · Tailwind CSS 4 · Apollo Client · Recharts |
+| **Server**  | Express 5 · Apollo Server · Prisma · PostgreSQL                                |
+| **Shared**  | TypeScript · Supabase · Vitest                                                 |
+| **Tooling** | pnpm workspaces · ESLint 9 · Prettier · Husky · Commitlint · Lint-staged       |
 
 ## Prerequisites
 
@@ -50,13 +28,15 @@ A full-stack Wallet application to help with budgeting built with React and Expr
 pnpm install
 ```
 
-### Decrypt environment files
+### Set up environment files
 
-Environment files are encrypted in the repository. Decrypt them before running:
+**If you cloned this repo and have the GPG key:**
 
 ```bash
 pnpm run env:decrypt
 ```
+
+**If you are self-hosting a fork:** copy the `.env.sample` files in `apps/web` and `apps/server` to `.env` and fill in your own values. See [Environment Variables](#environment-variables) below for what is required.
 
 ### Set up the database
 
@@ -74,7 +54,7 @@ This script will prompt for the PostgreSQL superuser password and automatically:
 
 ### Development
 
-Run both frontend and backend in development mode:
+Run both web and server in development mode:
 
 ```bash
 pnpm dev
@@ -83,8 +63,8 @@ pnpm dev
 Or run them individually:
 
 ```bash
-pnpm dev:frontend  # Starts frontend on http://localhost:3000
-pnpm dev:backend   # Starts backend on http://localhost:4000
+pnpm dev:web     # Starts web on http://localhost:3000
+pnpm dev:server  # Starts server on http://localhost:4000
 ```
 
 ### Build
@@ -121,22 +101,20 @@ pnpm typecheck
 
 - **Reports**: Create and manage budget reports, each containing its own set of transactions
 - **Transaction Management**: Add income and expense transactions with categories within a report
-- **Category Support**: Pre-defined categories for both income (Salary, Freelance, Investment, Gift, Other) and expenses (Food, Transport, Utilities, Entertainment, Shopping, Health, Other)
-- **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
-- **Net Worth**: Track your financial position by creating snapshots of assets and liabilities, with automatic net worth calculation and paginated snapshot history
 - **Subscriptions**: Track recurring payments (Netflix, Spotify, etc.) with monthly/yearly billing cycles, next renewal date calculation, cost equivalents (yearly for monthly, monthly for yearly), cancel or delete subscriptions, and view total monthly cost
+- **Net Worth**: Track your financial position by creating snapshots of assets and liabilities, with automatic net worth calculation and paginated snapshot history
 - **Charts**: Income & expenses grouped bar chart on the Home dashboard (last 12 reports); expense breakdown pie chart on the Report page
-- **Dark Mode**: Theme toggle with local storage persistence
+- **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
 
 ## Project Structure
 
 ```text
 my-wallet/
 ├── .husky/                # Git hooks
-├── packages/
-│   ├── backend/           # Express + Apollo Server backend app
-│   └── frontend/          # React + Vite web app
-├── scripts/               # Bootstrap and Utility scripts
+├── apps/
+│   ├── server/            # Express + Apollo Server app
+│   └── web/               # React + Vite web app
+├── scripts/               # Bootstrap and utility scripts
 ├── commitlint.config.js   # Conventional commits config
 ├── eslint.config.js       # ESLint config
 ├── lint-staged.config.js  # Lint-staged config
@@ -145,36 +123,24 @@ my-wallet/
 
 ## GraphQL API
 
-The backend exposes a GraphQL endpoint at `/graphql`.
-
-### Development
+The server exposes a GraphQL endpoint at `/graphql`.
 
 When running in development mode, you can access the Apollo Sandbox at `http://localhost:4000/graphql`.
 
-## Environment Files
+## Environment Variables
 
-Environment files (`.env`) are encrypted using GPG for secure storage in the repository.
+Environment files (`.env`) are encrypted using GPG for secure storage in the repository. `.env.sample` files are provided in each app as a reference.
 
-### Decrypt
+### Required variables
 
-```bash
-pnpm run env:decrypt
-```
+- **Server** (`apps/server/.env`): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `PG_*` database connection variables
+- **Web** (`apps/web/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
-### Encrypt
-
-Before committing changes to environment files:
+### Encrypt before committing (repo maintainer only)
 
 ```bash
 pnpm run env:encrypt
 ```
-
-### Required Supabase Variables
-
-The following environment variables must be set for authentication (see `.env.sample` files):
-
-- **Backend**: `SUPABASE_URL`, `SUPABASE_SECRET_KEY`
-- **Frontend**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
 ## Deployment
 
@@ -182,8 +148,8 @@ Deployment is handled via GitHub Actions (`.github/workflows/deploy.yml`), trigg
 
 1. **Test** — lint, typecheck, and run tests
 2. **Migrate** — run Prisma database migrations
-3. **Deploy backend** — build Docker image and deploy to Google Cloud Run
-4. **Deploy frontend** — build and deploy to Netlify
+3. **Deploy server** — build Docker image and deploy to Google Cloud Run
+4. **Deploy web** — build and deploy to Netlify
 
 ## Commit Convention
 
@@ -202,5 +168,11 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 Examples:
 
 - `feat: add user authentication`
-- `fix(frontend): resolve login form validation`
+- `fix(web): resolve login form validation`
 - `docs: update README with setup instructions`
+
+## License
+
+This project is licensed under the [Elastic License 2.0](LICENSE).
+
+You are free to use, fork, and self-host this software for personal use. You may not sell it or offer it as a hosted service to others.

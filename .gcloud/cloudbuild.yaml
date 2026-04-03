@@ -3,11 +3,11 @@ steps:
     args:
       - 'build'
       - '-f'
-      - 'packages/backend/Dockerfile'
+      - 'apps/server/Dockerfile'
       - '-t'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:$TAG_NAME'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/server:$TAG_NAME'
       - '-t'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:latest'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/server:latest'
       - '.'
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -17,7 +17,7 @@ steps:
       - 'deploy'
       - '${_SERVICE}'
       - '--image'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:$TAG_NAME'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/server:$TAG_NAME'
       - '--region'
       - '${_REGION}'
       - '--port'
@@ -25,8 +25,8 @@ steps:
       - '--allow-unauthenticated'
 
 images:
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:$TAG_NAME'
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/backend:latest'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/server:$TAG_NAME'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/my-wallet/server:latest'
 
 substitutions:
   _REGION: europe-west1
