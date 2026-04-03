@@ -44,9 +44,9 @@ function formFromTransaction(transaction: Transaction) {
 
 export function TransactionFormModal({
   isOpen,
+  mode,
   onClose,
   onSubmit,
-  mode,
   transaction,
 }: TransactionFormModalProps) {
   const [form, setForm] = useState(INITIAL_FORM);

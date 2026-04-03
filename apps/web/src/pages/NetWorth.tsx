@@ -18,7 +18,7 @@ const PAGE_SIZE = 20;
 
 export function NetWorth() {
   const [page, setPage] = useState(1);
-  const { data, loading, error } = useQuery<NetWorthSnapshotsData>(
+  const { data, error, loading } = useQuery<NetWorthSnapshotsData>(
     GET_NET_WORTH_SNAPSHOTS,
     { variables: { page } }
   );

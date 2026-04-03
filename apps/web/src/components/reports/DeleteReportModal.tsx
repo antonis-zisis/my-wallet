@@ -9,11 +9,11 @@ interface DeleteReportModalProps {
 }
 
 export function DeleteReportModal({
+  isDeleting,
   isOpen,
   onClose,
   onConfirm,
   reportTitle,
-  isDeleting,
 }: DeleteReportModalProps) {
   return (
     <Modal

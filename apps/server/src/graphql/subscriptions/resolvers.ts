@@ -37,7 +37,7 @@ export const subscriptionResolvers = {
   Query: {
     subscriptions: async (
       _parent: unknown,
-      { page = 1, active }: { page?: number; active?: boolean },
+      { active, page = 1 }: { page?: number; active?: boolean },
       { userId }: { userId: string }
     ) => {
       const where: { userId: string; isActive?: boolean } = { userId };

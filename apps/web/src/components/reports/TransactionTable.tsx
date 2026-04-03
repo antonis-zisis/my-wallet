@@ -15,9 +15,9 @@ function formatAmount(transaction: Transaction) {
 }
 
 export function TransactionTable({
-  transactions,
-  onEdit,
   onDelete,
+  onEdit,
+  transactions,
 }: TransactionTableProps) {
   if (transactions.length === 0) {
     return (

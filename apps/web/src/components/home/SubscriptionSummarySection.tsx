@@ -3,8 +3,8 @@ import { formatMoney } from '../../utils/formatMoney';
 import { Card } from '../ui';
 
 export function SubscriptionSummarySection({
-  subscriptions,
   currentIncome,
+  subscriptions,
 }: {
   subscriptions: Array<Subscription>;
   currentIncome: number;

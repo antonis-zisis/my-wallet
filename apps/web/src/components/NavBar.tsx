@@ -24,12 +24,12 @@ const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
 
 export function NavBar() {
   const { signOut } = useAuth();
-  const { user, loading } = useUser();
+  const { loading, user } = useUser();
   const navigate = useNavigate();
   const {
-    loading: healthLoading,
-    error: healthError,
     data: healthData,
+    error: healthError,
+    loading: healthLoading,
   } = useQuery<{ health: string }>(HEALTH_QUERY);
 
   const dotConfig = healthLoading

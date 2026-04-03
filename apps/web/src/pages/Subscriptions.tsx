@@ -33,16 +33,16 @@ export function Subscriptions() {
 
   const {
     data: activeData,
-    loading: activeLoading,
     error: activeError,
+    loading: activeLoading,
   } = useQuery<SubscriptionsData>(GET_SUBSCRIPTIONS, {
     variables: { page: activePage, active: true },
   });
 
   const {
     data: inactiveData,
-    loading: inactiveLoading,
     error: inactiveError,
+    loading: inactiveLoading,
   } = useQuery<SubscriptionsData>(GET_SUBSCRIPTIONS, {
     variables: { page: inactivePage, active: false },
   });

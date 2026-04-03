@@ -7,7 +7,7 @@ import { useUser } from '../contexts/UserContext';
 const MIN_PASSWORD_LENGTH = 6;
 
 export function Profile() {
-  const { user, updateUser } = useUser();
+  const { updateUser, user } = useUser();
   const { updatePassword } = useAuth();
 
   const [fullName, setFullName] = useState(user?.fullName ?? '');

@@ -14,9 +14,9 @@ const variantStyles: Record<BadgeVariant, string> = {
 };
 
 export function Badge({
-  variant = 'default',
-  className = '',
   children,
+  className = '',
+  variant = 'default',
   ...props
 }: BadgeProps) {
   return (

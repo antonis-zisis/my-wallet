@@ -10,10 +10,10 @@ interface SnapshotData {
 }
 
 function EntriesSection({
-  title,
-  entries,
-  total,
   colorClass,
+  entries,
+  title,
+  total,
 }: {
   title: string;
   entries: Array<NetWorthEntry>;
@@ -76,7 +76,7 @@ function EntriesSection({
 
 export function NetWorthSnapshotPage() {
   const { id } = useParams<{ id: string }>();
-  const { data, loading, error } = useQuery<SnapshotData>(
+  const { data, error, loading } = useQuery<SnapshotData>(
     GET_NET_WORTH_SNAPSHOT,
     { variables: { id } }
   );

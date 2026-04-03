@@ -39,7 +39,7 @@ describe('authMiddleware', () => {
   });
 
   it('returns 401 when no Authorization header', async () => {
-    const { req, res, next } = createMocks();
+    const { next, req, res } = createMocks();
 
     await authMiddleware(req, res, next);
 
@@ -51,7 +51,7 @@ describe('authMiddleware', () => {
   });
 
   it('returns 401 when Authorization header does not start with Bearer', async () => {
-    const { req, res, next } = createMocks('Basic abc123');
+    const { next, req, res } = createMocks('Basic abc123');
 
     await authMiddleware(req, res, next);
 
@@ -68,7 +68,7 @@ describe('authMiddleware', () => {
       error: { message: 'Token expired' },
     });
 
-    const { req, res, next } = createMocks('Bearer valid-token');
+    const { next, req, res } = createMocks('Bearer valid-token');
 
     await authMiddleware(req, res, next);
 
@@ -85,7 +85,7 @@ describe('authMiddleware', () => {
       error: null,
     });
 
-    const { req, res, next } = createMocks('Bearer valid-token');
+    const { next, req, res } = createMocks('Bearer valid-token');
 
     await authMiddleware(req, res, next);
 
@@ -102,7 +102,7 @@ describe('authMiddleware', () => {
       error: null,
     });
 
-    const { req, res, next } = createMocks('Bearer valid-token');
+    const { next, req, res } = createMocks('Bearer valid-token');
 
     await authMiddleware(req, res, next);
 
@@ -114,7 +114,7 @@ describe('authMiddleware', () => {
   it('returns 401 when getUser throws an exception', async () => {
     mockGetUser.mockRejectedValueOnce(new Error('Network error'));
 
-    const { req, res, next } = createMocks('Bearer valid-token');
+    const { next, req, res } = createMocks('Bearer valid-token');
 
     await authMiddleware(req, res, next);
 

@@ -3,11 +3,11 @@ import { Card } from '../ui';
 import { ReportCard } from './ReportCard';
 
 export function ReportSummaryGrid({
-  totalCount,
-  currentReport,
   currentLoading,
-  previousReport,
+  currentReport,
   previousLoading,
+  previousReport,
+  totalCount,
 }: {
   totalCount: number | undefined;
   currentReport: Report | undefined;

@@ -19,17 +19,17 @@ pnpm lint                 # Lint all apps
 pnpm format               # Format with Prettier
 
 # Run tests for a single app
-pnpm --filter web test
-pnpm --filter server test
+pnpm --filter my-wallet-web test
+pnpm --filter my-wallet-server test
 
 # Run a single test file
-pnpm --filter web exec vitest run src/pages/Home.test.tsx
-pnpm --filter server exec vitest run src/index.test.ts
+pnpm --filter my-wallet-web exec vitest run src/pages/Home.test.tsx
+pnpm --filter my-wallet-server exec vitest run src/index.test.ts
 
 # Prisma (run from apps/server)
-pnpm --filter server db:generate    # Generate Prisma client
-pnpm --filter server db:migrate     # Run migrations
-pnpm --filter server db:studio      # Open Prisma Studio
+pnpm --filter my-wallet-server db:generate    # Generate Prisma client
+pnpm --filter my-wallet-server db:migrate     # Run migrations
+pnpm --filter my-wallet-server db:studio      # Open Prisma Studio
 
 # Environment files (GPG-encrypted in repo)
 pnpm run env:decrypt      # Decrypt .env files
@@ -68,6 +68,7 @@ pnpm run env:encrypt      # Encrypt before committing
 ## Conventions
 
 - **Commits:** Conventional Commits — `type(scope): description`, enforced by commitlint + husky
-- **ESLint:** `id-length` requires identifiers ≥ 2 characters (exception: `_`). Unused vars prefixed with `_` are allowed. `eslint-plugin-simple-import-sort` enforces sorted imports and exports
+- **ESLint:** `id-length` requires identifiers ≥ 2 characters (exception: `_`). Unused vars prefixed with `_` are allowed. `eslint-plugin-simple-import-sort` enforces sorted imports and exports. `eslint-plugin-sort-destructure-keys` enforces alphabetically sorted destructure keys
 - **Lint-staged:** ESLint + Prettier on `*.{ts,tsx,js,jsx}`, Prettier on `*.{json,md,css,html}`
 - **Prettier:** `prettier-plugin-tailwindcss` for class sorting
+- **Naming:** Use full descriptive variable names — never abbreviate. e.g. `transaction` not `tx`, `subscription` not `sub`, `event` not `e`

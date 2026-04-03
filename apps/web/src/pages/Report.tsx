@@ -35,7 +35,7 @@ interface ReportData {
 export function Report() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data, loading, error } = useQuery<ReportData>(GET_REPORT, {
+  const { data, error, loading } = useQuery<ReportData>(GET_REPORT, {
     variables: { id },
   });
   const [createTransaction] = useMutation(CREATE_TRANSACTION, {

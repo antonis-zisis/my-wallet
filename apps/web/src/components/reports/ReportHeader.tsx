@@ -10,10 +10,10 @@ interface ReportHeaderProps {
 }
 
 export function ReportHeader({
-  title,
-  onSaveTitle,
   onAddTransaction,
   onDeleteReport,
+  onSaveTitle,
+  title,
 }: ReportHeaderProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editTitle, setEditTitle] = useState('');

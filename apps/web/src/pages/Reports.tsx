@@ -10,7 +10,7 @@ const PAGE_SIZE = 20;
 
 export function Reports() {
   const [page, setPage] = useState(1);
-  const { data, loading, error } = useQuery<ReportsData>(GET_REPORTS, {
+  const { data, error, loading } = useQuery<ReportsData>(GET_REPORTS, {
     variables: { page },
   });
   const [createReport] = useMutation(CREATE_REPORT, {
