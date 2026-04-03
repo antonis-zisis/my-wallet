@@ -3,13 +3,14 @@ name: CI
 on:
   push:
     branches: [main]
+  pull_request:
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: '24'
 
 jobs:
   ci:
@@ -26,7 +27,7 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter server db:generate
+      - run: pnpm --filter my-wallet-server db:generate
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test -- --run

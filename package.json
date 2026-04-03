@@ -8,8 +8,8 @@
   "license": "Elastic-2.0",
   "scripts": {
     "dev": "pnpm run --parallel dev",
-    "dev:web": "pnpm --filter web dev",
-    "dev:server": "pnpm --filter server dev",
+    "dev:web": "pnpm --filter my-wallet-web dev",
+    "dev:server": "pnpm --filter my-wallet-server dev",
     "build": "pnpm run --parallel build",
     "test": "pnpm run --parallel test",
     "lint": "pnpm run --parallel lint",
