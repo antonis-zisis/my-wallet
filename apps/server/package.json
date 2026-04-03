@@ -1,8 +1,8 @@
 {
-  "name": "server",
+  "name": "my-wallet-server",
   "version": "0.2.0",
-  "private": true,
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "pnpm run db:generate && tsup",
