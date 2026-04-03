@@ -16,7 +16,7 @@ export function ReportSummaryGrid({
   previousLoading: boolean;
 }) {
   return (
-    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Card>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Total Reports

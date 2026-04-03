@@ -8,8 +8,7 @@ import {
   SubscriptionSummarySection,
   UpcomingRenewalsCard,
 } from '../components/home';
-import { Card } from '../components/ui';
-import { HEALTH_QUERY } from '../graphql/health';
+import { Divider } from '../components/ui';
 import { GET_NET_WORTH_SNAPSHOTS } from '../graphql/netWorth';
 import {
   GET_REPORT,
@@ -28,7 +27,6 @@ interface ReportsSummaryData {
 }
 
 export function Home() {
-  const { data, loading, error } = useQuery<{ health: string }>(HEALTH_QUERY);
   const { data: reportsData } = useQuery<ReportsData>(GET_REPORTS);
   const { data: summaryData } =
     useQuery<ReportsSummaryData>(GET_REPORTS_SUMMARY);
@@ -53,18 +51,6 @@ export function Home() {
     report: Report;
   }>(GET_REPORT, { variables: { id: previousId }, skip: !previousId });
 
-  const getStatusMessage = () => {
-    if (loading) {
-      return 'Connecting...';
-    }
-
-    if (error) {
-      return 'Failed to connect to server';
-    }
-
-    return data?.health ?? 'Connected';
-  };
-
   const chartReports = summaryData?.reports.items ?? [];
   const lastSnapshot = netWorthData?.netWorthSnapshots.items[0] ?? null;
   const activeSubscriptions = subscriptionsData?.subscriptions.items ?? [];
@@ -72,38 +58,46 @@ export function Home() {
     .filter((tx) => tx.type === 'INCOME')
     .reduce((sum, tx) => sum + tx.amount, 0);
 
+  const showSubscriptions = activeSubscriptions.length > 0;
+  const showNetWorth = lastSnapshot !== null;
+
   return (
     <div className="py-8">
-      <div className="mx-auto max-w-5xl px-4">
-        <Card>
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            {getStatusMessage()}
-          </p>
-        </Card>
+      <div className="mx-auto max-w-5xl space-y-10 px-4">
+        <section>
+          <ReportSummaryGrid
+            totalCount={reportsData?.reports.totalCount}
+            currentReport={currentData?.report}
+            currentLoading={currentLoading}
+            previousReport={previousData?.report}
+            previousLoading={previousLoading}
+          />
+          <ErrorBoundary compact>
+            <IncomeExpensesSection reports={chartReports} />
+          </ErrorBoundary>
+        </section>
 
-        <ReportSummaryGrid
-          totalCount={reportsData?.reports.totalCount}
-          currentReport={currentData?.report}
-          currentLoading={currentLoading}
-          previousReport={previousData?.report}
-          previousLoading={previousLoading}
-        />
-
-        <ErrorBoundary compact>
-          <IncomeExpensesSection reports={chartReports} />
-        </ErrorBoundary>
-
-        {activeSubscriptions.length > 0 && (
+        {showSubscriptions && (
           <>
-            <SubscriptionSummarySection
-              subscriptions={activeSubscriptions}
-              currentIncome={currentIncome}
-            />
-            <UpcomingRenewalsCard subscriptions={activeSubscriptions} />
+            <Divider />
+            <section>
+              <SubscriptionSummarySection
+                subscriptions={activeSubscriptions}
+                currentIncome={currentIncome}
+              />
+              <UpcomingRenewalsCard subscriptions={activeSubscriptions} />
+            </section>
           </>
         )}
 
-        {lastSnapshot && <NetWorthSummaryCard snapshot={lastSnapshot} />}
+        {showNetWorth && (
+          <>
+            <Divider />
+            <section>
+              <NetWorthSummaryCard snapshot={lastSnapshot} />
+            </section>
+          </>
+        )}
       </div>
     </div>
   );

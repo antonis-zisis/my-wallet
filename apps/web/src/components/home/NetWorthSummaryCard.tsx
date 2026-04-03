@@ -19,7 +19,7 @@ export function NetWorthSummaryCard({
   const netWorthColor = isPositive ? 'text-green-600' : 'text-red-600';
 
   return (
-    <Card className="mt-4">
+    <Card>
       <div className="flex items-center justify-between">
         <button
           type="button"
