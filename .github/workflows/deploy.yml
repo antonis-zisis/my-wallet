@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: '24'
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
   CLOUD_RUN_SERVICE: ${{ secrets.CLOUD_RUN_SERVICE }}
@@ -29,7 +29,7 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter server db:generate
+      - run: pnpm --filter my-wallet-server db:generate
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test -- --run
@@ -49,10 +49,10 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter server db:generate
+      - run: pnpm --filter my-wallet-server db:generate
 
       - name: Deploy migrations
-        run: pnpm --filter server db:migrate:deploy
+        run: pnpm --filter my-wallet-server db:migrate:deploy
         env:
           PG_HOST: ${{ secrets.PG_HOST }}
           PG_PORT: ${{ secrets.PG_PORT }}

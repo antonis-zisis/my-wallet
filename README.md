@@ -1,5 +1,7 @@
 # My Wallet
 
+[![Deploy](https://github.com/antonis-zisis/my-wallet/actions/workflows/deploy.yml/badge.svg)](https://github.com/antonis-zisis/my-wallet/actions/workflows/deploy.yml)
+
 A personal budgeting app built with React and Express.
 
 [my-wallet.antoniszisis.com](https://my-wallet.antoniszisis.com)
