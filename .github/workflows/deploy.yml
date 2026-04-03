@@ -29,7 +29,7 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter backend db:generate
+      - run: pnpm --filter server db:generate
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test -- --run
@@ -49,10 +49,10 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter backend db:generate
+      - run: pnpm --filter server db:generate
 
       - name: Deploy migrations
-        run: pnpm --filter backend db:migrate:deploy
+        run: pnpm --filter server db:migrate:deploy
         env:
           PG_HOST: ${{ secrets.PG_HOST }}
           PG_PORT: ${{ secrets.PG_PORT }}
@@ -60,8 +60,8 @@ jobs:
           PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
           PG_DATABASE: ${{ secrets.PG_DATABASE }}
 
-  deploy-backend:
-    name: Deploy Backend to Cloud Run
+  deploy-server:
+    name: Deploy Server to Cloud Run
     needs: migrate
     runs-on: ubuntu-latest
     permissions:
@@ -83,19 +83,19 @@ jobs:
 
       - name: Build and push to Artifact Registry
         run: |
-          IMAGE="${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/my-wallet/backend:${{ github.event.release.tag_name }}"
-          docker build -f packages/backend/Dockerfile -t "$IMAGE" .
+          IMAGE="${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/my-wallet/server:${{ github.event.release.tag_name }}"
+          docker build -f apps/server/Dockerfile -t "$IMAGE" .
           docker push "$IMAGE"
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy "${{ env.CLOUD_RUN_SERVICE }}" \
-            --image "${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/my-wallet/backend:${{ github.event.release.tag_name }}" \
+            --image "${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/my-wallet/server:${{ github.event.release.tag_name }}" \
             --region "${{ env.GCP_REGION }}" \
             --allow-unauthenticated
 
-  deploy-frontend:
-    name: Deploy Frontend to Netlify
+  deploy-web:
+    name: Deploy Web to Netlify
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -110,8 +110,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Build frontend
-        run: pnpm --filter frontend build
+      - name: Build web
+        run: pnpm --filter web build
         env:
           VITE_GRAPHQL_URL: ${{ secrets.VITE_GRAPHQL_URL }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -120,7 +120,7 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3
         with:
-          publish-dir: packages/frontend/dist
+          publish-dir: apps/web/dist
           production-deploy: true
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

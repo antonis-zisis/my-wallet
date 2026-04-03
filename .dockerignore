@@ -3,4 +3,4 @@ dist
 .env
 *.env.gpg
 .git
-packages/frontend
+apps/web

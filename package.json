@@ -8,8 +8,8 @@
   "license": "Elastic-2.0",
   "scripts": {
     "dev": "pnpm run --parallel dev",
-    "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "pnpm --filter backend dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:server": "pnpm --filter server dev",
     "build": "pnpm run --parallel build",
     "test": "pnpm run --parallel test",
     "lint": "pnpm run --parallel lint",

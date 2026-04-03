@@ -1,5 +1,5 @@
 [build]
-  base = "packages/frontend"
+  base = "apps/web"
   command = "pnpm build"
   publish = "dist"
   ignore = "[ $CONTEXT != 'deploy-preview' ] && exit 0 || exit 1"

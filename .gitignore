@@ -16,7 +16,7 @@ dist
 coverage
 
 # Generated files
-packages/backend/src/generated/prisma
+apps/server/src/generated/prisma
 *.tsbuildinfo
 
 # OS

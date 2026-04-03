@@ -8,12 +8,12 @@ A personal budgeting app built with React and Express.
 
 ## Tech Stack
 
-|              |                                                                                |
-| ------------ | ------------------------------------------------------------------------------ |
-| **Frontend** | React 19 · React Router 7 · Vite 7 · Tailwind CSS 4 · Apollo Client · Recharts |
-| **Backend**  | Express 5 · Apollo Server · Prisma · PostgreSQL                                |
-| **Shared**   | TypeScript · Supabase · Vitest                                                 |
-| **Tooling**  | pnpm workspaces · ESLint 9 · Prettier · Husky · Commitlint · Lint-staged       |
+|             |                                                                                |
+| ----------- | ------------------------------------------------------------------------------ |
+| **Web**     | React 19 · React Router 7 · Vite 7 · Tailwind CSS 4 · Apollo Client · Recharts |
+| **Server**  | Express 5 · Apollo Server · Prisma · PostgreSQL                                |
+| **Shared**  | TypeScript · Supabase · Vitest                                                 |
+| **Tooling** | pnpm workspaces · ESLint 9 · Prettier · Husky · Commitlint · Lint-staged       |
 
 ## Prerequisites
 
@@ -36,7 +36,7 @@ pnpm install
 pnpm run env:decrypt
 ```
 
-**If you are self-hosting a fork:** copy the `.env.sample` files in `packages/frontend` and `packages/backend` to `.env` and fill in your own values. See [Environment Variables](#environment-variables) below for what is required.
+**If you are self-hosting a fork:** copy the `.env.sample` files in `apps/web` and `apps/server` to `.env` and fill in your own values. See [Environment Variables](#environment-variables) below for what is required.
 
 ### Set up the database
 
@@ -54,7 +54,7 @@ This script will prompt for the PostgreSQL superuser password and automatically:
 
 ### Development
 
-Run both frontend and backend in development mode:
+Run both web and server in development mode:
 
 ```bash
 pnpm dev
@@ -63,8 +63,8 @@ pnpm dev
 Or run them individually:
 
 ```bash
-pnpm dev:frontend  # Starts frontend on http://localhost:3000
-pnpm dev:backend   # Starts backend on http://localhost:4000
+pnpm dev:web     # Starts web on http://localhost:3000
+pnpm dev:server  # Starts server on http://localhost:4000
 ```
 
 ### Build
@@ -111,9 +111,9 @@ pnpm typecheck
 ```text
 my-wallet/
 ├── .husky/                # Git hooks
-├── packages/
-│   ├── backend/           # Express + Apollo Server backend app
-│   └── frontend/          # React + Vite web app
+├── apps/
+│   ├── server/            # Express + Apollo Server app
+│   └── web/               # React + Vite web app
 ├── scripts/               # Bootstrap and utility scripts
 ├── commitlint.config.js   # Conventional commits config
 ├── eslint.config.js       # ESLint config
@@ -123,18 +123,18 @@ my-wallet/
 
 ## GraphQL API
 
-The backend exposes a GraphQL endpoint at `/graphql`.
+The server exposes a GraphQL endpoint at `/graphql`.
 
 When running in development mode, you can access the Apollo Sandbox at `http://localhost:4000/graphql`.
 
 ## Environment Variables
 
-Environment files (`.env`) are encrypted using GPG for secure storage in the repository. `.env.sample` files are provided in each package as a reference.
+Environment files (`.env`) are encrypted using GPG for secure storage in the repository. `.env.sample` files are provided in each app as a reference.
 
 ### Required variables
 
-- **Backend** (`packages/backend/.env`): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `PG_*` database connection variables
-- **Frontend** (`packages/frontend/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+- **Server** (`apps/server/.env`): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `PG_*` database connection variables
+- **Web** (`apps/web/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
 ### Encrypt before committing (repo maintainer only)
 
@@ -148,8 +148,8 @@ Deployment is handled via GitHub Actions (`.github/workflows/deploy.yml`), trigg
 
 1. **Test** — lint, typecheck, and run tests
 2. **Migrate** — run Prisma database migrations
-3. **Deploy backend** — build Docker image and deploy to Google Cloud Run
-4. **Deploy frontend** — build and deploy to Netlify
+3. **Deploy server** — build Docker image and deploy to Google Cloud Run
+4. **Deploy web** — build and deploy to Netlify
 
 ## Commit Convention
 
@@ -168,7 +168,7 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 Examples:
 
 - `feat: add user authentication`
-- `fix(frontend): resolve login form validation`
+- `fix(web): resolve login form validation`
 - `docs: update README with setup instructions`
 
 ## License
