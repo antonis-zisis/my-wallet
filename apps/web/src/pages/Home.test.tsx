@@ -525,7 +525,7 @@ describe('Home', () => {
       expect(screen.getByText(/3\.000,00 €/)).toBeInTheDocument();
     });
 
-    it('does not render the card when no snapshots exist', async () => {
+    it('shows CTA placeholder when no snapshots exist', async () => {
       renderHome([
         mockHealthQuery,
         mockReportsEmpty,
@@ -534,8 +534,9 @@ describe('Home', () => {
         mockSubscriptionsEmpty,
       ]);
 
-      await screen.findByText('0');
-      expect(screen.queryByText('Net Worth')).not.toBeInTheDocument();
+      expect(
+        await screen.findByText('No net worth snapshot yet')
+      ).toBeInTheDocument();
     });
 
     it('card is collapsed by default', async () => {
@@ -701,7 +702,7 @@ describe('Home', () => {
       expect(screen.queryByText('Spotify')).not.toBeInTheDocument();
     });
 
-    it('does not render section when no active subscriptions', async () => {
+    it('shows CTA placeholder when no active subscriptions', async () => {
       renderHome([
         mockHealthQuery,
         mockReportsEmpty,
@@ -710,11 +711,9 @@ describe('Home', () => {
         mockSubscriptionsEmpty,
       ]);
 
-      await screen.findByText('0');
       expect(
-        screen.queryByText('Active Subscriptions')
-      ).not.toBeInTheDocument();
-      expect(screen.queryByText('Upcoming Renewals')).not.toBeInTheDocument();
+        await screen.findByText('No subscriptions tracked yet')
+      ).toBeInTheDocument();
     });
   });
 });
