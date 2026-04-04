@@ -19,6 +19,7 @@ export function Home() {
     lastSnapshot,
     previousLoading,
     previousReport,
+    reportsLoading,
     totalReportsCount,
   } = useHomeData();
 
@@ -29,11 +30,12 @@ export function Home() {
     <PageLayout className="space-y-10">
       <section>
         <ReportSummaryGrid
-          totalCount={totalReportsCount}
-          currentReport={currentReport}
           currentLoading={currentLoading}
-          previousReport={previousReport}
+          currentReport={currentReport}
           previousLoading={previousLoading}
+          previousReport={previousReport}
+          reportsLoading={reportsLoading}
+          totalCount={totalReportsCount}
         />
 
         <ErrorBoundary compact>
@@ -46,8 +48,8 @@ export function Home() {
           <Divider />
           <section>
             <SubscriptionSummarySection
-              subscriptions={activeSubscriptions}
               currentIncome={currentIncome}
+              subscriptions={activeSubscriptions}
             />
             <UpcomingRenewalsCard subscriptions={activeSubscriptions} />
           </section>

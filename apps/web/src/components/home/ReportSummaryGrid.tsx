@@ -1,19 +1,30 @@
 import { Report } from '../../types/report';
-import { Card } from '../ui';
+import { Card, Skeleton } from '../ui';
 import { ReportCard } from './ReportCard';
+
+function SkeletonCard() {
+  return (
+    <Card>
+      <Skeleton className="mb-3 h-3 w-1/2" />
+      <Skeleton className="h-7 w-2/5" />
+    </Card>
+  );
+}
 
 export function ReportSummaryGrid({
   currentLoading,
   currentReport,
   previousLoading,
   previousReport,
+  reportsLoading,
   totalCount,
 }: {
-  totalCount: number | undefined;
-  currentReport: Report | undefined;
   currentLoading: boolean;
-  previousReport: Report | undefined;
+  currentReport: Report | undefined;
   previousLoading: boolean;
+  previousReport: Report | undefined;
+  reportsLoading: boolean;
+  totalCount: number | undefined;
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -22,15 +33,17 @@ export function ReportSummaryGrid({
           Total Reports
         </p>
 
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-          {totalCount ?? '-'}
-        </p>
+        {reportsLoading ? (
+          <Skeleton className="mt-1 h-7 w-2/5" />
+        ) : (
+          <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+            {totalCount ?? '-'}
+          </p>
+        )}
       </Card>
 
       {currentLoading && !currentReport ? (
-        <Card>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
-        </Card>
+        <SkeletonCard />
       ) : currentReport ? (
         <ReportCard label="Current" report={currentReport} />
       ) : (
@@ -45,9 +58,7 @@ export function ReportSummaryGrid({
       )}
 
       {previousLoading && !previousReport ? (
-        <Card>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
-        </Card>
+        <SkeletonCard />
       ) : previousReport ? (
         <ReportCard label="Previous" report={previousReport} />
       ) : (
