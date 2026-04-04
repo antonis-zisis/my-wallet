@@ -17,6 +17,7 @@ export function Home() {
     currentLoading,
     currentReport,
     lastSnapshot,
+    netWorthLoading,
     previousLoading,
     previousReport,
     reportsLoading,
@@ -25,7 +26,6 @@ export function Home() {
   } = useHomeData();
 
   const showSubscriptions = activeSubscriptions.length > 0;
-  const showNetWorth = lastSnapshot !== null;
 
   return (
     <PageLayout className="space-y-10">
@@ -60,14 +60,13 @@ export function Home() {
         </>
       )}
 
-      {showNetWorth && (
-        <>
-          <Divider />
-          <section>
-            <NetWorthSummaryCard snapshot={lastSnapshot} />
-          </section>
-        </>
-      )}
+      <Divider />
+      <section>
+        <NetWorthSummaryCard
+          loading={netWorthLoading}
+          snapshot={lastSnapshot}
+        />
+      </section>
     </PageLayout>
   );
 }
