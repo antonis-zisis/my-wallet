@@ -13,12 +13,12 @@ const iconButtonClass =
   'rounded-lg cursor-pointer p-1.5 text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700';
 
 export function Pagination({
-  page,
-  totalPages,
-  totalCount,
-  pageSize,
   itemCount,
   onPageChange,
+  page,
+  pageSize,
+  totalCount,
+  totalPages,
 }: PaginationProps) {
   const startItem = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
   const endItem = (page - 1) * pageSize + itemCount;

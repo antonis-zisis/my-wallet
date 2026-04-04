@@ -13,10 +13,10 @@ interface NetWorthListProps {
 }
 
 export function NetWorthList({
-  snapshots,
-  loading,
   error,
+  loading,
   onDelete,
+  snapshots,
 }: NetWorthListProps) {
   if (loading) {
     return (

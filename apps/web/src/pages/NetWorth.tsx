@@ -6,7 +6,7 @@ import {
   DeleteNetWorthSnapshotModal,
   NetWorthList,
 } from '../components/netWorth';
-import { Button, Pagination } from '../components/ui';
+import { Button, PageLayout, Pagination } from '../components/ui';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
@@ -18,7 +18,7 @@ const PAGE_SIZE = 20;
 
 export function NetWorth() {
   const [page, setPage] = useState(1);
-  const { data, loading, error } = useQuery<NetWorthSnapshotsData>(
+  const { data, error, loading } = useQuery<NetWorthSnapshotsData>(
     GET_NET_WORTH_SNAPSHOTS,
     { variables: { page } }
   );
@@ -67,8 +67,8 @@ export function NetWorth() {
   };
 
   return (
-    <div className="py-8">
-      <div className="mx-auto max-w-5xl px-4">
+    <>
+      <PageLayout>
         <div className="mb-6 flex items-center justify-end">
           <Button onClick={() => setIsCreateOpen(true)}>New Snapshot</Button>
         </div>
@@ -92,7 +92,7 @@ export function NetWorth() {
             onPageChange={setPage}
           />
         )}
-      </div>
+      </PageLayout>
 
       <CreateNetWorthSnapshotModal
         isOpen={isCreateOpen}
@@ -107,6 +107,6 @@ export function NetWorth() {
         snapshotTitle={snapshotToDelete?.title ?? ''}
         isDeleting={isDeleting}
       />
-    </div>
+    </>
   );
 }

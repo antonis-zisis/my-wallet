@@ -9,11 +9,11 @@ interface DeleteTransactionModalProps {
 }
 
 export function DeleteTransactionModal({
+  isDeleting,
   isOpen,
   onClose,
   onConfirm,
   transactionDescription,
-  isDeleting,
 }: DeleteTransactionModalProps) {
   return (
     <Modal

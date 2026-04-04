@@ -1,4 +1,5 @@
 /// <reference types="node" />
+
 import '@testing-library/jest-dom';
 
 import { vi } from 'vitest';
@@ -17,7 +18,7 @@ vi.mock('../lib/supabase', () => ({
   },
 }));
 
-// mock matchMedia for tests
+// mock matchMedia for all tests
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query: string) => ({
@@ -36,7 +37,6 @@ Object.defineProperty(window, 'matchMedia', {
 // this is a known behavior when testing GraphQL error scenarios
 if (typeof process !== 'undefined' && process.on) {
   process.on('unhandledRejection', (reason: unknown) => {
-    // suppress Apollo MockLink errors that are expected in error tests
     if (
       reason instanceof Error &&
       reason.message === 'Failed to create transaction'

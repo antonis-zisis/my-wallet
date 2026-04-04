@@ -1,6 +1,5 @@
 import { MockLink } from '@apollo/client/testing';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
@@ -24,15 +23,6 @@ const mockHealthQuery: MockLink.MockedResponse = {
     data: {
       health: 'GraphQL server is running!',
     },
-  },
-};
-
-const mockHealthQueryError: MockLink.MockedResponse = {
-  request: {
-    query: HEALTH_QUERY,
-  },
-  result: {
-    errors: [new GraphQLError('Connection failed')],
   },
 };
 
@@ -212,45 +202,6 @@ const renderHome = (mocks: Array<MockLink.MockedResponse>) => {
 };
 
 describe('Home', () => {
-  it('shows connecting status initially', () => {
-    renderHome([
-      mockHealthQuery,
-      mockReportsEmpty,
-      mockReportsSummaryEmpty,
-      mockNetWorthSnapshotsEmpty,
-      mockSubscriptionsEmpty,
-    ]);
-    expect(screen.getByText('Connecting...')).toBeInTheDocument();
-  });
-
-  it('shows connected status after health query succeeds', async () => {
-    renderHome([
-      mockHealthQuery,
-      mockReportsEmpty,
-      mockReportsSummaryEmpty,
-      mockNetWorthSnapshotsEmpty,
-      mockSubscriptionsEmpty,
-    ]);
-
-    expect(
-      await screen.findByText('GraphQL server is running!')
-    ).toBeInTheDocument();
-  });
-
-  it('shows error status when health query fails', async () => {
-    renderHome([
-      mockHealthQueryError,
-      mockReportsEmpty,
-      mockReportsSummaryEmpty,
-      mockNetWorthSnapshotsEmpty,
-      mockSubscriptionsEmpty,
-    ]);
-
-    expect(
-      await screen.findByText('Failed to connect to server')
-    ).toBeInTheDocument();
-  });
-
   it('displays total reports count', async () => {
     renderHome([
       mockHealthQuery,
@@ -263,15 +214,17 @@ describe('Home', () => {
     expect(await screen.findByText('5')).toBeInTheDocument();
   });
 
-  it('shows dash when reports data is not yet loaded', () => {
-    renderHome([
+  it('shows skeleton when reports data is not yet loaded', () => {
+    const { container } = renderHome([
       mockHealthQuery,
       mockReportsEmpty,
       mockReportsSummaryEmpty,
       mockNetWorthSnapshotsEmpty,
       mockSubscriptionsEmpty,
     ]);
-    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
+      0
+    );
   });
 
   it('renders current and previous report cards', async () => {
@@ -572,7 +525,7 @@ describe('Home', () => {
       expect(screen.getByText(/3\.000,00 €/)).toBeInTheDocument();
     });
 
-    it('does not render the card when no snapshots exist', async () => {
+    it('shows CTA placeholder when no snapshots exist', async () => {
       renderHome([
         mockHealthQuery,
         mockReportsEmpty,
@@ -581,8 +534,9 @@ describe('Home', () => {
         mockSubscriptionsEmpty,
       ]);
 
-      await screen.findByText('0');
-      expect(screen.queryByText('Net Worth')).not.toBeInTheDocument();
+      expect(
+        await screen.findByText('No net worth snapshot yet')
+      ).toBeInTheDocument();
     });
 
     it('card is collapsed by default', async () => {
@@ -748,7 +702,7 @@ describe('Home', () => {
       expect(screen.queryByText('Spotify')).not.toBeInTheDocument();
     });
 
-    it('does not render section when no active subscriptions', async () => {
+    it('shows CTA placeholder when no active subscriptions', async () => {
       renderHome([
         mockHealthQuery,
         mockReportsEmpty,
@@ -757,11 +711,9 @@ describe('Home', () => {
         mockSubscriptionsEmpty,
       ]);
 
-      await screen.findByText('0');
       expect(
-        screen.queryByText('Active Subscriptions')
-      ).not.toBeInTheDocument();
-      expect(screen.queryByText('Upcoming Renewals')).not.toBeInTheDocument();
+        await screen.findByText('No subscriptions tracked yet')
+      ).toBeInTheDocument();
     });
   });
 });

@@ -15,7 +15,7 @@ const mockUser = {
 };
 
 function TestConsumer() {
-  const { user, loading } = useUser();
+  const { loading, user } = useUser();
   return (
     <div>
       <span data-testid="loading">{String(loading)}</span>

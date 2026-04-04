@@ -9,11 +9,11 @@ interface DeleteSubscriptionModalProps {
 }
 
 export function DeleteSubscriptionModal({
+  isDeleting,
   isOpen,
   onClose,
   onConfirm,
   subscriptionName,
-  isDeleting,
 }: DeleteSubscriptionModalProps) {
   return (
     <Modal

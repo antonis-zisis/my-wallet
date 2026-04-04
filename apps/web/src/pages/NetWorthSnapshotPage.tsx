@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/client/react';
 import { useParams } from 'react-router-dom';
 
+import { PageLayout } from '../components/ui';
 import { GET_NET_WORTH_SNAPSHOT } from '../graphql/netWorth';
 import { NetWorthEntry, NetWorthSnapshot } from '../types/netWorth';
 import { formatMoney } from '../utils/formatMoney';
@@ -10,10 +11,10 @@ interface SnapshotData {
 }
 
 function EntriesSection({
-  title,
-  entries,
-  total,
   colorClass,
+  entries,
+  title,
+  total,
 }: {
   title: string;
   entries: Array<NetWorthEntry>;
@@ -76,32 +77,28 @@ function EntriesSection({
 
 export function NetWorthSnapshotPage() {
   const { id } = useParams<{ id: string }>();
-  const { data, loading, error } = useQuery<SnapshotData>(
+  const { data, error, loading } = useQuery<SnapshotData>(
     GET_NET_WORTH_SNAPSHOT,
     { variables: { id } }
   );
 
   if (loading) {
     return (
-      <div className="py-8">
-        <div className="mx-auto max-w-5xl px-4">
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            Loading...
-          </p>
-        </div>
-      </div>
+      <PageLayout>
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Loading...
+        </p>
+      </PageLayout>
     );
   }
 
   if (error || !data?.netWorthSnapshot) {
     return (
-      <div className="py-8">
-        <div className="mx-auto max-w-5xl px-4">
-          <p className="text-center text-red-500">
-            {error ? 'Failed to load snapshot.' : 'Snapshot not found.'}
-          </p>
-        </div>
-      </div>
+      <PageLayout>
+        <p className="text-center text-red-500">
+          {error ? 'Failed to load snapshot.' : 'Snapshot not found.'}
+        </p>
+      </PageLayout>
     );
   }
 
@@ -113,78 +110,76 @@ export function NetWorthSnapshotPage() {
   const isPositive = snapshot.netWorth >= 0;
 
   return (
-    <div className="py-8">
-      <div className="mx-auto max-w-5xl space-y-6 px-4">
-        <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
-          <h1 className="mb-4 text-2xl font-bold text-gray-800 dark:text-gray-100">
-            {snapshot.title}
-          </h1>
+    <PageLayout className="space-y-6">
+      <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+        <h1 className="mb-4 text-2xl font-bold text-gray-800 dark:text-gray-100">
+          {snapshot.title}
+        </h1>
 
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total Assets
-              </p>
-              <p className="text-xl font-semibold text-green-600 dark:text-green-400">
-                {formatMoney(snapshot.totalAssets)} €
-              </p>
-            </div>
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Total Assets
+            </p>
+            <p className="text-xl font-semibold text-green-600 dark:text-green-400">
+              {formatMoney(snapshot.totalAssets)} €
+            </p>
+          </div>
 
-            <div className="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total Liabilities
-              </p>
-              <p className="text-xl font-semibold text-red-600 dark:text-red-400">
-                {formatMoney(snapshot.totalLiabilities)} €
-              </p>
-            </div>
+          <div className="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Total Liabilities
+            </p>
+            <p className="text-xl font-semibold text-red-600 dark:text-red-400">
+              {formatMoney(snapshot.totalLiabilities)} €
+            </p>
+          </div>
 
-            <div
-              className={`rounded-lg p-4 ${
+          <div
+            className={`rounded-lg p-4 ${
+              isPositive
+                ? 'bg-blue-50 dark:bg-blue-900/20'
+                : 'bg-orange-50 dark:bg-orange-900/20'
+            }`}
+          >
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Net Worth
+            </p>
+            <p
+              className={`text-xl font-semibold ${
                 isPositive
-                  ? 'bg-blue-50 dark:bg-blue-900/20'
-                  : 'bg-orange-50 dark:bg-orange-900/20'
+                  ? 'text-blue-600 dark:text-blue-400'
+                  : 'text-orange-600 dark:text-orange-400'
               }`}
             >
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Net Worth
-              </p>
-              <p
-                className={`text-xl font-semibold ${
-                  isPositive
-                    ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-orange-600 dark:text-orange-400'
-                }`}
-              >
-                {isPositive ? '' : '-'}
-                {formatMoney(Math.abs(snapshot.netWorth))} €
-              </p>
-            </div>
+              {isPositive ? '' : '-'}
+              {formatMoney(Math.abs(snapshot.netWorth))} €
+            </p>
           </div>
         </div>
-
-        {assets.length > 0 && (
-          <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
-            <EntriesSection
-              title="Assets"
-              entries={assets}
-              total={snapshot.totalAssets}
-              colorClass="text-green-600 dark:text-green-400"
-            />
-          </div>
-        )}
-
-        {liabilities.length > 0 && (
-          <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
-            <EntriesSection
-              title="Liabilities"
-              entries={liabilities}
-              total={snapshot.totalLiabilities}
-              colorClass="text-red-600 dark:text-red-400"
-            />
-          </div>
-        )}
       </div>
-    </div>
+
+      {assets.length > 0 && (
+        <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+          <EntriesSection
+            title="Assets"
+            entries={assets}
+            total={snapshot.totalAssets}
+            colorClass="text-green-600 dark:text-green-400"
+          />
+        </div>
+      )}
+
+      {liabilities.length > 0 && (
+        <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+          <EntriesSection
+            title="Liabilities"
+            entries={liabilities}
+            total={snapshot.totalLiabilities}
+            colorClass="text-red-600 dark:text-red-400"
+          />
+        </div>
+      )}
+    </PageLayout>
   );
 }

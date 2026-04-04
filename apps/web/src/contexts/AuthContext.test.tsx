@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 import { AuthProvider, useAuth } from './AuthContext';
 
 function TestConsumer() {
-  const { session, loading, signIn, signOut } = useAuth();
+  const { loading, session, signIn, signOut } = useAuth();
   return (
     <div>
       <span data-testid="loading">{String(loading)}</span>

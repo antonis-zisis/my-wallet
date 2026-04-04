@@ -46,16 +46,16 @@ const RADIAN = Math.PI / 180;
 const renderShape = ({
   cx,
   cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  startAngle,
   endAngle,
   fill,
+  innerRadius,
+  isActive,
+  midAngle,
+  outerRadius,
   payload,
   percent,
+  startAngle,
   value,
-  isActive,
 }: PieSectorShapeProps) => {
   if (!isActive) {
     return (

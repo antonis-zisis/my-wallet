@@ -8,7 +8,7 @@ interface MockedProviderProps {
   children: ReactNode;
 }
 
-export function MockedProvider({ mocks = [], children }: MockedProviderProps) {
+export function MockedProvider({ children, mocks = [] }: MockedProviderProps) {
   const mockLink = new MockLink(mocks);
 
   const client = new ApolloClient({

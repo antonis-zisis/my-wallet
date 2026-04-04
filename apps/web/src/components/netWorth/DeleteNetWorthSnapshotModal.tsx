@@ -9,11 +9,11 @@ interface DeleteNetWorthSnapshotModalProps {
 }
 
 export function DeleteNetWorthSnapshotModal({
+  isDeleting,
   isOpen,
   onClose,
   onConfirm,
   snapshotTitle,
-  isDeleting,
 }: DeleteNetWorthSnapshotModalProps) {
   return (
     <Modal

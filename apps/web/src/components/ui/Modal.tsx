@@ -12,12 +12,12 @@ interface ModalProps {
 }
 
 export function Modal({
-  isOpen,
-  onClose,
-  title,
   children,
   footer,
+  isOpen,
+  onClose,
   size = 'md',
+  title,
 }: ModalProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {

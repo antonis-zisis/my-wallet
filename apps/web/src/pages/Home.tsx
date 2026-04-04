@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client/react';
+import { Link } from 'react-router-dom';
 
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import {
@@ -8,103 +8,104 @@ import {
   SubscriptionSummarySection,
   UpcomingRenewalsCard,
 } from '../components/home';
-import { Card } from '../components/ui';
-import { HEALTH_QUERY } from '../graphql/health';
-import { GET_NET_WORTH_SNAPSHOTS } from '../graphql/netWorth';
-import {
-  GET_REPORT,
-  GET_REPORTS,
-  GET_REPORTS_SUMMARY,
-} from '../graphql/reports';
-import { GET_SUBSCRIPTIONS } from '../graphql/subscriptions';
-import { NetWorthSnapshotsData } from '../types/netWorth';
-import { Report, ReportsData } from '../types/report';
-import { SubscriptionsData } from '../types/subscription';
+import { Card, Divider, PageLayout, Skeleton } from '../components/ui';
+import { useHomeData } from '../hooks/useHomeData';
 
-interface ReportsSummaryData {
-  reports: {
-    items: Array<Report>;
-  };
+function SubscriptionsSkeletonGrid() {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {[0, 1, 2].map((index) => (
+        <Card key={index}>
+          <Skeleton className="mb-3 h-3 w-1/2" />
+          <Skeleton className="h-7 w-2/5" />
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function SubscriptionsCTACard() {
+  return (
+    <Card>
+      <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          No subscriptions tracked yet
+        </p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">
+          Add your recurring bills to track monthly costs and upcoming renewals.
+        </p>
+        <Link
+          to="/subscriptions"
+          className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+        >
+          Add a subscription
+        </Link>
+      </div>
+    </Card>
+  );
 }
 
 export function Home() {
-  const { data, loading, error } = useQuery<{ health: string }>(HEALTH_QUERY);
-  const { data: reportsData } = useQuery<ReportsData>(GET_REPORTS);
-  const { data: summaryData } =
-    useQuery<ReportsSummaryData>(GET_REPORTS_SUMMARY);
-  const { data: netWorthData } = useQuery<NetWorthSnapshotsData>(
-    GET_NET_WORTH_SNAPSHOTS,
-    { variables: { page: 1 } }
-  );
-  const { data: subscriptionsData } = useQuery<SubscriptionsData>(
-    GET_SUBSCRIPTIONS,
-    { variables: { page: 1, active: true } }
-  );
-
-  const reportItems = reportsData?.reports.items ?? [];
-  const currentId = reportItems[0]?.id;
-  const previousId = reportItems[1]?.id;
-
-  const { data: currentData, loading: currentLoading } = useQuery<{
-    report: Report;
-  }>(GET_REPORT, { variables: { id: currentId }, skip: !currentId });
-
-  const { data: previousData, loading: previousLoading } = useQuery<{
-    report: Report;
-  }>(GET_REPORT, { variables: { id: previousId }, skip: !previousId });
-
-  const getStatusMessage = () => {
-    if (loading) {
-      return 'Connecting...';
-    }
-
-    if (error) {
-      return 'Failed to connect to server';
-    }
-
-    return data?.health ?? 'Connected';
-  };
-
-  const chartReports = summaryData?.reports.items ?? [];
-  const lastSnapshot = netWorthData?.netWorthSnapshots.items[0] ?? null;
-  const activeSubscriptions = subscriptionsData?.subscriptions.items ?? [];
-  const currentIncome = (currentData?.report.transactions ?? [])
-    .filter((tx) => tx.type === 'INCOME')
-    .reduce((sum, tx) => sum + tx.amount, 0);
+  const {
+    activeSubscriptions,
+    chartReports,
+    currentIncome,
+    currentLoading,
+    currentReport,
+    lastSnapshot,
+    netWorthLoading,
+    previousLoading,
+    previousReport,
+    reportsLoading,
+    subscriptionsLoading,
+    summaryLoading,
+    totalReportsCount,
+  } = useHomeData();
 
   return (
-    <div className="py-8">
-      <div className="mx-auto max-w-5xl px-4">
-        <Card>
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            {getStatusMessage()}
-          </p>
-        </Card>
-
+    <PageLayout className="space-y-10">
+      <section>
         <ReportSummaryGrid
-          totalCount={reportsData?.reports.totalCount}
-          currentReport={currentData?.report}
           currentLoading={currentLoading}
-          previousReport={previousData?.report}
+          currentReport={currentReport}
           previousLoading={previousLoading}
+          previousReport={previousReport}
+          reportsLoading={reportsLoading}
+          totalCount={totalReportsCount}
         />
 
         <ErrorBoundary compact>
-          <IncomeExpensesSection reports={chartReports} />
+          <IncomeExpensesSection
+            loading={summaryLoading}
+            reports={chartReports}
+          />
         </ErrorBoundary>
+      </section>
 
-        {activeSubscriptions.length > 0 && (
+      <Divider />
+      <section>
+        {subscriptionsLoading ? (
+          <SubscriptionsSkeletonGrid />
+        ) : activeSubscriptions.length === 0 ? (
+          <SubscriptionsCTACard />
+        ) : (
           <>
             <SubscriptionSummarySection
-              subscriptions={activeSubscriptions}
               currentIncome={currentIncome}
+              subscriptions={activeSubscriptions}
             />
             <UpcomingRenewalsCard subscriptions={activeSubscriptions} />
           </>
         )}
+      </section>
 
-        {lastSnapshot && <NetWorthSummaryCard snapshot={lastSnapshot} />}
-      </div>
-    </div>
+      <Divider />
+      <section>
+        <NetWorthSummaryCard
+          loading={netWorthLoading}
+          snapshot={lastSnapshot}
+        />
+      </section>
+    </PageLayout>
   );
 }

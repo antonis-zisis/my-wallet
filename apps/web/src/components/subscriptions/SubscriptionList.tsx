@@ -16,13 +16,13 @@ interface SubscriptionListProps {
 }
 
 export function SubscriptionList({
-  subscriptions,
-  loading,
+  emptyMessage = 'No subscriptions yet.',
   error,
-  onEdit,
+  loading,
   onCancel,
   onDelete,
-  emptyMessage = 'No subscriptions yet.',
+  onEdit,
+  subscriptions,
 }: SubscriptionListProps) {
   if (loading) {
     return (

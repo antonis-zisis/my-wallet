@@ -3,8 +3,8 @@ import { formatMoney } from '../../utils/formatMoney';
 import { Card } from '../ui';
 
 export function SubscriptionSummarySection({
-  subscriptions,
   currentIncome,
+  subscriptions,
 }: {
   subscriptions: Array<Subscription>;
   currentIncome: number;
@@ -20,7 +20,7 @@ export function SubscriptionSummarySection({
       : '-';
 
   return (
-    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Card>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Active Subscriptions

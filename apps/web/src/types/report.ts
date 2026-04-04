@@ -14,3 +14,9 @@ export interface ReportsData {
     totalCount: number;
   };
 }
+
+export interface ReportsSummaryData {
+  reports: {
+    items: Array<Report>;
+  };
+}

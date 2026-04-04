@@ -9,11 +9,11 @@ interface CancelSubscriptionModalProps {
 }
 
 export function CancelSubscriptionModal({
+  isCancelling,
   isOpen,
   onClose,
   onConfirm,
   subscriptionName,
-  isCancelling,
 }: CancelSubscriptionModalProps) {
   return (
     <Modal

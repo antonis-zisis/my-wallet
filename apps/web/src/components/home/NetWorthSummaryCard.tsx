@@ -5,21 +5,53 @@ import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
 import { ChevronDownIcon, ChevronUpIcon } from '../icons';
-import { Card } from '../ui';
+import { Card, Skeleton } from '../ui';
 
 export function NetWorthSummaryCard({
+  loading,
   snapshot,
 }: {
-  snapshot: NetWorthSnapshot;
+  loading: boolean;
+  snapshot: NetWorthSnapshot | null;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <Card>
+        <Skeleton className="mb-3 h-5 w-1/3" />
+        <Skeleton className="h-7 w-2/5" />
+      </Card>
+    );
+  }
+
+  if (!snapshot) {
+    return (
+      <Card>
+        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            No net worth snapshot yet
+          </p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            Track your assets and liabilities to see your net worth.
+          </p>
+          <Link
+            to="/net-worth"
+            className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+          >
+            Add a snapshot
+          </Link>
+        </div>
+      </Card>
+    );
+  }
 
   const isPositive = snapshot.netWorth >= 0;
   const sign = isPositive ? '' : '-';
   const netWorthColor = isPositive ? 'text-green-600' : 'text-red-600';
 
   return (
-    <Card className="mt-4">
+    <Card>
       <div className="flex items-center justify-between">
         <button
           type="button"

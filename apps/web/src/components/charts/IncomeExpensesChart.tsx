@@ -20,8 +20,8 @@ interface IncomeExpensesChartProps {
 }
 
 export function IncomeExpensesChart({
-  reports,
   limit = 12,
+  reports,
 }: IncomeExpensesChartProps) {
   const navigate = useNavigate();
 

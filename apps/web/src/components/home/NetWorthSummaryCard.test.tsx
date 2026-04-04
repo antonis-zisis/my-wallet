@@ -27,17 +27,16 @@ const negativeSnapshot: NetWorthSnapshot = {
   updatedAt: '2026-01-01T00:00:00.000Z',
 };
 
-const renderCard = (snapshot: NetWorthSnapshot) =>
+const renderCard = (snapshot: NetWorthSnapshot | null, loading = false) =>
   render(
     <MemoryRouter>
-      <NetWorthSummaryCard snapshot={snapshot} />
+      <NetWorthSummaryCard loading={loading} snapshot={snapshot} />
     </MemoryRouter>
   );
 
 describe('NetWorthSummaryCard', () => {
   it('renders the Net Worth heading', () => {
     renderCard(positiveSnapshot);
-
     expect(
       screen.getByRole('heading', { name: 'Net Worth' })
     ).toBeInTheDocument();
@@ -45,42 +44,33 @@ describe('NetWorthSummaryCard', () => {
 
   it('displays the net worth value in the header', () => {
     renderCard(positiveSnapshot);
-
     expect(screen.getByText(/12\.000,00 €/)).toBeInTheDocument();
   });
 
   it('is collapsed by default', () => {
     renderCard(positiveSnapshot);
-
     expect(screen.queryByText('Assets')).not.toBeInTheDocument();
   });
 
   it('expands when the header button is clicked', () => {
     renderCard(positiveSnapshot);
-
     fireEvent.click(screen.getByRole('button', { name: /net worth/i }));
-
     expect(screen.getByText('Assets')).toBeInTheDocument();
   });
 
   it('collapses again on a second click', () => {
     renderCard(positiveSnapshot);
-
     const button = screen.getByRole('button', { name: /net worth/i });
     fireEvent.click(button);
     fireEvent.click(button);
-
     expect(screen.queryByText('Assets')).not.toBeInTheDocument();
   });
 
   it('shows totalAssets, totalLiabilities and netWorth when expanded', () => {
     renderCard(positiveSnapshot);
-
     fireEvent.click(screen.getByRole('button', { name: /net worth/i }));
-
     expect(screen.getByText(/15\.000,00 €/)).toBeInTheDocument();
     expect(screen.getByText(/3\.000,00 €/)).toBeInTheDocument();
-    // net worth value appears in both header and grid
     expect(screen.getAllByText(/12\.000,00 €/).length).toBeGreaterThanOrEqual(
       2
     );
@@ -88,9 +78,7 @@ describe('NetWorthSummaryCard', () => {
 
   it('shows the snapshot title as a link when expanded', () => {
     renderCard(positiveSnapshot);
-
     fireEvent.click(screen.getByRole('button', { name: /net worth/i }));
-
     const link = screen.getByRole('link', { name: 'February 2026' });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('href', '/net-worth/nw1');
@@ -99,28 +87,45 @@ describe('NetWorthSummaryCard', () => {
   describe('negative net worth', () => {
     it('displays a minus sign before the value in the header', () => {
       renderCard(negativeSnapshot);
-
       expect(screen.getByText(/^-/)).toBeInTheDocument();
     });
 
     it('uses red colour for a negative net worth value', () => {
       renderCard(negativeSnapshot);
-
       const headerSpan = screen.getByText(/4\.000,00 €/);
       expect(headerSpan).toHaveClass('text-red-600');
     });
 
     it('shows the absolute value without double negation when expanded', () => {
       renderCard(negativeSnapshot);
-
       fireEvent.click(screen.getByRole('button', { name: /net worth/i }));
-
-      // Should show "4.000,00 €" not "-4.000,00 €" or "−−4.000,00 €"
       const values = screen.getAllByText(/4\.000,00 €/);
       expect(values.length).toBeGreaterThanOrEqual(1);
-      values.forEach((el) => {
-        expect(el.textContent).not.toMatch(/--/);
+      values.forEach((element) => {
+        expect(element.textContent).not.toMatch(/--/);
       });
+    });
+  });
+
+  describe('loading state', () => {
+    it('shows skeleton when loading is true', () => {
+      const { container } = renderCard(null, true);
+      expect(
+        container.querySelectorAll('.animate-pulse').length
+      ).toBeGreaterThan(0);
+      expect(
+        screen.queryByRole('heading', { name: 'Net Worth' })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('empty state', () => {
+    it('shows CTA placeholder when snapshot is null and not loading', () => {
+      renderCard(null, false);
+      expect(screen.getByText('No net worth snapshot yet')).toBeInTheDocument();
+      expect(
+        screen.getByRole('link', { name: 'Add a snapshot' })
+      ).toHaveAttribute('href', '/net-worth');
     });
   });
 });

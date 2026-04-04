@@ -1,13 +1,13 @@
 import { type FormEvent, useEffect, useState } from 'react';
 
-import { Button, Card, Input } from '../components/ui';
+import { Button, Card, Input, PageLayout } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 import { useUser } from '../contexts/UserContext';
 
 const MIN_PASSWORD_LENGTH = 6;
 
 export function Profile() {
-  const { user, updateUser } = useUser();
+  const { updateUser, user } = useUser();
   const { updatePassword } = useAuth();
 
   const [fullName, setFullName] = useState(user?.fullName ?? '');
@@ -87,7 +87,7 @@ export function Profile() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-4">
+    <PageLayout className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
         Profile
       </h1>
@@ -158,6 +158,6 @@ export function Profile() {
           </Button>
         </form>
       </Card>
-    </div>
+    </PageLayout>
   );
 }
