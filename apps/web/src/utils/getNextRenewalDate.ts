@@ -10,6 +10,7 @@ export function getNextRenewalDate(
       : startDate;
   const parsed = value instanceof Date ? value : new Date(value);
   const today = new Date();
+
   today.setHours(0, 0, 0, 0);
 
   const increment = billingCycle === 'MONTHLY' ? 1 : 12;

@@ -93,7 +93,7 @@ export function NavBar() {
                       aria-label="User menu"
                       className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-blue-500 text-xs font-medium text-white hover:bg-blue-600"
                     >
-                      {getInitials(user)}
+                      {getInitials(user.fullName ?? user.email)}
                     </button>
                   }
                 />

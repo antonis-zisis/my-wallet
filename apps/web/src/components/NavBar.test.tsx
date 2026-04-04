@@ -101,7 +101,7 @@ describe('NavBar', () => {
 
     await renderNavBar();
     const avatar = screen.getByLabelText('User menu');
-    expect(avatar).toHaveTextContent('TE');
+    expect(avatar).toHaveTextContent('T');
   });
 
   it('does not show avatar when user is null', async () => {
