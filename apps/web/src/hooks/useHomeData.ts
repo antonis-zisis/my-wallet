@@ -12,17 +12,18 @@ import { Report, ReportsData, ReportsSummaryData } from '../types/report';
 import { SubscriptionsData } from '../types/subscription';
 
 export function useHomeData() {
-  const { data: reportsData } = useQuery<ReportsData>(GET_REPORTS);
-  const { data: summaryData } =
+  const { data: reportsData, loading: reportsLoading } =
+    useQuery<ReportsData>(GET_REPORTS);
+  const { data: summaryData, loading: summaryLoading } =
     useQuery<ReportsSummaryData>(GET_REPORTS_SUMMARY);
-  const { data: netWorthData } = useQuery<NetWorthSnapshotsData>(
-    GET_NET_WORTH_SNAPSHOTS,
-    { variables: { page: 1 } }
-  );
-  const { data: subscriptionsData } = useQuery<SubscriptionsData>(
-    GET_SUBSCRIPTIONS,
-    { variables: { page: 1, active: true } }
-  );
+  const { data: netWorthData, loading: netWorthLoading } =
+    useQuery<NetWorthSnapshotsData>(GET_NET_WORTH_SNAPSHOTS, {
+      variables: { page: 1 },
+    });
+  const { data: subscriptionsData, loading: subscriptionsLoading } =
+    useQuery<SubscriptionsData>(GET_SUBSCRIPTIONS, {
+      variables: { page: 1, active: true },
+    });
 
   const reportItems = reportsData?.reports.items ?? [];
   const currentId = reportItems[0]?.id;
@@ -42,14 +43,18 @@ export function useHomeData() {
     .reduce((sum, transaction) => sum + transaction.amount, 0);
 
   return {
-    totalReportsCount: reportsData?.reports.totalCount,
-    chartReports: summaryData?.reports.items ?? [],
-    currentReport: currentData?.report,
-    currentLoading,
-    previousReport: previousData?.report,
-    previousLoading,
     activeSubscriptions,
+    chartReports: summaryData?.reports.items ?? [],
     currentIncome,
+    currentLoading,
+    currentReport: currentData?.report,
     lastSnapshot: netWorthData?.netWorthSnapshots.items[0] ?? null,
+    netWorthLoading,
+    previousLoading,
+    previousReport: previousData?.report,
+    reportsLoading,
+    subscriptionsLoading,
+    summaryLoading,
+    totalReportsCount: reportsData?.reports.totalCount,
   };
 }
