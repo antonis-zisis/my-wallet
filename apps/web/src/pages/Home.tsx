@@ -20,6 +20,7 @@ export function Home() {
     previousLoading,
     previousReport,
     reportsLoading,
+    summaryLoading,
     totalReportsCount,
   } = useHomeData();
 
@@ -39,7 +40,10 @@ export function Home() {
         />
 
         <ErrorBoundary compact>
-          <IncomeExpensesSection reports={chartReports} />
+          <IncomeExpensesSection
+            loading={summaryLoading}
+            reports={chartReports}
+          />
         </ErrorBoundary>
       </section>
 

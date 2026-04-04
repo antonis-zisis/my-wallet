@@ -1,19 +1,51 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
 import { IncomeExpensesChart } from '../charts';
 import { ChevronDownIcon, ChevronUpIcon } from '../icons';
-import { Card } from '../ui';
+import { Card, Skeleton } from '../ui';
 
 const LIMIT_OPTIONS = [3, 6, 9, 12] as const;
 type LimitOption = (typeof LIMIT_OPTIONS)[number];
 
-export function IncomeExpensesSection({ reports }: { reports: Array<Report> }) {
+export function IncomeExpensesSection({
+  loading,
+  reports,
+}: {
+  loading: boolean;
+  reports: Array<Report>;
+}) {
   const [isOpen, setIsOpen] = useState(true);
   const [limit, setLimit] = useState<LimitOption>(12);
 
+  if (loading) {
+    return (
+      <Card className="mt-4">
+        <Skeleton className="h-48 w-full" />
+      </Card>
+    );
+  }
+
   if (reports.length === 0) {
-    return null;
+    return (
+      <Card className="mt-4">
+        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            No reports yet
+          </p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            Add a report to see your income and expenses over time.
+          </p>
+          <Link
+            to="/reports"
+            className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+          >
+            Add a report
+          </Link>
+        </div>
+      </Card>
+    );
   }
 
   return (
@@ -65,7 +97,7 @@ export function IncomeExpensesSection({ reports }: { reports: Array<Report> }) {
 
       {isOpen && (
         <div className="mt-4">
-          <IncomeExpensesChart reports={reports} limit={limit} />
+          <IncomeExpensesChart limit={limit} reports={reports} />
         </div>
       )}
     </Card>
