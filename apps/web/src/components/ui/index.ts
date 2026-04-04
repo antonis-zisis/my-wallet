@@ -5,5 +5,6 @@ export { Divider } from './Divider';
 export { Dropdown } from './Dropdown';
 export { Input } from './Input';
 export { Modal } from './Modal';
+export { PageLayout } from './PageLayout';
 export { Pagination } from './Pagination';
 export { Select } from './Select';

@@ -9,7 +9,7 @@ import {
   EditSubscriptionModal,
   SubscriptionList,
 } from '../components/subscriptions';
-import { Button, Pagination } from '../components/ui';
+import { Button, PageLayout, Pagination } from '../components/ui';
 import {
   CANCEL_SUBSCRIPTION,
   CREATE_SUBSCRIPTION,
@@ -165,8 +165,8 @@ export function Subscriptions() {
   };
 
   return (
-    <div className="py-8">
-      <div className="mx-auto max-w-5xl px-4">
+    <>
+      <PageLayout>
         <div className="mb-6 flex items-center justify-end">
           <Button onClick={() => setIsCreateOpen(true)}>
             New Subscription
@@ -260,7 +260,7 @@ export function Subscriptions() {
             )}
           </div>
         )}
-      </div>
+      </PageLayout>
 
       <CreateSubscriptionModal
         isOpen={isCreateOpen}
@@ -290,6 +290,6 @@ export function Subscriptions() {
         subscriptionName={subscriptionToDelete?.name ?? ''}
         isDeleting={isDeleting}
       />
-    </div>
+    </>
   );
 }

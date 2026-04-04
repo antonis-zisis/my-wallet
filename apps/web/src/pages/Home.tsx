@@ -6,7 +6,7 @@ import {
   SubscriptionSummarySection,
   UpcomingRenewalsCard,
 } from '../components/home';
-import { Divider } from '../components/ui';
+import { Divider, PageLayout } from '../components/ui';
 import { useHomeData } from '../hooks/useHomeData';
 
 export function Home() {
@@ -26,43 +26,42 @@ export function Home() {
   const showNetWorth = lastSnapshot !== null;
 
   return (
-    <div className="py-8">
-      <div className="mx-auto max-w-5xl space-y-10 px-4">
-        <section>
-          <ReportSummaryGrid
-            totalCount={totalReportsCount}
-            currentReport={currentReport}
-            currentLoading={currentLoading}
-            previousReport={previousReport}
-            previousLoading={previousLoading}
-          />
-          <ErrorBoundary compact>
-            <IncomeExpensesSection reports={chartReports} />
-          </ErrorBoundary>
-        </section>
+    <PageLayout className="space-y-10">
+      <section>
+        <ReportSummaryGrid
+          totalCount={totalReportsCount}
+          currentReport={currentReport}
+          currentLoading={currentLoading}
+          previousReport={previousReport}
+          previousLoading={previousLoading}
+        />
 
-        {showSubscriptions && (
-          <>
-            <Divider />
-            <section>
-              <SubscriptionSummarySection
-                subscriptions={activeSubscriptions}
-                currentIncome={currentIncome}
-              />
-              <UpcomingRenewalsCard subscriptions={activeSubscriptions} />
-            </section>
-          </>
-        )}
+        <ErrorBoundary compact>
+          <IncomeExpensesSection reports={chartReports} />
+        </ErrorBoundary>
+      </section>
 
-        {showNetWorth && (
-          <>
-            <Divider />
-            <section>
-              <NetWorthSummaryCard snapshot={lastSnapshot} />
-            </section>
-          </>
-        )}
-      </div>
-    </div>
+      {showSubscriptions && (
+        <>
+          <Divider />
+          <section>
+            <SubscriptionSummarySection
+              subscriptions={activeSubscriptions}
+              currentIncome={currentIncome}
+            />
+            <UpcomingRenewalsCard subscriptions={activeSubscriptions} />
+          </section>
+        </>
+      )}
+
+      {showNetWorth && (
+        <>
+          <Divider />
+          <section>
+            <NetWorthSummaryCard snapshot={lastSnapshot} />
+          </section>
+        </>
+      )}
+    </PageLayout>
   );
 }

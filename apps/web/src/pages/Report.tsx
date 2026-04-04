@@ -18,7 +18,7 @@ import {
   TransactionFormModal,
   TransactionTable,
 } from '../components/reports';
-import { Card } from '../components/ui';
+import { Card, PageLayout } from '../components/ui';
 import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
 import {
   DELETE_TRANSACTION,
@@ -107,39 +107,35 @@ export function Report() {
 
   if (loading) {
     return (
-      <div className="py-8">
-        <div className="mx-auto max-w-5xl px-4">
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            Loading report...
-          </p>
-        </div>
-      </div>
+      <PageLayout>
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Loading report...
+        </p>
+      </PageLayout>
     );
   }
 
   if (error || !report) {
     return (
-      <div className="py-8">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="mb-6">
-            <Link
-              to="/reports"
-              className="text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              ← Back to Reports
-            </Link>
-          </div>
-          <p className="text-center text-red-500">
-            {error ? 'Failed to load report.' : 'Report not found.'}
-          </p>
+      <PageLayout>
+        <div className="mb-6">
+          <Link
+            to="/reports"
+            className="text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            ← Back to Reports
+          </Link>
         </div>
-      </div>
+        <p className="text-center text-red-500">
+          {error ? 'Failed to load report.' : 'Report not found.'}
+        </p>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="py-8">
-      <div className="mx-auto max-w-5xl px-4">
+    <>
+      <PageLayout>
         <div className="mb-6">
           <Link
             to="/reports"
@@ -217,7 +213,7 @@ export function Report() {
             onDelete={setDeletingTransaction}
           />
         </div>
-      </div>
+      </PageLayout>
 
       <AddTransactionModal
         isOpen={isModalOpen}
@@ -248,6 +244,6 @@ export function Report() {
         reportTitle={report.title}
         isDeleting={isDeleting}
       />
-    </div>
+    </>
   );
 }
