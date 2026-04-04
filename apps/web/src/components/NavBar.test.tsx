@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { HEALTH_QUERY } from '../graphql/health';
+import { MockedProvider } from '../test/apollo-test-utils';
 import { NavBar } from './NavBar';
 
 const mockNavigate = vi.fn();
@@ -22,15 +24,22 @@ vi.mock('../contexts/UserContext', () => ({
 
 const { useUser } = await import('../contexts/UserContext');
 
+const healthMock = {
+  request: { query: HEALTH_QUERY },
+  result: { data: { health: 'OK' } },
+};
+
 const renderNavBar = async () => {
   render(
-    <ThemeProvider>
-      <AuthProvider>
-        <MemoryRouter>
-          <NavBar />
-        </MemoryRouter>
-      </AuthProvider>
-    </ThemeProvider>
+    <MockedProvider mocks={[healthMock]}>
+      <ThemeProvider>
+        <AuthProvider>
+          <MemoryRouter>
+            <NavBar />
+          </MemoryRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </MockedProvider>
   );
 
   await waitFor(() => {
