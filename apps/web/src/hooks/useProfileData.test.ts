@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
+import type { SubmitEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useProfileData } from './useProfileData';
@@ -22,7 +23,7 @@ vi.mock('../contexts/AuthContext', () => ({
   }),
 }));
 
-const mockEvent = { preventDefault: vi.fn() } as unknown as React.FormEvent;
+const mockEvent = { preventDefault: vi.fn() } as unknown as SubmitEvent;
 
 beforeEach(() => {
   mockUpdateUser.mockReset();
