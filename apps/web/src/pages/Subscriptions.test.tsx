@@ -130,7 +130,9 @@ const renderSubscriptions = (mocks: Array<MockLink.MockedResponse>) => {
 describe('Subscriptions', () => {
   it('shows loading state initially', () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-    expect(screen.getByText('Loading subscriptions...')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('subscription-list-skeleton')
+    ).toBeInTheDocument();
   });
 
   it('renders active subscriptions after loading', async () => {
@@ -177,7 +179,10 @@ describe('Subscriptions', () => {
   it('shows empty state when no active subscriptions exist', async () => {
     renderSubscriptions([mockActiveQueryEmpty, mockInactiveQueryEmpty]);
     expect(
-      await screen.findByText('No active subscriptions. Add your first one!')
+      await screen.findByText('No active subscriptions yet.')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Add your first subscription' })
     ).toBeInTheDocument();
   });
 
