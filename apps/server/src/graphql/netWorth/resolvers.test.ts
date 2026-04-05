@@ -141,7 +141,7 @@ describe('netWorthResolvers', () => {
         orderBy: { createdAt: 'desc' },
         include: { entries: { orderBy: { createdAt: 'asc' } } },
         skip: 0,
-        take: 20,
+        take: 10,
       });
       expect(result).toEqual({
         items: [mockSnapshotWithEntries],
@@ -149,9 +149,9 @@ describe('netWorthResolvers', () => {
       });
     });
 
-    it('skips 20 items for page 2', async () => {
+    it('skips 10 items for page 2', async () => {
       vi.mocked(prisma.netWorthSnapshot.findMany).mockResolvedValue([]);
-      vi.mocked(prisma.netWorthSnapshot.count).mockResolvedValue(21);
+      vi.mocked(prisma.netWorthSnapshot.count).mockResolvedValue(11);
 
       await netWorthResolvers.Query.netWorthSnapshots(
         undefined as unknown,
@@ -160,7 +160,7 @@ describe('netWorthResolvers', () => {
       );
 
       expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 20, take: 20 })
+        expect.objectContaining({ skip: 10, take: 10 })
       );
     });
 
@@ -175,7 +175,7 @@ describe('netWorthResolvers', () => {
       );
 
       expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 0, take: 20 })
+        expect.objectContaining({ skip: 0, take: 10 })
       );
     });
   });
