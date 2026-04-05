@@ -50,11 +50,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={`relative cursor-pointer rounded-lg font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
         {...props}
       >
-        <span className={isLoading ? 'invisible' : undefined}>{children}</span>
-        {isLoading && (
-          <span className="absolute inset-0 flex items-center justify-center">
-            <Spinner />
-          </span>
+        {isLoading ? (
+          <>
+            <span className="invisible">{children}</span>
+            <span className="absolute inset-0 flex items-center justify-center">
+              <Spinner />
+            </span>
+          </>
+        ) : (
+          children
         )}
       </button>
     );

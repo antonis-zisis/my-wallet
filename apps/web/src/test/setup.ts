@@ -2,7 +2,11 @@
 
 import '@testing-library/jest-dom';
 
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 // mock Supabase client for all tests
 vi.mock('../lib/supabase', () => ({

@@ -71,7 +71,7 @@ describe('Login', () => {
     });
   });
 
-  it('disables button and shows "Logging in..." while submitting', async () => {
+  it('disables button and shows a spinner while submitting', async () => {
     let resolveSignIn!: (value: unknown) => void;
     vi.mocked(supabase.auth.signInWithPassword).mockImplementationOnce(
       // @ts-expect-error - this is a test helper to control when the sign-in promise resolves
@@ -90,9 +90,7 @@ describe('Login', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Signing in…' })
-      ).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Sign in' })).toBeDisabled();
     });
 
     resolveSignIn({ data: { user: null, session: null }, error: null });
