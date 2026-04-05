@@ -5,14 +5,35 @@ import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { ChevronDownIcon, ChevronUpIcon } from '../icons';
-import { Card } from '../ui';
+import { Card, Skeleton } from '../ui';
 
 export function UpcomingRenewalsCard({
+  loading = false,
   subscriptions,
 }: {
+  loading?: boolean;
   subscriptions: Array<Subscription>;
 }) {
   const [isOpen, setIsOpen] = useState(true);
+
+  if (loading) {
+    return (
+      <Card className="mt-4">
+        <Skeleton className="mb-4 h-5 w-1/3" />
+        <div className="divide-y divide-gray-100 dark:divide-gray-700">
+          {[0, 1, 2].map((index) => (
+            <div key={index} className="flex items-center justify-between py-2">
+              <div className="space-y-1">
+                <Skeleton className="h-3.5 w-24" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+              <Skeleton className="h-3.5 w-12" />
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  }
 
   const sorted = [...subscriptions].sort((aa, bb) => {
     const dateA = getNextRenewalDate(aa.startDate, aa.billingCycle);

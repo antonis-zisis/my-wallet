@@ -2,10 +2,7 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import { IncomeExpensesSection } from '../components/home/IncomeExpensesSection';
 import { NetWorthSummaryCard } from '../components/home/NetWorthSummaryCard';
 import { ReportSummaryGrid } from '../components/home/ReportSummaryGrid';
-import { SubscriptionsCTACard } from '../components/home/SubscriptionsCTACard';
-import { SubscriptionsSkeletonGrid } from '../components/home/SubscriptionsSkeletonGrid';
-import { SubscriptionSummarySection } from '../components/home/SubscriptionSummarySection';
-import { UpcomingRenewalsCard } from '../components/home/UpcomingRenewalsCard';
+import { SubscriptionsSection } from '../components/home/SubscriptionsSection';
 import { Divider, PageLayout } from '../components/ui';
 import { useHomeData } from '../hooks/useHomeData';
 
@@ -49,19 +46,11 @@ export function Home() {
       <Divider />
 
       <section>
-        {subscriptionsLoading ? (
-          <SubscriptionsSkeletonGrid />
-        ) : activeSubscriptions.length === 0 ? (
-          <SubscriptionsCTACard />
-        ) : (
-          <>
-            <SubscriptionSummarySection
-              currentIncome={currentIncome}
-              subscriptions={activeSubscriptions}
-            />
-            <UpcomingRenewalsCard subscriptions={activeSubscriptions} />
-          </>
-        )}
+        <SubscriptionsSection
+          currentIncome={currentIncome}
+          loading={subscriptionsLoading}
+          subscriptions={activeSubscriptions}
+        />
       </section>
 
       <Divider />

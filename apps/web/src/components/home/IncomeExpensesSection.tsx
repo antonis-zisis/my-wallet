@@ -22,7 +22,7 @@ export function IncomeExpensesSection({
   if (loading) {
     return (
       <Card className="mt-4">
-        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-80 w-full" />
       </Card>
     );
   }

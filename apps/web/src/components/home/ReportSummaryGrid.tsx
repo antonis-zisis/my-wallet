@@ -28,19 +28,18 @@ export function ReportSummaryGrid({
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <Card>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Total Reports
-        </p>
-
-        {reportsLoading ? (
-          <Skeleton className="mt-1 h-7 w-2/5" />
-        ) : (
+      {reportsLoading ? (
+        <SkeletonCard />
+      ) : (
+        <Card>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Total Reports
+          </p>
           <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
             {totalCount ?? '-'}
           </p>
-        )}
-      </Card>
+        </Card>
+      )}
 
       {currentLoading && !currentReport ? (
         <SkeletonCard />
