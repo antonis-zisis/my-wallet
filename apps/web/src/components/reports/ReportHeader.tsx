@@ -47,7 +47,7 @@ export function ReportHeader({
   };
 
   return (
-    <div className="mb-6 flex items-center justify-between">
+    <div className="mb-4 flex items-center justify-between">
       {isEditingTitle ? (
         <div className="flex items-center gap-2">
           <Input

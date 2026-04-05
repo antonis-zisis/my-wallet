@@ -1,12 +1,13 @@
 import { Transaction } from '../../types/transaction';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
-import { Badge, Dropdown } from '../ui';
+import { Badge, Button, Card, Dropdown } from '../ui';
 
 interface TransactionTableProps {
   transactions: Array<Transaction>;
-  onEdit?: (transaction: Transaction) => void;
+  onAddTransaction?: () => void;
   onDelete?: (transaction: Transaction) => void;
+  onEdit?: (transaction: Transaction) => void;
 }
 
 function formatAmount(transaction: Transaction) {
@@ -15,20 +16,30 @@ function formatAmount(transaction: Transaction) {
 }
 
 export function TransactionTable({
+  onAddTransaction,
   onDelete,
   onEdit,
   transactions,
 }: TransactionTableProps) {
   if (transactions.length === 0) {
     return (
-      <p className="text-center text-gray-500 dark:text-gray-400">
-        No transactions yet. Add your first one!
-      </p>
+      <Card className="mt-4">
+        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            No transactions yet
+          </p>
+          {onAddTransaction && (
+            <Button size="sm" onClick={onAddTransaction}>
+              Add Transaction
+            </Button>
+          )}
+        </div>
+      </Card>
     );
   }
 
   return (
-    <div>
+    <Card className="mt-4">
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-200 text-left text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
@@ -99,6 +110,6 @@ export function TransactionTable({
           ))}
         </tbody>
       </table>
-    </div>
+    </Card>
   );
 }

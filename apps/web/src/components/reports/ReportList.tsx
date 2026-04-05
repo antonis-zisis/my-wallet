@@ -46,7 +46,7 @@ function EmptyState({ onCreateReport }: { onCreateReport?: () => void }) {
       </p>
       {onCreateReport && (
         <button
-          className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+          className="cursor-pointer text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
           onClick={onCreateReport}
         >
           Create your first report
