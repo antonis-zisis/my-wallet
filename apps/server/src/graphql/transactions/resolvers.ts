@@ -56,7 +56,7 @@ export const transactionResolvers = {
           extensions: { code: 'NOT_FOUND' },
         });
       }
-      return prisma.transaction.create({
+      const transaction = await prisma.transaction.create({
         data: {
           reportId: input.reportId,
           type: input.type,
@@ -66,6 +66,11 @@ export const transactionResolvers = {
           date: new Date(input.date),
         },
       });
+      await prisma.report.update({
+        where: { id: input.reportId },
+        data: { updatedAt: new Date() },
+      });
+      return transaction;
     },
     updateTransaction: async (
       _parent: unknown,
@@ -80,7 +85,7 @@ export const transactionResolvers = {
           extensions: { code: 'NOT_FOUND' },
         });
       }
-      return prisma.transaction.update({
+      const transaction = await prisma.transaction.update({
         where: { id: input.id },
         data: {
           type: input.type,
@@ -90,6 +95,11 @@ export const transactionResolvers = {
           date: new Date(input.date),
         },
       });
+      await prisma.report.update({
+        where: { id: existing.reportId },
+        data: { updatedAt: new Date() },
+      });
+      return transaction;
     },
     deleteTransaction: async (
       _parent: unknown,
@@ -105,6 +115,10 @@ export const transactionResolvers = {
         });
       }
       await prisma.transaction.delete({ where: { id } });
+      await prisma.report.update({
+        where: { id: existing.reportId },
+        data: { updatedAt: new Date() },
+      });
       return true;
     },
   },

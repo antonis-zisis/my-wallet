@@ -29,6 +29,7 @@ vi.mock('../../lib/prisma', () => ({
   default: {
     report: {
       findFirst: vi.fn(),
+      update: vi.fn(),
     },
     transaction: {
       findMany: vi.fn(),
@@ -111,6 +112,7 @@ describe('transactionResolvers', () => {
       };
 
       vi.mocked(prisma.report.findFirst).mockResolvedValue(mockReport);
+      vi.mocked(prisma.report.update).mockResolvedValue(mockReport);
       vi.mocked(prisma.transaction.create).mockResolvedValue(mockTransaction);
 
       const result = await transactionResolvers.Mutation.createTransaction(
@@ -131,6 +133,10 @@ describe('transactionResolvers', () => {
           category: 'Food',
           date: new Date('2024-01-15'),
         },
+      });
+      expect(prisma.report.update).toHaveBeenCalledWith({
+        where: { id: 'report-1' },
+        data: { updatedAt: expect.any(Date) },
       });
       expect(result).toEqual(mockTransaction);
     });
@@ -159,6 +165,7 @@ describe('transactionResolvers', () => {
       vi.mocked(prisma.transaction.update).mockResolvedValue(
         updatedTransaction
       );
+      vi.mocked(prisma.report.update).mockResolvedValue(mockReport);
 
       const result = await transactionResolvers.Mutation.updateTransaction(
         undefined as unknown,
@@ -179,6 +186,10 @@ describe('transactionResolvers', () => {
           date: new Date('2024-02-01'),
         },
       });
+      expect(prisma.report.update).toHaveBeenCalledWith({
+        where: { id: 'report-1' },
+        data: { updatedAt: expect.any(Date) },
+      });
       expect(result).toEqual(updatedTransaction);
     });
   });
@@ -189,6 +200,7 @@ describe('transactionResolvers', () => {
         mockTransaction
       );
       vi.mocked(prisma.transaction.delete).mockResolvedValue(mockTransaction);
+      vi.mocked(prisma.report.update).mockResolvedValue(mockReport);
 
       const result = await transactionResolvers.Mutation.deleteTransaction(
         undefined as unknown,
@@ -201,6 +213,10 @@ describe('transactionResolvers', () => {
       });
       expect(prisma.transaction.delete).toHaveBeenCalledWith({
         where: { id: 'tx-1' },
+      });
+      expect(prisma.report.update).toHaveBeenCalledWith({
+        where: { id: 'report-1' },
+        data: { updatedAt: expect.any(Date) },
       });
       expect(result).toBe(true);
     });

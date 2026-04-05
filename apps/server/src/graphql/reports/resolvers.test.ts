@@ -69,7 +69,7 @@ describe('reportResolvers', () => {
         where: { userId: USER_ID },
         orderBy: { createdAt: 'desc' },
         skip: 0,
-        take: 20,
+        take: 10,
       });
       expect(prisma.report.count).toHaveBeenCalledWith({
         where: { userId: USER_ID },
@@ -77,9 +77,9 @@ describe('reportResolvers', () => {
       expect(result).toEqual({ items: [mockReport], totalCount: 1 });
     });
 
-    it('skips 20 items for page 2', async () => {
+    it('skips 10 items for page 2', async () => {
       vi.mocked(prisma.report.findMany).mockResolvedValue([mockReport]);
-      vi.mocked(prisma.report.count).mockResolvedValue(21);
+      vi.mocked(prisma.report.count).mockResolvedValue(11);
 
       await reportResolvers.Query.reports(
         undefined as unknown,
@@ -90,8 +90,8 @@ describe('reportResolvers', () => {
       expect(prisma.report.findMany).toHaveBeenCalledWith({
         where: { userId: USER_ID },
         orderBy: { createdAt: 'desc' },
-        skip: 20,
-        take: 20,
+        skip: 10,
+        take: 10,
       });
     });
 
@@ -102,7 +102,7 @@ describe('reportResolvers', () => {
       await reportResolvers.Query.reports(undefined as unknown, {}, CTX);
 
       expect(prisma.report.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 0, take: 20 })
+        expect.objectContaining({ skip: 0, take: 10 })
       );
     });
 

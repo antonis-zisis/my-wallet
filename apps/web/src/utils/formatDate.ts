@@ -1,10 +1,15 @@
-export function formatDate(date: Date | string | number) {
+export function formatDate(date: Date | string | number): string {
   const value =
     typeof date === 'string' && /^\d+$/.test(date) ? Number(date) : date;
   const parsed = value instanceof Date ? value : new Date(value);
-  const day = String(parsed.getDate()).padStart(2, '0');
-  const month = String(parsed.getMonth() + 1).padStart(2, '0');
-  const year = parsed.getFullYear();
 
-  return `${day}/${month}/${year}`;
+  if (isNaN(parsed.getTime())) {
+    return '';
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(parsed);
 }
