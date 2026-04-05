@@ -43,6 +43,31 @@ describe('Profile', () => {
     expect(nameInput).not.toHaveAttribute('readOnly');
   });
 
+  it('renders Personal info and Change password section headings', () => {
+    render(<Profile />);
+    expect(
+      screen.getByRole('heading', { name: 'Personal info' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Change password' })
+    ).toBeInTheDocument();
+  });
+
+  describe('Save button', () => {
+    it('is disabled when name has not changed', () => {
+      render(<Profile />);
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+
+    it('is enabled when name has changed', async () => {
+      render(<Profile />);
+      const nameInput = screen.getByLabelText('Full name');
+      await userEvent.clear(nameInput);
+      await userEvent.type(nameInput, 'Jane Doe');
+      expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+    });
+  });
+
   it('submits profile update with trimmed full name', async () => {
     mockUpdateUser.mockResolvedValueOnce(undefined);
     render(<Profile />);
@@ -63,6 +88,10 @@ describe('Profile', () => {
   it('shows error when profile update fails', async () => {
     mockUpdateUser.mockRejectedValueOnce(new Error('fail'));
     render(<Profile />);
+
+    const nameInput = screen.getByLabelText('Full name');
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'Jane Doe');
 
     fireEvent.submit(screen.getAllByText('Save')[0].closest('form')!);
 
