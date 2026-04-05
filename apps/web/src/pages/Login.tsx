@@ -18,6 +18,7 @@ export function Login() {
 
   const handleSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
+
     setError('');
     setSubmitting(true);
 

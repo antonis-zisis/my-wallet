@@ -81,8 +81,9 @@ describe('NavBar', () => {
     expect(link.closest('a')).toHaveAttribute('href', '/net-worth');
   });
 
-  it('contains theme toggle', async () => {
+  it('contains theme toggle in the user dropdown', async () => {
     await renderNavBar();
+    fireEvent.click(screen.getByLabelText('User menu'));
     expect(screen.getByLabelText(/Switch to .+ mode/)).toBeInTheDocument();
   });
 
