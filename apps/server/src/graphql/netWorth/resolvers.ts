@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql';
 import { NetWorthEntry } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 interface NetWorthEntryInput {
   type: string;

@@ -79,7 +79,9 @@ const renderPage = (mocks: Array<MockLink.MockedResponse>) => {
 describe('NetWorthSnapshotPage', () => {
   it('shows loading state initially', () => {
     renderPage([mockSnapshotQuery]);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('net-worth-snapshot-skeleton')
+    ).toBeInTheDocument();
   });
 
   it('renders snapshot title after loading', async () => {

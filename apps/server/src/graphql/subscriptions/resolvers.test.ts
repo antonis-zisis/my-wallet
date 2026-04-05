@@ -89,7 +89,7 @@ describe('subscriptionResolvers', () => {
         where: { userId: USER_ID },
         orderBy: { name: 'asc' },
         skip: 0,
-        take: 20,
+        take: 10,
       });
       expect(result).toEqual({
         items: [mockSubscription],
@@ -97,9 +97,9 @@ describe('subscriptionResolvers', () => {
       });
     });
 
-    it('skips 20 items for page 2', async () => {
+    it('skips 10 items for page 2', async () => {
       vi.mocked(prisma.subscription.findMany).mockResolvedValue([]);
-      vi.mocked(prisma.subscription.count).mockResolvedValue(21);
+      vi.mocked(prisma.subscription.count).mockResolvedValue(11);
 
       await subscriptionResolvers.Query.subscriptions(
         undefined as unknown,
@@ -108,7 +108,7 @@ describe('subscriptionResolvers', () => {
       );
 
       expect(prisma.subscription.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 20, take: 20 })
+        expect.objectContaining({ skip: 10, take: 10 })
       );
     });
 
@@ -123,7 +123,7 @@ describe('subscriptionResolvers', () => {
       );
 
       expect(prisma.subscription.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 0, take: 20 })
+        expect.objectContaining({ skip: 0, take: 10 })
       );
     });
 

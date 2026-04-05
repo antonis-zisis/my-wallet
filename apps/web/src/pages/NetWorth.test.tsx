@@ -66,7 +66,7 @@ const renderNetWorth = (mocks: Array<MockLink.MockedResponse>) => {
 describe('NetWorth', () => {
   it('shows loading state initially', () => {
     renderNetWorth([mockSnapshotsQuery]);
-    expect(screen.getByText('Loading snapshots...')).toBeInTheDocument();
+    expect(screen.getByTestId('net-worth-list-skeleton')).toBeInTheDocument();
   });
 
   it('renders snapshot list after loading', async () => {
@@ -82,9 +82,7 @@ describe('NetWorth', () => {
 
   it('shows empty state when no snapshots exist', async () => {
     renderNetWorth([mockSnapshotsQueryEmpty]);
-    expect(
-      await screen.findByText('No snapshots yet. Create your first one!')
-    ).toBeInTheDocument();
+    expect(await screen.findByText('No snapshots yet')).toBeInTheDocument();
   });
 
   it('shows error state on query failure', async () => {

@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export interface CreateSubscriptionInput {
   name: string;
