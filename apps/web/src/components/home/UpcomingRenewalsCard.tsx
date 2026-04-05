@@ -1,5 +1,4 @@
-import { useState } from 'react';
-
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
@@ -14,7 +13,10 @@ export function UpcomingRenewalsCard({
   loading?: boolean;
   subscriptions: Array<Subscription>;
 }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useLocalStorage(
+    'home.upcomingRenewals.isOpen',
+    true
+  );
 
   if (loading) {
     return (
