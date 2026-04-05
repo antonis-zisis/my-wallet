@@ -1,8 +1,9 @@
 import { type SyntheticEvent, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import ThemeToggle from '../components/ThemeToggle';
-import { Button, Input } from '../components/ui';
+import { CircleAlertIcon, WalletIcon } from '../components/icons';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { Button, Card, Input } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 
 export function Login() {
@@ -30,16 +31,28 @@ export function Login() {
     }
   };
 
+  const isFormEmpty = !email.trim() || !password;
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="fixed top-4 right-4">
         <ThemeToggle />
       </div>
 
-      <div className="w-full max-w-sm rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
-        <h1 className="mb-6 text-center text-2xl font-bold text-gray-900 dark:text-gray-100">
-          My Wallet
-        </h1>
+      <Card className="w-full max-w-md p-8">
+        <div className="mb-6 flex flex-col items-center gap-2">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+            <WalletIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            My Wallet
+          </h1>
+
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Sign in to your account
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
@@ -47,6 +60,8 @@ export function Login() {
             type="email"
             label="Email"
             value={email}
+            autoComplete="email"
+            placeholder="you@example.com"
             onChange={(event) => setEmail(event.target.value)}
             required
           />
@@ -56,22 +71,31 @@ export function Login() {
             type="password"
             label="Password"
             value={password}
+            autoComplete="current-password"
+            placeholder="••••••••"
             onChange={(event) => setPassword(event.target.value)}
             required
           />
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
-
           <Button
             type="submit"
             variant="primary"
-            className="w-full"
-            disabled={submitting}
+            size="lg"
+            className="mt-2 w-full"
+            disabled={isFormEmpty}
+            isLoading={submitting}
           >
-            {submitting ? 'Logging in...' : 'Log in'}
+            Sign in
           </Button>
+
+          {error && (
+            <div className="flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-400">
+              <CircleAlertIcon className="mt-0.5 h-4 w-4 shrink-0" />
+              {error}
+            </div>
+          )}
         </form>
-      </div>
+      </Card>
     </div>
   );
 }

@@ -42,7 +42,7 @@ describe('Login', () => {
     });
 
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
   });
 
   it('shows error message on failed sign-in', async () => {
@@ -64,7 +64,7 @@ describe('Login', () => {
     const user = userEvent.setup();
     await user.type(screen.getByLabelText('Email'), 'test@example.com');
     await user.type(screen.getByLabelText('Password'), 'wrong');
-    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() => {
       expect(screen.getByText('Invalid login credentials')).toBeInTheDocument();
@@ -87,11 +87,11 @@ describe('Login', () => {
     const user = userEvent.setup();
     await user.type(screen.getByLabelText('Email'), 'test@example.com');
     await user.type(screen.getByLabelText('Password'), 'password');
-    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Logging in...' })
+        screen.getByRole('button', { name: 'Signing in…' })
       ).toBeDisabled();
     });
 
