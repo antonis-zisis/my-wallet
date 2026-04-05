@@ -68,7 +68,9 @@ export function Report() {
         <ReportBackLink />
 
         <ReportHeader
+          createdAt={report.createdAt}
           title={report.title}
+          updatedAt={report.updatedAt}
           onAddTransaction={onOpenAddTransactionModal}
           onDeleteReport={onOpenDeleteReportModal}
           onSaveTitle={onSaveTitle}
