@@ -42,7 +42,7 @@ describe('Login', () => {
     });
 
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
   });
 
   it('shows error message on failed sign-in', async () => {
@@ -64,14 +64,14 @@ describe('Login', () => {
     const user = userEvent.setup();
     await user.type(screen.getByLabelText('Email'), 'test@example.com');
     await user.type(screen.getByLabelText('Password'), 'wrong');
-    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() => {
       expect(screen.getByText('Invalid login credentials')).toBeInTheDocument();
     });
   });
 
-  it('disables button and shows "Logging in..." while submitting', async () => {
+  it('disables button and shows a spinner while submitting', async () => {
     let resolveSignIn!: (value: unknown) => void;
     vi.mocked(supabase.auth.signInWithPassword).mockImplementationOnce(
       // @ts-expect-error - this is a test helper to control when the sign-in promise resolves
@@ -87,12 +87,10 @@ describe('Login', () => {
     const user = userEvent.setup();
     await user.type(screen.getByLabelText('Email'), 'test@example.com');
     await user.type(screen.getByLabelText('Password'), 'password');
-    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Logging in...' })
-      ).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Sign in' })).toBeDisabled();
     });
 
     resolveSignIn({ data: { user: null, session: null }, error: null });

@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Report } from '../../types/report';
 import { IncomeExpensesChart } from '../charts';
 import { ChevronDownIcon, ChevronUpIcon } from '../icons';
@@ -16,13 +16,19 @@ export function IncomeExpensesSection({
   loading: boolean;
   reports: Array<Report>;
 }) {
-  const [isOpen, setIsOpen] = useState(true);
-  const [limit, setLimit] = useState<LimitOption>(12);
+  const [isOpen, setIsOpen] = useLocalStorage(
+    'home.incomeExpenses.isOpen',
+    true
+  );
+  const [limit, setLimit] = useLocalStorage<LimitOption>(
+    'home.incomeExpenses.limit',
+    12
+  );
 
   if (loading) {
     return (
       <Card className="mt-4">
-        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-80 w-full" />
       </Card>
     );
   }

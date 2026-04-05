@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
@@ -14,7 +14,7 @@ export function NetWorthSummaryCard({
   loading: boolean;
   snapshot: NetWorthSnapshot | null;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useLocalStorage('home.netWorth.isOpen', false);
 
   if (loading) {
     return (

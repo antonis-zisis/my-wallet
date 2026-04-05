@@ -2,18 +2,25 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 
 import { Button } from './Button';
 
-export interface DropdownItem {
-  label: string;
-  onClick: () => void;
-  variant?: 'default' | 'danger';
-}
+export type DropdownItem =
+  | {
+      type?: 'action';
+      icon?: ReactNode;
+      label: string;
+      onClick: () => void;
+      variant?: 'default' | 'danger';
+    }
+  | {
+      type: 'custom';
+      content: ReactNode;
+    };
 
 interface DropdownProps {
   items: Array<DropdownItem>;
   trigger?: ReactNode;
 }
 
-const itemStyles = {
+const actionStyles = {
   default:
     'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
   danger:
@@ -56,19 +63,28 @@ export function Dropdown({ items, trigger }: DropdownProps) {
       </div>
 
       {isOpen && (
-        <div className="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
-          {items.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => {
-                setIsOpen(false);
-                item.onClick();
-              }}
-              className={`w-full cursor-pointer px-4 py-2 text-left text-sm ${itemStyles[item.variant ?? 'default']}`}
-            >
-              {item.label}
-            </button>
-          ))}
+        <div className="absolute right-0 z-10 mt-1 w-52 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+          {items.map((item, index) => {
+            if (item.type === 'custom') {
+              return <div key={index}>{item.content}</div>;
+            }
+
+            return (
+              <button
+                key={item.label}
+                onClick={() => {
+                  setIsOpen(false);
+                  item.onClick();
+                }}
+                className={`flex w-full cursor-pointer items-center gap-3 px-4 py-2 text-left text-sm ${actionStyles[item.variant ?? 'default']}`}
+              >
+                {item.icon && (
+                  <span className="h-4 w-4 shrink-0">{item.icon}</span>
+                )}
+                {item.label}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

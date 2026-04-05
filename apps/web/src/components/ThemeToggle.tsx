@@ -2,7 +2,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { MoonIcon, SunIcon } from './icons';
 import { Button } from './ui';
 
-export default function ThemeToggle() {
+export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
   return (
