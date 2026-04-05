@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -7,7 +7,7 @@ import { CreateReportModal } from './CreateReportModal';
 const defaultProps = {
   isOpen: true,
   onClose: vi.fn(),
-  onSubmit: vi.fn(),
+  onSubmit: vi.fn().mockResolvedValue(undefined),
 };
 
 describe('CreateReportModal', () => {
@@ -29,14 +29,32 @@ describe('CreateReportModal', () => {
     expect(screen.getByText('Create')).toBeDisabled();
   });
 
-  it('enables Create button when title has content', async () => {
+  it('disables Create button when title is less than 3 characters', async () => {
+    render(<CreateReportModal {...defaultProps} />);
+    await userEvent.type(screen.getByLabelText('Report Title'), 'ab');
+    expect(screen.getByText('Create')).toBeDisabled();
+  });
+
+  it('shows static hint about character limits', () => {
+    render(<CreateReportModal {...defaultProps} />);
+    expect(screen.getByText('Between 3–100 characters')).toBeInTheDocument();
+  });
+
+  it('enables Create button when title meets minimum length', async () => {
     render(<CreateReportModal {...defaultProps} />);
     await userEvent.type(screen.getByLabelText('Report Title'), 'My Report');
     expect(screen.getByText('Create')).toBeEnabled();
   });
 
-  it('submits trimmed title', async () => {
-    const onSubmit = vi.fn();
+  it('shows character counter', async () => {
+    render(<CreateReportModal {...defaultProps} />);
+    expect(screen.getByText('0/100')).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Report Title'), 'My Report');
+    expect(screen.getByText('9/100')).toBeInTheDocument();
+  });
+
+  it('submits trimmed title on button click', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
 
     await userEvent.type(
@@ -46,6 +64,72 @@ describe('CreateReportModal', () => {
     await userEvent.click(screen.getByText('Create'));
 
     expect(onSubmit).toHaveBeenCalledWith('My Report');
+  });
+
+  it('submits trimmed title on Enter key', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
+
+    await userEvent.type(screen.getByLabelText('Report Title'), 'My Report');
+    await userEvent.keyboard('{Enter}');
+
+    expect(onSubmit).toHaveBeenCalledWith('My Report');
+  });
+
+  it('does not submit on Enter when title is invalid', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
+
+    await userEvent.type(screen.getByLabelText('Report Title'), 'ab');
+    await userEvent.keyboard('{Enter}');
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows error message when submit fails', async () => {
+    const onSubmit = vi.fn().mockRejectedValue(new Error('Network error'));
+    render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
+
+    await userEvent.type(screen.getByLabelText('Report Title'), 'My Report');
+    await userEvent.click(screen.getByText('Create'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Something went wrong. Please try again.')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('keeps modal open when submit fails', async () => {
+    const onSubmit = vi.fn().mockRejectedValue(new Error('Network error'));
+    render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
+
+    await userEvent.type(screen.getByLabelText('Report Title'), 'My Report');
+    await userEvent.click(screen.getByText('Create'));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Report Title')).toBeInTheDocument();
+    });
+  });
+
+  it('clears submit error when input changes', async () => {
+    const onSubmit = vi.fn().mockRejectedValue(new Error('Network error'));
+    render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
+
+    await userEvent.type(screen.getByLabelText('Report Title'), 'My Report');
+    await userEvent.click(screen.getByText('Create'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Something went wrong. Please try again.')
+      ).toBeInTheDocument();
+    });
+
+    await userEvent.type(screen.getByLabelText('Report Title'), '!');
+    expect(
+      screen.queryByText('Something went wrong. Please try again.')
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Between 3–100 characters')).toBeInTheDocument();
   });
 
   it('calls onClose when Cancel is clicked', async () => {
