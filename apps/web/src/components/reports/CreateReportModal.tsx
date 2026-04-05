@@ -2,10 +2,13 @@ import { useState } from 'react';
 
 import { Button, Input, Modal } from '../ui';
 
+const MIN_TITLE_LENGTH = 3;
+const MAX_TITLE_LENGTH = 100;
+
 interface CreateReportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (title: string) => void;
+  onSubmit: (title: string) => Promise<void>;
 }
 
 export function CreateReportModal({
@@ -14,19 +17,40 @@ export function CreateReportModal({
   onSubmit,
 }: CreateReportModalProps) {
   const [title, setTitle] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const trimmedTitle = title.trim();
+  const isValid =
+    trimmedTitle.length >= MIN_TITLE_LENGTH &&
+    trimmedTitle.length <= MAX_TITLE_LENGTH;
 
   const handleClose = () => {
     setTitle('');
+    setSubmitError('');
     onClose();
   };
 
-  const handleSubmit = () => {
-    const trimmed = title.trim();
-    if (!trimmed) {
+  const handleSubmit = async () => {
+    if (!isValid || isSubmitting) {
       return;
     }
-    onSubmit(trimmed);
-    setTitle('');
+    setIsSubmitting(true);
+    setSubmitError('');
+    try {
+      await onSubmit(trimmedTitle);
+      setTitle('');
+    } catch {
+      setSubmitError('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSubmit();
+    }
   };
 
   return (
@@ -36,23 +60,54 @@ export function CreateReportModal({
       title="Create Report"
       footer={
         <>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!title.trim()}>
+          <Button
+            onClick={handleSubmit}
+            disabled={!isValid}
+            isLoading={isSubmitting}
+          >
             Create
           </Button>
         </>
       }
     >
-      <Input
-        label="Report Title"
-        id="report-title"
-        placeholder="Enter report title"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        autoFocus
-      />
+      <div>
+        <div className="mb-1 flex items-center justify-between">
+          <label
+            htmlFor="report-title"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Report Title
+          </label>
+          <span className="text-xs text-gray-400">
+            {title.length}/{MAX_TITLE_LENGTH}
+          </span>
+        </div>
+        <Input
+          id="report-title"
+          placeholder="Enter report title"
+          value={title}
+          onChange={(event) => {
+            setTitle(event.target.value);
+            setSubmitError('');
+          }}
+          onKeyDown={handleKeyDown}
+          maxLength={MAX_TITLE_LENGTH}
+          error={submitError}
+          autoFocus
+        />
+        {!submitError && (
+          <p className="mt-1 text-xs text-gray-400">
+            Between {MIN_TITLE_LENGTH}–{MAX_TITLE_LENGTH} characters
+          </p>
+        )}
+      </div>
     </Modal>
   );
 }

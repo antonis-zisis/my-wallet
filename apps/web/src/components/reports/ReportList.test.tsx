@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Report } from '../../types/report';
 import { ReportList } from './ReportList';
@@ -21,9 +21,10 @@ const mockReports: Array<Report> = [
 ];
 
 const renderReportList = (props: {
-  reports: Array<Report>;
-  loading: boolean;
   error: boolean;
+  loading: boolean;
+  onCreateReport?: () => void;
+  reports: Array<Report>;
 }) => {
   return render(
     <MemoryRouter>
@@ -34,24 +35,35 @@ const renderReportList = (props: {
 
 describe('ReportList', () => {
   it('shows loading state', () => {
-    renderReportList({ reports: [], loading: true, error: false });
-    expect(screen.getByText('Loading reports...')).toBeInTheDocument();
+    renderReportList({ error: false, loading: true, reports: [] });
+    expect(screen.getByTestId('report-list-skeleton')).toBeInTheDocument();
   });
 
   it('shows error state', () => {
-    renderReportList({ reports: [], loading: false, error: true });
+    renderReportList({ error: true, loading: false, reports: [] });
     expect(screen.getByText('Failed to load reports.')).toBeInTheDocument();
   });
 
   it('shows empty state', () => {
-    renderReportList({ reports: [], loading: false, error: false });
+    renderReportList({ error: false, loading: false, reports: [] });
+    expect(screen.getByText('No reports yet')).toBeInTheDocument();
+  });
+
+  it('shows create button in empty state when onCreateReport is provided', () => {
+    const onCreateReport = vi.fn();
+    renderReportList({
+      error: false,
+      loading: false,
+      onCreateReport,
+      reports: [],
+    });
     expect(
-      screen.getByText('No reports yet. Create your first one!')
+      screen.getByRole('button', { name: 'Create your first report' })
     ).toBeInTheDocument();
   });
 
   it('renders report titles as links', () => {
-    renderReportList({ reports: mockReports, loading: false, error: false });
+    renderReportList({ error: false, loading: false, reports: mockReports });
 
     const link1 = screen.getByText('January Budget').closest('a');
     const link2 = screen.getByText('February Budget').closest('a');
@@ -60,9 +72,8 @@ describe('ReportList', () => {
     expect(link2).toHaveAttribute('href', '/reports/2');
   });
 
-  it('displays creation dates', () => {
-    renderReportList({ reports: mockReports, loading: false, error: false });
-    expect(screen.getByText('01/01/2024')).toBeInTheDocument();
-    expect(screen.getByText('01/02/2024')).toBeInTheDocument();
+  it('displays relative updated time', () => {
+    renderReportList({ error: false, loading: false, reports: mockReports });
+    expect(screen.getAllByText('Jan 1, 2024').length).toBeGreaterThan(0);
   });
 });

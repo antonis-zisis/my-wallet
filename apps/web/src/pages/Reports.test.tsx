@@ -46,13 +46,14 @@ const mockPage1: MockLink.MockedResponse = {
   result: {
     data: {
       reports: {
-        items: Array.from({ length: 20 }, (_, ii) => ({
-          id: String(ii + 1),
-          title: `Report ${ii + 1}`,
+        items: Array.from({ length: 10 }, (_, index) => ({
+          id: String(index + 1),
+          title: `Report ${index + 1}`,
           createdAt: '2024-01-01T00:00:00.000Z',
           updatedAt: '2024-01-01T00:00:00.000Z',
+          transactions: [],
         })),
-        totalCount: 25,
+        totalCount: 15,
       },
     },
   },
@@ -63,13 +64,14 @@ const mockPage2: MockLink.MockedResponse = {
   result: {
     data: {
       reports: {
-        items: Array.from({ length: 5 }, (_, ii) => ({
-          id: String(ii + 21),
-          title: `Report ${ii + 21}`,
+        items: Array.from({ length: 5 }, (_, index) => ({
+          id: String(index + 11),
+          title: `Report ${index + 11}`,
           createdAt: '2024-01-01T00:00:00.000Z',
           updatedAt: '2024-01-01T00:00:00.000Z',
+          transactions: [],
         })),
-        totalCount: 25,
+        totalCount: 15,
       },
     },
   },
@@ -88,7 +90,7 @@ const renderReports = (mocks: Array<MockLink.MockedResponse>) => {
 describe('Reports', () => {
   it('shows loading state initially', () => {
     renderReports([mockReportsQuery]);
-    expect(screen.getByText('Loading reports...')).toBeInTheDocument();
+    expect(screen.getByTestId('report-list-skeleton')).toBeInTheDocument();
   });
 
   it('renders report list after loading', async () => {
@@ -128,14 +130,14 @@ describe('Reports', () => {
     it('shows correct item range as the centre label', async () => {
       renderReports([mockPage1]);
       expect(
-        await screen.findByText(/Showing 1 - 20 of 25/)
+        await screen.findByText(/Showing 1 - 10 of 15/)
       ).toBeInTheDocument();
     });
 
     it('shows correct item range on page 1', async () => {
       renderReports([mockPage1]);
       expect(
-        await screen.findByText(/Showing 1 - 20 of 25/)
+        await screen.findByText(/Showing 1 - 10 of 15/)
       ).toBeInTheDocument();
     });
 
@@ -145,8 +147,8 @@ describe('Reports', () => {
 
       await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
 
-      expect(await screen.findByText('Report 21')).toBeInTheDocument();
-      expect(screen.getByText(/Showing 21 - 25 of 25/)).toBeInTheDocument();
+      expect(await screen.findByText('Report 11')).toBeInTheDocument();
+      expect(screen.getByText(/Showing 11 - 15 of 15/)).toBeInTheDocument();
     });
 
     it('disables Next button on the last page', async () => {
@@ -155,7 +157,7 @@ describe('Reports', () => {
 
       await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
 
-      expect(await screen.findByText('Report 21')).toBeInTheDocument();
+      expect(await screen.findByText('Report 11')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
     });
   });

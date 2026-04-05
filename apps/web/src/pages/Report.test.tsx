@@ -88,9 +88,9 @@ const renderReport = (mocks: Array<MockLink.MockedResponse>) => {
 };
 
 describe('Report', () => {
-  it('shows loading state initially', () => {
+  it('shows loading skeleton initially', () => {
     renderReport([mockReportQuery]);
-    expect(screen.getByText('Loading report...')).toBeInTheDocument();
+    expect(screen.getByTestId('report-skeleton')).toBeInTheDocument();
   });
 
   it('renders report data after loading', async () => {
@@ -111,6 +111,9 @@ describe('Report', () => {
 
     expect(screen.getByText('Total Expenses')).toBeInTheDocument();
     expect(screen.getByText('300,00 €')).toBeInTheDocument();
+
+    expect(screen.getByText('Net Balance')).toBeInTheDocument();
+    expect(screen.getByText('+1.200,00 €')).toBeInTheDocument();
   });
 
   it('shows error state on query failure', async () => {
@@ -122,8 +125,8 @@ describe('Report', () => {
 
   it('shows back to reports link', async () => {
     renderReport([mockReportQuery]);
-    const link = await screen.findByText('← Back to Reports');
-    expect(link.closest('a')).toHaveAttribute('href', '/reports');
+    const link = await screen.findByRole('link', { name: /back to reports/i });
+    expect(link).toHaveAttribute('href', '/reports');
   });
 
   describe('expense breakdown chart', () => {

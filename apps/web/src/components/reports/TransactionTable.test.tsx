@@ -33,9 +33,27 @@ const mockTransactions: Array<Transaction> = [
 describe('TransactionTable', () => {
   it('shows empty state when no transactions', () => {
     render(<TransactionTable transactions={[]} />);
+    expect(screen.getByText('No transactions yet')).toBeInTheDocument();
+  });
+
+  it('shows add transaction button in empty state when onAddTransaction is provided', async () => {
+    const onAddTransaction = vi.fn();
+    render(
+      <TransactionTable transactions={[]} onAddTransaction={onAddTransaction} />
+    );
+
+    const button = screen.getByRole('button', { name: /add transaction/i });
+    expect(button).toBeInTheDocument();
+
+    await userEvent.click(button);
+    expect(onAddTransaction).toHaveBeenCalledOnce();
+  });
+
+  it('does not show add transaction button in empty state when onAddTransaction is not provided', () => {
+    render(<TransactionTable transactions={[]} />);
     expect(
-      screen.getByText('No transactions yet. Add your first one!')
-    ).toBeInTheDocument();
+      screen.queryByRole('button', { name: /add transaction/i })
+    ).not.toBeInTheDocument();
   });
 
   it('renders transaction rows', () => {

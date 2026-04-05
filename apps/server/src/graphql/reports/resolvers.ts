@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql';
 import { Transaction } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export interface CreateReportInput {
   title: string;
@@ -16,6 +16,8 @@ export interface UpdateReportInput {
 
 export const reportResolvers = {
   Report: {
+    createdAt: (parent: { createdAt: Date }) => parent.createdAt.toISOString(),
+    updatedAt: (parent: { updatedAt: Date }) => parent.updatedAt.toISOString(),
     transactions: async (parent: {
       id: string;
       transactions?: Array<Transaction>;

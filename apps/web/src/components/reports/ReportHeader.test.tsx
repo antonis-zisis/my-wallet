@@ -5,10 +5,17 @@ import { describe, expect, it, vi } from 'vitest';
 import { ReportHeader } from './ReportHeader';
 
 const defaultProps = {
+  createdAt: '2024-01-01T00:00:00.000Z',
   title: 'Test Report',
-  onSaveTitle: vi.fn(),
+  updatedAt: '2024-03-15T00:00:00.000Z',
   onAddTransaction: vi.fn(),
   onDeleteReport: vi.fn(),
+  onSaveTitle: vi.fn(),
+};
+
+const openRenameViaDropdown = async () => {
+  await userEvent.click(screen.getByLabelText('Options'));
+  await userEvent.click(screen.getByText('Rename Report'));
 };
 
 describe('ReportHeader', () => {
@@ -17,9 +24,15 @@ describe('ReportHeader', () => {
     expect(screen.getByText('Test Report')).toBeInTheDocument();
   });
 
-  it('enters edit mode when edit button is clicked', async () => {
+  it('displays createdAt and updatedAt dates', () => {
     render(<ReportHeader {...defaultProps} />);
-    await userEvent.click(screen.getByLabelText('Edit title'));
+    expect(screen.getByText(/Created Jan 1, 2024/)).toBeInTheDocument();
+    expect(screen.getByText(/Updated Mar 15, 2024/)).toBeInTheDocument();
+  });
+
+  it('enters edit mode when Rename Report is clicked in the dropdown', async () => {
+    render(<ReportHeader {...defaultProps} />);
+    await openRenameViaDropdown();
     expect(screen.getByDisplayValue('Test Report')).toBeInTheDocument();
   });
 
@@ -27,7 +40,7 @@ describe('ReportHeader', () => {
     const onSaveTitle = vi.fn();
     render(<ReportHeader {...defaultProps} onSaveTitle={onSaveTitle} />);
 
-    await userEvent.click(screen.getByLabelText('Edit title'));
+    await openRenameViaDropdown();
     const input = screen.getByDisplayValue('Test Report');
     await userEvent.clear(input);
     await userEvent.type(input, 'New Title{Enter}');
@@ -38,7 +51,7 @@ describe('ReportHeader', () => {
   it('cancels editing on Escape key', async () => {
     render(<ReportHeader {...defaultProps} />);
 
-    await userEvent.click(screen.getByLabelText('Edit title'));
+    await openRenameViaDropdown();
     expect(screen.getByDisplayValue('Test Report')).toBeInTheDocument();
 
     await userEvent.keyboard('{Escape}');
@@ -50,7 +63,7 @@ describe('ReportHeader', () => {
     const onSaveTitle = vi.fn();
     render(<ReportHeader {...defaultProps} onSaveTitle={onSaveTitle} />);
 
-    await userEvent.click(screen.getByLabelText('Edit title'));
+    await openRenameViaDropdown();
     await userEvent.keyboard('{Enter}');
 
     expect(onSaveTitle).not.toHaveBeenCalled();
@@ -60,7 +73,7 @@ describe('ReportHeader', () => {
     const onSaveTitle = vi.fn();
     render(<ReportHeader {...defaultProps} onSaveTitle={onSaveTitle} />);
 
-    await userEvent.click(screen.getByLabelText('Edit title'));
+    await openRenameViaDropdown();
     const input = screen.getByDisplayValue('Test Report');
     await userEvent.clear(input);
     await userEvent.keyboard('{Enter}');

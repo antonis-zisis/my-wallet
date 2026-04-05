@@ -1,60 +1,52 @@
-import { useMutation, useQuery } from '@apollo/client/react';
-import { useState } from 'react';
-
 import { CreateReportModal, ReportList } from '../components/reports';
 import { Button, PageLayout, Pagination } from '../components/ui';
-import { CREATE_REPORT, GET_REPORTS } from '../graphql/reports';
-import { ReportsData } from '../types/report';
-
-const PAGE_SIZE = 20;
+import { PAGE_SIZE, useReportsData } from '../hooks/useReportsData';
 
 export function Reports() {
-  const [page, setPage] = useState(1);
-  const { data, error, loading } = useQuery<ReportsData>(GET_REPORTS, {
-    variables: { page },
-  });
-  const [createReport] = useMutation(CREATE_REPORT, {
-    refetchQueries: [{ query: GET_REPORTS, variables: { page: 1 } }],
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const reports = data?.reports.items ?? [];
-  const totalCount = data?.reports.totalCount ?? 0;
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
-
-  const handleCreateReport = async (title: string) => {
-    await createReport({ variables: { input: { title } } });
-    setPage(1);
-    setIsModalOpen(false);
-  };
+  const {
+    error,
+    isModalOpen,
+    loading,
+    onCloseModal,
+    onCreateReport,
+    onOpenModal,
+    onPageChange,
+    page,
+    reports,
+    totalCount,
+    totalPages,
+  } = useReportsData();
 
   return (
     <>
       <PageLayout>
-        <div className="mb-6 flex items-center justify-end">
-          <Button onClick={() => setIsModalOpen(true)}>Create Report</Button>
+        <div className="mb-4 flex items-center justify-end">
+          <Button onClick={onOpenModal}>Create Report</Button>
         </div>
 
-        <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
-          <ReportList reports={reports} loading={loading} error={!!error} />
-        </div>
+        <ReportList
+          error={error}
+          loading={loading}
+          onCreateReport={onOpenModal}
+          reports={reports}
+        />
 
         {!loading && !error && totalCount > 0 && (
           <Pagination
-            page={page}
-            totalPages={totalPages}
-            totalCount={totalCount}
-            pageSize={PAGE_SIZE}
             itemCount={reports.length}
-            onPageChange={setPage}
+            page={page}
+            pageSize={PAGE_SIZE}
+            totalCount={totalCount}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
           />
         )}
       </PageLayout>
 
       <CreateReportModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreateReport}
+        onClose={onCloseModal}
+        onSubmit={onCreateReport}
       />
     </>
   );
