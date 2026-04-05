@@ -1,5 +1,7 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 
+import { Spinner } from './Spinner';
+
 type ButtonVariant = 'primary' | 'secondary' | 'success' | 'danger' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
@@ -45,10 +47,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || isLoading}
-        className={`cursor-pointer rounded-lg font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+        className={`relative cursor-pointer rounded-lg font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
         {...props}
       >
-        {isLoading ? 'Loading...' : children}
+        <span className={isLoading ? 'invisible' : undefined}>{children}</span>
+        {isLoading && (
+          <span className="absolute inset-0 flex items-center justify-center">
+            <Spinner />
+          </span>
+        )}
       </button>
     );
   }
