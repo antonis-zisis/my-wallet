@@ -43,12 +43,14 @@ const mockReportsWithItems: MockLink.MockedResponse = {
         items: [
           {
             id: '1',
+            isLocked: false,
             title: 'February 2026',
             createdAt: '2026-02-01T00:00:00.000Z',
             updatedAt: '2026-02-01T00:00:00.000Z',
           },
           {
             id: '2',
+            isLocked: false,
             title: 'January 2026',
             createdAt: '2026-01-01T00:00:00.000Z',
             updatedAt: '2026-01-01T00:00:00.000Z',
@@ -68,6 +70,7 @@ const mockReportsOneItem: MockLink.MockedResponse = {
         items: [
           {
             id: '1',
+            isLocked: false,
             title: 'February 2026',
             createdAt: '2026-02-01T00:00:00.000Z',
             updatedAt: '2026-02-01T00:00:00.000Z',
@@ -85,6 +88,7 @@ const mockCurrentReport: MockLink.MockedResponse = {
     data: {
       report: {
         id: '1',
+        isLocked: false,
         title: 'February 2026',
         createdAt: '2026-02-01T00:00:00.000Z',
         updatedAt: '2026-02-01T00:00:00.000Z',
@@ -112,6 +116,7 @@ const mockPreviousReport: MockLink.MockedResponse = {
     data: {
       report: {
         id: '2',
+        isLocked: false,
         title: 'January 2026',
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-01-01T00:00:00.000Z',
@@ -209,6 +214,8 @@ describe('Home', () => {
       mockReportsSummaryWithItems,
       mockNetWorthSnapshotsEmpty,
       mockSubscriptionsEmpty,
+      mockCurrentReport,
+      mockPreviousReport,
     ]);
 
     expect(await screen.findByText('5')).toBeInTheDocument();

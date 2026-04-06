@@ -221,7 +221,7 @@ describe('useSubscriptionsData', () => {
     expect(result.current.showInactive).toBe(false);
   });
 
-  it('changes active page via onActivePaginate', () => {
+  it('changes active page via onActivePaginate', async () => {
     const { result } = renderHook(() => useSubscriptionsData(), {
       wrapper: createWrapper([
         mockActiveQuery,
@@ -234,6 +234,8 @@ describe('useSubscriptionsData', () => {
 
     act(() => result.current.onActivePaginate(2));
     expect(result.current.activePage).toBe(2);
+
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
   });
 
   it('starts with no subscription selected for edit, cancel, or delete', () => {
@@ -325,9 +327,18 @@ describe('useSubscriptionsData', () => {
       },
     };
 
+    const mockActiveQueryPage2ForCreate: MockLink.MockedResponse = {
+      request: {
+        query: GET_SUBSCRIPTIONS,
+        variables: { active: true, page: 2, pageSize: PAGE_SIZE },
+      },
+      result: { data: { subscriptions: { items: [], totalCount: 1 } } },
+    };
+
     const { result } = renderHook(() => useSubscriptionsData(), {
       wrapper: createWrapper([
         mockActiveQuery,
+        mockActiveQueryPage2ForCreate,
         mockInactiveQueryEmpty,
         createMock,
         refetchMock,

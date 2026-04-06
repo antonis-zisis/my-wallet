@@ -26,12 +26,14 @@ const mockReportsQuery: MockLink.MockedResponse = {
         items: [
           {
             id: '1',
+            isLocked: false,
             title: 'January Budget',
             createdAt: '2024-01-01T00:00:00.000Z',
             updatedAt: '2024-01-01T00:00:00.000Z',
           },
           {
             id: '2',
+            isLocked: false,
             title: 'February Budget',
             createdAt: '2024-02-01T00:00:00.000Z',
             updatedAt: '2024-02-01T00:00:00.000Z',
@@ -57,6 +59,7 @@ const mockPage1: MockLink.MockedResponse = {
       reports: {
         items: Array.from({ length: 10 }, (_, index) => ({
           id: String(index + 1),
+          isLocked: false,
           title: `Report ${index + 1}`,
           createdAt: '2024-01-01T00:00:00.000Z',
           updatedAt: '2024-01-01T00:00:00.000Z',
@@ -75,6 +78,7 @@ const mockPage2: MockLink.MockedResponse = {
       reports: {
         items: Array.from({ length: 5 }, (_, index) => ({
           id: String(index + 11),
+          isLocked: false,
           title: `Report ${index + 11}`,
           createdAt: '2024-01-01T00:00:00.000Z',
           updatedAt: '2024-01-01T00:00:00.000Z',
