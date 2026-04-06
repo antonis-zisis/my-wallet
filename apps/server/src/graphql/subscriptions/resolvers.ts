@@ -2,8 +2,6 @@ import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
 
-const PAGE_SIZE = 10;
-
 export interface CreateSubscriptionInput {
   name: string;
   amount: number;
@@ -37,23 +35,30 @@ export const subscriptionResolvers = {
   Query: {
     subscriptions: async (
       _parent: unknown,
-      { active, page = 1 }: { page?: number; active?: boolean },
+      {
+        active,
+        page = 1,
+        pageSize = 10,
+      }: { active?: boolean; page?: number; pageSize?: number },
       { userId }: { userId: string }
     ) => {
       const where: { userId: string; isActive?: boolean } = { userId };
+
       if (active !== undefined) {
         where.isActive = active;
       }
-      const skip = (page - 1) * PAGE_SIZE;
+
+      const skip = (page - 1) * pageSize;
       const [items, totalCount] = await Promise.all([
         prisma.subscription.findMany({
           where,
           orderBy: { name: 'asc' },
           skip,
-          take: PAGE_SIZE,
+          take: pageSize,
         }),
         prisma.subscription.count({ where }),
       ]);
+
       return { items, totalCount };
     },
   },
@@ -82,11 +87,13 @@ export const subscriptionResolvers = {
       const existing = await prisma.subscription.findFirst({
         where: { id: input.id, userId },
       });
+
       if (!existing) {
         throw new GraphQLError('Subscription not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+
       return prisma.subscription.update({
         where: { id: input.id },
         data: {
@@ -106,11 +113,13 @@ export const subscriptionResolvers = {
       const existing = await prisma.subscription.findFirst({
         where: { id, userId },
       });
+
       if (!existing) {
         throw new GraphQLError('Subscription not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+
       return prisma.subscription.update({
         where: { id },
         data: { isActive: false },
@@ -124,12 +133,15 @@ export const subscriptionResolvers = {
       const existing = await prisma.subscription.findFirst({
         where: { id, userId },
       });
+
       if (!existing) {
         throw new GraphQLError('Subscription not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+
       await prisma.subscription.delete({ where: { id } });
+
       return true;
     },
   },

@@ -14,11 +14,13 @@ export function useReportsData() {
 
   const { data, error, loading } = useQuery<ReportsData>(GET_REPORTS, {
     fetchPolicy: 'cache-first',
-    variables: { page },
+    variables: { page, pageSize: PAGE_SIZE },
   });
 
   const [createReport] = useMutation(CREATE_REPORT, {
-    refetchQueries: [{ query: GET_REPORTS, variables: { page: 1 } }],
+    refetchQueries: [
+      { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
+    ],
   });
 
   const reports = data?.reports.items ?? [];

@@ -23,7 +23,7 @@ const mockReport = (id: string, title: string) => ({
 });
 
 const mockReportsPage1: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1 } },
+  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
   result: {
     data: {
       reports: {
@@ -35,7 +35,7 @@ const mockReportsPage1: MockLink.MockedResponse = {
 };
 
 const emptyReportsMock: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1 } },
+  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
   result: { data: { reports: { items: [], totalCount: 0 } } },
 };
 
@@ -52,7 +52,7 @@ const createReportMock: MockLink.MockedResponse = {
 };
 
 const refetchAfterCreateMock: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1 } },
+  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
   result: {
     data: {
       reports: {

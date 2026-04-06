@@ -35,7 +35,7 @@ export const subscriptionTypeDefs = `#graphql
   }
 
   extend type Query {
-    subscriptions(page: Int, active: Boolean): SubscriptionsResult!
+    subscriptions(page: Int, pageSize: Int, active: Boolean): SubscriptionsResult!
   }
 
   extend type Mutation {

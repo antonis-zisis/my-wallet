@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_NET_WORTH_SNAPSHOTS = gql`
-  query GetNetWorthSnapshots($page: Int) {
-    netWorthSnapshots(page: $page) {
+  query GetNetWorthSnapshots($page: Int, $pageSize: Int) {
+    netWorthSnapshots(page: $page, pageSize: $pageSize) {
       items {
         id
         title
