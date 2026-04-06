@@ -10,6 +10,7 @@ import {
   DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOTS,
 } from '../graphql/netWorth';
+import { PAGE_SIZE } from '../hooks/useNetWorthData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { NetWorth } from './NetWorth';
 
@@ -23,7 +24,10 @@ const mockSnapshot = {
 };
 
 const mockSnapshotsQuery: MockLink.MockedResponse = {
-  request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+  request: {
+    query: GET_NET_WORTH_SNAPSHOTS,
+    variables: { page: 1, pageSize: PAGE_SIZE },
+  },
   result: {
     data: {
       netWorthSnapshots: {
@@ -35,7 +39,10 @@ const mockSnapshotsQuery: MockLink.MockedResponse = {
 };
 
 const mockSnapshotsQueryEmpty: MockLink.MockedResponse = {
-  request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+  request: {
+    query: GET_NET_WORTH_SNAPSHOTS,
+    variables: { page: 1, pageSize: PAGE_SIZE },
+  },
   result: {
     data: {
       netWorthSnapshots: {
@@ -47,7 +54,10 @@ const mockSnapshotsQueryEmpty: MockLink.MockedResponse = {
 };
 
 const mockSnapshotsQueryError: MockLink.MockedResponse = {
-  request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+  request: {
+    query: GET_NET_WORTH_SNAPSHOTS,
+    variables: { page: 1, pageSize: PAGE_SIZE },
+  },
   result: {
     errors: [new GraphQLError('Failed to load snapshots')],
   },
@@ -161,7 +171,10 @@ describe('NetWorth', () => {
         },
       };
       const refetchMock: MockLink.MockedResponse = {
-        request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+        request: {
+          query: GET_NET_WORTH_SNAPSHOTS,
+          variables: { page: 1, pageSize: PAGE_SIZE },
+        },
         result: {
           data: {
             netWorthSnapshots: {
@@ -234,7 +247,7 @@ describe('NetWorth', () => {
       const refetchMock: MockLink.MockedResponse = {
         request: {
           query: GET_NET_WORTH_SNAPSHOTS,
-          variables: { page: 1 },
+          variables: { page: 1, pageSize: PAGE_SIZE },
         },
         result: {
           data: {
