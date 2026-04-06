@@ -35,8 +35,10 @@ export function CreateReportModal({
     if (!isValid || isSubmitting) {
       return;
     }
+
     setIsSubmitting(true);
     setSubmitError('');
+
     try {
       await onSubmit(trimmedTitle);
       setTitle('');
@@ -67,6 +69,7 @@ export function CreateReportModal({
           >
             Cancel
           </Button>
+
           <Button
             onClick={handleSubmit}
             disabled={!isValid}
@@ -85,10 +88,12 @@ export function CreateReportModal({
           >
             Report Title
           </label>
+
           <span className="text-xs text-gray-400">
             {title.length}/{MAX_TITLE_LENGTH}
           </span>
         </div>
+
         <Input
           id="report-title"
           placeholder="Enter report title"
@@ -102,6 +107,7 @@ export function CreateReportModal({
           error={submitError}
           autoFocus
         />
+
         {!submitError && (
           <p className="mt-1 text-xs text-gray-400">
             Between {MIN_TITLE_LENGTH}–{MAX_TITLE_LENGTH} characters

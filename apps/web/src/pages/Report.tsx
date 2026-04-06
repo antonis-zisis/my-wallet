@@ -3,15 +3,13 @@ import {
   ExpenseBreakdownChart,
 } from '../components/charts';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import {
-  ReportBackLink,
-  ReportChartSection,
-  ReportHeader,
-  ReportModals,
-  ReportSkeleton,
-  ReportSummary,
-  TransactionTable,
-} from '../components/reports';
+import { ReportBackLink } from '../components/reports/ReportBackLink';
+import { ReportChartSection } from '../components/reports/ReportChartSection';
+import { ReportHeader } from '../components/reports/ReportHeader';
+import { ReportModals } from '../components/reports/ReportModals';
+import { ReportSkeleton } from '../components/reports/ReportSkeleton';
+import { ReportSummary } from '../components/reports/ReportSummary';
+import { TransactionTable } from '../components/reports/TransactionTable';
 import { PageLayout } from '../components/ui';
 import { useReportData } from '../hooks/useReportData';
 

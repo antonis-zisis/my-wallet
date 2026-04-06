@@ -5,6 +5,7 @@ export { ChevronLeftIcon } from './ChevronLeftIcon';
 export { ChevronRightIcon } from './ChevronRightIcon';
 export { ChevronUpIcon } from './ChevronUpIcon';
 export { CircleAlertIcon } from './CircleAlertIcon';
+export { DocumentTextIcon } from './DocumentTextIcon';
 export { LogOutIcon } from './LogOutIcon';
 export { MoonIcon } from './MoonIcon';
 export { SunIcon } from './SunIcon';

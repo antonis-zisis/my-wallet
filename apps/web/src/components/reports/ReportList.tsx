@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
-import { ChevronRightIcon } from '../icons';
+import { ChevronRightIcon, DocumentTextIcon } from '../icons';
 import { Card, Skeleton } from '../ui';
 
 interface ReportListProps {
@@ -24,26 +24,16 @@ function SkeletonRow() {
 function EmptyState({ onCreateReport }: { onCreateReport?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="size-10 text-gray-300 dark:text-gray-600"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-        />
-      </svg>
+      <DocumentTextIcon className="size-10 text-gray-300 dark:text-gray-600" />
+
       <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
         No reports yet
       </p>
+
       <p className="text-xs text-gray-400 dark:text-gray-500">
         Create your first report to start tracking income and expenses.
       </p>
+
       {onCreateReport && (
         <button
           className="cursor-pointer text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -97,6 +87,7 @@ export function ReportList({
               <span className="font-medium text-gray-800 dark:text-gray-100">
                 {report.title}
               </span>
+
               <div className="flex shrink-0 items-center gap-3">
                 <span className="text-xs text-gray-400 dark:text-gray-500">
                   {formatRelativeTime(report.updatedAt)}

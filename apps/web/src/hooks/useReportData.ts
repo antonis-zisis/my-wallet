@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { type CreateTransactionInput } from '../components/reports';
+import { type CreateTransactionInput } from '../components/reports/AddTransactionModal';
 import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
 import {
   CREATE_TRANSACTION,

@@ -63,6 +63,7 @@ export function ReportHeader({
             onBlur={handleCancelEditing}
             autoFocus
           />
+
           <Button
             onMouseDown={(event) => event.preventDefault()}
             onClick={handleSaveTitle}
@@ -80,8 +81,10 @@ export function ReportHeader({
           </p>
         </div>
       )}
+
       <div className="flex items-center gap-2">
         <Button onClick={onAddTransaction}>Add Transaction</Button>
+
         <Dropdown
           items={[
             {

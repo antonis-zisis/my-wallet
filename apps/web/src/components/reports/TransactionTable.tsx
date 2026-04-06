@@ -51,6 +51,7 @@ export function TransactionTable({
             <th className="pb-3"></th>
           </tr>
         </thead>
+
         <tbody>
           {transactions.map((transaction, index) => (
             <tr
