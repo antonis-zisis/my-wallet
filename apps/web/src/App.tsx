@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { NavBar } from './components/NavBar';
+import { ToastContainer } from './components/ui/Toast';
 
 export function App() {
   return (
@@ -11,6 +12,8 @@ export function App() {
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>
+
+      <ToastContainer />
     </div>
   );
 }
