@@ -55,12 +55,15 @@ export function IncomeExpensesChart({
         margin={{ top: 8, right: 16, bottom: 8, left: 16 }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+
         <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6b7280' }} />
+
         <YAxis
           tickFormatter={(value: number) => `${formatMoney(value)}€`}
           tick={{ fontSize: 12, fill: '#6b7280' }}
           width={64}
         />
+
         <Tooltip
           formatter={(value, name) => [
             `${formatMoney(typeof value === 'number' ? value : 0)} €`,
@@ -74,11 +77,13 @@ export function IncomeExpensesChart({
             fontSize: '13px',
           }}
         />
+
         <Legend
           formatter={(value: string) =>
             value.charAt(0).toUpperCase() + value.slice(1)
           }
         />
+
         <Bar
           dataKey="income"
           name="income"
@@ -87,6 +92,7 @@ export function IncomeExpensesChart({
           cursor="pointer"
           onClick={(data) => navigate(`/reports/${data.payload.id}`)}
         />
+
         <Bar
           dataKey="expenses"
           name="expenses"

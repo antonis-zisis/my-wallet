@@ -9,9 +9,11 @@ export function SubscriptionsCTACard() {
         <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
           No subscriptions tracked yet
         </p>
+
         <p className="text-xs text-gray-400 dark:text-gray-500">
           Add your recurring bills to track monthly costs and upcoming renewals.
         </p>
+
         <Link
           to="/subscriptions"
           className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"

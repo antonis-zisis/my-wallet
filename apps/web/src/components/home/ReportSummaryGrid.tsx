@@ -11,6 +11,15 @@ function SkeletonCard() {
   );
 }
 
+interface ReportSummaryGridProps {
+  currentLoading: boolean;
+  currentReport: Report | undefined;
+  previousLoading: boolean;
+  previousReport: Report | undefined;
+  reportsLoading: boolean;
+  totalCount: number | undefined;
+}
+
 export function ReportSummaryGrid({
   currentLoading,
   currentReport,
@@ -18,14 +27,7 @@ export function ReportSummaryGrid({
   previousReport,
   reportsLoading,
   totalCount,
-}: {
-  currentLoading: boolean;
-  currentReport: Report | undefined;
-  previousLoading: boolean;
-  previousReport: Report | undefined;
-  reportsLoading: boolean;
-  totalCount: number | undefined;
-}) {
+}: ReportSummaryGridProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {reportsLoading ? (
@@ -35,6 +37,7 @@ export function ReportSummaryGrid({
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Total Reports
           </p>
+
           <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
             {totalCount ?? '-'}
           </p>
@@ -50,6 +53,7 @@ export function ReportSummaryGrid({
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
             Current
           </p>
+
           <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
             Add a report to view summary
           </p>
@@ -65,6 +69,7 @@ export function ReportSummaryGrid({
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
             Previous
           </p>
+
           <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
             Add a report to view summary
           </p>

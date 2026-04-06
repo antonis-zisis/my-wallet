@@ -2,13 +2,15 @@ import { Subscription } from '../../types/subscription';
 import { formatMoney } from '../../utils/formatMoney';
 import { Card } from '../ui';
 
+interface SubscriptionSummarySectionProps {
+  subscriptions: Array<Subscription>;
+  currentIncome: number;
+}
+
 export function SubscriptionSummarySection({
   currentIncome,
   subscriptions,
-}: {
-  subscriptions: Array<Subscription>;
-  currentIncome: number;
-}) {
+}: SubscriptionSummarySectionProps) {
   const totalMonthlyCost = subscriptions.reduce(
     (sum, sub) => sum + sub.monthlyCost,
     0
@@ -25,6 +27,7 @@ export function SubscriptionSummarySection({
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Active Subscriptions
         </p>
+
         <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
           {subscriptions.length}
         </p>
