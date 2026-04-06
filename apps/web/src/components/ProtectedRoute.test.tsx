@@ -27,7 +27,7 @@ describe('ProtectedRoute', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(document.querySelector('.animate-spin')).toBeInTheDocument();
   });
 
   it('redirects to /login when session is null and not loading', () => {
