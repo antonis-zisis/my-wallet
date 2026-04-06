@@ -93,7 +93,7 @@ export function ReportList({
                   className={`size-3.5 text-gray-400 dark:text-gray-500 ${report.isLocked ? '' : 'invisible'}`}
                 />
 
-                <span className="text-xs text-gray-400 dark:text-gray-500">
+                <span className="w-24 text-right text-xs text-gray-400 dark:text-gray-500">
                   {formatRelativeTime(report.updatedAt)}
                 </span>
 
