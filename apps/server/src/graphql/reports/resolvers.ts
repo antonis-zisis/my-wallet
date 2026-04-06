@@ -83,6 +83,12 @@ export const reportResolvers = {
         });
       }
 
+      if (existing.isLocked) {
+        throw new GraphQLError('Report is locked', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
       return prisma.report.update({
         where: { id: input.id },
         data: { title: input.title },
@@ -101,9 +107,45 @@ export const reportResolvers = {
         });
       }
 
+      if (existing.isLocked) {
+        throw new GraphQLError('Report is locked', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
       await prisma.report.delete({ where: { id } });
 
       return true;
+    },
+    lockReport: async (
+      _parent: unknown,
+      { id }: { id: string },
+      { userId }: { userId: string }
+    ) => {
+      const existing = await prisma.report.findFirst({ where: { id, userId } });
+
+      if (!existing) {
+        throw new GraphQLError('Report not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return prisma.report.update({ where: { id }, data: { isLocked: true } });
+    },
+    unlockReport: async (
+      _parent: unknown,
+      { id }: { id: string },
+      { userId }: { userId: string }
+    ) => {
+      const existing = await prisma.report.findFirst({ where: { id, userId } });
+
+      if (!existing) {
+        throw new GraphQLError('Report not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return prisma.report.update({ where: { id }, data: { isLocked: false } });
     },
   },
 };

@@ -4,6 +4,7 @@ import { formatMoney } from '../../utils/formatMoney';
 import { Badge, Button, Card, Dropdown } from '../ui';
 
 interface TransactionTableProps {
+  isLocked?: boolean;
   transactions: Array<Transaction>;
   onAddTransaction?: () => void;
   onDelete?: (transaction: Transaction) => void;
@@ -16,6 +17,7 @@ function formatAmount(transaction: Transaction) {
 }
 
 export function TransactionTable({
+  isLocked = false,
   onAddTransaction,
   onDelete,
   onEdit,
@@ -93,19 +95,21 @@ export function TransactionTable({
               </td>
 
               <td className="py-3 pl-2">
-                <Dropdown
-                  items={[
-                    {
-                      label: 'Edit',
-                      onClick: () => onEdit?.(transaction),
-                    },
-                    {
-                      label: 'Delete',
-                      variant: 'danger' as const,
-                      onClick: () => onDelete?.(transaction),
-                    },
-                  ]}
-                />
+                {!isLocked && (
+                  <Dropdown
+                    items={[
+                      {
+                        label: 'Edit',
+                        onClick: () => onEdit?.(transaction),
+                      },
+                      {
+                        label: 'Delete',
+                        variant: 'danger' as const,
+                        onClick: () => onDelete?.(transaction),
+                      },
+                    ]}
+                  />
+                )}
               </td>
             </tr>
           ))}

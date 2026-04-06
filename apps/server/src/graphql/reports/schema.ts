@@ -2,6 +2,7 @@ export const reportTypeDefs = `#graphql
   type Report {
     id: ID!
     title: String!
+    isLocked: Boolean!
     transactions: [Transaction!]!
     createdAt: String!
     updatedAt: String!
@@ -30,5 +31,7 @@ export const reportTypeDefs = `#graphql
     createReport(input: CreateReportInput!): Report!
     updateReport(input: UpdateReportInput!): Report!
     deleteReport(id: ID!): Boolean!
+    lockReport(id: ID!): Report!
+    unlockReport(id: ID!): Report!
   }
 `;

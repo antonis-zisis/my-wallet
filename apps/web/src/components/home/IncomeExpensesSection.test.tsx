@@ -7,6 +7,7 @@ import { IncomeExpensesSection } from './IncomeExpensesSection';
 
 const mockReport: Report = {
   id: '1',
+  isLocked: false,
   title: 'Jan',
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',

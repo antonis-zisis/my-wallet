@@ -46,6 +46,7 @@ const mockReportQuery: MockLink.MockedResponse = {
     data: {
       report: {
         id: '1',
+        isLocked: false,
         title: 'January Budget',
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',
@@ -95,6 +96,7 @@ const refetchAfterMutationMock: MockLink.MockedResponse = {
     data: {
       report: {
         id: '1',
+        isLocked: false,
         title: 'January Budget',
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',

@@ -24,6 +24,7 @@ export function Report() {
     isDeleteReportModalOpen,
     isDeleting,
     isDeletingTransaction,
+    isLocked,
     loading,
     onCloseAddTransactionModal,
     onCloseDeleteReportModal,
@@ -32,6 +33,7 @@ export function Report() {
     onConfirmDeleteReport,
     onConfirmDeleteTransaction,
     onCreateTransaction,
+    onLockReport,
     onOpenAddTransactionModal,
     onOpenDeleteReportModal,
     onSaveTitle,
@@ -39,6 +41,7 @@ export function Report() {
     onSelectTransactionForEdit,
     onToggleBudgetChart,
     onToggleChart,
+    onUnlockReport,
     onUpdateTransaction,
     report,
     transactions,
@@ -67,11 +70,14 @@ export function Report() {
 
         <ReportHeader
           createdAt={report.createdAt}
+          isLocked={isLocked}
           title={report.title}
           updatedAt={report.updatedAt}
           onAddTransaction={onOpenAddTransactionModal}
           onDeleteReport={onOpenDeleteReportModal}
+          onLockReport={onLockReport}
           onSaveTitle={onSaveTitle}
+          onUnlockReport={onUnlockReport}
         />
 
         <ReportSummary transactions={transactions} />
@@ -97,8 +103,9 @@ export function Report() {
         </ReportChartSection>
 
         <TransactionTable
+          isLocked={isLocked}
           transactions={transactions}
-          onAddTransaction={onOpenAddTransactionModal}
+          onAddTransaction={isLocked ? undefined : onOpenAddTransactionModal}
           onDelete={onSelectTransactionForDelete}
           onEdit={onSelectTransactionForEdit}
         />

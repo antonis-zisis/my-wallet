@@ -17,6 +17,7 @@ import { PAGE_SIZE, useReportsData } from './useReportsData';
 
 const mockReport = (id: string, title: string) => ({
   id,
+  isLocked: false,
   title,
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
@@ -28,6 +29,18 @@ const mockReportsPage1: MockLink.MockedResponse = {
     data: {
       reports: {
         items: [mockReport('1', 'January'), mockReport('2', 'February')],
+        totalCount: 12,
+      },
+    },
+  },
+};
+
+const mockReportsPage2: MockLink.MockedResponse = {
+  request: { query: GET_REPORTS, variables: { page: 2, pageSize: PAGE_SIZE } },
+  result: {
+    data: {
+      reports: {
+        items: [mockReport('3', 'March')],
         totalCount: 12,
       },
     },
@@ -135,21 +148,24 @@ describe('useReportsData', () => {
     expect(result.current.isModalOpen).toBe(false);
   });
 
-  it('changes page via onPageChange', () => {
+  it('changes page via onPageChange', async () => {
     const { result } = renderHook(() => useReportsData(), {
-      wrapper: createWrapper([mockReportsPage1]),
+      wrapper: createWrapper([mockReportsPage1, mockReportsPage2]),
     });
 
     expect(result.current.page).toBe(1);
 
     act(() => result.current.onPageChange(2));
     expect(result.current.page).toBe(2);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
   });
 
   it('resets to page 1 and closes modal after creating a report', async () => {
     const { result } = renderHook(() => useReportsData(), {
       wrapper: createWrapper([
         mockReportsPage1,
+        mockReportsPage2,
         createReportMock,
         refetchAfterCreateMock,
       ]),

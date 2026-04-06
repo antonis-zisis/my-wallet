@@ -8,12 +8,14 @@ import { ReportList } from './ReportList';
 const mockReports: Array<Report> = [
   {
     id: '1',
+    isLocked: false,
     title: 'January Budget',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
   {
     id: '2',
+    isLocked: false,
     title: 'February Budget',
     createdAt: '2024-02-01T00:00:00.000Z',
     updatedAt: '2024-02-01T00:00:00.000Z',
