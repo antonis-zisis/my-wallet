@@ -9,7 +9,7 @@ import {
   GET_NET_WORTH_SNAPSHOTS,
 } from '../graphql/netWorth';
 import { createWrapper } from '../test/hook-test-utils';
-import { useNetWorthData } from './useNetWorthData';
+import { PAGE_SIZE, useNetWorthData } from './useNetWorthData';
 
 const mockSnapshot = {
   id: '1',
@@ -30,7 +30,10 @@ const mockSecondSnapshot = {
 };
 
 const mockSnapshotsQuery: MockLink.MockedResponse = {
-  request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+  request: {
+    query: GET_NET_WORTH_SNAPSHOTS,
+    variables: { page: 1, pageSize: PAGE_SIZE },
+  },
   result: {
     data: {
       netWorthSnapshots: {
@@ -42,7 +45,10 @@ const mockSnapshotsQuery: MockLink.MockedResponse = {
 };
 
 const mockSnapshotsQueryEmpty: MockLink.MockedResponse = {
-  request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+  request: {
+    query: GET_NET_WORTH_SNAPSHOTS,
+    variables: { page: 1, pageSize: PAGE_SIZE },
+  },
   result: {
     data: {
       netWorthSnapshots: { items: [], totalCount: 0 },
@@ -51,7 +57,10 @@ const mockSnapshotsQueryEmpty: MockLink.MockedResponse = {
 };
 
 const mockSnapshotsQueryError: MockLink.MockedResponse = {
-  request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+  request: {
+    query: GET_NET_WORTH_SNAPSHOTS,
+    variables: { page: 1, pageSize: PAGE_SIZE },
+  },
   result: {
     errors: [new GraphQLError('Failed to load snapshots')],
   },
@@ -115,7 +124,10 @@ describe('useNetWorthData', () => {
   describe('pagination', () => {
     it('calculates totalPages correctly', async () => {
       const multiPageQuery: MockLink.MockedResponse = {
-        request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+        request: {
+          query: GET_NET_WORTH_SNAPSHOTS,
+          variables: { page: 1, pageSize: PAGE_SIZE },
+        },
         result: {
           data: {
             netWorthSnapshots: {
@@ -137,7 +149,10 @@ describe('useNetWorthData', () => {
 
     it('changes page when onPageChange is called', async () => {
       const page2Query: MockLink.MockedResponse = {
-        request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 2 } },
+        request: {
+          query: GET_NET_WORTH_SNAPSHOTS,
+          variables: { page: 2, pageSize: PAGE_SIZE },
+        },
         result: {
           data: {
             netWorthSnapshots: {
@@ -224,7 +239,10 @@ describe('useNetWorthData', () => {
       };
 
       const refetchMock: MockLink.MockedResponse = {
-        request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+        request: {
+          query: GET_NET_WORTH_SNAPSHOTS,
+          variables: { page: 1, pageSize: PAGE_SIZE },
+        },
         result: {
           data: {
             netWorthSnapshots: {
@@ -305,7 +323,10 @@ describe('useNetWorthData', () => {
       };
 
       const refetchMock: MockLink.MockedResponse = {
-        request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+        request: {
+          query: GET_NET_WORTH_SNAPSHOTS,
+          variables: { page: 1, pageSize: PAGE_SIZE },
+        },
         result: {
           data: {
             netWorthSnapshots: { items: [], totalCount: 0 },

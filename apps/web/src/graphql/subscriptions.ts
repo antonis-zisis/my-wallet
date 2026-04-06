@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_SUBSCRIPTIONS = gql`
-  query GetSubscriptions($page: Int, $active: Boolean) {
-    subscriptions(page: $page, active: $active) {
+  query GetSubscriptions($page: Int, $pageSize: Int, $active: Boolean) {
+    subscriptions(page: $page, pageSize: $pageSize, active: $active) {
       items {
         id
         name

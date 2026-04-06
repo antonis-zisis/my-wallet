@@ -18,19 +18,27 @@ export function useNetWorthData() {
 
   const { data, error, loading } = useQuery<NetWorthSnapshotsData>(
     GET_NET_WORTH_SNAPSHOTS,
-    { variables: { page } }
+    { variables: { page, pageSize: PAGE_SIZE } }
   );
 
   const [createSnapshot] = useMutation(CREATE_NET_WORTH_SNAPSHOT, {
     refetchQueries: [
-      { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
+      {
+        query: GET_NET_WORTH_SNAPSHOTS,
+        variables: { page: 1, pageSize: PAGE_SIZE },
+      },
     ],
   });
 
   const [deleteSnapshot, { loading: isDeleting }] = useMutation(
     DELETE_NET_WORTH_SNAPSHOT,
     {
-      refetchQueries: [{ query: GET_NET_WORTH_SNAPSHOTS, variables: { page } }],
+      refetchQueries: [
+        {
+          query: GET_NET_WORTH_SNAPSHOTS,
+          variables: { page, pageSize: PAGE_SIZE },
+        },
+      ],
     }
   );
 

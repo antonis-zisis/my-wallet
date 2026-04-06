@@ -51,7 +51,10 @@ const mockYearlySubscription = mockSubscription({
 });
 
 const mockActiveQuery: MockLink.MockedResponse = {
-  request: { query: GET_SUBSCRIPTIONS, variables: { page: 1, active: true } },
+  request: {
+    query: GET_SUBSCRIPTIONS,
+    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+  },
   result: {
     data: {
       subscriptions: {
@@ -63,17 +66,26 @@ const mockActiveQuery: MockLink.MockedResponse = {
 };
 
 const mockActiveQueryEmpty: MockLink.MockedResponse = {
-  request: { query: GET_SUBSCRIPTIONS, variables: { page: 1, active: true } },
+  request: {
+    query: GET_SUBSCRIPTIONS,
+    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+  },
   result: { data: { subscriptions: { items: [], totalCount: 0 } } },
 };
 
 const mockInactiveQueryEmpty: MockLink.MockedResponse = {
-  request: { query: GET_SUBSCRIPTIONS, variables: { page: 1, active: false } },
+  request: {
+    query: GET_SUBSCRIPTIONS,
+    variables: { active: false, page: 1, pageSize: PAGE_SIZE },
+  },
   result: { data: { subscriptions: { items: [], totalCount: 0 } } },
 };
 
 const mockActiveQueryPage2: MockLink.MockedResponse = {
-  request: { query: GET_SUBSCRIPTIONS, variables: { page: 2, active: true } },
+  request: {
+    query: GET_SUBSCRIPTIONS,
+    variables: { active: true, page: 2, pageSize: PAGE_SIZE },
+  },
   result: {
     data: {
       subscriptions: {
@@ -85,7 +97,10 @@ const mockActiveQueryPage2: MockLink.MockedResponse = {
 };
 
 const mockActiveQueryLarge: MockLink.MockedResponse = {
-  request: { query: GET_SUBSCRIPTIONS, variables: { page: 1, active: true } },
+  request: {
+    query: GET_SUBSCRIPTIONS,
+    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+  },
   result: {
     data: {
       subscriptions: {
@@ -296,7 +311,7 @@ describe('useSubscriptionsData', () => {
     const refetchMock: MockLink.MockedResponse = {
       request: {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: 1, active: true },
+        variables: { active: true, page: 1, pageSize: PAGE_SIZE },
       },
       result: {
         data: {
@@ -366,7 +381,7 @@ describe('useSubscriptionsData', () => {
     const refetchActiveMock: MockLink.MockedResponse = {
       request: {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: 1, active: true },
+        variables: { active: true, page: 1, pageSize: PAGE_SIZE },
       },
       result: {
         data: {
@@ -380,7 +395,7 @@ describe('useSubscriptionsData', () => {
     const refetchInactiveMock: MockLink.MockedResponse = {
       request: {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: 1, active: false },
+        variables: { active: false, page: 1, pageSize: PAGE_SIZE },
       },
       result: { data: { subscriptions: { items: [], totalCount: 0 } } },
     };
@@ -421,7 +436,7 @@ describe('useSubscriptionsData', () => {
     const refetchActiveMock: MockLink.MockedResponse = {
       request: {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: 1, active: true },
+        variables: { active: true, page: 1, pageSize: PAGE_SIZE },
       },
       result: {
         data: {
@@ -432,7 +447,7 @@ describe('useSubscriptionsData', () => {
     const refetchInactiveMock: MockLink.MockedResponse = {
       request: {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: 1, active: false },
+        variables: { active: false, page: 1, pageSize: PAGE_SIZE },
       },
       result: { data: { subscriptions: { items: [], totalCount: 0 } } },
     };
@@ -465,7 +480,7 @@ describe('useSubscriptionsData', () => {
     const refetchActiveMock: MockLink.MockedResponse = {
       request: {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: 1, active: true },
+        variables: { active: true, page: 1, pageSize: PAGE_SIZE },
       },
       result: {
         data: {
@@ -476,7 +491,7 @@ describe('useSubscriptionsData', () => {
     const refetchInactiveMock: MockLink.MockedResponse = {
       request: {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: 1, active: false },
+        variables: { active: false, page: 1, pageSize: PAGE_SIZE },
       },
       result: { data: { subscriptions: { items: [], totalCount: 0 } } },
     };

@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_REPORTS = gql`
-  query GetReports($page: Int) {
-    reports(page: $page) {
+  query GetReports($page: Int, $pageSize: Int) {
+    reports(page: $page, pageSize: $pageSize) {
       items {
         id
         title

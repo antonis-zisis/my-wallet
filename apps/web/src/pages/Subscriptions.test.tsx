@@ -19,6 +19,7 @@ import {
   DELETE_SUBSCRIPTION,
   GET_SUBSCRIPTIONS,
 } from '../graphql/subscriptions';
+import { PAGE_SIZE } from '../hooks/useSubscriptionsData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Subscriptions } from './Subscriptions';
 
@@ -64,7 +65,7 @@ const mockInactiveSubscription = {
 const mockActiveQuery: MockLink.MockedResponse = {
   request: {
     query: GET_SUBSCRIPTIONS,
-    variables: { page: 1, active: true },
+    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
   },
   result: {
     data: {
@@ -79,7 +80,7 @@ const mockActiveQuery: MockLink.MockedResponse = {
 const mockInactiveQuery: MockLink.MockedResponse = {
   request: {
     query: GET_SUBSCRIPTIONS,
-    variables: { page: 1, active: false },
+    variables: { active: false, page: 1, pageSize: PAGE_SIZE },
   },
   result: {
     data: {
@@ -94,7 +95,7 @@ const mockInactiveQuery: MockLink.MockedResponse = {
 const mockActiveQueryEmpty: MockLink.MockedResponse = {
   request: {
     query: GET_SUBSCRIPTIONS,
-    variables: { page: 1, active: true },
+    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
   },
   result: {
     data: {
@@ -106,7 +107,7 @@ const mockActiveQueryEmpty: MockLink.MockedResponse = {
 const mockInactiveQueryEmpty: MockLink.MockedResponse = {
   request: {
     query: GET_SUBSCRIPTIONS,
-    variables: { page: 1, active: false },
+    variables: { active: false, page: 1, pageSize: PAGE_SIZE },
   },
   result: {
     data: {
@@ -118,7 +119,7 @@ const mockInactiveQueryEmpty: MockLink.MockedResponse = {
 const mockActiveQueryError: MockLink.MockedResponse = {
   request: {
     query: GET_SUBSCRIPTIONS,
-    variables: { page: 1, active: true },
+    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
   },
   result: {
     errors: [new GraphQLError('Failed to load subscriptions')],
@@ -290,7 +291,7 @@ describe('Subscriptions', () => {
       const refetchMock: MockLink.MockedResponse = {
         request: {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: 1, active: true },
+          variables: { active: true, page: 1, pageSize: PAGE_SIZE },
         },
         result: {
           data: {
@@ -373,7 +374,7 @@ describe('Subscriptions', () => {
       const refetchActive: MockLink.MockedResponse = {
         request: {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: 1, active: true },
+          variables: { active: true, page: 1, pageSize: PAGE_SIZE },
         },
         result: {
           data: {
@@ -387,7 +388,7 @@ describe('Subscriptions', () => {
       const refetchInactive: MockLink.MockedResponse = {
         request: {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: 1, active: false },
+          variables: { active: false, page: 1, pageSize: PAGE_SIZE },
         },
         result: {
           data: {
@@ -447,7 +448,7 @@ describe('Subscriptions', () => {
       const refetchActive: MockLink.MockedResponse = {
         request: {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: 1, active: true },
+          variables: { active: true, page: 1, pageSize: PAGE_SIZE },
         },
         result: {
           data: {
@@ -461,7 +462,7 @@ describe('Subscriptions', () => {
       const refetchInactive: MockLink.MockedResponse = {
         request: {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: 1, active: false },
+          variables: { active: false, page: 1, pageSize: PAGE_SIZE },
         },
         result: {
           data: {

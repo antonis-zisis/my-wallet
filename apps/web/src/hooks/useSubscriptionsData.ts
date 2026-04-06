@@ -35,7 +35,7 @@ export function useSubscriptionsData() {
     error: activeError,
     loading: activeLoading,
   } = useQuery<SubscriptionsData>(GET_SUBSCRIPTIONS, {
-    variables: { page: activePage, active: true },
+    variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
   });
 
   const {
@@ -43,12 +43,15 @@ export function useSubscriptionsData() {
     error: inactiveError,
     loading: inactiveLoading,
   } = useQuery<SubscriptionsData>(GET_SUBSCRIPTIONS, {
-    variables: { page: inactivePage, active: false },
+    variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
   });
 
   const [createSubscription] = useMutation(CREATE_SUBSCRIPTION, {
     refetchQueries: [
-      { query: GET_SUBSCRIPTIONS, variables: { page: 1, active: true } },
+      {
+        query: GET_SUBSCRIPTIONS,
+        variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+      },
     ],
   });
 
@@ -56,11 +59,11 @@ export function useSubscriptionsData() {
     refetchQueries: [
       {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: activePage, active: true },
+        variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
       },
       {
         query: GET_SUBSCRIPTIONS,
-        variables: { page: inactivePage, active: false },
+        variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
       },
     ],
   });
@@ -71,11 +74,11 @@ export function useSubscriptionsData() {
       refetchQueries: [
         {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: activePage, active: true },
+          variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
         },
         {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: inactivePage, active: false },
+          variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
         },
       ],
     }
@@ -87,11 +90,11 @@ export function useSubscriptionsData() {
       refetchQueries: [
         {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: activePage, active: true },
+          variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
         },
         {
           query: GET_SUBSCRIPTIONS,
-          variables: { page: inactivePage, active: false },
+          variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
         },
       ],
     }

@@ -38,7 +38,7 @@ export const netWorthTypeDefs = `#graphql
   }
 
   extend type Query {
-    netWorthSnapshots(page: Int): NetWorthSnapshotsResult!
+    netWorthSnapshots(page: Int, pageSize: Int): NetWorthSnapshotsResult!
     netWorthSnapshot(id: ID!): NetWorthSnapshot
   }
 

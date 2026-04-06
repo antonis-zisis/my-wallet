@@ -14,11 +14,12 @@ vi.mock('../contexts/ToastContext', () => ({
 }));
 
 import { GET_REPORTS } from '../graphql/reports';
+import { PAGE_SIZE } from '../hooks/useReportsData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Reports } from './Reports';
 
 const mockReportsQuery: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1 } },
+  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
   result: {
     data: {
       reports: {
@@ -43,14 +44,14 @@ const mockReportsQuery: MockLink.MockedResponse = {
 };
 
 const mockReportsQueryError: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1 } },
+  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
   result: {
     errors: [new GraphQLError('Failed to load reports')],
   },
 };
 
 const mockPage1: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1 } },
+  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
   result: {
     data: {
       reports: {
@@ -68,7 +69,7 @@ const mockPage1: MockLink.MockedResponse = {
 };
 
 const mockPage2: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 2 } },
+  request: { query: GET_REPORTS, variables: { page: 2, pageSize: PAGE_SIZE } },
   result: {
     data: {
       reports: {

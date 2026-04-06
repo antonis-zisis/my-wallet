@@ -3,8 +3,6 @@ import { GraphQLError } from 'graphql';
 import { NetWorthEntry } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
 
-const PAGE_SIZE = 10;
-
 interface NetWorthEntryInput {
   type: string;
   label: string;
@@ -28,6 +26,7 @@ export const netWorthResolvers = {
       if (parent.entries !== undefined) {
         return parent.entries;
       }
+
       return prisma.netWorthEntry.findMany({
         where: { snapshotId: parent.id },
         orderBy: { createdAt: 'asc' },
@@ -39,6 +38,7 @@ export const netWorthResolvers = {
         (await prisma.netWorthEntry.findMany({
           where: { snapshotId: parent.id },
         }));
+
       return entries
         .filter((entry) => entry.type === 'ASSET')
         .reduce((sum, entry) => sum + entry.amount, 0);
@@ -49,6 +49,7 @@ export const netWorthResolvers = {
         (await prisma.netWorthEntry.findMany({
           where: { snapshotId: parent.id },
         }));
+
       return entries
         .filter((entry) => entry.type === 'LIABILITY')
         .reduce((sum, entry) => sum + entry.amount, 0);
@@ -59,32 +60,36 @@ export const netWorthResolvers = {
         (await prisma.netWorthEntry.findMany({
           where: { snapshotId: parent.id },
         }));
+
       const assets = entries
         .filter((entry) => entry.type === 'ASSET')
         .reduce((sum, entry) => sum + entry.amount, 0);
+
       const liabilities = entries
         .filter((entry) => entry.type === 'LIABILITY')
         .reduce((sum, entry) => sum + entry.amount, 0);
+
       return assets - liabilities;
     },
   },
   Query: {
     netWorthSnapshots: async (
       _parent: unknown,
-      { page = 1 }: { page?: number },
+      { page = 1, pageSize = 10 }: { page?: number; pageSize?: number },
       { userId }: { userId: string }
     ) => {
-      const skip = (page - 1) * PAGE_SIZE;
+      const skip = (page - 1) * pageSize;
       const [items, totalCount] = await Promise.all([
         prisma.netWorthSnapshot.findMany({
           where: { userId },
           orderBy: { createdAt: 'desc' },
           include: { entries: { orderBy: { createdAt: 'asc' } } },
           skip,
-          take: PAGE_SIZE,
+          take: pageSize,
         }),
         prisma.netWorthSnapshot.count({ where: { userId } }),
       ]);
+
       return { items, totalCount };
     },
     netWorthSnapshot: async (
@@ -128,12 +133,15 @@ export const netWorthResolvers = {
       const existing = await prisma.netWorthSnapshot.findFirst({
         where: { id, userId },
       });
+
       if (!existing) {
         throw new GraphQLError('Net worth snapshot not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+
       await prisma.netWorthSnapshot.delete({ where: { id } });
+
       return true;
     },
   },
