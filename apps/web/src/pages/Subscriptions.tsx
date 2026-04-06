@@ -1,12 +1,10 @@
 import { ChevronDownIcon, ChevronUpIcon } from '../components/icons';
-import {
-  CancelSubscriptionModal,
-  CreateSubscriptionModal,
-  DeleteSubscriptionModal,
-  EditSubscriptionModal,
-  SubscriptionCostSummary,
-  SubscriptionList,
-} from '../components/subscriptions';
+import { CancelSubscriptionModal } from '../components/subscriptions/CancelSubscriptionModal';
+import { CreateSubscriptionModal } from '../components/subscriptions/CreateSubscriptionModal';
+import { DeleteSubscriptionModal } from '../components/subscriptions/DeleteSubscriptionModal';
+import { EditSubscriptionModal } from '../components/subscriptions/EditSubscriptionModal';
+import { SubscriptionCostSummary } from '../components/subscriptions/SubscriptionCostSummary';
+import { SubscriptionList } from '../components/subscriptions/SubscriptionList';
 import { Button, PageLayout, Pagination } from '../components/ui';
 import { PAGE_SIZE, useSubscriptionsData } from '../hooks/useSubscriptionsData';
 

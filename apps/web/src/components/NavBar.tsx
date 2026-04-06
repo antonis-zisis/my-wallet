@@ -57,6 +57,7 @@ export function NavBar() {
                   className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${dotConfig.ping}`}
                 />
               )}
+
               <span
                 className={`relative inline-flex h-2 w-2 rounded-full ${dotConfig.core}`}
               />

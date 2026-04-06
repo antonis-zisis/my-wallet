@@ -25,12 +25,14 @@ export function SubscriptionCostSummary({
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Monthly cost
             </p>
+
             <p className="mt-1 text-xl font-semibold text-gray-800 dark:text-gray-100">
               {formatMoney(totalMonthlyCost)} €
             </p>
           </>
         )}
       </Card>
+
       <Card>
         {loading ? (
           <>
@@ -42,6 +44,7 @@ export function SubscriptionCostSummary({
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Yearly cost
             </p>
+
             <p className="mt-1 text-xl font-semibold text-gray-800 dark:text-gray-100">
               {formatMoney(totalYearlyCost)} €
             </p>

@@ -2,6 +2,7 @@ import { Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
+import { CreditCardIcon } from '../icons';
 import { Badge, Card, Dropdown, Skeleton } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
 
@@ -37,23 +38,12 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="size-10 text-gray-300 dark:text-gray-600"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"
-        />
-      </svg>
+      <CreditCardIcon className="size-10 text-gray-300 dark:text-gray-600" />
+
       <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
         {message}
       </p>
+
       {onAdd && (
         <button
           className="cursor-pointer text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -106,6 +96,7 @@ export function SubscriptionList({
       <ul className="divide-y divide-gray-200 dark:divide-gray-700">
         {subscriptions.map((subscription) => {
           const dropdownItems: Array<DropdownItem> = [];
+
           if (onEdit) {
             dropdownItems.push({
               label: 'Edit',
@@ -134,6 +125,7 @@ export function SubscriptionList({
                     <span className="font-medium text-gray-800 dark:text-gray-100">
                       {subscription.name}
                     </span>
+
                     <Badge
                       variant={
                         subscription.billingCycle === 'MONTHLY'
@@ -176,6 +168,7 @@ export function SubscriptionList({
                   )}
                 </span>
               </div>
+
               <Dropdown items={dropdownItems} />
             </li>
           );

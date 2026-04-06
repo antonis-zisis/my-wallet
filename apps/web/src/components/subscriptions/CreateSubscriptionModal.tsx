@@ -42,6 +42,7 @@ export function CreateSubscriptionModal({
     if (!isValid) {
       return;
     }
+
     onSubmit({
       name: name.trim(),
       amount: parseFloat(amount),
@@ -77,6 +78,7 @@ export function CreateSubscriptionModal({
           onChange={(ev) => setName(ev.target.value)}
           autoFocus
         />
+
         <Input
           label="Amount"
           id="subscription-amount"
@@ -87,6 +89,7 @@ export function CreateSubscriptionModal({
           value={amount}
           onChange={(ev) => setAmount(ev.target.value)}
         />
+
         <Select
           label="Billing Cycle"
           id="subscription-billing-cycle"
@@ -97,6 +100,7 @@ export function CreateSubscriptionModal({
           ]}
           onChange={(ev) => setBillingCycle(ev.target.value as BillingCycle)}
         />
+
         <Input
           label="Start Date"
           id="subscription-start-date"
