@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { type CreateTransactionInput } from '../components/reports/AddTransactionModal';
+import { useToast } from '../contexts/ToastContext';
 import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
 import {
   CREATE_TRANSACTION,
@@ -17,6 +18,7 @@ interface ReportData {
 }
 
 export function useReportData() {
+  const { showError, showSuccess } = useToast();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -63,11 +65,16 @@ export function useReportData() {
   };
 
   const onCreateTransaction = async (input: CreateTransactionInput) => {
-    await createTransaction({
-      variables: { input: { ...input, reportId: id } },
-    });
+    try {
+      await createTransaction({
+        variables: { input: { ...input, reportId: id } },
+      });
 
-    setIsAddTransactionModalOpen(false);
+      setIsAddTransactionModalOpen(false);
+      showSuccess('Transaction added.');
+    } catch {
+      showError('Failed to add transaction.');
+    }
   };
 
   const onUpdateTransaction = async (input: CreateTransactionInput) => {

@@ -4,6 +4,14 @@ import { GraphQLError } from 'graphql';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: vi.fn().mockReturnValue({
+    showSuccess: vi.fn(),
+    showError: vi.fn(),
+    showInfo: vi.fn(),
+  }),
+}));
+
 import { GET_REPORT } from '../graphql/reports';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Report } from './Report';

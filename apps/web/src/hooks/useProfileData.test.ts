@@ -6,6 +6,8 @@ import { useProfileData } from './useProfileData';
 
 const mockUpdateUser = vi.fn();
 const mockUpdatePassword = vi.fn();
+const mockShowSuccess = vi.fn();
+const mockShowError = vi.fn();
 
 vi.mock('../contexts/UserContext', () => ({
   useUser: vi.fn().mockReturnValue({
@@ -23,11 +25,20 @@ vi.mock('../contexts/AuthContext', () => ({
   }),
 }));
 
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: vi.fn().mockReturnValue({
+    showSuccess: (...args: Array<unknown>) => mockShowSuccess(...args),
+    showError: (...args: Array<unknown>) => mockShowError(...args),
+  }),
+}));
+
 const mockEvent = { preventDefault: vi.fn() } as unknown as SubmitEvent;
 
 beforeEach(() => {
   mockUpdateUser.mockReset();
   mockUpdatePassword.mockReset();
+  mockShowSuccess.mockReset();
+  mockShowError.mockReset();
   mockEvent.preventDefault = vi.fn();
 });
 
@@ -46,12 +57,10 @@ describe('useProfileData', () => {
       expect(result.current.isNameUnchanged).toBe(true);
     });
 
-    it('starts with no status messages and not saving', () => {
+    it('starts not saving', () => {
       const { result } = renderHook(() => useProfileData());
 
-      expect(result.current.profileStatus).toBeNull();
       expect(result.current.profileSaving).toBe(false);
-      expect(result.current.passwordStatus).toBeNull();
       expect(result.current.passwordSaving).toBe(false);
     });
 
@@ -138,7 +147,7 @@ describe('useProfileData', () => {
       expect(mockUpdateUser).toHaveBeenCalledWith({ fullName: 'Jane Doe' });
     });
 
-    it('sets success status after successful update', async () => {
+    it('shows success toast after successful update', async () => {
       mockUpdateUser.mockResolvedValueOnce(undefined);
       const { result } = renderHook(() => useProfileData());
 
@@ -152,14 +161,11 @@ describe('useProfileData', () => {
         await result.current.onProfileSubmit(mockEvent);
       });
 
-      expect(result.current.profileStatus).toEqual({
-        type: 'success',
-        message: 'Profile updated.',
-      });
+      expect(mockShowSuccess).toHaveBeenCalledWith('Profile updated.');
       expect(result.current.profileSaving).toBe(false);
     });
 
-    it('sets error status when updateUser throws', async () => {
+    it('shows error toast when updateUser throws', async () => {
       mockUpdateUser.mockRejectedValueOnce(new Error('network error'));
       const { result } = renderHook(() => useProfileData());
 
@@ -173,16 +179,13 @@ describe('useProfileData', () => {
         await result.current.onProfileSubmit(mockEvent);
       });
 
-      expect(result.current.profileStatus).toEqual({
-        type: 'error',
-        message: 'Failed to update profile.',
-      });
+      expect(mockShowError).toHaveBeenCalledWith('Failed to update profile.');
       expect(result.current.profileSaving).toBe(false);
     });
   });
 
   describe('onPasswordSubmit', () => {
-    it('sets error when passwords do not match', async () => {
+    it('shows error toast when passwords do not match', async () => {
       const { result } = renderHook(() => useProfileData());
 
       act(() => {
@@ -198,14 +201,11 @@ describe('useProfileData', () => {
         await result.current.onPasswordSubmit(mockEvent);
       });
 
-      expect(result.current.passwordStatus).toEqual({
-        type: 'error',
-        message: 'Passwords do not match.',
-      });
+      expect(mockShowError).toHaveBeenCalledWith('Passwords do not match.');
       expect(mockUpdatePassword).not.toHaveBeenCalled();
     });
 
-    it('sets error when password is too short', async () => {
+    it('shows error toast when password is too short', async () => {
       const { result } = renderHook(() => useProfileData());
 
       act(() => {
@@ -221,14 +221,13 @@ describe('useProfileData', () => {
         await result.current.onPasswordSubmit(mockEvent);
       });
 
-      expect(result.current.passwordStatus).toEqual({
-        type: 'error',
-        message: 'Password must be at least 6 characters.',
-      });
+      expect(mockShowError).toHaveBeenCalledWith(
+        'Password must be at least 6 characters.'
+      );
       expect(mockUpdatePassword).not.toHaveBeenCalled();
     });
 
-    it('calls updatePassword and sets success status on valid input', async () => {
+    it('calls updatePassword and shows success toast on valid input', async () => {
       mockUpdatePassword.mockResolvedValueOnce({ error: null });
       const { result } = renderHook(() => useProfileData());
 
@@ -246,10 +245,7 @@ describe('useProfileData', () => {
       });
 
       expect(mockUpdatePassword).toHaveBeenCalledWith('newpass123');
-      expect(result.current.passwordStatus).toEqual({
-        type: 'success',
-        message: 'Password changed.',
-      });
+      expect(mockShowSuccess).toHaveBeenCalledWith('Password changed.');
     });
 
     it('clears password fields after successful change', async () => {
@@ -274,7 +270,7 @@ describe('useProfileData', () => {
       expect(result.current.passwordSaving).toBe(false);
     });
 
-    it('sets error status when updatePassword returns an error', async () => {
+    it('shows error toast when updatePassword returns an error', async () => {
       mockUpdatePassword.mockResolvedValueOnce({
         error: { message: 'Invalid password' },
       });
@@ -293,14 +289,11 @@ describe('useProfileData', () => {
         await result.current.onPasswordSubmit(mockEvent);
       });
 
-      expect(result.current.passwordStatus).toEqual({
-        type: 'error',
-        message: 'Invalid password',
-      });
+      expect(mockShowError).toHaveBeenCalledWith('Invalid password');
       expect(result.current.passwordSaving).toBe(false);
     });
 
-    it('sets error status when updatePassword throws', async () => {
+    it('shows error toast when updatePassword throws', async () => {
       mockUpdatePassword.mockRejectedValueOnce(new Error('network error'));
       const { result } = renderHook(() => useProfileData());
 
@@ -317,10 +310,7 @@ describe('useProfileData', () => {
         await result.current.onPasswordSubmit(mockEvent);
       });
 
-      expect(result.current.passwordStatus).toEqual({
-        type: 'error',
-        message: 'Failed to change password.',
-      });
+      expect(mockShowError).toHaveBeenCalledWith('Failed to change password.');
       expect(result.current.passwordSaving).toBe(false);
     });
   });

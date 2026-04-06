@@ -3,7 +3,15 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: vi.fn().mockReturnValue({
+    showSuccess: vi.fn(),
+    showError: vi.fn(),
+    showInfo: vi.fn(),
+  }),
+}));
 
 import { GET_REPORTS } from '../graphql/reports';
 import { MockedProvider } from '../test/apollo-test-utils';

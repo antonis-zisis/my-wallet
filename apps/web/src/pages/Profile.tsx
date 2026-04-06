@@ -14,9 +14,7 @@ export function Profile() {
     onPasswordSubmit,
     onProfileSubmit,
     passwordSaving,
-    passwordStatus,
     profileSaving,
-    profileStatus,
   } = useProfileData();
 
   return (
@@ -47,14 +45,6 @@ export function Profile() {
             value={fullName}
             onChange={onFullNameChange}
           />
-
-          {profileStatus && (
-            <p
-              className={`text-sm ${profileStatus.type === 'success' ? 'text-green-600' : 'text-red-500'}`}
-            >
-              {profileStatus.message}
-            </p>
-          )}
 
           <Button
             disabled={isNameUnchanged}
@@ -89,14 +79,6 @@ export function Profile() {
             value={confirmPassword}
             onChange={onConfirmPasswordChange}
           />
-
-          {passwordStatus && (
-            <p
-              className={`text-sm ${passwordStatus.type === 'success' ? 'text-green-600' : 'text-red-500'}`}
-            >
-              {passwordStatus.message}
-            </p>
-          )}
 
           <Button isLoading={passwordSaving} type="submit">
             Change password

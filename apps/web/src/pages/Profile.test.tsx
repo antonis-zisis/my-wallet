@@ -6,6 +6,8 @@ import { Profile } from './Profile';
 
 const mockUpdateUser = vi.fn();
 const mockUpdatePassword = vi.fn();
+const mockShowSuccess = vi.fn();
+const mockShowError = vi.fn();
 
 vi.mock('../contexts/UserContext', () => ({
   useUser: vi.fn().mockReturnValue({
@@ -25,10 +27,20 @@ vi.mock('../contexts/AuthContext', () => ({
   }),
 }));
 
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: vi.fn().mockReturnValue({
+    showSuccess: (...args: Array<unknown>) => mockShowSuccess(...args),
+    showError: (...args: Array<unknown>) => mockShowError(...args),
+    showInfo: vi.fn(),
+  }),
+}));
+
 describe('Profile', () => {
   beforeEach(() => {
     mockUpdateUser.mockReset();
     mockUpdatePassword.mockReset();
+    mockShowSuccess.mockReset();
+    mockShowError.mockReset();
   });
 
   it('renders email as read-only and fullName as editable', () => {
@@ -82,7 +94,9 @@ describe('Profile', () => {
       expect(mockUpdateUser).toHaveBeenCalledWith({ fullName: 'Jane Doe' });
     });
 
-    expect(screen.getByText('Profile updated.')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockShowSuccess).toHaveBeenCalledWith('Profile updated.');
+    });
   });
 
   it('shows error when profile update fails', async () => {
@@ -96,7 +110,7 @@ describe('Profile', () => {
     fireEvent.submit(screen.getAllByText('Save')[0].closest('form')!);
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to update profile.')).toBeInTheDocument();
+      expect(mockShowError).toHaveBeenCalledWith('Failed to update profile.');
     });
   });
 
@@ -113,7 +127,7 @@ describe('Profile', () => {
     fireEvent.submit(passwordForm);
 
     await waitFor(() => {
-      expect(screen.getByText('Passwords do not match.')).toBeInTheDocument();
+      expect(mockShowError).toHaveBeenCalledWith('Passwords do not match.');
     });
 
     expect(mockUpdatePassword).not.toHaveBeenCalled();
@@ -129,9 +143,9 @@ describe('Profile', () => {
     fireEvent.submit(passwordForm);
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Password must be at least 6 characters.')
-      ).toBeInTheDocument();
+      expect(mockShowError).toHaveBeenCalledWith(
+        'Password must be at least 6 characters.'
+      );
     });
 
     expect(mockUpdatePassword).not.toHaveBeenCalled();
@@ -154,6 +168,8 @@ describe('Profile', () => {
       expect(mockUpdatePassword).toHaveBeenCalledWith('newpass123');
     });
 
-    expect(screen.getByText('Password changed.')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockShowSuccess).toHaveBeenCalledWith('Password changed.');
+    });
   });
 });

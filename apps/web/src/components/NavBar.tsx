@@ -1,8 +1,10 @@
 import { useQuery } from '@apollo/client/react';
+import { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { HEALTH_QUERY } from '../graphql/health';
 import { getInitials } from '../utils/getInitials';
@@ -27,10 +29,17 @@ export function NavBar() {
   const { signOut } = useAuth();
   const { loading, user } = useUser();
   const { theme, toggleTheme } = useTheme();
+  const { showError } = useToast();
   const navigate = useNavigate();
   const { error: healthError, loading: healthLoading } = useQuery<{
     health: string;
   }>(HEALTH_QUERY);
+
+  useEffect(() => {
+    if (healthError) {
+      showError('Unable to connect to server.');
+    }
+  }, [healthError, showError]);
 
   const dotConfig = healthLoading
     ? { core: 'bg-gray-400 dark:bg-gray-500', ping: null }

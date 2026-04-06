@@ -3,7 +3,15 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: vi.fn().mockReturnValue({
+    showSuccess: vi.fn(),
+    showError: vi.fn(),
+    showInfo: vi.fn(),
+  }),
+}));
 
 import { GET_REPORT } from '../graphql/reports';
 import {

@@ -1,7 +1,15 @@
 import { MockLink } from '@apollo/client/testing';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: vi.fn().mockReturnValue({
+    showSuccess: vi.fn(),
+    showError: vi.fn(),
+    showInfo: vi.fn(),
+  }),
+}));
 
 import { CREATE_REPORT, GET_REPORTS } from '../graphql/reports';
 import { MockedProvider } from '../test/apollo-test-utils';

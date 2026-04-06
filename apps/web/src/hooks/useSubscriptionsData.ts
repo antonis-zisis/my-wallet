@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
+import { useToast } from '../contexts/ToastContext';
 import {
   CANCEL_SUBSCRIPTION,
   CREATE_SUBSCRIPTION,
@@ -17,6 +18,7 @@ import {
 export const PAGE_SIZE = 10;
 
 export function useSubscriptionsData() {
+  const { showError, showSuccess } = useToast();
   const [activePage, setActivePage] = useState(1);
   const [inactivePage, setInactivePage] = useState(1);
   const [showInactive, setShowInactive] = useState(false);
@@ -116,9 +118,15 @@ export function useSubscriptionsData() {
     startDate: string;
     endDate?: string;
   }) => {
-    await createSubscription({ variables: { input } });
-    setActivePage(1);
-    setIsCreateOpen(false);
+    try {
+      await createSubscription({ variables: { input } });
+
+      setActivePage(1);
+      setIsCreateOpen(false);
+      showSuccess('Subscription created.');
+    } catch {
+      showError('Failed to create subscription.');
+    }
   };
 
   const handleUpdate = async (input: {
@@ -137,6 +145,7 @@ export function useSubscriptionsData() {
     if (!subscriptionToCancel) {
       return;
     }
+
     await cancelSubscription({ variables: { id: subscriptionToCancel.id } });
     setSubscriptionToCancel(null);
   };
@@ -145,6 +154,7 @@ export function useSubscriptionsData() {
     if (!subscriptionToDelete) {
       return;
     }
+
     await deleteSubscription({ variables: { id: subscriptionToDelete.id } });
     setSubscriptionToDelete(null);
   };
