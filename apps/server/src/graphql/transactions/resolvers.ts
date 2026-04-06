@@ -58,6 +58,12 @@ export const transactionResolvers = {
         });
       }
 
+      if (report.isLocked) {
+        throw new GraphQLError('Report is locked', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
       const transaction = await prisma.transaction.create({
         data: {
           reportId: input.reportId,
@@ -83,11 +89,18 @@ export const transactionResolvers = {
     ) => {
       const existing = await prisma.transaction.findFirst({
         where: { id: input.id, report: { userId } },
+        include: { report: true },
       });
 
       if (!existing) {
         throw new GraphQLError('Transaction not found', {
           extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      if (existing.report.isLocked) {
+        throw new GraphQLError('Report is locked', {
+          extensions: { code: 'FORBIDDEN' },
         });
       }
 
@@ -115,11 +128,18 @@ export const transactionResolvers = {
     ) => {
       const existing = await prisma.transaction.findFirst({
         where: { id, report: { userId } },
+        include: { report: true },
       });
 
       if (!existing) {
         throw new GraphQLError('Transaction not found', {
           extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      if (existing.report.isLocked) {
+        throw new GraphQLError('Report is locked', {
+          extensions: { code: 'FORBIDDEN' },
         });
       }
 

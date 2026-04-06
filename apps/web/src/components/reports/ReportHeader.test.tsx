@@ -6,11 +6,14 @@ import { ReportHeader } from './ReportHeader';
 
 const defaultProps = {
   createdAt: '2024-01-01T00:00:00.000Z',
+  isLocked: false,
   title: 'Test Report',
   updatedAt: '2024-03-15T00:00:00.000Z',
   onAddTransaction: vi.fn(),
   onDeleteReport: vi.fn(),
+  onLockReport: vi.fn(),
   onSaveTitle: vi.fn(),
+  onUnlockReport: vi.fn(),
 };
 
 const openRenameViaDropdown = async () => {

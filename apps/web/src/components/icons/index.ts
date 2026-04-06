@@ -7,6 +7,8 @@ export { ChevronUpIcon } from './ChevronUpIcon';
 export { CircleAlertIcon } from './CircleAlertIcon';
 export { CreditCardIcon } from './CreditCardIcon';
 export { DocumentTextIcon } from './DocumentTextIcon';
+export { LockClosedIcon } from './LockClosedIcon';
+export { LockOpenIcon } from './LockOpenIcon';
 export { LogOutIcon } from './LogOutIcon';
 export { MoonIcon } from './MoonIcon';
 export { SunIcon } from './SunIcon';

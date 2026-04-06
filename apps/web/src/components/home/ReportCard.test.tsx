@@ -6,6 +6,7 @@ import { ReportCard } from './ReportCard';
 
 const mockReport: Report = {
   id: '1',
+  isLocked: false,
   title: 'January 2026',
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-15T00:00:00.000Z',
@@ -69,6 +70,7 @@ describe('ReportCard', () => {
   it('handles a report with no transactions', () => {
     const emptyReport: Report = {
       id: '2',
+      isLocked: false,
       title: 'Empty Report',
       createdAt: '2026-02-01T00:00:00.000Z',
       updatedAt: '2026-02-01T00:00:00.000Z',

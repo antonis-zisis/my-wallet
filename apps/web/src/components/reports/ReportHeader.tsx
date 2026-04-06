@@ -1,22 +1,29 @@
 import { useState } from 'react';
 
 import { formatDate } from '../../utils/formatDate';
+import { LockClosedIcon } from '../icons';
 import { Button, Dropdown, Input } from '../ui';
 
 interface ReportHeaderProps {
   createdAt: string;
+  isLocked: boolean;
   title: string;
   updatedAt: string;
   onAddTransaction: () => void;
   onDeleteReport: () => void;
+  onLockReport: () => void;
   onSaveTitle: (title: string) => void;
+  onUnlockReport: () => void;
 }
 
 export function ReportHeader({
   createdAt,
+  isLocked,
   onAddTransaction,
   onDeleteReport,
+  onLockReport,
   onSaveTitle,
+  onUnlockReport,
   title,
   updatedAt,
 }: ReportHeaderProps) {
@@ -73,9 +80,16 @@ export function ReportHeader({
         </div>
       ) : (
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-            {title}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+              {title}
+            </h1>
+
+            {isLocked && (
+              <LockClosedIcon className="size-4 text-gray-400 dark:text-gray-500" />
+            )}
+          </div>
+
           <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
             Created {formatDate(createdAt)} · Updated {formatDate(updatedAt)}
           </p>
@@ -83,19 +97,33 @@ export function ReportHeader({
       )}
 
       <div className="flex items-center gap-2">
-        <Button onClick={onAddTransaction}>Add Transaction</Button>
+        {!isLocked && (
+          <Button onClick={onAddTransaction}>Add Transaction</Button>
+        )}
 
         <Dropdown
           items={[
+            ...(!isLocked
+              ? [
+                  {
+                    label: 'Rename Report',
+                    onClick: handleStartEditing,
+                  },
+                ]
+              : []),
             {
-              label: 'Rename Report',
-              onClick: handleStartEditing,
+              label: isLocked ? 'Unlock Report' : 'Lock Report',
+              onClick: isLocked ? onUnlockReport : onLockReport,
             },
-            {
-              label: 'Delete Report',
-              onClick: onDeleteReport,
-              variant: 'danger',
-            },
+            ...(!isLocked
+              ? [
+                  {
+                    label: 'Delete Report',
+                    onClick: onDeleteReport,
+                    variant: 'danger' as const,
+                  },
+                ]
+              : []),
           ]}
         />
       </div>

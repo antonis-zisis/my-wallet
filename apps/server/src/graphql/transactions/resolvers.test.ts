@@ -19,10 +19,26 @@ const mockTransaction = {
 
 const mockReport = {
   id: 'report-1',
+  isLocked: false,
   title: 'January Budget',
   userId: USER_ID,
   createdAt: new Date('2024-01-01T10:00:00Z'),
   updatedAt: new Date('2024-01-01T10:00:00Z'),
+};
+
+const mockTransactionWithReport = {
+  ...{
+    id: 'tx-1',
+    reportId: 'report-1',
+    type: 'EXPENSE',
+    amount: 50.25,
+    description: 'Grocery shopping',
+    category: 'Food',
+    date: new Date('2024-01-15'),
+    createdAt: new Date('2024-01-15T10:00:00Z'),
+    updatedAt: new Date('2024-01-15T10:00:00Z'),
+  },
+  report: mockReport,
 };
 
 vi.mock('../../lib/prisma', () => ({
@@ -160,7 +176,7 @@ describe('transactionResolvers', () => {
       };
 
       vi.mocked(prisma.transaction.findFirst).mockResolvedValue(
-        mockTransaction
+        mockTransactionWithReport as never
       );
       vi.mocked(prisma.transaction.update).mockResolvedValue(
         updatedTransaction
@@ -175,6 +191,7 @@ describe('transactionResolvers', () => {
 
       expect(prisma.transaction.findFirst).toHaveBeenCalledWith({
         where: { id: 'tx-1', report: { userId: USER_ID } },
+        include: { report: true },
       });
       expect(prisma.transaction.update).toHaveBeenCalledWith({
         where: { id: 'tx-1' },
@@ -197,7 +214,7 @@ describe('transactionResolvers', () => {
   describe('Mutation.deleteTransaction', () => {
     it('deletes a transaction and returns true', async () => {
       vi.mocked(prisma.transaction.findFirst).mockResolvedValue(
-        mockTransaction
+        mockTransactionWithReport as never
       );
       vi.mocked(prisma.transaction.delete).mockResolvedValue(mockTransaction);
       vi.mocked(prisma.report.update).mockResolvedValue(mockReport);
@@ -210,6 +227,7 @@ describe('transactionResolvers', () => {
 
       expect(prisma.transaction.findFirst).toHaveBeenCalledWith({
         where: { id: 'tx-1', report: { userId: USER_ID } },
+        include: { report: true },
       });
       expect(prisma.transaction.delete).toHaveBeenCalledWith({
         where: { id: 'tx-1' },

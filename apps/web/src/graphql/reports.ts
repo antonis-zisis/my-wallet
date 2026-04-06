@@ -5,6 +5,7 @@ export const GET_REPORTS = gql`
     reports(page: $page, pageSize: $pageSize) {
       items {
         id
+        isLocked
         title
         createdAt
         updatedAt
@@ -18,6 +19,7 @@ export const GET_REPORT = gql`
   query GetReport($id: ID!) {
     report(id: $id) {
       id
+      isLocked
       title
       createdAt
       updatedAt
@@ -76,5 +78,23 @@ export const UPDATE_REPORT = gql`
 export const DELETE_REPORT = gql`
   mutation DeleteReport($id: ID!) {
     deleteReport(id: $id)
+  }
+`;
+
+export const LOCK_REPORT = gql`
+  mutation LockReport($id: ID!) {
+    lockReport(id: $id) {
+      id
+      isLocked
+    }
+  }
+`;
+
+export const UNLOCK_REPORT = gql`
+  mutation UnlockReport($id: ID!) {
+    unlockReport(id: $id) {
+      id
+      isLocked
+    }
   }
 `;

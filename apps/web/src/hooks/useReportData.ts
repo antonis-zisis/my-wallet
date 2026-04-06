@@ -4,7 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { type CreateTransactionInput } from '../components/reports/AddTransactionModal';
 import { useToast } from '../contexts/ToastContext';
-import { DELETE_REPORT, GET_REPORT, UPDATE_REPORT } from '../graphql/reports';
+import {
+  DELETE_REPORT,
+  GET_REPORT,
+  LOCK_REPORT,
+  UNLOCK_REPORT,
+  UPDATE_REPORT,
+} from '../graphql/reports';
 import {
   CREATE_TRANSACTION,
   DELETE_TRANSACTION,
@@ -47,6 +53,14 @@ export function useReportData() {
 
   const [deleteReport, { loading: isDeleting }] = useMutation(DELETE_REPORT);
 
+  const [lockReport, { loading: isLocking }] = useMutation(LOCK_REPORT, {
+    refetchQueries: [{ query: GET_REPORT, variables: { id } }],
+  });
+
+  const [unlockReport] = useMutation(UNLOCK_REPORT, {
+    refetchQueries: [{ query: GET_REPORT, variables: { id } }],
+  });
+
   const [isChartOpen, setIsChartOpen] = useState(false);
   const [isBudgetChartOpen, setIsBudgetChartOpen] = useState(false);
   const [isAddTransactionModalOpen, setIsAddTransactionModalOpen] =
@@ -59,6 +73,7 @@ export function useReportData() {
 
   const report = data?.report;
   const transactions = report?.transactions ?? [];
+  const isLocked = report?.isLocked ?? false;
 
   const onSaveTitle = async (title: string) => {
     await updateReport({ variables: { input: { id, title } } });
@@ -108,12 +123,14 @@ export function useReportData() {
     deletingTransaction,
     editingTransaction,
     error: !!error,
-    isBudgetChartOpen,
     isAddTransactionModalOpen,
+    isBudgetChartOpen,
     isChartOpen,
     isDeleteReportModalOpen,
     isDeleting,
     isDeletingTransaction,
+    isLocked,
+    isLocking,
     loading,
     onCloseAddTransactionModal: () => setIsAddTransactionModalOpen(false),
     onCloseDeleteReportModal: () => setIsDeleteReportModalOpen(false),
@@ -122,6 +139,7 @@ export function useReportData() {
     onConfirmDeleteReport,
     onConfirmDeleteTransaction,
     onCreateTransaction,
+    onLockReport: () => lockReport({ variables: { id } }),
     onOpenAddTransactionModal: () => setIsAddTransactionModalOpen(true),
     onOpenDeleteReportModal: () => setIsDeleteReportModalOpen(true),
     onSaveTitle,
@@ -129,6 +147,7 @@ export function useReportData() {
     onSelectTransactionForEdit: setEditingTransaction,
     onToggleBudgetChart: () => setIsBudgetChartOpen((prev) => !prev),
     onToggleChart: () => setIsChartOpen((prev) => !prev),
+    onUnlockReport: () => unlockReport({ variables: { id } }),
     onUpdateTransaction,
     report,
     transactions,

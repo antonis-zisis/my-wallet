@@ -6,6 +6,7 @@ import { ReportSummaryGrid } from './ReportSummaryGrid';
 
 const mockReport: Report = {
   id: '1',
+  isLocked: false,
   title: 'January 2026',
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',

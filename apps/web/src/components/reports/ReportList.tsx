@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
-import { ChevronRightIcon, DocumentTextIcon } from '../icons';
+import { ChevronRightIcon, DocumentTextIcon, LockClosedIcon } from '../icons';
 import { Card, Skeleton } from '../ui';
 
 interface ReportListProps {
@@ -89,9 +89,14 @@ export function ReportList({
               </span>
 
               <div className="flex shrink-0 items-center gap-3">
+                <LockClosedIcon
+                  className={`size-3.5 text-gray-400 dark:text-gray-500 ${report.isLocked ? '' : 'invisible'}`}
+                />
+
                 <span className="text-xs text-gray-400 dark:text-gray-500">
                   {formatRelativeTime(report.updatedAt)}
                 </span>
+
                 <ChevronRightIcon className="size-4 text-gray-400 dark:text-gray-500" />
               </div>
             </Link>
