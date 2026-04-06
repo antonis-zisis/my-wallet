@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
+import { TrendingChartIcon } from '../icons';
 import { Card, Dropdown, Skeleton } from '../ui';
 
 interface NetWorthListProps {
@@ -28,26 +29,16 @@ function SkeletonRow() {
 function EmptyState({ onAdd }: { onAdd?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="size-10 text-gray-300 dark:text-gray-600"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
-        />
-      </svg>
+      <TrendingChartIcon className="size-10 text-gray-300 dark:text-gray-600" />
+
       <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
         No snapshots yet
       </p>
+
       <p className="text-xs text-gray-400 dark:text-gray-500">
         Create your first snapshot to start tracking your net worth.
       </p>
+
       {onAdd && (
         <button
           className="cursor-pointer text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -96,6 +87,7 @@ export function NetWorthList({
       <ul className="divide-y divide-gray-100 dark:divide-gray-700">
         {snapshots.map((snapshot) => {
           const isPositive = snapshot.netWorth >= 0;
+
           return (
             <li key={snapshot.id} className="flex items-center">
               <Link
@@ -105,6 +97,7 @@ export function NetWorthList({
                 <span className="font-medium text-gray-800 dark:text-gray-100">
                   {snapshot.title}
                 </span>
+
                 <div className="flex shrink-0 items-center gap-6">
                   <span
                     className={`text-sm font-semibold ${
@@ -116,11 +109,13 @@ export function NetWorthList({
                     {isPositive ? '+' : '-'}
                     {formatMoney(Math.abs(snapshot.netWorth))} €
                   </span>
+
                   <span className="text-xs text-gray-400 dark:text-gray-500">
                     {formatDate(snapshot.createdAt)}
                   </span>
                 </div>
               </Link>
+
               <Dropdown
                 items={[
                   {

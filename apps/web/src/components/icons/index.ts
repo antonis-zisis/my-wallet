@@ -8,5 +8,6 @@ export { CircleAlertIcon } from './CircleAlertIcon';
 export { LogOutIcon } from './LogOutIcon';
 export { MoonIcon } from './MoonIcon';
 export { SunIcon } from './SunIcon';
+export { TrendingChartIcon } from './TrendingChartIcon';
 export { UserIcon } from './UserIcon';
 export { WalletIcon } from './WalletIcon';

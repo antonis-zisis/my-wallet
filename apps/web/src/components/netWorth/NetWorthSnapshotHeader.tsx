@@ -26,6 +26,7 @@ export function NetWorthSnapshotHeader({
           <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
             {title}
           </h1>
+
           <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
             {formatDate(createdAt)}
           </p>
@@ -37,6 +38,7 @@ export function NetWorthSnapshotHeader({
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Total Assets
           </p>
+
           <p className="text-xl font-semibold text-green-600 dark:text-green-400">
             {formatMoney(totalAssets)} €
           </p>
@@ -46,6 +48,7 @@ export function NetWorthSnapshotHeader({
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Total Liabilities
           </p>
+
           <p className="text-xl font-semibold text-red-600 dark:text-red-400">
             {formatMoney(totalLiabilities)} €
           </p>
@@ -59,6 +62,7 @@ export function NetWorthSnapshotHeader({
           }`}
         >
           <p className="text-sm text-gray-500 dark:text-gray-400">Net Worth</p>
+
           <p
             className={`text-xl font-semibold ${
               isPositive

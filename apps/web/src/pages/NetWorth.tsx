@@ -1,8 +1,6 @@
-import {
-  CreateNetWorthSnapshotModal,
-  DeleteNetWorthSnapshotModal,
-  NetWorthList,
-} from '../components/netWorth';
+import { CreateNetWorthSnapshotModal } from '../components/netWorth/CreateNetWorthSnapshotModal';
+import { DeleteNetWorthSnapshotModal } from '../components/netWorth/DeleteNetWorthSnapshotModal';
+import { NetWorthList } from '../components/netWorth/NetWorthList';
 import { Button, PageLayout, Pagination } from '../components/ui';
 import { PAGE_SIZE, useNetWorthData } from '../hooks/useNetWorthData';
 
