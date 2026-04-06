@@ -51,11 +51,13 @@ export const transactionResolvers = {
       const report = await prisma.report.findFirst({
         where: { id: input.reportId, userId },
       });
+
       if (!report) {
         throw new GraphQLError('Report not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+
       const transaction = await prisma.transaction.create({
         data: {
           reportId: input.reportId,
@@ -66,10 +68,12 @@ export const transactionResolvers = {
           date: new Date(input.date),
         },
       });
+
       await prisma.report.update({
         where: { id: input.reportId },
         data: { updatedAt: new Date() },
       });
+
       return transaction;
     },
     updateTransaction: async (
@@ -80,11 +84,13 @@ export const transactionResolvers = {
       const existing = await prisma.transaction.findFirst({
         where: { id: input.id, report: { userId } },
       });
+
       if (!existing) {
         throw new GraphQLError('Transaction not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+
       const transaction = await prisma.transaction.update({
         where: { id: input.id },
         data: {
@@ -95,6 +101,7 @@ export const transactionResolvers = {
           date: new Date(input.date),
         },
       });
+
       await prisma.report.update({
         where: { id: existing.reportId },
         data: { updatedAt: new Date() },
@@ -109,16 +116,19 @@ export const transactionResolvers = {
       const existing = await prisma.transaction.findFirst({
         where: { id, report: { userId } },
       });
+
       if (!existing) {
         throw new GraphQLError('Transaction not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+
       await prisma.transaction.delete({ where: { id } });
       await prisma.report.update({
         where: { id: existing.reportId },
         data: { updatedAt: new Date() },
       });
+
       return true;
     },
   },
