@@ -57,6 +57,7 @@ export function EditSubscriptionModal({
     if (!isValid || !subscription) {
       return;
     }
+
     onSubmit({
       id: subscription.id,
       name: name.trim(),
@@ -92,6 +93,7 @@ export function EditSubscriptionModal({
           onChange={(ev) => setName(ev.target.value)}
           autoFocus
         />
+
         <Input
           label="Amount"
           id="edit-subscription-amount"
@@ -102,6 +104,7 @@ export function EditSubscriptionModal({
           value={amount}
           onChange={(ev) => setAmount(ev.target.value)}
         />
+
         <Select
           label="Billing Cycle"
           id="edit-subscription-billing-cycle"
@@ -112,6 +115,7 @@ export function EditSubscriptionModal({
           ]}
           onChange={(ev) => setBillingCycle(ev.target.value as BillingCycle)}
         />
+
         <Input
           label="Start Date"
           id="edit-subscription-start-date"

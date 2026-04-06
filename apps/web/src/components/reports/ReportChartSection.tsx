@@ -27,6 +27,7 @@ export function ReportChartSection({
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           {title}
         </h2>
+
         {isOpen ? (
           <ChevronUpIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
         ) : (

@@ -3,14 +3,14 @@ import { formatMoney } from '../../utils/formatMoney';
 import { ArrowDownIcon, ArrowUpIcon } from '../icons';
 import { Badge, Card } from '../ui';
 
-export function ReportCard({
-  label,
-  report,
-}: {
+interface ReportCardProps {
   label: string;
   report: Report;
-}) {
+}
+
+export function ReportCard({ label, report }: ReportCardProps) {
   const transactions = report.transactions ?? [];
+
   const totalIncome = transactions
     .filter((tx) => tx.type === 'INCOME')
     .reduce((sum, tx) => sum + tx.amount, 0);

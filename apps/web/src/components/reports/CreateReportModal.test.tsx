@@ -86,20 +86,6 @@ describe('CreateReportModal', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('shows error message when submit fails', async () => {
-    const onSubmit = vi.fn().mockRejectedValue(new Error('Network error'));
-    render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
-
-    await userEvent.type(screen.getByLabelText('Report Title'), 'My Report');
-    await userEvent.click(screen.getByText('Create'));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Something went wrong. Please try again.')
-      ).toBeInTheDocument();
-    });
-  });
-
   it('keeps modal open when submit fails', async () => {
     const onSubmit = vi.fn().mockRejectedValue(new Error('Network error'));
     render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
@@ -110,26 +96,6 @@ describe('CreateReportModal', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Report Title')).toBeInTheDocument();
     });
-  });
-
-  it('clears submit error when input changes', async () => {
-    const onSubmit = vi.fn().mockRejectedValue(new Error('Network error'));
-    render(<CreateReportModal {...defaultProps} onSubmit={onSubmit} />);
-
-    await userEvent.type(screen.getByLabelText('Report Title'), 'My Report');
-    await userEvent.click(screen.getByText('Create'));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Something went wrong. Please try again.')
-      ).toBeInTheDocument();
-    });
-
-    await userEvent.type(screen.getByLabelText('Report Title'), '!');
-    expect(
-      screen.queryByText('Something went wrong. Please try again.')
-    ).not.toBeInTheDocument();
-    expect(screen.getByText('Between 3–100 characters')).toBeInTheDocument();
   });
 
   it('calls onClose when Cancel is clicked', async () => {

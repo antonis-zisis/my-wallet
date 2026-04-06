@@ -60,6 +60,7 @@ const renderShape = ({
       />
     );
   }
+
   const sin = Math.sin(-RADIAN * (midAngle ?? 0));
   const cos = Math.cos(-RADIAN * (midAngle ?? 0));
   const sx = (cx ?? 0) + ((outerRadius ?? 0) + 10) * cos;
@@ -148,7 +149,9 @@ export function ExpenseBreakdownChart({
       if (tx.type !== 'EXPENSE') {
         continue;
       }
+
       const current = expensesByCategory.get(tx.category) ?? 0;
+
       expensesByCategory.set(tx.category, current + tx.amount);
     }
 
@@ -181,6 +184,7 @@ export function ExpenseBreakdownChart({
         dataKey="value"
         stroke="none"
       />
+
       <Tooltip content={() => null} defaultIndex={0} active />
       <Legend />
     </PieChart>

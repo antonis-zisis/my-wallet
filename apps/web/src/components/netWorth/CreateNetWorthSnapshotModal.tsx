@@ -90,6 +90,7 @@ export function CreateNetWorthSnapshotModal({
         if (entry.key !== key) {
           return entry;
         }
+
         if (field === 'type') {
           const newType = value as NetWorthEntryType;
           const categories =
@@ -126,6 +127,7 @@ export function CreateNetWorthSnapshotModal({
     if (!isValid) {
       return;
     }
+
     onSubmit({
       title: title.trim(),
       entries: entries.map((entry) => ({
@@ -135,6 +137,7 @@ export function CreateNetWorthSnapshotModal({
         category: entry.category,
       })),
     });
+
     setTitle('');
     setEntries([makeEntry('ASSET')]);
   };
@@ -256,6 +259,7 @@ export function CreateNetWorthSnapshotModal({
             >
               + Asset
             </Button>
+
             <Button
               variant="secondary"
               size="sm"
@@ -270,9 +274,11 @@ export function CreateNetWorthSnapshotModal({
           <span className="text-green-600 dark:text-green-400">
             Assets: {formatMoney(totalAssets)} €
           </span>
+
           <span className="text-red-600 dark:text-red-400">
             Liabilities: {formatMoney(totalLiabilities)} €
           </span>
+
           <span
             className={`font-semibold ${
               netWorth >= 0

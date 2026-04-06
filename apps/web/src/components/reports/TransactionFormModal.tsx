@@ -77,6 +77,7 @@ export function TransactionFormModal({
     if (!form.amount || !form.description || !form.category) {
       return;
     }
+
     onSubmit({
       type: form.type,
       amount: parseFloat(form.amount),
@@ -84,6 +85,7 @@ export function TransactionFormModal({
       category: form.category,
       date: form.date,
     });
+
     setForm(INITIAL_FORM);
   };
 
@@ -97,6 +99,7 @@ export function TransactionFormModal({
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
+
           <Button
             onClick={handleSubmit}
             disabled={!form.amount || !form.description || !form.category}
@@ -116,6 +119,7 @@ export function TransactionFormModal({
           >
             Income
           </Button>
+
           <Button
             type="button"
             variant={form.type === 'EXPENSE' ? 'danger' : 'secondary'}

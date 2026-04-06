@@ -22,6 +22,14 @@ vi.mock('../contexts/UserContext', () => ({
   }),
 }));
 
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: vi.fn().mockReturnValue({
+    showSuccess: vi.fn(),
+    showError: vi.fn(),
+    showInfo: vi.fn(),
+  }),
+}));
+
 const { useUser } = await import('../contexts/UserContext');
 
 const healthMock = {

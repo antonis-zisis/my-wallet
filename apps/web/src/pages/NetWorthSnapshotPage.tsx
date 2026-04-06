@@ -1,9 +1,7 @@
-import {
-  NetWorthBackLink,
-  NetWorthEntriesSection,
-  NetWorthSnapshotHeader,
-  NetWorthSnapshotSkeleton,
-} from '../components/netWorth';
+import { NetWorthBackLink } from '../components/netWorth/NetWorthBackLink';
+import { NetWorthEntriesSection } from '../components/netWorth/NetWorthEntriesSection';
+import { NetWorthSnapshotHeader } from '../components/netWorth/NetWorthSnapshotHeader';
+import { NetWorthSnapshotSkeleton } from '../components/netWorth/NetWorthSnapshotSkeleton';
 import { PageLayout } from '../components/ui';
 import { useNetWorthSnapshotData } from '../hooks/useNetWorthSnapshotData';
 

@@ -158,8 +158,10 @@ export function BudgetBreakdownChart({
       if (tx.type !== 'EXPENSE') {
         continue;
       }
+
       const bucket = CATEGORY_TO_BUCKET[tx.category] ?? 'Wants';
       const current = buckets.get(bucket) ?? 0;
+
       buckets.set(bucket, current + tx.amount);
     }
 
@@ -192,6 +194,7 @@ export function BudgetBreakdownChart({
         dataKey="value"
         stroke="none"
       />
+
       <Tooltip content={() => null} defaultIndex={0} active />
       <Legend />
     </PieChart>

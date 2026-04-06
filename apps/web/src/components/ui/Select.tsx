@@ -22,6 +22,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             {label}
           </label>
         )}
+
         <select
           ref={ref}
           id={id}
@@ -33,12 +34,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           {...props}
         >
           {placeholder && <option value="">{placeholder}</option>}
+
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </select>
+
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
       </div>
     );

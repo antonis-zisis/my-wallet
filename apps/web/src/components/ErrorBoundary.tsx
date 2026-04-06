@@ -33,6 +33,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Failed to load this section.
           </p>
+
           <Button variant="secondary" size="sm" onClick={this.reset}>
             Try again
           </Button>
@@ -43,12 +44,15 @@ export class ErrorBoundary extends Component<Props, State> {
     return (
       <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center p-4 text-center">
         <p className="text-8xl font-bold text-gray-200 dark:text-gray-700">!</p>
+
         <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
           Something went wrong
         </h1>
+
         <p className="mt-2 text-gray-500 dark:text-gray-400">
           An unexpected error occurred. Please try again.
         </p>
+
         <div className="mt-8">
           <Button onClick={this.reset}>Try again</Button>
         </div>

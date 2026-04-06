@@ -9,17 +9,20 @@ import { Card, Skeleton } from '../ui';
 const LIMIT_OPTIONS = [3, 6, 9, 12] as const;
 type LimitOption = (typeof LIMIT_OPTIONS)[number];
 
+interface IncomeExpensesSectionProps {
+  loading: boolean;
+  reports: Array<Report>;
+}
+
 export function IncomeExpensesSection({
   loading,
   reports,
-}: {
-  loading: boolean;
-  reports: Array<Report>;
-}) {
+}: IncomeExpensesSectionProps) {
   const [isOpen, setIsOpen] = useLocalStorage(
     'home.incomeExpenses.isOpen',
     true
   );
+
   const [limit, setLimit] = useLocalStorage<LimitOption>(
     'home.incomeExpenses.limit',
     12
@@ -40,9 +43,11 @@ export function IncomeExpensesSection({
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
             No reports yet
           </p>
+
           <p className="text-xs text-gray-400 dark:text-gray-500">
             Add a report to see your income and expenses over time.
           </p>
+
           <Link
             to="/reports"
             className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"

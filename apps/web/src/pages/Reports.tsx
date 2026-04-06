@@ -1,4 +1,5 @@
-import { CreateReportModal, ReportList } from '../components/reports';
+import { CreateReportModal } from '../components/reports/CreateReportModal';
+import { ReportList } from '../components/reports/ReportList';
 import { Button, PageLayout, Pagination } from '../components/ui';
 import { PAGE_SIZE, useReportsData } from '../hooks/useReportsData';
 

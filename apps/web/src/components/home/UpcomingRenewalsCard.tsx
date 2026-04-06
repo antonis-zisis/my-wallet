@@ -6,13 +6,15 @@ import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { ChevronDownIcon, ChevronUpIcon } from '../icons';
 import { Card, Skeleton } from '../ui';
 
+interface UpcomingRenewalsCardProps {
+  loading?: boolean;
+  subscriptions: Array<Subscription>;
+}
+
 export function UpcomingRenewalsCard({
   loading = false,
   subscriptions,
-}: {
-  loading?: boolean;
-  subscriptions: Array<Subscription>;
-}) {
+}: UpcomingRenewalsCardProps) {
   const [isOpen, setIsOpen] = useLocalStorage(
     'home.upcomingRenewals.isOpen',
     true
@@ -85,10 +87,12 @@ export function UpcomingRenewalsCard({
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {sub.name}
                   </p>
+
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {formatDate(renewalDate)}
                   </p>
                 </div>
+
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                   {formatMoney(sub.amount)} €
                 </p>

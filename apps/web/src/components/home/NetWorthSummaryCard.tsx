@@ -7,13 +7,15 @@ import { formatMoney } from '../../utils/formatMoney';
 import { ChevronDownIcon, ChevronUpIcon } from '../icons';
 import { Card, Skeleton } from '../ui';
 
+interface NetWorthSummaryCardProps {
+  loading: boolean;
+  snapshot: NetWorthSnapshot | null;
+}
+
 export function NetWorthSummaryCard({
   loading,
   snapshot,
-}: {
-  loading: boolean;
-  snapshot: NetWorthSnapshot | null;
-}) {
+}: NetWorthSummaryCardProps) {
   const [isOpen, setIsOpen] = useLocalStorage('home.netWorth.isOpen', false);
 
   if (loading) {
@@ -32,9 +34,11 @@ export function NetWorthSummaryCard({
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
             No net worth snapshot yet
           </p>
+
           <p className="text-xs text-gray-400 dark:text-gray-500">
             Track your assets and liabilities to see your net worth.
           </p>
+
           <Link
             to="/net-worth"
             className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -61,6 +65,7 @@ export function NetWorthSummaryCard({
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Net Worth
           </h2>
+
           <span className={`text-sm font-semibold ${netWorthColor}`}>
             {sign}
             {formatMoney(Math.abs(snapshot.netWorth))} €
@@ -89,6 +94,7 @@ export function NetWorthSummaryCard({
             >
               {snapshot.title}
             </Link>
+
             <span className="text-sm text-gray-500 dark:text-gray-400">
               {formatDate(snapshot.createdAt)}
             </span>
@@ -101,6 +107,7 @@ export function NetWorthSummaryCard({
                 {formatMoney(snapshot.totalAssets)} €
               </p>
             </div>
+
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Liabilities
@@ -109,6 +116,7 @@ export function NetWorthSummaryCard({
                 {formatMoney(snapshot.totalLiabilities)} €
               </p>
             </div>
+
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Net Worth

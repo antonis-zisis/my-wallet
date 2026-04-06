@@ -18,7 +18,6 @@ export function CreateReportModal({
 }: CreateReportModalProps) {
   const [title, setTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
 
   const trimmedTitle = title.trim();
   const isValid =
@@ -27,7 +26,6 @@ export function CreateReportModal({
 
   const handleClose = () => {
     setTitle('');
-    setSubmitError('');
     onClose();
   };
 
@@ -35,13 +33,14 @@ export function CreateReportModal({
     if (!isValid || isSubmitting) {
       return;
     }
+
     setIsSubmitting(true);
-    setSubmitError('');
+
     try {
       await onSubmit(trimmedTitle);
       setTitle('');
     } catch {
-      setSubmitError('Something went wrong. Please try again.');
+      // error is shown as a toast by the caller
     } finally {
       setIsSubmitting(false);
     }
@@ -67,6 +66,7 @@ export function CreateReportModal({
           >
             Cancel
           </Button>
+
           <Button
             onClick={handleSubmit}
             disabled={!isValid}
@@ -85,28 +85,25 @@ export function CreateReportModal({
           >
             Report Title
           </label>
+
           <span className="text-xs text-gray-400">
             {title.length}/{MAX_TITLE_LENGTH}
           </span>
         </div>
+
         <Input
           id="report-title"
           placeholder="Enter report title"
           value={title}
-          onChange={(event) => {
-            setTitle(event.target.value);
-            setSubmitError('');
-          }}
+          onChange={(event) => setTitle(event.target.value)}
           onKeyDown={handleKeyDown}
           maxLength={MAX_TITLE_LENGTH}
-          error={submitError}
           autoFocus
         />
-        {!submitError && (
-          <p className="mt-1 text-xs text-gray-400">
-            Between {MIN_TITLE_LENGTH}–{MAX_TITLE_LENGTH} characters
-          </p>
-        )}
+
+        <p className="mt-1 text-xs text-gray-400">
+          Between {MIN_TITLE_LENGTH}–{MAX_TITLE_LENGTH} characters
+        </p>
       </div>
     </Modal>
   );
