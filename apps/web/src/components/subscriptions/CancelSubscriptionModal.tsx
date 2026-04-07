@@ -33,8 +33,9 @@ export function CancelSubscriptionModal({
     >
       <p className="text-gray-600 dark:text-gray-300">
         Are you sure you want to cancel{' '}
-        <span className="font-semibold">{subscriptionName}</span>? It will be
-        moved to the inactive section.
+        <span className="font-semibold">{subscriptionName}</span>? It will
+        remain active until the end of the current billing period, then move to
+        the inactive section.
       </p>
     </Modal>
   );

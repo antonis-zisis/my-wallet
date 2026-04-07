@@ -104,7 +104,7 @@ export function SubscriptionList({
             });
           }
 
-          if (onCancel) {
+          if (onCancel && !subscription.cancelledAt) {
             dropdownItems.push({
               label: 'Cancel',
               onClick: () => onCancel(subscription),
@@ -137,19 +137,34 @@ export function SubscriptionList({
                         ? 'Monthly'
                         : 'Yearly'}
                     </Badge>
+
+                    {subscription.cancelledAt && (
+                      <Badge variant="danger">Cancelled</Badge>
+                    )}
                   </div>
 
                   {subscription.isActive && (
                     <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                      next renewal at{' '}
-                      <span className="font-semibold">
-                        {formatDate(
-                          getNextRenewalDate(
-                            subscription.startDate,
-                            subscription.billingCycle
-                          )
-                        )}
-                      </span>
+                      {subscription.cancelledAt ? (
+                        <>
+                          active until{' '}
+                          <span className="font-semibold">
+                            {formatDate(subscription.endDate!)}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          next renewal at{' '}
+                          <span className="font-semibold">
+                            {formatDate(
+                              getNextRenewalDate(
+                                subscription.startDate,
+                                subscription.billingCycle
+                              )
+                            )}
+                          </span>
+                        </>
+                      )}
                     </p>
                   )}
                 </div>

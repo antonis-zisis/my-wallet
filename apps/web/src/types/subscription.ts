@@ -8,6 +8,7 @@ export interface Subscription {
   isActive: boolean;
   startDate: string;
   endDate: string | null;
+  cancelledAt: string | null;
   monthlyCost: number;
   createdAt: string;
   updatedAt: string;

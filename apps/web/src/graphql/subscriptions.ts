@@ -11,6 +11,7 @@ export const GET_SUBSCRIPTIONS = gql`
         isActive
         startDate
         endDate
+        cancelledAt
         monthlyCost
         createdAt
         updatedAt
@@ -30,6 +31,7 @@ export const CREATE_SUBSCRIPTION = gql`
       isActive
       startDate
       endDate
+      cancelledAt
       monthlyCost
       createdAt
       updatedAt
@@ -47,6 +49,7 @@ export const UPDATE_SUBSCRIPTION = gql`
       isActive
       startDate
       endDate
+      cancelledAt
       monthlyCost
       createdAt
       updatedAt
@@ -59,6 +62,8 @@ export const CANCEL_SUBSCRIPTION = gql`
     cancelSubscription(id: $id) {
       id
       isActive
+      cancelledAt
+      endDate
     }
   }
 `;

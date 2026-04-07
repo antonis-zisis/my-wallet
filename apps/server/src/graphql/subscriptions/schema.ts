@@ -7,6 +7,7 @@ export const subscriptionTypeDefs = `#graphql
     isActive: Boolean!
     startDate: String!
     endDate: String
+    cancelledAt: String
     monthlyCost: Float!
     createdAt: String!
     updatedAt: String!
