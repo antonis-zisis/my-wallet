@@ -7,6 +7,7 @@ import {
   CREATE_SUBSCRIPTION,
   DELETE_SUBSCRIPTION,
   GET_SUBSCRIPTIONS,
+  RESUME_SUBSCRIPTION,
   UPDATE_SUBSCRIPTION,
 } from '../graphql/subscriptions';
 import {
@@ -26,6 +27,8 @@ export function useSubscriptionsData() {
   const [subscriptionToEdit, setSubscriptionToEdit] =
     useState<Subscription | null>(null);
   const [subscriptionToCancel, setSubscriptionToCancel] =
+    useState<Subscription | null>(null);
+  const [subscriptionToResume, setSubscriptionToResume] =
     useState<Subscription | null>(null);
   const [subscriptionToDelete, setSubscriptionToDelete] =
     useState<Subscription | null>(null);
@@ -70,6 +73,22 @@ export function useSubscriptionsData() {
 
   const [cancelSubscription, { loading: isCancelling }] = useMutation(
     CANCEL_SUBSCRIPTION,
+    {
+      refetchQueries: [
+        {
+          query: GET_SUBSCRIPTIONS,
+          variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
+        },
+        {
+          query: GET_SUBSCRIPTIONS,
+          variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
+        },
+      ],
+    }
+  );
+
+  const [resumeSubscription, { loading: isResuming }] = useMutation(
+    RESUME_SUBSCRIPTION,
     {
       refetchQueries: [
         {
@@ -153,6 +172,33 @@ export function useSubscriptionsData() {
     setSubscriptionToCancel(null);
   };
 
+  const handleResumeActive = async (subscription: Subscription) => {
+    try {
+      await resumeSubscription({
+        variables: { input: { id: subscription.id } },
+      });
+      showSuccess('Subscription resumed.');
+    } catch {
+      showError('Failed to resume subscription.');
+    }
+  };
+
+  const handleResumeFromInactive = async (input: {
+    id: string;
+    startDate: string;
+    amount: number;
+    billingCycle: BillingCycle;
+  }) => {
+    try {
+      await resumeSubscription({ variables: { input } });
+
+      setSubscriptionToResume(null);
+      showSuccess('Subscription resumed.');
+    } catch {
+      showError('Failed to resume subscription.');
+    }
+  };
+
   const handleDeleteConfirm = async () => {
     if (!subscriptionToDelete) {
       return;
@@ -178,6 +224,7 @@ export function useSubscriptionsData() {
     isCancelling,
     isCreateOpen,
     isDeleting,
+    isResuming,
     onActivePaginate: setActivePage,
     onCancelConfirm: handleCancelConfirm,
     onCloseCreate: () => setIsCreateOpen(false),
@@ -185,15 +232,19 @@ export function useSubscriptionsData() {
     onDeleteConfirm: handleDeleteConfirm,
     onInactivePaginate: setInactivePage,
     onOpenCreate: () => setIsCreateOpen(true),
+    onResumeActive: handleResumeActive,
+    onResumeFromInactive: handleResumeFromInactive,
     onSelectForCancel: setSubscriptionToCancel,
     onSelectForDelete: setSubscriptionToDelete,
     onSelectForEdit: setSubscriptionToEdit,
+    onSelectForResume: setSubscriptionToResume,
     onToggleInactive: () => setShowInactive((previous) => !previous),
     onUpdate: handleUpdate,
     showInactive,
     subscriptionToCancel,
     subscriptionToDelete,
     subscriptionToEdit,
+    subscriptionToResume,
     totalMonthlyCost,
     totalYearlyCost,
   };

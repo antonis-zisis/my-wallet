@@ -61,6 +61,30 @@ pnpm run env:encrypt      # Encrypt before committing
 - Web: jsdom environment, setup in `src/test/setup.ts` (jest-dom matchers + `matchMedia` mock). Custom `MockedProvider` in `src/test/apollo-test-utils.tsx` for GraphQL mocking
 - Server: node environment, no special setup
 
+## GraphQL Domains
+
+Each domain lives in mirrored directories on both sides:
+
+| Domain            | Server                                   | Web graphql                | Web hook                                      | Web page                           |
+| ----------------- | ---------------------------------------- | -------------------------- | --------------------------------------------- | ---------------------------------- |
+| **reports**       | `apps/server/src/graphql/reports/`       | `graphql/reports.ts`       | `useReportsData` / `useReportData`            | `Reports`, `Report`                |
+| **transactions**  | `apps/server/src/graphql/transactions/`  | `graphql/transactions.ts`  | _(used inside report hook)_                   | _(inside Report page)_             |
+| **subscriptions** | `apps/server/src/graphql/subscriptions/` | `graphql/subscriptions.ts` | `useSubscriptionsData`                        | `Subscriptions`                    |
+| **netWorth**      | `apps/server/src/graphql/netWorth/`      | `graphql/netWorth.ts`      | `useNetWorthData` / `useNetWorthSnapshotData` | `NetWorth`, `NetWorthSnapshotPage` |
+| **user**          | `apps/server/src/graphql/user/`          | `graphql/user.ts`          | `useProfileData`                              | `Profile`                          |
+
+**Server domain structure** (each domain has three files):
+
+- `schema.ts` — SDL exported as `<domain>TypeDefs`
+- `resolvers.ts` — resolvers exported as `<domain>Resolvers`, TypeScript input interfaces at the top
+- `resolvers.test.ts` — Vitest unit tests, prisma mocked via `vi.mock`
+
+All domains are merged in `apps/server/src/graphql/index.ts`.
+
+**Web data hook pattern:** hooks own all query/mutation logic and return a flat object of state + `on<Action>` handlers. Pages are thin — they just destructure the hook and render.
+
+**Subscription cancellation model:** `cancelledAt` marks when cancelled, `endDate` is the last active date (set to next renewal on cancellation). `isActive` is a computed field — it checks `cancelledAt` + `endDate` rather than the stored `isActive` column when a subscription has been cancelled.
+
 ## Rules
 
 - **Never commit** unless the user explicitly asks for it.

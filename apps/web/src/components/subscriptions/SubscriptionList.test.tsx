@@ -14,6 +14,7 @@ const makeSubscription = (
   isActive: true,
   startDate: '2025-01-01',
   endDate: null,
+  cancelledAt: null,
   monthlyCost: 9.99,
   createdAt: '2025-01-01T00:00:00Z',
   updatedAt: '2025-01-01T00:00:00Z',
@@ -130,5 +131,143 @@ describe('SubscriptionList', () => {
     expect(
       screen.queryByRole('button', { name: 'Edit' })
     ).not.toBeInTheDocument();
+  });
+
+  it('shows Cancel in the dropdown for active non-cancelled subscriptions', async () => {
+    const subscriptions = [makeSubscription({ name: 'Netflix' })];
+    render(
+      <SubscriptionList
+        {...defaultProps}
+        subscriptions={subscriptions}
+        onCancel={vi.fn()}
+      />
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+  });
+
+  it('does not show Cancel in the dropdown for already-cancelled subscriptions', async () => {
+    const subscriptions = [
+      makeSubscription({
+        name: 'Netflix',
+        cancelledAt: '2026-04-01T00:00:00Z',
+        endDate: '2026-04-30T00:00:00Z',
+      }),
+    ];
+    render(
+      <SubscriptionList
+        {...defaultProps}
+        subscriptions={subscriptions}
+        onCancel={vi.fn()}
+      />
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows a Cancelled badge for cancelled subscriptions', () => {
+    const subscriptions = [
+      makeSubscription({
+        name: 'Netflix',
+        cancelledAt: '2026-04-01T00:00:00Z',
+        endDate: '2026-04-30T00:00:00Z',
+      }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    expect(screen.getByText('Cancelled')).toBeInTheDocument();
+  });
+
+  it('does not show a Cancelled badge for active subscriptions', () => {
+    const subscriptions = [makeSubscription({ name: 'Netflix' })];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    expect(screen.queryByText('Cancelled')).not.toBeInTheDocument();
+  });
+
+  it('shows "active until" text for cancelled subscriptions', () => {
+    const subscriptions = [
+      makeSubscription({
+        name: 'Netflix',
+        cancelledAt: '2026-04-01T00:00:00Z',
+        endDate: '2026-04-30T00:00:00Z',
+      }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    expect(screen.getByText(/active until/)).toBeInTheDocument();
+  });
+
+  it('shows Resume in the dropdown for cancelled active subscriptions', async () => {
+    const subscriptions = [
+      makeSubscription({
+        name: 'Netflix',
+        cancelledAt: '2026-04-01T00:00:00Z',
+        endDate: '2026-04-30T00:00:00Z',
+      }),
+    ];
+    render(
+      <SubscriptionList
+        {...defaultProps}
+        subscriptions={subscriptions}
+        onResume={vi.fn()}
+      />
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+    expect(screen.getByRole('button', { name: 'Resume' })).toBeInTheDocument();
+  });
+
+  it('shows Resume in the dropdown for inactive subscriptions', async () => {
+    const subscriptions = [
+      makeSubscription({ name: 'Spotify', isActive: false }),
+    ];
+    render(
+      <SubscriptionList
+        {...defaultProps}
+        subscriptions={subscriptions}
+        onResume={vi.fn()}
+      />
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+    expect(screen.getByRole('button', { name: 'Resume' })).toBeInTheDocument();
+  });
+
+  it('does not show Resume for normal active subscriptions', async () => {
+    const subscriptions = [makeSubscription({ name: 'Netflix' })];
+    render(
+      <SubscriptionList
+        {...defaultProps}
+        subscriptions={subscriptions}
+        onResume={vi.fn()}
+      />
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+    expect(
+      screen.queryByRole('button', { name: 'Resume' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('calls onResume when Resume is clicked', async () => {
+    const onResume = vi.fn();
+    const subscription = makeSubscription({
+      name: 'Netflix',
+      cancelledAt: '2026-04-01T00:00:00Z',
+      endDate: '2026-04-30T00:00:00Z',
+    });
+    render(
+      <SubscriptionList
+        {...defaultProps}
+        subscriptions={[subscription]}
+        onResume={onResume}
+      />
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Resume' }));
+    expect(onResume).toHaveBeenCalledWith(subscription);
   });
 });

@@ -22,7 +22,25 @@ export interface UpdateSubscriptionInput {
 type SubscriptionParent = {
   amount: number;
   billingCycle: string;
+  isActive: boolean;
+  cancelledAt: Date | null;
+  endDate: Date | null;
 };
+
+function getNextRenewalDate(startDate: Date, billingCycle: string): Date {
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  const increment = billingCycle === 'YEARLY' ? 12 : 1;
+  const next = new Date(startDate);
+
+  while (next <= today) {
+    next.setMonth(next.getMonth() + increment);
+  }
+
+  return next;
+}
 
 export const subscriptionResolvers = {
   Subscription: {
@@ -30,6 +48,13 @@ export const subscriptionResolvers = {
       return parent.billingCycle === 'YEARLY'
         ? parent.amount / 12
         : parent.amount;
+    },
+    isActive: (parent: SubscriptionParent) => {
+      if (parent.cancelledAt) {
+        return parent.endDate ? parent.endDate > new Date() : false;
+      }
+
+      return parent.isActive;
     },
   },
   Query: {
@@ -42,13 +67,40 @@ export const subscriptionResolvers = {
       }: { active?: boolean; page?: number; pageSize?: number },
       { userId }: { userId: string }
     ) => {
-      const where: { userId: string; isActive?: boolean } = { userId };
-
-      if (active !== undefined) {
-        where.isActive = active;
-      }
-
+      const now = new Date();
       const skip = (page - 1) * pageSize;
+
+      const buildWhere = () => {
+        if (active === true) {
+          return {
+            userId,
+            isActive: true,
+            OR: [
+              { cancelledAt: null },
+              { cancelledAt: { not: null }, endDate: { gt: now } },
+            ],
+          };
+        }
+
+        if (active === false) {
+          return {
+            userId,
+            OR: [
+              { isActive: false },
+              {
+                isActive: true,
+                cancelledAt: { not: null },
+                endDate: { lte: now },
+              },
+            ],
+          };
+        }
+
+        return { userId };
+      };
+
+      const where = buildWhere();
+
       const [items, totalCount] = await Promise.all([
         prisma.subscription.findMany({
           where,
@@ -120,9 +172,49 @@ export const subscriptionResolvers = {
         });
       }
 
+      const endDate =
+        existing.endDate ??
+        getNextRenewalDate(existing.startDate, existing.billingCycle);
+
       return prisma.subscription.update({
         where: { id },
-        data: { isActive: false },
+        data: { cancelledAt: new Date(), endDate },
+      });
+    },
+    resumeSubscription: async (
+      _parent: unknown,
+      {
+        input,
+      }: {
+        input: {
+          id: string;
+          startDate?: string;
+          amount?: number;
+          billingCycle?: string;
+        };
+      },
+      { userId }: { userId: string }
+    ) => {
+      const existing = await prisma.subscription.findFirst({
+        where: { id: input.id, userId },
+      });
+
+      if (!existing) {
+        throw new GraphQLError('Subscription not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return prisma.subscription.update({
+        where: { id: input.id },
+        data: {
+          isActive: true,
+          cancelledAt: null,
+          endDate: null,
+          ...(input.startDate && { startDate: new Date(input.startDate) }),
+          ...(input.amount !== undefined && { amount: input.amount }),
+          ...(input.billingCycle && { billingCycle: input.billingCycle }),
+        },
       });
     },
     deleteSubscription: async (

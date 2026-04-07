@@ -13,6 +13,7 @@ const mockSubscription: Subscription = {
   isActive: true,
   startDate: '2025-01-15',
   endDate: null,
+  cancelledAt: null,
   monthlyCost: 15.99,
   createdAt: '2025-01-15T00:00:00Z',
   updatedAt: '2025-01-15T00:00:00Z',

@@ -3,6 +3,7 @@ import { CancelSubscriptionModal } from '../components/subscriptions/CancelSubsc
 import { CreateSubscriptionModal } from '../components/subscriptions/CreateSubscriptionModal';
 import { DeleteSubscriptionModal } from '../components/subscriptions/DeleteSubscriptionModal';
 import { EditSubscriptionModal } from '../components/subscriptions/EditSubscriptionModal';
+import { ResumeSubscriptionModal } from '../components/subscriptions/ResumeSubscriptionModal';
 import { SubscriptionCostSummary } from '../components/subscriptions/SubscriptionCostSummary';
 import { SubscriptionList } from '../components/subscriptions/SubscriptionList';
 import { Button, PageLayout, Pagination } from '../components/ui';
@@ -25,6 +26,7 @@ export function Subscriptions() {
     isCancelling,
     isCreateOpen,
     isDeleting,
+    isResuming,
     onActivePaginate,
     onCancelConfirm,
     onCloseCreate,
@@ -32,15 +34,19 @@ export function Subscriptions() {
     onDeleteConfirm,
     onInactivePaginate,
     onOpenCreate,
+    onResumeActive,
+    onResumeFromInactive,
     onSelectForCancel,
     onSelectForDelete,
     onSelectForEdit,
+    onSelectForResume,
     onToggleInactive,
     onUpdate,
     showInactive,
     subscriptionToCancel,
     subscriptionToDelete,
     subscriptionToEdit,
+    subscriptionToResume,
     totalMonthlyCost,
     totalYearlyCost,
   } = useSubscriptionsData();
@@ -69,6 +75,7 @@ export function Subscriptions() {
           onCancel={onSelectForCancel}
           onDelete={onSelectForDelete}
           onEdit={onSelectForEdit}
+          onResume={onResumeActive}
         />
 
         {!activeLoading && !activeError && activeTotalCount > 0 && (
@@ -104,6 +111,7 @@ export function Subscriptions() {
                   subscriptions={inactiveItems}
                   emptyMessage="No inactive subscriptions."
                   onDelete={onSelectForDelete}
+                  onResume={onSelectForResume}
                 />
 
                 {!inactiveLoading &&
@@ -151,6 +159,14 @@ export function Subscriptions() {
         subscriptionName={subscriptionToDelete?.name ?? ''}
         onClose={() => onSelectForDelete(null)}
         onConfirm={onDeleteConfirm}
+      />
+
+      <ResumeSubscriptionModal
+        isOpen={!!subscriptionToResume}
+        isResuming={isResuming}
+        subscription={subscriptionToResume}
+        onClose={() => onSelectForResume(null)}
+        onSubmit={onResumeFromInactive}
       />
     </>
   );

@@ -7,6 +7,7 @@ export const subscriptionTypeDefs = `#graphql
     isActive: Boolean!
     startDate: String!
     endDate: String
+    cancelledAt: String
     monthlyCost: Float!
     createdAt: String!
     updatedAt: String!
@@ -38,10 +39,18 @@ export const subscriptionTypeDefs = `#graphql
     subscriptions(page: Int, pageSize: Int, active: Boolean): SubscriptionsResult!
   }
 
+  input ResumeSubscriptionInput {
+    id: ID!
+    startDate: String
+    amount: Float
+    billingCycle: String
+  }
+
   extend type Mutation {
     createSubscription(input: CreateSubscriptionInput!): Subscription!
     updateSubscription(input: UpdateSubscriptionInput!): Subscription!
     cancelSubscription(id: ID!): Subscription!
+    resumeSubscription(input: ResumeSubscriptionInput!): Subscription!
     deleteSubscription(id: ID!): Boolean!
   }
 `;

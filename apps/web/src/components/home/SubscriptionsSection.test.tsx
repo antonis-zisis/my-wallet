@@ -14,6 +14,7 @@ const makeSubscription = (
   isActive: true,
   startDate: '2025-01-01',
   endDate: null,
+  cancelledAt: null,
   monthlyCost: 10,
   createdAt: '2025-01-01T00:00:00Z',
   updatedAt: '2025-01-01T00:00:00Z',

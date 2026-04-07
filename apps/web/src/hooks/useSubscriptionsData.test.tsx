@@ -16,6 +16,7 @@ import {
   CREATE_SUBSCRIPTION,
   DELETE_SUBSCRIPTION,
   GET_SUBSCRIPTIONS,
+  RESUME_SUBSCRIPTION,
   UPDATE_SUBSCRIPTION,
 } from '../graphql/subscriptions';
 import { MockedProvider } from '../test/apollo-test-utils';
@@ -32,6 +33,7 @@ const mockSubscription = (
   isActive: true,
   startDate: '2025-01-01T00:00:00.000Z',
   endDate: null,
+  cancelledAt: null,
   monthlyCost: 15.99,
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
@@ -238,13 +240,14 @@ describe('useSubscriptionsData', () => {
     await waitFor(() => expect(result.current.activeLoading).toBe(false));
   });
 
-  it('starts with no subscription selected for edit, cancel, or delete', () => {
+  it('starts with no subscription selected for edit, cancel, resume, or delete', () => {
     const { result } = renderHook(() => useSubscriptionsData(), {
       wrapper: createWrapper([mockActiveQuery, mockInactiveQueryEmpty]),
     });
 
     expect(result.current.subscriptionToEdit).toBeNull();
     expect(result.current.subscriptionToCancel).toBeNull();
+    expect(result.current.subscriptionToResume).toBeNull();
     expect(result.current.subscriptionToDelete).toBeNull();
   });
 
@@ -442,7 +445,16 @@ describe('useSubscriptionsData', () => {
   it('clears subscriptionToCancel after confirming cancellation', async () => {
     const cancelMock: MockLink.MockedResponse = {
       request: { query: CANCEL_SUBSCRIPTION, variables: { id: '1' } },
-      result: { data: { cancelSubscription: { id: '1', isActive: false } } },
+      result: {
+        data: {
+          cancelSubscription: {
+            id: '1',
+            isActive: true,
+            cancelledAt: '2026-04-07T00:00:00.000Z',
+            endDate: '2026-05-01T00:00:00.000Z',
+          },
+        },
+      },
     };
     const refetchActiveMock: MockLink.MockedResponse = {
       request: {
@@ -481,6 +493,87 @@ describe('useSubscriptionsData', () => {
     await act(() => result.current.onCancelConfirm());
 
     expect(result.current.subscriptionToCancel).toBeNull();
+  });
+
+  it('sets subscription for resume via onSelectForResume', async () => {
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([mockActiveQuery, mockInactiveQueryEmpty]),
+    });
+
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+
+    const subscription = result.current.activeItems[0];
+    act(() => result.current.onSelectForResume(subscription));
+    expect(result.current.subscriptionToResume).toEqual(subscription);
+
+    act(() => result.current.onSelectForResume(null));
+    expect(result.current.subscriptionToResume).toBeNull();
+  });
+
+  it('clears subscriptionToResume after onResumeFromInactive succeeds', async () => {
+    const resumeMock: MockLink.MockedResponse = {
+      request: {
+        query: RESUME_SUBSCRIPTION,
+        variables: {
+          input: {
+            id: '1',
+            startDate: '2026-05-01',
+            amount: 15.99,
+            billingCycle: 'MONTHLY' as const,
+          },
+        },
+      },
+      result: {
+        data: {
+          resumeSubscription: mockSubscription({
+            isActive: true,
+            cancelledAt: null,
+          }),
+        },
+      },
+    };
+    const refetchActiveMock: MockLink.MockedResponse = {
+      request: {
+        query: GET_SUBSCRIPTIONS,
+        variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+      },
+      result: {
+        data: { subscriptions: { items: [mockSubscription()], totalCount: 1 } },
+      },
+    };
+    const refetchInactiveMock: MockLink.MockedResponse = {
+      request: {
+        query: GET_SUBSCRIPTIONS,
+        variables: { active: false, page: 1, pageSize: PAGE_SIZE },
+      },
+      result: { data: { subscriptions: { items: [], totalCount: 0 } } },
+    };
+
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        mockActiveQuery,
+        mockInactiveQueryEmpty,
+        resumeMock,
+        refetchActiveMock,
+        refetchInactiveMock,
+      ]),
+    });
+
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+
+    act(() => result.current.onSelectForResume(result.current.activeItems[0]));
+    expect(result.current.subscriptionToResume).not.toBeNull();
+
+    await act(() =>
+      result.current.onResumeFromInactive({
+        id: '1',
+        startDate: '2026-05-01',
+        amount: 15.99,
+        billingCycle: 'MONTHLY',
+      })
+    );
+
+    expect(result.current.subscriptionToResume).toBeNull();
   });
 
   it('clears subscriptionToDelete after confirming deletion', async () => {
