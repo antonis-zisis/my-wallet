@@ -181,6 +181,42 @@ export const subscriptionResolvers = {
         data: { cancelledAt: new Date(), endDate },
       });
     },
+    resumeSubscription: async (
+      _parent: unknown,
+      {
+        input,
+      }: {
+        input: {
+          id: string;
+          startDate?: string;
+          amount?: number;
+          billingCycle?: string;
+        };
+      },
+      { userId }: { userId: string }
+    ) => {
+      const existing = await prisma.subscription.findFirst({
+        where: { id: input.id, userId },
+      });
+
+      if (!existing) {
+        throw new GraphQLError('Subscription not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return prisma.subscription.update({
+        where: { id: input.id },
+        data: {
+          isActive: true,
+          cancelledAt: null,
+          endDate: null,
+          ...(input.startDate && { startDate: new Date(input.startDate) }),
+          ...(input.amount !== undefined && { amount: input.amount }),
+          ...(input.billingCycle && { billingCycle: input.billingCycle }),
+        },
+      });
+    },
     deleteSubscription: async (
       _parent: unknown,
       { id }: { id: string },

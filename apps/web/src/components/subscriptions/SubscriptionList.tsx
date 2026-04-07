@@ -12,6 +12,7 @@ interface SubscriptionListProps {
   error: boolean;
   onEdit?: (subscription: Subscription) => void;
   onCancel?: (subscription: Subscription) => void;
+  onResume?: (subscription: Subscription) => void;
   onDelete: (subscription: Subscription) => void;
   onAdd?: () => void;
   emptyMessage?: string;
@@ -64,6 +65,7 @@ export function SubscriptionList({
   onCancel,
   onDelete,
   onEdit,
+  onResume,
   subscriptions,
 }: SubscriptionListProps) {
   if (loading) {
@@ -108,6 +110,16 @@ export function SubscriptionList({
             dropdownItems.push({
               label: 'Cancel',
               onClick: () => onCancel(subscription),
+            });
+          }
+
+          if (
+            onResume &&
+            (subscription.cancelledAt || !subscription.isActive)
+          ) {
+            dropdownItems.push({
+              label: 'Resume',
+              onClick: () => onResume(subscription),
             });
           }
 

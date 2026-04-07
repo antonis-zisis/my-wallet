@@ -344,6 +344,91 @@ describe('subscriptionResolvers', () => {
     });
   });
 
+  describe('Mutation.resumeSubscription', () => {
+    it('clears cancelledAt and endDate, sets isActive to true', async () => {
+      const cancelledSubscription = {
+        ...mockSubscription,
+        cancelledAt: new Date('2026-04-01'),
+        endDate: new Date('2026-04-30'),
+      };
+      vi.mocked(prisma.subscription.findFirst).mockResolvedValue(
+        cancelledSubscription as never
+      );
+      vi.mocked(prisma.subscription.update).mockResolvedValue({
+        ...mockSubscription,
+        isActive: true,
+        cancelledAt: null,
+        endDate: null,
+      } as never);
+
+      const result = await subscriptionResolvers.Mutation.resumeSubscription(
+        undefined as unknown,
+        { input: { id: 'sub-1' } },
+        CTX
+      );
+
+      expect(prisma.subscription.update).toHaveBeenCalledWith({
+        where: { id: 'sub-1' },
+        data: { isActive: true, cancelledAt: null, endDate: null },
+      });
+      expect(result).toEqual(
+        expect.objectContaining({ isActive: true, cancelledAt: null })
+      );
+    });
+
+    it('updates startDate, amount, and billingCycle when provided', async () => {
+      vi.mocked(prisma.subscription.findFirst).mockResolvedValue(
+        mockSubscription as never
+      );
+      vi.mocked(prisma.subscription.update).mockResolvedValue({
+        ...mockSubscription,
+        isActive: true,
+        cancelledAt: null,
+        endDate: null,
+        startDate: new Date('2026-05-01'),
+        amount: 19.99,
+        billingCycle: 'YEARLY',
+      } as never);
+
+      await subscriptionResolvers.Mutation.resumeSubscription(
+        undefined as unknown,
+        {
+          input: {
+            id: 'sub-1',
+            startDate: '2026-05-01',
+            amount: 19.99,
+            billingCycle: 'YEARLY',
+          },
+        },
+        CTX
+      );
+
+      expect(prisma.subscription.update).toHaveBeenCalledWith({
+        where: { id: 'sub-1' },
+        data: {
+          isActive: true,
+          cancelledAt: null,
+          endDate: null,
+          startDate: new Date('2026-05-01'),
+          amount: 19.99,
+          billingCycle: 'YEARLY',
+        },
+      });
+    });
+
+    it('throws NOT_FOUND error when subscription does not belong to user', async () => {
+      vi.mocked(prisma.subscription.findFirst).mockResolvedValue(null);
+
+      await expect(
+        subscriptionResolvers.Mutation.resumeSubscription(
+          undefined as unknown,
+          { input: { id: 'other-sub' } },
+          CTX
+        )
+      ).rejects.toThrow('Subscription not found');
+    });
+  });
+
   describe('Mutation.deleteSubscription', () => {
     it('deletes a subscription and returns true', async () => {
       vi.mocked(prisma.subscription.findFirst).mockResolvedValue(

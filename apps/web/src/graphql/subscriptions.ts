@@ -68,6 +68,24 @@ export const CANCEL_SUBSCRIPTION = gql`
   }
 `;
 
+export const RESUME_SUBSCRIPTION = gql`
+  mutation ResumeSubscription($input: ResumeSubscriptionInput!) {
+    resumeSubscription(input: $input) {
+      id
+      name
+      amount
+      billingCycle
+      isActive
+      startDate
+      endDate
+      cancelledAt
+      monthlyCost
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const DELETE_SUBSCRIPTION = gql`
   mutation DeleteSubscription($id: ID!) {
     deleteSubscription(id: $id)
