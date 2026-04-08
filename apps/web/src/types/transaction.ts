@@ -13,15 +13,16 @@ export interface Transaction {
 }
 
 export const EXPENSE_CATEGORIES = [
-  'Food',
-  'Housing',
-  'Transport',
+  'Rent',
   'Utilities',
+  'Groceries',
+  'Dining Out',
+  'Transport',
   'Health',
   'Entertainment',
   'Shopping',
-  'Insurance',
   'Investment',
+  'Insurance',
   'Loan',
   'Other',
 ] as const;

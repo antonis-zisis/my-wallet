@@ -16,14 +16,15 @@ interface BudgetBreakdownChartProps {
 }
 
 const BUCKET_COLORS: Record<string, string> = {
-  Needs: '#10b981',
-  Wants: '#3b82f6',
-  Invest: '#8b5cf6',
+  Needs: '#3b82f6',
+  Wants: '#f59e0b',
+  Invest: '#10b981',
 };
 
 export const CATEGORY_TO_BUCKET: Record<string, string> = {
-  Housing: 'Needs',
-  Food: 'Needs',
+  Groceries: 'Needs',
+  'Dining Out': 'Needs',
+  Rent: 'Needs',
   Transport: 'Needs',
   Utilities: 'Needs',
   Health: 'Needs',
@@ -165,13 +166,17 @@ export function BudgetBreakdownChart({
       buckets.set(bucket, current + tx.amount);
     }
 
+    const bucketOrder = ['Needs', 'Wants', 'Invest'];
+
     return Array.from(buckets.entries())
       .map(([name, value]) => ({
         name,
         value,
         fill: BUCKET_COLORS[name],
       }))
-      .sort((aa, bb) => bb.value - aa.value);
+      .sort(
+        (aa, bb) => bucketOrder.indexOf(aa.name) - bucketOrder.indexOf(bb.name)
+      );
   }, [transactions]);
 
   if (chartData.length === 0) {
@@ -196,7 +201,25 @@ export function BudgetBreakdownChart({
       />
 
       <Tooltip content={() => null} defaultIndex={0} active />
-      <Legend />
+
+      <Legend
+        layout="vertical"
+        align="left"
+        verticalAlign="middle"
+        content={() => (
+          <ul className="flex w-30 flex-col gap-2 pl-2 text-sm">
+            {chartData.map((item) => (
+              <li key={item.name} className="flex items-center gap-2">
+                <span
+                  className="inline-block h-3 w-3"
+                  style={{ backgroundColor: item.fill }}
+                />
+                <span style={{ color: item.fill }}>{item.name}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      />
     </PieChart>
   );
 }
