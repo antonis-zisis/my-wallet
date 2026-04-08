@@ -42,6 +42,11 @@ export function TransactionTable({
 
   return (
     <Card className="mt-4">
+      <div className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+        {transactions.length}{' '}
+        {transactions.length === 1 ? 'transaction' : 'transactions'}
+      </div>
+
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-200 text-left text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
@@ -76,8 +81,8 @@ export function TransactionTable({
                 </Badge>
               </td>
 
-              <td className="py-3 pr-4 text-sm text-gray-600 dark:text-gray-300">
-                {transaction.category}
+              <td className="py-3 pr-4">
+                <Badge variant="default">{transaction.category}</Badge>
               </td>
 
               <td className="py-3 pr-4 text-sm text-gray-800 dark:text-gray-200">

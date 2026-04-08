@@ -11,7 +11,7 @@ const mockTransaction: Transaction = {
   type: 'EXPENSE',
   amount: 42.5,
   description: 'Groceries',
-  category: 'Food',
+  category: 'Groceries',
   date: String(new Date('2024-03-15').getTime()),
   createdAt: '2024-03-15T00:00:00.000Z',
   updatedAt: '2024-03-15T00:00:00.000Z',
@@ -49,7 +49,7 @@ describe('TransactionFormModal', () => {
 
       expect(screen.getByLabelText('Amount')).toHaveValue(42.5);
       expect(screen.getByLabelText('Description')).toHaveValue('Groceries');
-      expect(screen.getByLabelText('Category')).toHaveValue('Food');
+      expect(screen.getByLabelText('Category')).toHaveValue('Groceries');
     });
 
     it('pre-populates date from numeric timestamp string', () => {
@@ -84,7 +84,7 @@ describe('TransactionFormModal', () => {
           type: 'EXPENSE',
           amount: 42.5,
           description: 'Updated',
-          category: 'Food',
+          category: 'Groceries',
           date: '2024-03-15',
         })
       );

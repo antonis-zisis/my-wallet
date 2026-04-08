@@ -55,8 +55,9 @@ describe('BudgetBreakdownChart', () => {
 
   it('maps Needs categories correctly', () => {
     const needsCategories = [
-      'Housing',
-      'Food',
+      'Groceries',
+      'Dining Out',
+      'Rent',
       'Transport',
       'Utilities',
       'Health',

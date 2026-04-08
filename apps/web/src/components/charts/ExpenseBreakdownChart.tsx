@@ -8,22 +8,27 @@ import {
   Tooltip,
 } from 'recharts';
 
-import { type Transaction } from '../../types/transaction';
+import { EXPENSE_CATEGORIES, type Transaction } from '../../types/transaction';
 import { formatMoney } from '../../utils/formatMoney';
 
 interface ExpenseBreakdownChartProps {
   transactions: Array<Transaction>;
 }
 
-const COLORS = [
-  '#3b82f6',
-  '#f59e0b',
-  '#10b981',
-  '#8b5cf6',
-  '#ef4444',
-  '#06b6d4',
-  '#f97316',
-];
+const CATEGORY_COLORS: Record<string, string> = {
+  Rent: '#1d4ed8',
+  Utilities: '#3b82f6',
+  Insurance: '#60a5fa',
+  Loan: '#1e3a8a',
+  Groceries: '#f97316',
+  'Dining Out': '#fb923c',
+  Transport: '#0891b2',
+  Health: '#14b8a6',
+  Entertainment: '#a855f7',
+  Shopping: '#ec4899',
+  Investment: '#10b981',
+  Other: '#9ca3af',
+};
 
 const RADIAN = Math.PI / 180;
 
@@ -156,12 +161,16 @@ export function ExpenseBreakdownChart({
     }
 
     return Array.from(expensesByCategory.entries())
-      .map(([name, value], index) => ({
+      .map(([name, value]) => ({
         name,
         value,
-        fill: COLORS[index % COLORS.length],
+        fill: CATEGORY_COLORS[name] ?? '#9ca3af',
       }))
-      .sort((aa, bb) => bb.value - aa.value);
+      .sort(
+        (aa, bb) =>
+          EXPENSE_CATEGORIES.indexOf(aa.name as never) -
+          EXPENSE_CATEGORIES.indexOf(bb.name as never)
+      );
   }, [transactions]);
 
   if (chartData.length === 0) {
@@ -186,7 +195,25 @@ export function ExpenseBreakdownChart({
       />
 
       <Tooltip content={() => null} defaultIndex={0} active />
-      <Legend />
+
+      <Legend
+        layout="vertical"
+        align="left"
+        verticalAlign="middle"
+        content={() => (
+          <ul className="flex w-30 flex-col gap-2 pl-2 text-sm">
+            {chartData.map((item) => (
+              <li key={item.name} className="flex items-center gap-2">
+                <span
+                  className="inline-block h-3 w-3"
+                  style={{ backgroundColor: item.fill }}
+                />
+                <span style={{ color: item.fill }}>{item.name}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      />
     </PieChart>
   );
 }

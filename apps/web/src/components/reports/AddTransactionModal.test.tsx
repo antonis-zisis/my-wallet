@@ -29,7 +29,9 @@ describe('AddTransactionModal', () => {
 
   it('shows expense categories by default', () => {
     render(<AddTransactionModal {...defaultProps} />);
-    expect(screen.getByRole('option', { name: 'Food' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: 'Groceries' })
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('option', { name: 'Transport' })
     ).toBeInTheDocument();
@@ -54,8 +56,11 @@ describe('AddTransactionModal', () => {
   it('resets category when switching transaction type', async () => {
     render(<AddTransactionModal {...defaultProps} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Category'), 'Food');
-    expect(screen.getByLabelText('Category')).toHaveValue('Food');
+    await userEvent.selectOptions(
+      screen.getByLabelText('Category'),
+      'Groceries'
+    );
+    expect(screen.getByLabelText('Category')).toHaveValue('Groceries');
 
     await userEvent.click(screen.getByText('Income'));
     expect(screen.getByLabelText('Category')).toHaveValue('');
@@ -72,7 +77,10 @@ describe('AddTransactionModal', () => {
 
     await userEvent.type(screen.getByLabelText('Amount'), '42.50');
     await userEvent.type(screen.getByLabelText('Description'), 'Groceries');
-    await userEvent.selectOptions(screen.getByLabelText('Category'), 'Food');
+    await userEvent.selectOptions(
+      screen.getByLabelText('Category'),
+      'Groceries'
+    );
 
     await userEvent.click(screen.getByText('Add'));
 
@@ -81,7 +89,7 @@ describe('AddTransactionModal', () => {
         type: 'EXPENSE',
         amount: 42.5,
         description: 'Groceries',
-        category: 'Food',
+        category: 'Groceries',
       })
     );
   });
