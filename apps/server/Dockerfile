@@ -15,7 +15,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY apps/server apps/server/
 
-RUN pnpm --filter server build
+RUN pnpm --filter my-wallet-server build
 
 # -- Production stage --
 FROM node:24-slim
