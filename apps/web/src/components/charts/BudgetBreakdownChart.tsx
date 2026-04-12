@@ -23,7 +23,7 @@ const BUCKET_COLORS: Record<string, string> = {
 
 export const CATEGORY_TO_BUCKET: Record<string, string> = {
   Groceries: 'Needs',
-  'Dining Out': 'Needs',
+  'Dining Out': 'Wants',
   Rent: 'Needs',
   Transport: 'Needs',
   Utilities: 'Needs',
