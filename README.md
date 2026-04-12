@@ -19,8 +19,8 @@ A personal budgeting app built with React and Express.
 
 ## Prerequisites
 
-- Node.js 24+
-- pnpm 10+
+- Node.js 24.14.1
+- pnpm 10.33.0
 
 ## Getting Started
 
