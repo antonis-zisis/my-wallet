@@ -77,11 +77,12 @@ fi
 
 echo ""
 log_step "Connecting to PostgreSQL as 'postgres' superuser..."
-echo -e "${YELLOW}Please enter the password for the 'postgres' superuser:${NC}"
+read -r -s -p "Please enter the password for the 'postgres' superuser: " SUPERUSER_PASSWORD
+echo ""
 
 # Check if database exists
 log_info "Checking if database '$PG_DATABASE' exists..."
-DB_EXISTS=$(PGPASSWORD="" psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$PG_DATABASE'" postgres 2>/dev/null || echo "error")
+DB_EXISTS=$(PGPASSWORD="$SUPERUSER_PASSWORD" psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$PG_DATABASE'" postgres 2>/dev/null || echo "error")
 
 if [ "$DB_EXISTS" = "error" ]; then
     log_error "Failed to connect to PostgreSQL. Please check your credentials."
@@ -90,33 +91,33 @@ fi
 
 # Check if user exists
 log_info "Checking if user '$PG_USER' exists..."
-USER_EXISTS=$(psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PG_USER'" postgres 2>/dev/null || echo "")
+USER_EXISTS=$(PGPASSWORD="$SUPERUSER_PASSWORD" psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PG_USER'" postgres 2>/dev/null || echo "")
 
 if [ "$USER_EXISTS" != "1" ]; then
     log_info "Creating user '$PG_USER'..."
-    psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "CREATE USER $PG_USER WITH PASSWORD '$PG_PASSWORD';" postgres
+    PGPASSWORD="$SUPERUSER_PASSWORD" psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "CREATE USER $PG_USER WITH PASSWORD '$PG_PASSWORD';" postgres
     log_info "User '$PG_USER' created successfully."
 else
     log_info "User '$PG_USER' already exists."
     # Update password in case it changed
     log_info "Updating password for user '$PG_USER'..."
-    psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "ALTER USER $PG_USER WITH PASSWORD '$PG_PASSWORD';" postgres
+    PGPASSWORD="$SUPERUSER_PASSWORD" psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "ALTER USER $PG_USER WITH PASSWORD '$PG_PASSWORD';" postgres
 fi
 
 # Create database if it doesn't exist
 if [ "$DB_EXISTS" != "1" ]; then
     log_info "Creating database '$PG_DATABASE'..."
-    psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "CREATE DATABASE $PG_DATABASE OWNER $PG_USER;" postgres
+    PGPASSWORD="$SUPERUSER_PASSWORD" psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "CREATE DATABASE $PG_DATABASE OWNER $PG_USER;" postgres
     log_info "Database '$PG_DATABASE' created successfully."
 else
     log_info "Database '$PG_DATABASE' already exists."
     # Ensure user has ownership
-    psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "ALTER DATABASE $PG_DATABASE OWNER TO $PG_USER;" postgres 2>/dev/null || true
+    PGPASSWORD="$SUPERUSER_PASSWORD" psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "ALTER DATABASE $PG_DATABASE OWNER TO $PG_USER;" postgres 2>/dev/null || true
 fi
 
 # Grant privileges
 log_info "Granting privileges to user '$PG_USER' on database '$PG_DATABASE'..."
-psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE $PG_DATABASE TO $PG_USER;" postgres
+PGPASSWORD="$SUPERUSER_PASSWORD" psql -h "$PG_HOST" -p "$PG_PORT" -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE $PG_DATABASE TO $PG_USER;" postgres
 
 echo ""
 log_step "Running Prisma setup..."

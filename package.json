@@ -1,6 +1,6 @@
 {
   "name": "my-wallet",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "module",
   "private": true,
   "author": "Antonis Zisis",
@@ -17,7 +17,9 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "prepare": "husky",
     "env:encrypt": "./scripts/encrypt-envs.sh",
-    "env:decrypt": "./scripts/decrypt-envs.sh"
+    "env:decrypt": "./scripts/decrypt-envs.sh",
+    "db:bootstrap": "./scripts/bootstrap-db.sh",
+    "db:bootstrap:docker": "./scripts/bootstrap-db-docker.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
@@ -35,5 +37,8 @@
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.58.0"
   },
-  "packageManager": "pnpm@10.28.2"
+  "packageManager": "pnpm@10.33.0",
+  "volta": {
+    "node": "24.14.1"
+  }
 }
