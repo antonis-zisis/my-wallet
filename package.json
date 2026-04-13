@@ -17,7 +17,9 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "prepare": "husky",
     "env:encrypt": "./scripts/encrypt-envs.sh",
-    "env:decrypt": "./scripts/decrypt-envs.sh"
+    "env:decrypt": "./scripts/decrypt-envs.sh",
+    "db:bootstrap": "./scripts/bootstrap-db.sh",
+    "db:bootstrap:docker": "./scripts/bootstrap-db-docker.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",

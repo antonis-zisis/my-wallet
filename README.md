@@ -21,6 +21,7 @@ A personal budgeting app built with React and Express.
 
 - Node.js 24.14.1
 - pnpm 10.33.0
+- PostgreSQL — either via [Docker Desktop](https://www.docker.com/products/docker-desktop/) / [OrbStack](https://orbstack.dev), or installed locally
 
 ## Getting Started
 
@@ -42,10 +43,37 @@ pnpm run env:decrypt
 
 ### Set up the database
 
+There are two options depending on your preference.
+
+#### Option A: Docker (recommended for new machines)
+
+Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) or [OrbStack](https://orbstack.dev).
+
+```bash
+pnpm db:bootstrap:docker
+```
+
+This will:
+
+- Start a `postgres:17-alpine` container with the credentials from `apps/server/.env`
+- Wait until PostgreSQL is ready
+- Generate the Prisma client
+- Run any pending migrations
+
+The container runs in the background and data is persisted in a named Docker volume (`postgres_data`). It survives restarts and is only lost if you run `docker compose down -v`.
+
+On subsequent dev sessions, just make sure Docker is running — the container will already have your data. If the container was stopped, bring it back with:
+
+```bash
+docker compose up -d
+```
+
+#### Option B: Local PostgreSQL
+
 Run the bootstrap script to create the database, user, and run migrations:
 
 ```bash
-./scripts/bootstrap-db.sh
+pnpm db:bootstrap
 ```
 
 This script will prompt for the PostgreSQL superuser password and automatically:
@@ -53,6 +81,18 @@ This script will prompt for the PostgreSQL superuser password and automatically:
 - Create the database user and database
 - Generate the Prisma client
 - Run any pending migrations
+
+### Seed the database (optional)
+
+To populate the database with sample data:
+
+```bash
+pnpm --filter my-wallet-server db:seed
+```
+
+This creates a placeholder user, two reports with transactions, five subscriptions, and a net worth snapshot. The seed is idempotent — safe to run multiple times.
+
+> **Note:** Seed data is tied to a placeholder user in the database, not your Supabase auth account. To see it in the app, update `PLACEHOLDER_USER_ID` in `apps/server/prisma/seed.ts` with your actual Supabase user ID.
 
 ### Development
 
