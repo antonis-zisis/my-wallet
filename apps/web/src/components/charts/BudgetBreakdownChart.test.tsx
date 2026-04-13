@@ -56,7 +56,6 @@ describe('BudgetBreakdownChart', () => {
   it('maps Needs categories correctly', () => {
     const needsCategories = [
       'Groceries',
-      'Dining Out',
       'Rent',
       'Transport',
       'Utilities',
@@ -70,7 +69,12 @@ describe('BudgetBreakdownChart', () => {
   });
 
   it('maps Wants categories correctly', () => {
-    const wantsCategories = ['Entertainment', 'Shopping', 'Other'];
+    const wantsCategories = [
+      'Dining Out',
+      'Entertainment',
+      'Shopping',
+      'Other',
+    ];
     for (const category of wantsCategories) {
       expect(CATEGORY_TO_BUCKET[category]).toBe('Wants');
     }
