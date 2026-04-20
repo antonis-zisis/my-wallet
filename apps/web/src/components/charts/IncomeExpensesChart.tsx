@@ -13,6 +13,7 @@ import {
 
 import { useTheme } from '../../contexts/ThemeContext';
 import { type Report } from '../../types/report';
+import { abbreviateReportTitle } from '../../utils/abbreviateReportTitle';
 import { formatMoney } from '../../utils/formatMoney';
 
 interface IncomeExpensesChartProps {
@@ -27,6 +28,7 @@ export function IncomeExpensesChart({
   const navigate = useNavigate();
   const { theme } = useTheme();
   const tickColor = theme === 'dark' ? '#d1d5db' : '#374151';
+  const gridColor = theme === 'dark' ? '#374151' : '#e5e7eb';
 
   const chartData = useMemo(() => {
     return [...reports]
@@ -41,10 +43,7 @@ export function IncomeExpensesChart({
           .filter((tx) => tx.type === 'EXPENSE')
           .reduce((sum, tx) => sum + tx.amount, 0);
 
-        const name =
-          report.title.length > 14
-            ? report.title.slice(0, 14) + '…'
-            : report.title;
+        const name = abbreviateReportTitle(report.title);
 
         return { id: report.id, name, income, expenses };
       });
@@ -60,7 +59,11 @@ export function IncomeExpensesChart({
         data={chartData}
         margin={{ top: 8, right: 16, bottom: 8, left: 16 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke={gridColor}
+          vertical={false}
+        />
 
         <XAxis dataKey="name" tick={{ fontSize: 12, fill: tickColor }} />
 
