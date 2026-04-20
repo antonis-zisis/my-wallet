@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
+import { ThemeProvider } from '../../contexts/ThemeContext';
 import { Report } from '../../types/report';
 import { IncomeExpensesSection } from './IncomeExpensesSection';
 
@@ -16,10 +17,12 @@ const mockReport: Report = {
 function renderSection(props: { reports?: Array<Report>; loading?: boolean }) {
   return render(
     <MemoryRouter>
-      <IncomeExpensesSection
-        loading={props.loading ?? false}
-        reports={props.reports ?? []}
-      />
+      <ThemeProvider>
+        <IncomeExpensesSection
+          loading={props.loading ?? false}
+          reports={props.reports ?? []}
+        />
+      </ThemeProvider>
     </MemoryRouter>
   );
 }
@@ -30,7 +33,7 @@ describe('IncomeExpensesSection', () => {
     expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
       0
     );
-    expect(screen.queryByText('Income & Expenses')).not.toBeInTheDocument();
+    expect(screen.queryByText('Monthly Summary')).not.toBeInTheDocument();
   });
 
   it('shows CTA placeholder when not loading and no reports', () => {
@@ -42,8 +45,8 @@ describe('IncomeExpensesSection', () => {
     );
   });
 
-  it('shows Income & Expenses heading when reports exist', () => {
+  it('shows Monthly Summary heading when reports exist', () => {
     renderSection({ loading: false, reports: [mockReport] });
-    expect(screen.getByText('Income & Expenses')).toBeInTheDocument();
+    expect(screen.getByText('Monthly Summary')).toBeInTheDocument();
   });
 });

@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import { Report } from '../../types/report';
 import { formatMoney } from '../../utils/formatMoney';
 import { ArrowDownIcon, ArrowUpIcon } from '../icons';
@@ -20,26 +22,28 @@ export function ReportCard({ label, report }: ReportCardProps) {
     .reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
-    <Card>
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
-          {report.title}
-        </span>
+    <Link to={`/reports/${report.id}`} className="block">
+      <Card className="transition-colors hover:border-blue-300 dark:hover:border-blue-700">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+            {report.title}
+          </span>
 
-        <Badge variant="info">{label}</Badge>
-      </div>
+          <Badge variant="info">{label}</Badge>
+        </div>
 
-      <div className="mt-2 flex items-center gap-3">
-        <p className="flex items-center gap-1 text-sm font-semibold text-green-600 dark:text-green-400">
-          <ArrowUpIcon className="size-4" />
-          {formatMoney(totalIncome)} &euro;
-        </p>
+        <div className="mt-2 flex items-center gap-3">
+          <p className="flex items-center gap-1 text-sm font-semibold text-green-600 dark:text-green-400">
+            <ArrowUpIcon className="size-4" />
+            {formatMoney(totalIncome)} &euro;
+          </p>
 
-        <p className="flex items-center gap-1 text-sm font-semibold text-red-600 dark:text-red-400">
-          <ArrowDownIcon className="size-4" />
-          {formatMoney(totalExpenses)} &euro;
-        </p>
-      </div>
-    </Card>
+          <p className="flex items-center gap-1 text-sm font-semibold text-red-600 dark:text-red-400">
+            <ArrowDownIcon className="size-4" />
+            {formatMoney(totalExpenses)} &euro;
+          </p>
+        </div>
+      </Card>
+    </Link>
   );
 }

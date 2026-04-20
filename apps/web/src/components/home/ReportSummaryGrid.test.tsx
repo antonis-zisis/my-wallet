@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import { Report } from '../../types/report';
@@ -15,15 +16,17 @@ const mockReport: Report = {
 
 function renderGrid(overrides = {}) {
   return render(
-    <ReportSummaryGrid
-      currentLoading={false}
-      currentReport={undefined}
-      previousLoading={false}
-      previousReport={undefined}
-      reportsLoading={false}
-      totalCount={undefined}
-      {...overrides}
-    />
+    <MemoryRouter>
+      <ReportSummaryGrid
+        currentLoading={false}
+        currentReport={undefined}
+        previousLoading={false}
+        previousReport={undefined}
+        reportsLoading={false}
+        totalCount={undefined}
+        {...overrides}
+      />
+    </MemoryRouter>
   );
 }
 

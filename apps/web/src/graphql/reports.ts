@@ -40,7 +40,7 @@ export const GET_REPORT = gql`
 
 export const GET_REPORTS_SUMMARY = gql`
   query GetReportsSummary {
-    reports {
+    reports(pageSize: 12) {
       items {
         id
         title

@@ -79,6 +79,6 @@ describe('SubscriptionSummarySection', () => {
       <SubscriptionSummarySection currentIncome={500} subscriptions={[]} />
     );
     expect(screen.getByText('0')).toBeInTheDocument();
-    expect(screen.getByText(/0,00 €/)).toBeInTheDocument();
+    expect(screen.getAllByText(/0,00 €/).length).toBeGreaterThanOrEqual(2);
   });
 });

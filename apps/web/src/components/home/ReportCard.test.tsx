@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import { Report } from '../../types/report';
@@ -49,22 +50,44 @@ const mockReport: Report = {
 
 describe('ReportCard', () => {
   it('renders the report title and label', () => {
-    render(<ReportCard label="Current" report={mockReport} />);
+    render(
+      <MemoryRouter>
+        <ReportCard label="Current" report={mockReport} />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText('January 2026')).toBeInTheDocument();
     expect(screen.getByText('Current')).toBeInTheDocument();
   });
 
   it('displays formatted income total', () => {
-    render(<ReportCard label="Current" report={mockReport} />);
+    render(
+      <MemoryRouter>
+        <ReportCard label="Current" report={mockReport} />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText(/2\.500,00/)).toBeInTheDocument();
   });
 
   it('displays formatted expense total', () => {
-    render(<ReportCard label="Current" report={mockReport} />);
+    render(
+      <MemoryRouter>
+        <ReportCard label="Current" report={mockReport} />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText(/200,50/)).toBeInTheDocument();
+  });
+
+  it('links to the report page', () => {
+    render(
+      <MemoryRouter>
+        <ReportCard label="Current" report={mockReport} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/reports/1');
   });
 
   it('handles a report with no transactions', () => {
@@ -76,7 +99,11 @@ describe('ReportCard', () => {
       updatedAt: '2026-02-01T00:00:00.000Z',
     };
 
-    render(<ReportCard label="Previous" report={emptyReport} />);
+    render(
+      <MemoryRouter>
+        <ReportCard label="Previous" report={emptyReport} />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText('Empty Report')).toBeInTheDocument();
     expect(screen.getByText('Previous')).toBeInTheDocument();
