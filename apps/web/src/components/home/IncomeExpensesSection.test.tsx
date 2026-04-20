@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
+import { ThemeProvider } from '../../contexts/ThemeContext';
 import { Report } from '../../types/report';
 import { IncomeExpensesSection } from './IncomeExpensesSection';
 
@@ -16,10 +17,12 @@ const mockReport: Report = {
 function renderSection(props: { reports?: Array<Report>; loading?: boolean }) {
   return render(
     <MemoryRouter>
-      <IncomeExpensesSection
-        loading={props.loading ?? false}
-        reports={props.reports ?? []}
-      />
+      <ThemeProvider>
+        <IncomeExpensesSection
+          loading={props.loading ?? false}
+          reports={props.reports ?? []}
+        />
+      </ThemeProvider>
     </MemoryRouter>
   );
 }

@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { ThemeProvider } from '../../contexts/ThemeContext';
 import { type Report } from '../../types/report';
 import { IncomeExpensesChart } from './IncomeExpensesChart';
 
@@ -44,7 +45,9 @@ const makeReport = (
 const renderChart = (props: React.ComponentProps<typeof IncomeExpensesChart>) =>
   render(
     <MemoryRouter>
-      <IncomeExpensesChart {...props} />
+      <ThemeProvider>
+        <IncomeExpensesChart {...props} />
+      </ThemeProvider>
     </MemoryRouter>
   );
 
