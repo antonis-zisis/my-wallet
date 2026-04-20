@@ -68,13 +68,13 @@ export function IncomeExpensesSection({
           onClick={() => setIsOpen((prev) => !prev)}
         >
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Income & Expenses
+            Monthly Summary
           </h2>
         </button>
 
         <div className="flex items-center gap-2">
           {isOpen && (
-            <div className="flex overflow-hidden rounded-md border border-gray-200 dark:border-gray-700">
+            <div className="flex overflow-hidden rounded border border-gray-200 dark:border-gray-700">
               {LIMIT_OPTIONS.map((option) => (
                 <button
                   key={option}

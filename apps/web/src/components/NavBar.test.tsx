@@ -51,7 +51,7 @@ const renderNavBar = async () => {
   );
 
   await waitFor(() => {
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Overview')).toBeInTheDocument();
   });
 };
 
@@ -65,9 +65,9 @@ describe('NavBar', () => {
     });
   });
 
-  it('renders Dashboard link', async () => {
+  it('renders Overview link', async () => {
     await renderNavBar();
-    const link = screen.getByText('Dashboard');
+    const link = screen.getByText('Overview');
     expect(link.closest('a')).toHaveAttribute('href', '/');
   });
 

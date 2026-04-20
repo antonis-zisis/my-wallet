@@ -30,7 +30,7 @@ describe('IncomeExpensesSection', () => {
     expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
       0
     );
-    expect(screen.queryByText('Income & Expenses')).not.toBeInTheDocument();
+    expect(screen.queryByText('Monthly Summary')).not.toBeInTheDocument();
   });
 
   it('shows CTA placeholder when not loading and no reports', () => {
@@ -42,8 +42,8 @@ describe('IncomeExpensesSection', () => {
     );
   });
 
-  it('shows Income & Expenses heading when reports exist', () => {
+  it('shows Monthly Summary heading when reports exist', () => {
     renderSection({ loading: false, reports: [mockReport] });
-    expect(screen.getByText('Income & Expenses')).toBeInTheDocument();
+    expect(screen.getByText('Monthly Summary')).toBeInTheDocument();
   });
 });

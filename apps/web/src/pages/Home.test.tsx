@@ -321,7 +321,7 @@ describe('Home', () => {
     });
   });
 
-  describe('income & expenses chart', () => {
+  describe('monthly summary chart', () => {
     it('renders the chart section when reports have data', async () => {
       renderHome([
         mockHealthQuery,
@@ -333,7 +333,7 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      expect(await screen.findByText('Income & Expenses')).toBeInTheDocument();
+      expect(await screen.findByText('Monthly Summary')).toBeInTheDocument();
     });
 
     it('does not render the chart section when no reports exist', async () => {
@@ -346,7 +346,7 @@ describe('Home', () => {
       ]);
 
       await screen.findByText('0');
-      expect(screen.queryByText('Income & Expenses')).not.toBeInTheDocument();
+      expect(screen.queryByText('Monthly Summary')).not.toBeInTheDocument();
     });
 
     it('collapses and reopens the chart on title button click', async () => {
@@ -361,7 +361,7 @@ describe('Home', () => {
       ]);
 
       const titleButton = await screen.findByRole('button', {
-        name: /income & expenses/i,
+        name: /monthly summary/i,
       });
 
       // chart is open by default — clicking closes it
@@ -386,7 +386,7 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      await screen.findByText('Income & Expenses');
+      await screen.findByText('Monthly Summary');
 
       expect(screen.getByRole('button', { name: '3' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: '6' })).toBeInTheDocument();
@@ -406,7 +406,7 @@ describe('Home', () => {
       ]);
 
       const titleButton = await screen.findByRole('button', {
-        name: /income & expenses/i,
+        name: /monthly summary/i,
       });
       fireEvent.click(titleButton);
 
@@ -429,7 +429,7 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      await screen.findByText('Income & Expenses');
+      await screen.findByText('Monthly Summary');
 
       fireEvent.click(screen.getByRole('button', { name: '6' }));
 

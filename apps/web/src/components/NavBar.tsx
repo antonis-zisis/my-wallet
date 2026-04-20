@@ -12,7 +12,7 @@ import { LogOutIcon, MoonIcon, SunIcon, UserIcon } from './icons';
 import { Dropdown } from './ui';
 
 const navLinks = [
-  { to: '/', label: 'Dashboard' },
+  { to: '/', label: 'Overview' },
   { to: '/reports', label: 'Reports' },
   { to: '/subscriptions', label: 'Subscriptions' },
   { to: '/net-worth', label: 'Net Worth' },
