@@ -11,3 +11,4 @@ export { Select } from './Select';
 export { Skeleton } from './Skeleton';
 export { Spinner } from './Spinner';
 export { ToastContainer } from './Toast';
+export { Tooltip } from './Tooltip';

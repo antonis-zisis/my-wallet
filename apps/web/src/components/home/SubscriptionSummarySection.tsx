@@ -1,6 +1,7 @@
 import { Subscription } from '../../types/subscription';
 import { formatMoney } from '../../utils/formatMoney';
-import { Card } from '../ui';
+import { InfoIcon } from '../icons';
+import { Card, Tooltip } from '../ui';
 
 interface SubscriptionSummarySectionProps {
   subscriptions: Array<Subscription>;
@@ -12,9 +13,11 @@ export function SubscriptionSummarySection({
   subscriptions,
 }: SubscriptionSummarySectionProps) {
   const totalMonthlyCost = subscriptions.reduce(
-    (sum, sub) => sum + sub.monthlyCost,
+    (sum, subscription) => sum + subscription.monthlyCost,
     0
   );
+
+  const totalYearlyCost = totalMonthlyCost * 12;
 
   const percentOfIncome =
     currentIncome > 0
@@ -22,7 +25,7 @@ export function SubscriptionSummarySection({
       : '-';
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
       <Card>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Active Subscriptions
@@ -41,7 +44,20 @@ export function SubscriptionSummarySection({
       </Card>
 
       <Card>
-        <p className="text-sm text-gray-500 dark:text-gray-400">% of Income</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Yearly Cost</p>
+        <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+          {formatMoney(totalYearlyCost)} €
+        </p>
+      </Card>
+
+      <Card>
+        <p className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+          % of Income
+          <Tooltip content="Based on the income of your latest report.">
+            <InfoIcon className="h-3.5 w-3.5 cursor-pointer text-gray-400 dark:text-gray-500" />
+          </Tooltip>
+        </p>
+
         <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
           {percentOfIncome}
         </p>
