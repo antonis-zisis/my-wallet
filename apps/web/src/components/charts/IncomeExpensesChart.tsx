@@ -11,6 +11,7 @@ import {
   YAxis,
 } from 'recharts';
 
+import { useTheme } from '../../contexts/ThemeContext';
 import { type Report } from '../../types/report';
 import { formatMoney } from '../../utils/formatMoney';
 
@@ -24,6 +25,8 @@ export function IncomeExpensesChart({
   reports,
 }: IncomeExpensesChartProps) {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const tickColor = theme === 'dark' ? '#d1d5db' : '#374151';
 
   const chartData = useMemo(() => {
     return [...reports]
@@ -33,13 +36,16 @@ export function IncomeExpensesChart({
         const income = (report.transactions ?? [])
           .filter((tx) => tx.type === 'INCOME')
           .reduce((sum, tx) => sum + tx.amount, 0);
+
         const expenses = (report.transactions ?? [])
           .filter((tx) => tx.type === 'EXPENSE')
           .reduce((sum, tx) => sum + tx.amount, 0);
+
         const name =
           report.title.length > 14
             ? report.title.slice(0, 14) + '…'
             : report.title;
+
         return { id: report.id, name, income, expenses };
       });
   }, [reports, limit]);
@@ -56,15 +62,16 @@ export function IncomeExpensesChart({
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
 
-        <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6b7280' }} />
+        <XAxis dataKey="name" tick={{ fontSize: 12, fill: tickColor }} />
 
         <YAxis
           tickFormatter={(value: number) => `${formatMoney(value)}€`}
-          tick={{ fontSize: 12, fill: '#6b7280' }}
+          tick={{ fontSize: 12, fill: tickColor }}
           width={64}
         />
 
         <Tooltip
+          itemSorter={(item) => (item.name === 'income' ? 0 : 1)}
           formatter={(value, name) => [
             `${formatMoney(typeof value === 'number' ? value : 0)} €`,
             String(name ?? '')
@@ -72,16 +79,26 @@ export function IncomeExpensesChart({
               .toUpperCase() + String(name ?? '').slice(1),
           ]}
           contentStyle={{
-            borderRadius: '8px',
+            borderRadius: '4px',
             border: '1px solid #e5e7eb',
             fontSize: '13px',
           }}
         />
 
         <Legend
-          formatter={(value: string) =>
-            value.charAt(0).toUpperCase() + value.slice(1)
-          }
+          content={() => (
+            <div className="flex justify-center gap-4 pt-1 text-xs text-gray-600 dark:text-gray-400">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                Income
+              </span>
+
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block h-2.5 w-2.5 rounded-full bg-red-500" />
+                Expenses
+              </span>
+            </div>
+          )}
         />
 
         <Bar
