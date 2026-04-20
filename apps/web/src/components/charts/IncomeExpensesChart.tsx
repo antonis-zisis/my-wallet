@@ -16,6 +16,61 @@ import { type Report } from '../../types/report';
 import { abbreviateReportTitle } from '../../utils/abbreviateReportTitle';
 import { formatMoney } from '../../utils/formatMoney';
 
+interface TooltipPayloadEntry {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  label?: string;
+  payload?: Array<TooltipPayloadEntry>;
+}
+
+function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
+  const income = payload.find((entry) => entry.name === 'income');
+  const expenses = payload.find((entry) => entry.name === 'expenses');
+
+  return (
+    <div className="rounded bg-white px-4 py-3 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+      <p className="mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+        {label}
+      </p>
+
+      <div className="space-y-1.5">
+        {income && (
+          <div className="flex items-center justify-between gap-6">
+            <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+              <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+              Income
+            </span>
+            <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+              {formatMoney(income.value)} €
+            </span>
+          </div>
+        )}
+
+        {expenses && (
+          <div className="flex items-center justify-between gap-6">
+            <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+              <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
+              Expenses
+            </span>
+            <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+              {formatMoney(expenses.value)} €
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 interface IncomeExpensesChartProps {
   reports: Array<Report>;
   limit?: number;
@@ -73,20 +128,7 @@ export function IncomeExpensesChart({
           width={64}
         />
 
-        <Tooltip
-          itemSorter={(item) => (item.name === 'income' ? 0 : 1)}
-          formatter={(value, name) => [
-            `${formatMoney(typeof value === 'number' ? value : 0)} €`,
-            String(name ?? '')
-              .charAt(0)
-              .toUpperCase() + String(name ?? '').slice(1),
-          ]}
-          contentStyle={{
-            borderRadius: '4px',
-            border: '1px solid #e5e7eb',
-            fontSize: '13px',
-          }}
-        />
+        <Tooltip content={<ChartTooltip />} />
 
         <Legend
           content={() => (
