@@ -18,6 +18,7 @@ export function Report() {
     deletingTransaction,
     editingTransaction,
     error,
+    filteredTransactions,
     isAddTransactionModalOpen,
     isBudgetChartOpen,
     isChartOpen,
@@ -37,13 +38,19 @@ export function Report() {
     onOpenAddTransactionModal,
     onOpenDeleteReportModal,
     onSaveTitle,
+    onSelectCategoryFilter,
     onSelectTransactionForDelete,
     onSelectTransactionForEdit,
+    onSelectTypeFilter,
     onToggleBudgetChart,
     onToggleChart,
     onUnlockReport,
     onUpdateTransaction,
+    presentExpenseCategories,
+    presentIncomeCategories,
     report,
+    selectedCategoryFilter,
+    selectedTypeFilter,
     transactions,
   } = useReportData();
 
@@ -104,10 +111,16 @@ export function Report() {
 
         <TransactionTable
           isLocked={isLocked}
-          transactions={transactions}
+          presentExpenseCategories={presentExpenseCategories}
+          presentIncomeCategories={presentIncomeCategories}
+          selectedCategoryFilter={selectedCategoryFilter}
+          selectedTypeFilter={selectedTypeFilter}
+          transactions={filteredTransactions}
           onAddTransaction={isLocked ? undefined : onOpenAddTransactionModal}
           onDelete={onSelectTransactionForDelete}
           onEdit={onSelectTransactionForEdit}
+          onSelectCategoryFilter={onSelectCategoryFilter}
+          onSelectTypeFilter={onSelectTypeFilter}
         />
       </PageLayout>
 

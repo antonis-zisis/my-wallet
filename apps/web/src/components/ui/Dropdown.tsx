@@ -16,6 +16,8 @@ export type DropdownItem =
     };
 
 interface DropdownProps {
+  align?: 'left' | 'right';
+  className?: string;
   items: Array<DropdownItem>;
   trigger?: ReactNode;
 }
@@ -27,7 +29,12 @@ const actionStyles = {
     'text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700',
 };
 
-export function Dropdown({ items, trigger }: DropdownProps) {
+export function Dropdown({
+  align = 'right',
+  className = 'relative',
+  items,
+  trigger,
+}: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -46,8 +53,11 @@ export function Dropdown({ items, trigger }: DropdownProps) {
   }, [isOpen]);
 
   return (
-    <div className="relative" ref={menuRef}>
-      <div onClick={() => setIsOpen((prev) => !prev)}>
+    <div className={className} ref={menuRef}>
+      <div
+        className="inline-flex items-center"
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
         {trigger ?? (
           <Button variant="ghost" size="sm" aria-label="Options">
             <svg
@@ -63,7 +73,9 @@ export function Dropdown({ items, trigger }: DropdownProps) {
       </div>
 
       {isOpen && (
-        <div className="absolute right-0 z-10 mt-1 w-52 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div
+          className={`absolute z-10 mt-1 w-52 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 ${align === 'left' ? 'left-0' : 'right-0'}`}
+        >
           {items.map((item, index) => {
             if (item.type === 'custom') {
               return <div key={index}>{item.content}</div>;
