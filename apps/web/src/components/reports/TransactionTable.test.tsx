@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -88,6 +88,159 @@ describe('TransactionTable', () => {
     render(<TransactionTable transactions={mockTransactions} />);
     const buttons = screen.getAllByLabelText('Options');
     expect(buttons).toHaveLength(2);
+  });
+
+  it('shows filtered empty state when filters are active and no transactions match', () => {
+    render(
+      <TransactionTable
+        transactions={[]}
+        selectedTypeFilter="Expense"
+        selectedCategoryFilter="Groceries"
+      />
+    );
+    expect(
+      screen.getByText('No transactions match the selected filters')
+    ).toBeInTheDocument();
+  });
+
+  describe('type filter', () => {
+    it('does not show type filter when only one type is present', () => {
+      render(
+        <TransactionTable
+          transactions={mockTransactions}
+          presentExpenseCategories={[]}
+          presentIncomeCategories={['Salary']}
+        />
+      );
+      const typeHeader = screen.getByRole('columnheader', { name: /^type$/i });
+      expect(within(typeHeader).queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('shows type filter when both income and expense transactions are present', () => {
+      render(
+        <TransactionTable
+          transactions={mockTransactions}
+          presentExpenseCategories={['Groceries']}
+          presentIncomeCategories={['Salary']}
+        />
+      );
+      const typeHeader = screen.getByRole('columnheader', { name: /type/i });
+      expect(within(typeHeader).getByRole('button')).toBeInTheDocument();
+    });
+
+    it('calls onSelectTypeFilter when a type filter option is clicked', async () => {
+      const onSelectTypeFilter = vi.fn();
+      render(
+        <TransactionTable
+          transactions={mockTransactions}
+          presentExpenseCategories={['Groceries']}
+          presentIncomeCategories={['Salary']}
+          onSelectTypeFilter={onSelectTypeFilter}
+        />
+      );
+
+      const typeHeader = screen.getByRole('columnheader', { name: /type/i });
+      await userEvent.click(within(typeHeader).getByRole('button'));
+      await userEvent.click(screen.getByRole('button', { name: 'Income' }));
+
+      expect(onSelectTypeFilter).toHaveBeenCalledWith('Income');
+    });
+  });
+
+  describe('category filter', () => {
+    it('shows category filter when presentExpenseCategories has entries', () => {
+      render(
+        <TransactionTable
+          transactions={mockTransactions}
+          presentExpenseCategories={['Groceries']}
+        />
+      );
+      const categoryHeader = screen.getByRole('columnheader', {
+        name: /category/i,
+      });
+      expect(within(categoryHeader).getByRole('button')).toBeInTheDocument();
+    });
+
+    it('does not show category filter when no categories are present', () => {
+      render(
+        <TransactionTable
+          transactions={mockTransactions}
+          presentExpenseCategories={[]}
+          presentIncomeCategories={[]}
+        />
+      );
+      const categoryHeader = screen.getByRole('columnheader', {
+        name: /category/i,
+      });
+      expect(
+        within(categoryHeader).queryByRole('button')
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows income categories when selectedTypeFilter is Income', async () => {
+      render(
+        <TransactionTable
+          transactions={mockTransactions}
+          presentExpenseCategories={['Groceries']}
+          presentIncomeCategories={['Salary']}
+          selectedTypeFilter="Income"
+        />
+      );
+
+      const categoryHeader = screen.getByRole('columnheader', {
+        name: /category/i,
+      });
+      await userEvent.click(within(categoryHeader).getByRole('button'));
+
+      expect(
+        screen.getByRole('button', { name: 'Salary' })
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Groceries' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows expense categories when selectedTypeFilter is Expense', async () => {
+      render(
+        <TransactionTable
+          transactions={mockTransactions}
+          presentExpenseCategories={['Groceries']}
+          presentIncomeCategories={['Salary']}
+          selectedTypeFilter="Expense"
+        />
+      );
+
+      const categoryHeader = screen.getByRole('columnheader', {
+        name: /category/i,
+      });
+      await userEvent.click(within(categoryHeader).getByRole('button'));
+
+      expect(
+        screen.getByRole('button', { name: 'Groceries' })
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Salary' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('calls onSelectCategoryFilter when a category option is clicked', async () => {
+      const onSelectCategoryFilter = vi.fn();
+      render(
+        <TransactionTable
+          transactions={mockTransactions}
+          presentExpenseCategories={['Groceries']}
+          onSelectCategoryFilter={onSelectCategoryFilter}
+        />
+      );
+
+      const categoryHeader = screen.getByRole('columnheader', {
+        name: /category/i,
+      });
+      await userEvent.click(within(categoryHeader).getByRole('button'));
+      await userEvent.click(screen.getByRole('button', { name: 'Groceries' }));
+
+      expect(onSelectCategoryFilter).toHaveBeenCalledWith('Groceries');
+    });
   });
 
   it('calls onEdit with the correct transaction when Edit is clicked', async () => {

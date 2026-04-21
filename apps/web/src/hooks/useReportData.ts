@@ -17,7 +17,11 @@ import {
   UPDATE_TRANSACTION,
 } from '../graphql/transactions';
 import { Report as ReportType } from '../types/report';
-import { Transaction } from '../types/transaction';
+import {
+  EXPENSE_CATEGORIES,
+  INCOME_CATEGORIES,
+  Transaction,
+} from '../types/transaction';
 
 interface ReportData {
   report: ReportType & { transactions: Array<Transaction> };
@@ -71,9 +75,47 @@ export function useReportData() {
   const [deletingTransaction, setDeletingTransaction] =
     useState<Transaction | null>(null);
 
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState<
+    'All' | 'Income' | 'Expense'
+  >('All');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] =
+    useState<string>('All');
+
+  const onSelectTypeFilter = (type: 'All' | 'Income' | 'Expense') => {
+    setSelectedTypeFilter(type);
+    setSelectedCategoryFilter('All');
+  };
+
   const report = data?.report;
   const transactions = report?.transactions ?? [];
   const isLocked = report?.isLocked ?? false;
+
+  const presentExpenseCategories = EXPENSE_CATEGORIES.filter((category) =>
+    transactions.some(
+      (transaction) =>
+        transaction.category === category && transaction.type === 'EXPENSE'
+    )
+  );
+
+  const presentIncomeCategories = INCOME_CATEGORIES.filter((category) =>
+    transactions.some(
+      (transaction) =>
+        transaction.category === category && transaction.type === 'INCOME'
+    )
+  );
+
+  const filteredTransactions = transactions.filter((transaction) => {
+    const matchesType =
+      selectedTypeFilter === 'All' ||
+      (selectedTypeFilter === 'Income' && transaction.type === 'INCOME') ||
+      (selectedTypeFilter === 'Expense' && transaction.type === 'EXPENSE');
+
+    const matchesCategory =
+      selectedCategoryFilter === 'All' ||
+      transaction.category === selectedCategoryFilter;
+
+    return matchesType && matchesCategory;
+  });
 
   const onSaveTitle = async (title: string) => {
     await updateReport({ variables: { input: { id, title } } });
@@ -123,6 +165,7 @@ export function useReportData() {
     deletingTransaction,
     editingTransaction,
     error: !!error,
+    filteredTransactions,
     isAddTransactionModalOpen,
     isBudgetChartOpen,
     isChartOpen,
@@ -143,13 +186,19 @@ export function useReportData() {
     onOpenAddTransactionModal: () => setIsAddTransactionModalOpen(true),
     onOpenDeleteReportModal: () => setIsDeleteReportModalOpen(true),
     onSaveTitle,
+    onSelectCategoryFilter: setSelectedCategoryFilter,
     onSelectTransactionForDelete: setDeletingTransaction,
     onSelectTransactionForEdit: setEditingTransaction,
+    onSelectTypeFilter,
     onToggleBudgetChart: () => setIsBudgetChartOpen((prev) => !prev),
     onToggleChart: () => setIsChartOpen((prev) => !prev),
     onUnlockReport: () => unlockReport({ variables: { id } }),
     onUpdateTransaction,
+    presentExpenseCategories,
+    presentIncomeCategories,
     report,
+    selectedCategoryFilter,
+    selectedTypeFilter,
     transactions,
   };
 }
