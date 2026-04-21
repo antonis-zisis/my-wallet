@@ -1,8 +1,10 @@
 import { HTMLAttributes } from 'react';
 
 type BadgeVariant = 'default' | 'success' | 'danger' | 'info';
+type BadgeSize = 'sm' | 'md';
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  size?: BadgeSize;
   variant?: BadgeVariant;
 }
 
@@ -13,15 +15,21 @@ const variantStyles: Record<BadgeVariant, string> = {
   info: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
 };
 
+const sizeStyles: Record<BadgeSize, string> = {
+  sm: 'px-1.5 py-0.5 text-[10px]',
+  md: 'px-2 py-1 text-xs',
+};
+
 export function Badge({
   children,
   className = '',
+  size = 'md',
   variant = 'default',
   ...props
 }: BadgeProps) {
   return (
     <span
-      className={`inline-block rounded px-2 py-1 text-xs font-medium ${variantStyles[variant]} ${className}`}
+      className={`inline-block rounded font-medium ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}

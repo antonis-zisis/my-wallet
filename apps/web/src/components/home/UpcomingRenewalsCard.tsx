@@ -4,7 +4,7 @@ import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { ChevronDownIcon } from '../icons';
-import { Badge, Card, Skeleton } from '../ui';
+import { Card, Skeleton } from '../ui';
 
 interface UpcomingRenewalsCardProps {
   loading?: boolean;
@@ -49,10 +49,6 @@ function billingCycleLabel(billingCycle: BillingCycle): string {
   return billingCycle === 'MONTHLY' ? 'Monthly' : 'Yearly';
 }
 
-function billingCycleVariant(billingCycle: BillingCycle): 'success' | 'info' {
-  return billingCycle === 'MONTHLY' ? 'success' : 'info';
-}
-
 export function UpcomingRenewalsCard({
   loading = false,
   subscriptions,
@@ -81,15 +77,22 @@ export function UpcomingRenewalsCard({
     );
   }
 
-  const sorted = [...subscriptions].sort((aa, bb) => {
-    const dateA = getNextRenewalDate(aa.startDate, aa.billingCycle);
-    const dateB = getNextRenewalDate(bb.startDate, bb.billingCycle);
-    return dateA.getTime() - dateB.getTime();
-  });
+  const sorted = [...subscriptions]
+    .map((subscription) => ({
+      subscription,
+      renewalDate: getNextRenewalDate(
+        subscription.startDate,
+        subscription.billingCycle
+      ),
+    }))
+    .filter(({ renewalDate }) => getDaysUntil(renewalDate) <= 40)
+    .sort((aa, bb) => aa.renewalDate.getTime() - bb.renewalDate.getTime())
+    .slice(0, 5);
 
   return (
     <Card className="mt-4">
       <button
+        aria-expanded={isOpen}
         type="button"
         className="flex w-full cursor-pointer items-center gap-2"
         onClick={() => setIsOpen((prev) => !prev)}
@@ -108,51 +111,55 @@ export function UpcomingRenewalsCard({
       >
         <div className="overflow-hidden">
           <div className="mt-4 divide-y divide-gray-100 dark:divide-gray-700">
-            {sorted.slice(0, 5).map((subscription) => {
-              const renewalDate = getNextRenewalDate(
-                subscription.startDate,
-                subscription.billingCycle
-              );
-              const daysUntil = getDaysUntil(renewalDate);
-              return (
-                <div
-                  key={subscription.id}
-                  className="flex items-center justify-between py-2"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {subscription.name}
-                    </p>
-
-                    <div className="mt-0.5 flex items-center gap-1.5">
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {formatDate(renewalDate)}
+            {sorted.length === 0 ? (
+              <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                No renewals due in the next 40 days.
+              </p>
+            ) : (
+              sorted.map(({ renewalDate, subscription }) => {
+                const daysUntil = getDaysUntil(renewalDate);
+                return (
+                  <div
+                    key={subscription.id}
+                    className="flex items-center justify-between py-2"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {subscription.name}
                       </p>
 
-                      <span
-                        className={`text-xs font-medium ${getUrgencyColor(daysUntil)}`}
-                      >
-                        · {formatUrgencyLabel(daysUntil)}
-                      </span>
-                    </div>
-                  </div>
+                      <div className="mt-0.5 flex items-center gap-1.5">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {billingCycleLabel(subscription.billingCycle)}
+                        </p>
 
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 text-left">
-                      <Badge
-                        variant={billingCycleVariant(subscription.billingCycle)}
-                      >
-                        {billingCycleLabel(subscription.billingCycle)}
-                      </Badge>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          ·
+                        </span>
+
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {formatDate(renewalDate)}
+                        </p>
+
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          ·
+                        </span>
+
+                        <span
+                          className={`text-xs font-medium ${getUrgencyColor(daysUntil)}`}
+                        >
+                          {formatUrgencyLabel(daysUntil)}
+                        </span>
+                      </div>
                     </div>
 
-                    <p className="w-20 text-right text-sm font-semibold text-gray-800 dark:text-gray-200">
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                       {formatMoney(subscription.amount)} €
                     </p>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
       </div>

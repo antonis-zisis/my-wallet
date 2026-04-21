@@ -64,6 +64,24 @@ describe('UpcomingRenewalsCard', () => {
       expect(screen.getByText(/9,00 €/)).toBeInTheDocument();
     });
 
+    it('shows billing cycle label as muted text', () => {
+      const subscriptions = [
+        makeSubscription({
+          name: 'Netflix',
+          startDate: '2024-04-10',
+          billingCycle: 'MONTHLY',
+        }),
+        makeSubscription({
+          name: 'Spotify',
+          startDate: '2024-04-15',
+          billingCycle: 'YEARLY',
+        }),
+      ];
+      render(<UpcomingRenewalsCard subscriptions={subscriptions} />);
+      expect(screen.getByText('Monthly')).toBeInTheDocument();
+      expect(screen.getByText('Yearly')).toBeInTheDocument();
+    });
+
     it('sorts subscriptions by next renewal date ascending', () => {
       // With today = 2026-04-06, MONTHLY subscriptions renew on day of startDate:
       // "2024-04-20" → April 20, "2024-04-10" → April 10, "2024-04-15" → April 15
@@ -91,12 +109,73 @@ describe('UpcomingRenewalsCard', () => {
       expect(screen.getAllByText(/^Sub \d+$/)).toHaveLength(5);
     });
 
+    it('filters out subscriptions renewing more than 40 days away', () => {
+      // Today is 2026-04-06; April 10 (monthly) is within 40 days,
+      // September 1 (yearly from 2024) renews Sep 1 2026 — 148 days away
+      const subscriptions = [
+        makeSubscription({ name: 'Soon', startDate: '2024-04-10' }),
+        makeSubscription({
+          name: 'Far Away',
+          startDate: '2024-09-01',
+          billingCycle: 'YEARLY',
+        }),
+      ];
+      render(<UpcomingRenewalsCard subscriptions={subscriptions} />);
+      expect(screen.getByText('Soon')).toBeInTheDocument();
+      expect(screen.queryByText('Far Away')).not.toBeInTheDocument();
+    });
+
+    it('shows empty state when no subscriptions renew within 40 days', () => {
+      // September 1 (yearly from 2024) renews Sep 1 2026 — 148 days away
+      const subscriptions = [
+        makeSubscription({
+          name: 'Far Away',
+          startDate: '2024-09-01',
+          billingCycle: 'YEARLY',
+        }),
+      ];
+      render(<UpcomingRenewalsCard subscriptions={subscriptions} />);
+      expect(
+        screen.getByText('No renewals due in the next 40 days.')
+      ).toBeInTheDocument();
+    });
+
+    describe('urgency labels', () => {
+      it('shows "Today" when renewal is today', () => {
+        // startDate renews on the 6th; today is 2026-04-06
+        const subscriptions = [
+          makeSubscription({ name: 'Netflix', startDate: '2024-04-06' }),
+        ];
+        render(<UpcomingRenewalsCard subscriptions={subscriptions} />);
+        expect(screen.getByText(/Today/)).toBeInTheDocument();
+      });
+
+      it('shows "Tomorrow" when renewal is tomorrow', () => {
+        const subscriptions = [
+          makeSubscription({ name: 'Netflix', startDate: '2024-04-07' }),
+        ];
+        render(<UpcomingRenewalsCard subscriptions={subscriptions} />);
+        expect(screen.getByText(/Tomorrow/)).toBeInTheDocument();
+      });
+
+      it('shows "in Xd" for renewals further away', () => {
+        // startDate renews on the 16th; today is the 6th → 10 days
+        const subscriptions = [
+          makeSubscription({ name: 'Netflix', startDate: '2024-04-16' }),
+        ];
+        render(<UpcomingRenewalsCard subscriptions={subscriptions} />);
+        expect(screen.getByText(/in 10d/)).toBeInTheDocument();
+      });
+    });
+
     it('is expanded by default', () => {
       const subscriptions = [
         makeSubscription({ name: 'Netflix', startDate: '2024-04-10' }),
       ];
       render(<UpcomingRenewalsCard subscriptions={subscriptions} />);
-      expect(screen.getByText('Netflix')).toBeVisible();
+      expect(
+        screen.getByRole('button', { name: /upcoming renewals/i })
+      ).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('collapses when the toggle button is clicked', () => {
@@ -107,7 +186,9 @@ describe('UpcomingRenewalsCard', () => {
       fireEvent.click(
         screen.getByRole('button', { name: /upcoming renewals/i })
       );
-      expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /upcoming renewals/i })
+      ).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('expands again on a second click', () => {
@@ -118,7 +199,7 @@ describe('UpcomingRenewalsCard', () => {
       const button = screen.getByRole('button', { name: /upcoming renewals/i });
       fireEvent.click(button);
       fireEvent.click(button);
-      expect(screen.getByText('Netflix')).toBeVisible();
+      expect(button).toHaveAttribute('aria-expanded', 'true');
     });
   });
 });
