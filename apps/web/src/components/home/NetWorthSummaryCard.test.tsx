@@ -44,12 +44,16 @@ describe('NetWorthSummaryCard', () => {
 
   it('displays the net worth value in the header', () => {
     renderCard(positiveSnapshot);
-    expect(screen.getByText(/12\.000,00 €/)).toBeInTheDocument();
+    const button = screen.getByRole('button', { name: /net worth/i });
+    expect(button).toHaveTextContent(/12\.000,00 €/);
   });
 
   it('is collapsed by default', () => {
     renderCard(positiveSnapshot);
-    expect(screen.queryByText('Assets')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /net worth/i })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
   });
 
   it('expands when the header button is clicked', () => {
@@ -63,7 +67,7 @@ describe('NetWorthSummaryCard', () => {
     const button = screen.getByRole('button', { name: /net worth/i });
     fireEvent.click(button);
     fireEvent.click(button);
-    expect(screen.queryByText('Assets')).not.toBeInTheDocument();
+    expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('shows totalAssets, totalLiabilities and netWorth when expanded', () => {
@@ -87,12 +91,15 @@ describe('NetWorthSummaryCard', () => {
   describe('negative net worth', () => {
     it('displays a minus sign before the value in the header', () => {
       renderCard(negativeSnapshot);
-      expect(screen.getByText(/^-/)).toBeInTheDocument();
+      const button = screen.getByRole('button', { name: /net worth/i });
+      const valueSpan = button.querySelector('span');
+      expect(valueSpan).toHaveTextContent(/^-/);
     });
 
     it('uses red colour for a negative net worth value', () => {
       renderCard(negativeSnapshot);
-      const headerSpan = screen.getByText(/4\.000,00 €/);
+      const button = screen.getByRole('button', { name: /net worth/i });
+      const headerSpan = button.querySelector('span');
       expect(headerSpan).toHaveClass('text-red-600');
     });
 

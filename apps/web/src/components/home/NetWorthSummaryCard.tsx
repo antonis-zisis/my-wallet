@@ -57,6 +57,7 @@ export function NetWorthSummaryCard({
   return (
     <Card>
       <button
+        aria-expanded={isOpen}
         type="button"
         className="flex w-full cursor-pointer items-center gap-3"
         onClick={() => setIsOpen((prev) => !prev)}

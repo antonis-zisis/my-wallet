@@ -87,6 +87,8 @@ export function IncomeExpensesSection({
           )}
 
           <button
+            aria-expanded={isOpen}
+            aria-label="Monthly Summary"
             type="button"
             onClick={() => setIsOpen((prev) => !prev)}
             className="cursor-pointer"

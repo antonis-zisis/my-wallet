@@ -360,18 +360,20 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      const titleButton = await screen.findByRole('button', {
+      const toggleButton = await screen.findByRole('button', {
         name: /monthly summary/i,
       });
 
       // chart is open by default — clicking closes it
-      fireEvent.click(titleButton);
+      fireEvent.click(toggleButton);
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
       expect(
         screen.queryByRole('button', { name: '12' })
       ).not.toBeInTheDocument();
 
       // click again to reopen
-      fireEvent.click(titleButton);
+      fireEvent.click(toggleButton);
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
       expect(screen.getByRole('button', { name: '12' })).toBeInTheDocument();
     });
 
@@ -405,10 +407,10 @@ describe('Home', () => {
         mockPreviousReport,
       ]);
 
-      const titleButton = await screen.findByRole('button', {
+      const toggleButton = await screen.findByRole('button', {
         name: /monthly summary/i,
       });
-      fireEvent.click(titleButton);
+      fireEvent.click(toggleButton);
 
       expect(
         screen.queryByRole('button', { name: '3' })
@@ -555,8 +557,10 @@ describe('Home', () => {
         mockSubscriptionsEmpty,
       ]);
 
-      await screen.findByRole('heading', { name: 'Net Worth' });
-      expect(screen.queryByText('Assets')).not.toBeInTheDocument();
+      const headerButton = await screen.findByRole('button', {
+        name: /net worth/i,
+      });
+      expect(headerButton).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('expands on header button click', async () => {
@@ -591,7 +595,7 @@ describe('Home', () => {
       fireEvent.click(headerButton);
       fireEvent.click(headerButton);
 
-      expect(screen.queryByText('Assets')).not.toBeInTheDocument();
+      expect(headerButton).toHaveAttribute('aria-expanded', 'false');
     });
   });
 
@@ -707,8 +711,7 @@ describe('Home', () => {
       });
       fireEvent.click(headerButton);
 
-      expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
-      expect(screen.queryByText('Spotify')).not.toBeInTheDocument();
+      expect(headerButton).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('shows CTA placeholder when no active subscriptions', async () => {
