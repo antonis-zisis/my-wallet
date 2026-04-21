@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { Report } from '../../types/report';
 import { IncomeExpensesChart } from '../charts';
-import { ChevronDownIcon, ChevronUpIcon } from '../icons';
+import { ChevronDownIcon } from '../icons';
 import { Card, Skeleton } from '../ui';
 
 const LIMIT_OPTIONS = [3, 6, 9, 12] as const;
@@ -62,15 +62,9 @@ export function IncomeExpensesSection({
   return (
     <Card className="mt-4">
       <div className="flex items-center justify-between">
-        <button
-          type="button"
-          className="flex flex-1 cursor-pointer items-center"
-          onClick={() => setIsOpen((prev) => !prev)}
-        >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Monthly Summary
-          </h2>
-        </button>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Monthly Summary
+        </h2>
 
         <div className="flex items-center gap-2">
           {isOpen && (
@@ -97,20 +91,22 @@ export function IncomeExpensesSection({
             onClick={() => setIsOpen((prev) => !prev)}
             className="cursor-pointer"
           >
-            {isOpen ? (
-              <ChevronUpIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-            ) : (
-              <ChevronDownIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-            )}
+            <ChevronDownIcon
+              className={`h-5 w-5 text-gray-500 transition-transform duration-300 dark:text-gray-400 ${isOpen ? 'rotate-180' : ''}`}
+            />
           </button>
         </div>
       </div>
 
-      {isOpen && (
-        <div className="mt-4">
-          <IncomeExpensesChart limit={limit} reports={reports} />
+      <div
+        className={`grid transition-all duration-300 ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+      >
+        <div className="overflow-hidden">
+          <div className="mt-4">
+            <IncomeExpensesChart limit={limit} reports={reports} />
+          </div>
         </div>
-      )}
+      </div>
     </Card>
   );
 }
