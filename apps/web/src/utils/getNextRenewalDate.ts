@@ -16,7 +16,7 @@ export function getNextRenewalDate(
   const increment = billingCycle === 'MONTHLY' ? 1 : 12;
   const next = new Date(parsed);
 
-  while (next <= today) {
+  while (next < today) {
     next.setMonth(next.getMonth() + increment);
   }
 
