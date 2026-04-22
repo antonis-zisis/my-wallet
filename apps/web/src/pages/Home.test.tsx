@@ -514,7 +514,7 @@ describe('Home', () => {
       expect(screen.getByText('February 2026')).toBeInTheDocument();
     });
 
-    it('shows totalAssets, totalLiabilities, and netWorth values when expanded', async () => {
+    it('shows the headline net worth value and a staleness indicator when expanded', async () => {
       renderHome([
         mockHealthQuery,
         mockReportsEmpty,
@@ -528,10 +528,8 @@ describe('Home', () => {
       });
       fireEvent.click(headerButton);
 
-      expect(screen.getByText('Assets')).toBeInTheDocument();
-      expect(screen.getByText(/15\.000,00 €/)).toBeInTheDocument();
-      expect(screen.getByText('Liabilities')).toBeInTheDocument();
-      expect(screen.getByText(/3\.000,00 €/)).toBeInTheDocument();
+      expect(screen.getByText(/12\.000,00 €/)).toBeInTheDocument();
+      expect(screen.getByText(/Last updated/)).toBeInTheDocument();
     });
 
     it('shows CTA placeholder when no snapshots exist', async () => {
@@ -575,9 +573,9 @@ describe('Home', () => {
       const headerButton = await screen.findByRole('button', {
         name: /net worth/i,
       });
+      expect(headerButton).toHaveAttribute('aria-expanded', 'false');
       fireEvent.click(headerButton);
-
-      expect(screen.getByText('Assets')).toBeInTheDocument();
+      expect(headerButton).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('collapses again on second click', async () => {

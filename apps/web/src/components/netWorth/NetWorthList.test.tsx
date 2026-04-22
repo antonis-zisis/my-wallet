@@ -10,6 +10,7 @@ const makeSnapshot = (
   overrides: Partial<NetWorthSnapshot> & Pick<NetWorthSnapshot, 'title'>
 ): NetWorthSnapshot => ({
   id: crypto.randomUUID(),
+  snapshotDate: '2026-01-01T00:00:00Z',
   totalAssets: 10000,
   totalLiabilities: 2000,
   netWorth: 8000,
@@ -23,6 +24,8 @@ const defaultProps = {
   error: false,
   loading: false,
   onDelete: vi.fn(),
+  onDuplicate: vi.fn(),
+  onEdit: vi.fn(),
   snapshots: [],
 };
 
@@ -76,5 +79,23 @@ describe('NetWorthList', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Options' }));
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
     expect(onDelete).toHaveBeenCalledWith(snapshot);
+  });
+
+  it('calls onEdit with the snapshot when Edit is clicked', async () => {
+    const onEdit = vi.fn();
+    const snapshot = makeSnapshot({ title: 'January 2026' });
+    renderList({ ...defaultProps, snapshots: [snapshot], onEdit });
+    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    expect(onEdit).toHaveBeenCalledWith(snapshot);
+  });
+
+  it('calls onDuplicate with the snapshot when Duplicate is clicked', async () => {
+    const onDuplicate = vi.fn();
+    const snapshot = makeSnapshot({ title: 'January 2026' });
+    renderList({ ...defaultProps, snapshots: [snapshot], onDuplicate });
+    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Duplicate' }));
+    expect(onDuplicate).toHaveBeenCalledWith(snapshot);
   });
 });

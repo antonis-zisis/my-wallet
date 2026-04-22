@@ -13,12 +13,19 @@ export interface NetWorthEntry {
 export interface NetWorthSnapshot {
   id: string;
   title: string;
+  snapshotDate: string;
   totalAssets: number;
   totalLiabilities: number;
   netWorth: number;
   entries: Array<NetWorthEntry>;
+  previousSnapshot?: NetWorthSnapshot | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface EntryDelta {
+  delta: number;
+  isNew: boolean;
 }
 
 export interface NetWorthSnapshotsData {

@@ -6,6 +6,31 @@ export const GET_NET_WORTH_SNAPSHOTS = gql`
       items {
         id
         title
+        snapshotDate
+        totalAssets
+        totalLiabilities
+        netWorth
+        entries {
+          id
+          type
+          label
+          amount
+          category
+        }
+        createdAt
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_NET_WORTH_TREND = gql`
+  query GetNetWorthTrend($pageSize: Int) {
+    netWorthSnapshots(page: 1, pageSize: $pageSize) {
+      items {
+        id
+        title
+        snapshotDate
         totalAssets
         totalLiabilities
         netWorth
@@ -21,6 +46,7 @@ export const GET_NET_WORTH_SNAPSHOT = gql`
     netWorthSnapshot(id: $id) {
       id
       title
+      snapshotDate
       totalAssets
       totalLiabilities
       netWorth
@@ -30,6 +56,17 @@ export const GET_NET_WORTH_SNAPSHOT = gql`
         label
         amount
         category
+      }
+      previousSnapshot {
+        totalAssets
+        totalLiabilities
+        netWorth
+        entries {
+          type
+          label
+          amount
+          category
+        }
       }
       createdAt
       updatedAt
@@ -42,10 +79,36 @@ export const CREATE_NET_WORTH_SNAPSHOT = gql`
     createNetWorthSnapshot(input: $input) {
       id
       title
+      snapshotDate
       totalAssets
       totalLiabilities
       netWorth
       createdAt
+    }
+  }
+`;
+
+export const UPDATE_NET_WORTH_SNAPSHOT = gql`
+  mutation UpdateNetWorthSnapshot(
+    $id: ID!
+    $input: UpdateNetWorthSnapshotInput!
+  ) {
+    updateNetWorthSnapshot(id: $id, input: $input) {
+      id
+      title
+      snapshotDate
+      totalAssets
+      totalLiabilities
+      netWorth
+      entries {
+        id
+        type
+        label
+        amount
+        category
+      }
+      createdAt
+      updatedAt
     }
   }
 `;

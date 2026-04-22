@@ -7,10 +7,12 @@ import { TrendingChartIcon } from '../icons';
 import { Card, Dropdown, Skeleton } from '../ui';
 
 interface NetWorthListProps {
-  snapshots: Array<NetWorthSnapshot>;
-  loading: boolean;
   error: boolean;
+  loading: boolean;
   onDelete: (snapshot: NetWorthSnapshot) => void;
+  onDuplicate: (snapshot: NetWorthSnapshot) => void;
+  onEdit: (snapshot: NetWorthSnapshot) => void;
+  snapshots: Array<NetWorthSnapshot>;
 }
 
 function SkeletonRow() {
@@ -55,6 +57,8 @@ export function NetWorthList({
   error,
   loading,
   onDelete,
+  onDuplicate,
+  onEdit,
   snapshots,
 }: NetWorthListProps) {
   if (loading) {
@@ -111,13 +115,21 @@ export function NetWorthList({
                   </span>
 
                   <span className="text-xs text-gray-400 dark:text-gray-500">
-                    {formatDate(snapshot.createdAt)}
+                    {formatDate(snapshot.snapshotDate)}
                   </span>
                 </div>
               </Link>
 
               <Dropdown
                 items={[
+                  {
+                    label: 'Edit',
+                    onClick: () => onEdit(snapshot),
+                  },
+                  {
+                    label: 'Duplicate',
+                    onClick: () => onDuplicate(snapshot),
+                  },
                   {
                     label: 'Delete',
                     onClick: () => onDelete(snapshot),

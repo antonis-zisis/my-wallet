@@ -12,11 +12,21 @@ interface NetWorthEntryInput {
 
 export interface CreateNetWorthSnapshotInput {
   title: string;
+  snapshotDate: string;
+  entries: Array<NetWorthEntryInput>;
+}
+
+export interface UpdateNetWorthSnapshotInput {
+  title: string;
+  snapshotDate: string;
   entries: Array<NetWorthEntryInput>;
 }
 
 type SnapshotParent = {
   id: string;
+  userId: string;
+  snapshotDate: Date;
+  createdAt: Date;
   entries?: Array<NetWorthEntry>;
 };
 
@@ -54,6 +64,16 @@ export const netWorthResolvers = {
         .filter((entry) => entry.type === 'LIABILITY')
         .reduce((sum, entry) => sum + entry.amount, 0);
     },
+    previousSnapshot: async (parent: SnapshotParent) => {
+      return prisma.netWorthSnapshot.findFirst({
+        where: {
+          userId: parent.userId,
+          snapshotDate: { lt: parent.snapshotDate },
+        },
+        orderBy: { snapshotDate: 'desc' },
+        include: { entries: { orderBy: { createdAt: 'asc' } } },
+      });
+    },
     netWorth: async (parent: SnapshotParent) => {
       const entries =
         parent.entries ??
@@ -82,7 +102,7 @@ export const netWorthResolvers = {
       const [items, totalCount] = await Promise.all([
         prisma.netWorthSnapshot.findMany({
           where: { userId },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { snapshotDate: 'desc' },
           include: { entries: { orderBy: { createdAt: 'asc' } } },
           skip,
           take: pageSize,
@@ -112,8 +132,42 @@ export const netWorthResolvers = {
       return prisma.netWorthSnapshot.create({
         data: {
           title: input.title,
+          snapshotDate: new Date(input.snapshotDate),
           userId,
           entries: {
+            create: input.entries.map((entry) => ({
+              type: entry.type,
+              label: entry.label,
+              amount: entry.amount,
+              category: entry.category,
+            })),
+          },
+        },
+        include: { entries: { orderBy: { createdAt: 'asc' } } },
+      });
+    },
+    updateNetWorthSnapshot: async (
+      _parent: unknown,
+      { id, input }: { id: string; input: UpdateNetWorthSnapshotInput },
+      { userId }: { userId: string }
+    ) => {
+      const existing = await prisma.netWorthSnapshot.findFirst({
+        where: { id, userId },
+      });
+
+      if (!existing) {
+        throw new GraphQLError('Net worth snapshot not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return prisma.netWorthSnapshot.update({
+        where: { id },
+        data: {
+          title: input.title,
+          snapshotDate: new Date(input.snapshotDate),
+          entries: {
+            deleteMany: {},
             create: input.entries.map((entry) => ({
               type: entry.type,
               label: entry.label,

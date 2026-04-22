@@ -31,6 +31,7 @@ const mockEntries = [
 const mockSnapshot = {
   id: 'snapshot-1',
   title: 'January 2024',
+  snapshotDate: new Date('2024-01-01T00:00:00Z'),
   userId: USER_ID,
   createdAt: new Date('2024-01-01T10:00:00Z'),
   updatedAt: new Date('2024-01-01T10:00:00Z'),
@@ -48,6 +49,7 @@ vi.mock('../../lib/prisma', () => ({
       findFirst: vi.fn(),
       count: vi.fn(),
       create: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
     },
     netWorthEntry: {
@@ -87,6 +89,48 @@ describe('netWorthResolvers', () => {
         orderBy: { createdAt: 'asc' },
       });
       expect(result).toEqual(mockEntries);
+    });
+  });
+
+  describe('NetWorthSnapshot.previousSnapshot', () => {
+    const mockPreviousSnapshot = {
+      id: 'snapshot-0',
+      title: 'December 2023',
+      snapshotDate: new Date('2023-12-01T00:00:00Z'),
+      userId: USER_ID,
+      createdAt: new Date('2023-12-01T10:00:00Z'),
+      updatedAt: new Date('2023-12-01T10:00:00Z'),
+      entries: [],
+    };
+
+    it('returns the most recent snapshot created before the current one', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findFirst).mockResolvedValue(
+        mockPreviousSnapshot as never
+      );
+
+      const result = await netWorthResolvers.NetWorthSnapshot.previousSnapshot(
+        mockSnapshotWithEntries
+      );
+
+      expect(prisma.netWorthSnapshot.findFirst).toHaveBeenCalledWith({
+        where: {
+          userId: USER_ID,
+          snapshotDate: { lt: mockSnapshot.snapshotDate },
+        },
+        orderBy: { snapshotDate: 'desc' },
+        include: { entries: { orderBy: { createdAt: 'asc' } } },
+      });
+      expect(result).toEqual(mockPreviousSnapshot);
+    });
+
+    it('returns null when no earlier snapshot exists', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findFirst).mockResolvedValue(null);
+
+      const result = await netWorthResolvers.NetWorthSnapshot.previousSnapshot(
+        mockSnapshotWithEntries
+      );
+
+      expect(result).toBeNull();
     });
   });
 
@@ -138,7 +182,7 @@ describe('netWorthResolvers', () => {
 
       expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith({
         where: { userId: USER_ID },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { snapshotDate: 'desc' },
         include: { entries: { orderBy: { createdAt: 'asc' } } },
         skip: 0,
         take: 10,
@@ -223,6 +267,7 @@ describe('netWorthResolvers', () => {
         {
           input: {
             title: 'January 2024',
+            snapshotDate: '2024-01-01',
             entries: [
               {
                 type: 'ASSET',
@@ -239,6 +284,7 @@ describe('netWorthResolvers', () => {
       expect(prisma.netWorthSnapshot.create).toHaveBeenCalledWith({
         data: {
           title: 'January 2024',
+          snapshotDate: new Date('2024-01-01'),
           userId: USER_ID,
           entries: {
             create: [
@@ -254,6 +300,78 @@ describe('netWorthResolvers', () => {
         include: { entries: { orderBy: { createdAt: 'asc' } } },
       });
       expect(result).toEqual(mockSnapshotWithEntries);
+    });
+  });
+
+  describe('Mutation.updateNetWorthSnapshot', () => {
+    it('replaces entries and updates the title when the snapshot belongs to the user', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findFirst).mockResolvedValue(
+        mockSnapshot as never
+      );
+      vi.mocked(prisma.netWorthSnapshot.update).mockResolvedValue(
+        mockSnapshotWithEntries as never
+      );
+
+      const result = await netWorthResolvers.Mutation.updateNetWorthSnapshot(
+        undefined as unknown,
+        {
+          id: 'snapshot-1',
+          input: {
+            title: 'January 2024 (updated)',
+            snapshotDate: '2024-01-15',
+            entries: [
+              {
+                type: 'ASSET',
+                label: 'Savings Account',
+                amount: 12000,
+                category: 'Savings',
+              },
+            ],
+          },
+        },
+        CTX
+      );
+
+      expect(prisma.netWorthSnapshot.findFirst).toHaveBeenCalledWith({
+        where: { id: 'snapshot-1', userId: USER_ID },
+      });
+      expect(prisma.netWorthSnapshot.update).toHaveBeenCalledWith({
+        where: { id: 'snapshot-1' },
+        data: {
+          title: 'January 2024 (updated)',
+          snapshotDate: new Date('2024-01-15'),
+          entries: {
+            deleteMany: {},
+            create: [
+              {
+                type: 'ASSET',
+                label: 'Savings Account',
+                amount: 12000,
+                category: 'Savings',
+              },
+            ],
+          },
+        },
+        include: { entries: { orderBy: { createdAt: 'asc' } } },
+      });
+      expect(result).toEqual(mockSnapshotWithEntries);
+    });
+
+    it('throws NOT_FOUND when the snapshot does not belong to the user', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findFirst).mockResolvedValue(null);
+
+      await expect(
+        netWorthResolvers.Mutation.updateNetWorthSnapshot(
+          undefined as unknown,
+          {
+            id: 'other-snapshot',
+            input: { title: 'X', snapshotDate: '2024-01-01', entries: [] },
+          },
+          CTX
+        )
+      ).rejects.toThrow('Net worth snapshot not found');
+
+      expect(prisma.netWorthSnapshot.update).not.toHaveBeenCalled();
     });
   });
 

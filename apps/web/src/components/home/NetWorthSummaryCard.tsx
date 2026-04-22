@@ -4,16 +4,43 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
-import { ChevronDownIcon } from '../icons';
+import { NetWorthSparkline } from '../charts';
+import { ArrowDownIcon, ArrowUpIcon, ChevronDownIcon } from '../icons';
 import { Card, Skeleton } from '../ui';
+
+const STALE_DAYS = 45;
 
 interface NetWorthSummaryCardProps {
   loading: boolean;
+  previousSnapshot: NetWorthSnapshot | null;
+  recentSnapshots: Array<NetWorthSnapshot>;
   snapshot: NetWorthSnapshot | null;
+}
+
+function daysSince(dateString: string): number {
+  const value = /^\d+$/.test(dateString) ? Number(dateString) : dateString;
+  const parsed = new Date(value);
+  if (isNaN(parsed.getTime())) {
+    return 0;
+  }
+  const diffMs = Date.now() - parsed.getTime();
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+function formatStaleness(daysAgo: number): string {
+  if (daysAgo === 0) {
+    return 'Last updated today';
+  }
+  if (daysAgo === 1) {
+    return 'Last updated yesterday';
+  }
+  return `Last updated ${daysAgo} days ago`;
 }
 
 export function NetWorthSummaryCard({
   loading,
+  previousSnapshot,
+  recentSnapshots,
   snapshot,
 }: NetWorthSummaryCardProps) {
   const [isOpen, setIsOpen] = useLocalStorage('home.netWorth.isOpen', false);
@@ -21,8 +48,10 @@ export function NetWorthSummaryCard({
   if (loading) {
     return (
       <Card>
-        <Skeleton className="mb-3 h-5 w-1/3" />
-        <Skeleton className="h-7 w-2/5" />
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-7 w-30" />
+          <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
+        </div>
       </Card>
     );
   }
@@ -52,7 +81,20 @@ export function NetWorthSummaryCard({
 
   const isPositive = snapshot.netWorth >= 0;
   const sign = isPositive ? '' : '-';
-  const netWorthColor = isPositive ? 'text-green-600' : 'text-red-600';
+  const netWorthColor = isPositive
+    ? 'text-green-600 dark:text-green-400'
+    : 'text-red-600 dark:text-red-400';
+
+  const delta = previousSnapshot
+    ? snapshot.netWorth - previousSnapshot.netWorth
+    : null;
+  const deltaIsPositive = delta !== null && delta >= 0;
+  const deltaColor = deltaIsPositive
+    ? 'text-green-600 dark:text-green-400'
+    : 'text-red-600 dark:text-red-400';
+
+  const daysAgo = daysSince(snapshot.snapshotDate);
+  const isStale = daysAgo > STALE_DAYS;
 
   return (
     <Card>
@@ -66,11 +108,6 @@ export function NetWorthSummaryCard({
           Net Worth
         </h2>
 
-        <span className={`text-sm font-semibold ${netWorthColor}`}>
-          {sign}
-          {formatMoney(Math.abs(snapshot.netWorth))} €
-        </span>
-
         <ChevronDownIcon
           className={`ml-auto h-5 w-5 text-gray-500 transition-transform duration-300 dark:text-gray-400 ${isOpen ? 'rotate-180' : ''}`}
         />
@@ -80,8 +117,8 @@ export function NetWorthSummaryCard({
         className={`grid transition-all duration-300 ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
       >
         <div className="overflow-hidden">
-          <div className="mt-4">
-            <div className="mb-3 flex items-center justify-between">
+          <div className="mt-4 space-y-4">
+            <div className="flex items-baseline justify-between gap-2">
               <Link
                 to={`/net-worth/${snapshot.id}`}
                 className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
@@ -89,40 +126,54 @@ export function NetWorthSummaryCard({
                 {snapshot.title}
               </Link>
 
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {formatDate(snapshot.createdAt)}
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {formatDate(snapshot.snapshotDate)}
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Assets
-                </p>
-                <p className="font-semibold text-green-600">
-                  {formatMoney(snapshot.totalAssets)} €
-                </p>
-              </div>
+            <div>
+              <p className={`text-3xl font-bold ${netWorthColor}`}>
+                {sign}
+                {formatMoney(Math.abs(snapshot.netWorth))} €
+              </p>
 
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Liabilities
-                </p>
-                <p className="font-semibold text-red-600">
-                  {formatMoney(snapshot.totalLiabilities)} €
-                </p>
-              </div>
+              {delta !== null && previousSnapshot && (
+                <p
+                  className={`mt-1 flex items-center gap-1 text-sm font-medium ${deltaColor}`}
+                >
+                  {deltaIsPositive ? (
+                    <ArrowUpIcon className="h-4 w-4" />
+                  ) : (
+                    <ArrowDownIcon className="h-4 w-4" />
+                  )}
 
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Net Worth
+                  <span>
+                    {deltaIsPositive ? '+' : '-'}
+                    {formatMoney(Math.abs(delta))} € since{' '}
+                    {previousSnapshot.title}
+                  </span>
                 </p>
-                <p className={`font-bold ${netWorthColor}`}>
-                  {sign}
-                  {formatMoney(Math.abs(snapshot.netWorth))} €
-                </p>
-              </div>
+              )}
             </div>
+
+            {recentSnapshots.length >= 2 && (
+              <NetWorthSparkline
+                isPositive={isPositive}
+                snapshots={recentSnapshots}
+              />
+            )}
+
+            <p
+              className={`text-xs ${
+                isStale
+                  ? 'text-orange-600 dark:text-orange-400'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}
+            >
+              {isStale
+                ? `${formatStaleness(daysAgo)} — time for a new snapshot?`
+                : formatStaleness(daysAgo)}
+            </p>
           </div>
         </div>
       </div>

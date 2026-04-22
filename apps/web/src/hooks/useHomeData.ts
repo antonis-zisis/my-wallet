@@ -42,16 +42,21 @@ export function useHomeData() {
     .filter((transaction) => transaction.type === 'INCOME')
     .reduce((sum, transaction) => sum + transaction.amount, 0);
 
+  const snapshotItems = netWorthData?.netWorthSnapshots.items ?? [];
+  const recentSnapshots = snapshotItems.slice(0, 6).reverse();
+
   return {
     activeSubscriptions,
     chartReports: summaryData?.reports.items ?? [],
     currentIncome,
     currentLoading,
     currentReport: currentData?.report,
-    lastSnapshot: netWorthData?.netWorthSnapshots.items[0] ?? null,
+    lastSnapshot: snapshotItems[0] ?? null,
     netWorthLoading,
     previousLoading,
     previousReport: previousData?.report,
+    previousSnapshot: snapshotItems[1] ?? null,
+    recentSnapshots,
     reportsLoading,
     subscriptionsLoading,
     summaryLoading,

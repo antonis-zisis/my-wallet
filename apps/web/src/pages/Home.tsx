@@ -17,6 +17,8 @@ export function Home() {
     netWorthLoading,
     previousLoading,
     previousReport,
+    previousSnapshot,
+    recentSnapshots,
     reportsLoading,
     subscriptionsLoading,
     summaryLoading,
@@ -58,6 +60,8 @@ export function Home() {
       <section>
         <NetWorthSummaryCard
           loading={netWorthLoading}
+          previousSnapshot={previousSnapshot}
+          recentSnapshots={recentSnapshots}
           snapshot={lastSnapshot}
         />
       </section>

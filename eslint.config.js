@@ -25,7 +25,7 @@ export default defineConfig(
       'sort-destructure-keys/sort-destructure-keys': 'error',
 
       curly: ['error', 'all'],
-      'id-length': ['warn', { min: 2, exceptions: ['_'] }],
+      'id-length': ['warn', { min: 2, exceptions: ['_', 'r'] }],
     },
   }
 );

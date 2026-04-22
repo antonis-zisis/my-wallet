@@ -12,10 +12,12 @@ export const netWorthTypeDefs = `#graphql
   type NetWorthSnapshot {
     id: ID!
     title: String!
+    snapshotDate: String!
     totalAssets: Float!
     totalLiabilities: Float!
     netWorth: Float!
     entries: [NetWorthEntry!]!
+    previousSnapshot: NetWorthSnapshot
     createdAt: String!
     updatedAt: String!
   }
@@ -34,6 +36,13 @@ export const netWorthTypeDefs = `#graphql
 
   input CreateNetWorthSnapshotInput {
     title: String!
+    snapshotDate: String!
+    entries: [NetWorthEntryInput!]!
+  }
+
+  input UpdateNetWorthSnapshotInput {
+    title: String!
+    snapshotDate: String!
     entries: [NetWorthEntryInput!]!
   }
 
@@ -44,6 +53,7 @@ export const netWorthTypeDefs = `#graphql
 
   extend type Mutation {
     createNetWorthSnapshot(input: CreateNetWorthSnapshotInput!): NetWorthSnapshot!
+    updateNetWorthSnapshot(id: ID!, input: UpdateNetWorthSnapshotInput!): NetWorthSnapshot!
     deleteNetWorthSnapshot(id: ID!): Boolean!
   }
 `;

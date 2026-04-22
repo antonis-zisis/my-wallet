@@ -1,26 +1,126 @@
 import { MockLink } from '@apollo/client/testing';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { ThemeProvider } from '../contexts/ThemeContext';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOTS,
+  GET_NET_WORTH_TREND,
 } from '../graphql/netWorth';
-import { PAGE_SIZE } from '../hooks/useNetWorthData';
+import { PAGE_SIZE, TREND_PAGE_SIZE } from '../hooks/useNetWorthData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { NetWorth } from './NetWorth';
+
+beforeAll(() => {
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      constructor(private callback: ResizeObserverCallback) {}
+      observe(target: Element) {
+        this.callback(
+          [
+            {
+              contentRect: { width: 800, height: 260 },
+              target,
+            } as ResizeObserverEntry,
+          ],
+          this as unknown as ResizeObserver
+        );
+      }
+      unobserve() {}
+      disconnect() {}
+    }
+  );
+});
 
 const mockSnapshot = {
   id: '1',
   title: 'January 2026',
+  snapshotDate: '2026-01-01T00:00:00.000Z',
   totalAssets: 10000,
   totalLiabilities: 5000,
   netWorth: 5000,
+  entries: [],
   createdAt: '2026-01-01T00:00:00.000Z',
+};
+
+const mockTrendQuery: MockLink.MockedResponse = {
+  request: {
+    query: GET_NET_WORTH_TREND,
+    variables: { pageSize: TREND_PAGE_SIZE },
+  },
+  result: {
+    data: {
+      netWorthSnapshots: {
+        items: [
+          {
+            id: mockSnapshot.id,
+            title: mockSnapshot.title,
+            snapshotDate: mockSnapshot.snapshotDate,
+            totalAssets: mockSnapshot.totalAssets,
+            totalLiabilities: mockSnapshot.totalLiabilities,
+            netWorth: mockSnapshot.netWorth,
+            createdAt: mockSnapshot.createdAt,
+          },
+        ],
+        totalCount: 1,
+      },
+    },
+  },
+};
+
+const mockTrendQueryEmpty: MockLink.MockedResponse = {
+  request: {
+    query: GET_NET_WORTH_TREND,
+    variables: { pageSize: TREND_PAGE_SIZE },
+  },
+  result: {
+    data: {
+      netWorthSnapshots: {
+        items: [],
+        totalCount: 0,
+      },
+    },
+  },
+};
+
+const mockTrendQueryWithChart: MockLink.MockedResponse = {
+  request: {
+    query: GET_NET_WORTH_TREND,
+    variables: { pageSize: TREND_PAGE_SIZE },
+  },
+  result: {
+    data: {
+      netWorthSnapshots: {
+        items: [
+          {
+            id: 'trend-1',
+            title: 'January 2026',
+            snapshotDate: '2026-01-01T00:00:00.000Z',
+            totalAssets: 10000,
+            totalLiabilities: 5000,
+            netWorth: 5000,
+            createdAt: '2026-01-01T00:00:00.000Z',
+          },
+          {
+            id: 'trend-2',
+            title: 'February 2026',
+            snapshotDate: '2026-02-01T00:00:00.000Z',
+            totalAssets: 12000,
+            totalLiabilities: 4000,
+            netWorth: 8000,
+            createdAt: '2026-02-01T00:00:00.000Z',
+          },
+        ],
+        totalCount: 2,
+      },
+    },
+  },
 };
 
 const mockSnapshotsQuery: MockLink.MockedResponse = {
@@ -63,11 +163,16 @@ const mockSnapshotsQueryError: MockLink.MockedResponse = {
   },
 };
 
-const renderNetWorth = (mocks: Array<MockLink.MockedResponse>) => {
+const renderNetWorth = (
+  mocks: Array<MockLink.MockedResponse>,
+  trendMock: MockLink.MockedResponse = mockTrendQuery
+) => {
   return render(
-    <MockedProvider mocks={mocks}>
+    <MockedProvider mocks={[trendMock, ...mocks]}>
       <MemoryRouter>
-        <NetWorth />
+        <ThemeProvider>
+          <NetWorth />
+        </ThemeProvider>
       </MemoryRouter>
     </MockedProvider>
   );
@@ -91,7 +196,7 @@ describe('NetWorth', () => {
   });
 
   it('shows empty state when no snapshots exist', async () => {
-    renderNetWorth([mockSnapshotsQueryEmpty]);
+    renderNetWorth([mockSnapshotsQueryEmpty], mockTrendQueryEmpty);
     expect(await screen.findByText('No snapshots yet')).toBeInTheDocument();
   });
 
@@ -146,6 +251,7 @@ describe('NetWorth', () => {
           variables: {
             input: {
               title: 'Test Snapshot',
+              snapshotDate: '2026-04-15',
               entries: [
                 {
                   type: 'ASSET',
@@ -162,6 +268,7 @@ describe('NetWorth', () => {
             createNetWorthSnapshot: {
               id: '2',
               title: 'Test Snapshot',
+              snapshotDate: '2026-04-15T00:00:00.000Z',
               totalAssets: 1000,
               totalLiabilities: 0,
               netWorth: 1000,
@@ -185,7 +292,12 @@ describe('NetWorth', () => {
         },
       };
 
-      renderNetWorth([mockSnapshotsQuery, createMock, refetchMock]);
+      renderNetWorth([
+        mockSnapshotsQuery,
+        createMock,
+        refetchMock,
+        mockTrendQuery,
+      ]);
 
       await userEvent.click(
         screen.getByRole('button', { name: 'New Snapshot' })
@@ -195,6 +307,9 @@ describe('NetWorth', () => {
         screen.getByPlaceholderText('e.g. February 2026'),
         'Test Snapshot'
       );
+      fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+        target: { value: '2026-04-15' },
+      });
       await userEvent.type(screen.getByPlaceholderText('Label'), 'Savings');
       await userEvent.type(screen.getByPlaceholderText('Amount'), '1000');
 
@@ -208,6 +323,58 @@ describe('NetWorth', () => {
         ).not.toBeInTheDocument();
       });
       expect(screen.getByText('January 2026')).toBeInTheDocument();
+    });
+  });
+
+  describe('trend chart', () => {
+    it('shows the chart header when trend has 2+ snapshots', async () => {
+      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
+      expect(
+        await screen.findByText('Net Worth Over Time')
+      ).toBeInTheDocument();
+    });
+
+    it('collapses the chart when the toggle button is clicked', async () => {
+      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
+      await screen.findByText('Net Worth Over Time');
+
+      const toggleButton = screen.getByRole('button', {
+        name: 'Net Worth Over Time',
+      });
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+
+      await userEvent.click(toggleButton);
+
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('hides the view toggle when collapsed', async () => {
+      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
+      await screen.findByText('Net Worth Over Time');
+
+      expect(
+        screen.getByRole('button', { name: 'Assets & Liabilities' })
+      ).toBeInTheDocument();
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Net Worth Over Time' })
+      );
+
+      expect(
+        screen.queryByRole('button', { name: 'Assets & Liabilities' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('switches to breakdown view when Assets & Liabilities is clicked', async () => {
+      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
+      await screen.findByText('Net Worth Over Time');
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Assets & Liabilities' })
+      );
+
+      expect(await screen.findByText('Assets')).toBeInTheDocument();
+      expect(screen.getByText('Liabilities')).toBeInTheDocument();
     });
   });
 
@@ -256,7 +423,12 @@ describe('NetWorth', () => {
         },
       };
 
-      renderNetWorth([mockSnapshotsQuery, deleteMock, refetchMock]);
+      renderNetWorth([
+        mockSnapshotsQuery,
+        deleteMock,
+        refetchMock,
+        mockTrendQuery,
+      ]);
       await screen.findByText('January 2026');
 
       await userEvent.click(screen.getByRole('button', { name: 'Options' }));

@@ -372,7 +372,14 @@ describe('Subscriptions', () => {
           variables: { id: '1' },
         },
         result: {
-          data: { cancelSubscription: { id: '1', isActive: false } },
+          data: {
+            cancelSubscription: {
+              id: '1',
+              isActive: false,
+              cancelledAt: '2026-04-22T00:00:00.000Z',
+              endDate: '2026-05-01T00:00:00.000Z',
+            },
+          },
         },
       };
       const refetchActive: MockLink.MockedResponse = {
