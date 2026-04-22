@@ -1,13 +1,27 @@
 import { NetWorthBackLink } from '../components/netWorth/NetWorthBackLink';
 import { NetWorthEntriesSection } from '../components/netWorth/NetWorthEntriesSection';
 import { NetWorthSnapshotHeader } from '../components/netWorth/NetWorthSnapshotHeader';
+import {
+  EntryInput,
+  NetWorthSnapshotModal,
+} from '../components/netWorth/NetWorthSnapshotModal';
 import { NetWorthSnapshotSkeleton } from '../components/netWorth/NetWorthSnapshotSkeleton';
 import { PageLayout } from '../components/ui';
 import { useNetWorthSnapshotData } from '../hooks/useNetWorthSnapshotData';
 
 export function NetWorthSnapshotPage() {
-  const { assets, error, isPositive, liabilities, loading, snapshot } =
-    useNetWorthSnapshotData();
+  const {
+    assets,
+    error,
+    isEditOpen,
+    isPositive,
+    liabilities,
+    loading,
+    onCloseEdit,
+    onEditSubmit,
+    onOpenEdit,
+    snapshot,
+  } = useNetWorthSnapshotData();
 
   if (loading) {
     return <NetWorthSnapshotSkeleton />;
@@ -25,32 +39,52 @@ export function NetWorthSnapshotPage() {
     );
   }
 
+  const initialEntries: Array<EntryInput> = snapshot.entries.map((entry) => ({
+    type: entry.type,
+    category: entry.category,
+    label: entry.label,
+    amount: entry.amount,
+  }));
+
   return (
-    <PageLayout className="space-y-4">
-      <NetWorthBackLink />
+    <>
+      <PageLayout className="space-y-4">
+        <NetWorthBackLink />
 
-      <NetWorthSnapshotHeader
-        createdAt={snapshot.createdAt}
-        isPositive={isPositive}
-        netWorth={snapshot.netWorth}
-        title={snapshot.title}
-        totalAssets={snapshot.totalAssets}
-        totalLiabilities={snapshot.totalLiabilities}
-      />
+        <NetWorthSnapshotHeader
+          createdAt={snapshot.createdAt}
+          isPositive={isPositive}
+          netWorth={snapshot.netWorth}
+          title={snapshot.title}
+          totalAssets={snapshot.totalAssets}
+          totalLiabilities={snapshot.totalLiabilities}
+          onEdit={onOpenEdit}
+        />
 
-      <NetWorthEntriesSection
-        colorClass="text-green-600 dark:text-green-400"
-        entries={assets}
-        title="Assets"
-        total={snapshot.totalAssets}
-      />
+        <NetWorthEntriesSection
+          colorClass="text-green-600 dark:text-green-400"
+          entries={assets}
+          title="Assets"
+          total={snapshot.totalAssets}
+        />
 
-      <NetWorthEntriesSection
-        colorClass="text-red-600 dark:text-red-400"
-        entries={liabilities}
-        title="Liabilities"
-        total={snapshot.totalLiabilities}
+        <NetWorthEntriesSection
+          colorClass="text-red-600 dark:text-red-400"
+          entries={liabilities}
+          title="Liabilities"
+          total={snapshot.totalLiabilities}
+        />
+      </PageLayout>
+
+      <NetWorthSnapshotModal
+        initialEntries={initialEntries}
+        initialTitle={snapshot.title}
+        isOpen={isEditOpen}
+        modalTitle="Edit Net Worth Snapshot"
+        submitLabel="Update Snapshot"
+        onClose={onCloseEdit}
+        onSubmit={onEditSubmit}
       />
-    </PageLayout>
+    </>
   );
 }

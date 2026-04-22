@@ -1,11 +1,12 @@
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
-import { Card } from '../ui';
+import { Button, Card } from '../ui';
 
 interface NetWorthSnapshotHeaderProps {
   createdAt: string;
   isPositive: boolean;
   netWorth: number;
+  onEdit?: () => void;
   title: string;
   totalAssets: number;
   totalLiabilities: number;
@@ -15,13 +16,14 @@ export function NetWorthSnapshotHeader({
   createdAt,
   isPositive,
   netWorth,
+  onEdit,
   title,
   totalAssets,
   totalLiabilities,
 }: NetWorthSnapshotHeaderProps) {
   return (
     <Card className="p-6">
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
             {title}
@@ -31,6 +33,12 @@ export function NetWorthSnapshotHeader({
             {formatDate(createdAt)}
           </p>
         </div>
+
+        {onEdit && (
+          <Button size="sm" variant="secondary" onClick={onEdit}>
+            Edit
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4 text-center">

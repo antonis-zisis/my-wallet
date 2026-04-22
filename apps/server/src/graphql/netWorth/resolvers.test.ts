@@ -48,6 +48,7 @@ vi.mock('../../lib/prisma', () => ({
       findFirst: vi.fn(),
       count: vi.fn(),
       create: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
     },
     netWorthEntry: {
@@ -254,6 +255,76 @@ describe('netWorthResolvers', () => {
         include: { entries: { orderBy: { createdAt: 'asc' } } },
       });
       expect(result).toEqual(mockSnapshotWithEntries);
+    });
+  });
+
+  describe('Mutation.updateNetWorthSnapshot', () => {
+    it('replaces entries and updates the title when the snapshot belongs to the user', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findFirst).mockResolvedValue(
+        mockSnapshot as never
+      );
+      vi.mocked(prisma.netWorthSnapshot.update).mockResolvedValue(
+        mockSnapshotWithEntries as never
+      );
+
+      const result = await netWorthResolvers.Mutation.updateNetWorthSnapshot(
+        undefined as unknown,
+        {
+          id: 'snapshot-1',
+          input: {
+            title: 'January 2024 (updated)',
+            entries: [
+              {
+                type: 'ASSET',
+                label: 'Savings Account',
+                amount: 12000,
+                category: 'Savings',
+              },
+            ],
+          },
+        },
+        CTX
+      );
+
+      expect(prisma.netWorthSnapshot.findFirst).toHaveBeenCalledWith({
+        where: { id: 'snapshot-1', userId: USER_ID },
+      });
+      expect(prisma.netWorthSnapshot.update).toHaveBeenCalledWith({
+        where: { id: 'snapshot-1' },
+        data: {
+          title: 'January 2024 (updated)',
+          entries: {
+            deleteMany: {},
+            create: [
+              {
+                type: 'ASSET',
+                label: 'Savings Account',
+                amount: 12000,
+                category: 'Savings',
+              },
+            ],
+          },
+        },
+        include: { entries: { orderBy: { createdAt: 'asc' } } },
+      });
+      expect(result).toEqual(mockSnapshotWithEntries);
+    });
+
+    it('throws NOT_FOUND when the snapshot does not belong to the user', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findFirst).mockResolvedValue(null);
+
+      await expect(
+        netWorthResolvers.Mutation.updateNetWorthSnapshot(
+          undefined as unknown,
+          {
+            id: 'other-snapshot',
+            input: { title: 'X', entries: [] },
+          },
+          CTX
+        )
+      ).rejects.toThrow('Net worth snapshot not found');
+
+      expect(prisma.netWorthSnapshot.update).not.toHaveBeenCalled();
     });
   });
 

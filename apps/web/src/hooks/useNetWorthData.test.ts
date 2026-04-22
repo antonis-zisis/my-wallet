@@ -7,26 +7,52 @@ import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOTS,
+  UPDATE_NET_WORTH_SNAPSHOT,
 } from '../graphql/netWorth';
 import { createWrapper } from '../test/hook-test-utils';
+import { NetWorthSnapshot } from '../types/netWorth';
 import { PAGE_SIZE, useNetWorthData } from './useNetWorthData';
 
-const mockSnapshot = {
+const mockSnapshot: NetWorthSnapshot = {
   id: '1',
   title: 'January 2026',
   totalAssets: 10000,
   totalLiabilities: 5000,
   netWorth: 5000,
+  entries: [
+    {
+      id: 'e1',
+      type: 'ASSET',
+      label: 'Savings',
+      amount: 10000,
+      category: 'Savings',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    },
+    {
+      id: 'e2',
+      type: 'LIABILITY',
+      label: 'Credit Card',
+      amount: 5000,
+      category: 'Credit Card',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    },
+  ],
   createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
 };
 
-const mockSecondSnapshot = {
+const mockSecondSnapshot: NetWorthSnapshot = {
+  ...mockSnapshot,
   id: '2',
   title: 'February 2026',
   totalAssets: 12000,
   totalLiabilities: 4000,
   netWorth: 8000,
+  entries: [],
   createdAt: '2026-02-01T00:00:00.000Z',
+  updatedAt: '2026-02-01T00:00:00.000Z',
 };
 
 const mockSnapshotsQuery: MockLink.MockedResponse = {
@@ -78,12 +104,12 @@ describe('useNetWorthData', () => {
       expect(result.current.snapshots).toEqual([]);
     });
 
-    it('modal and delete selection are closed/null initially', () => {
+    it('modal is closed and delete selection is null initially', () => {
       const { result } = renderHook(() => useNetWorthData(), {
         wrapper: createWrapper([mockSnapshotsQuery]),
       });
 
-      expect(result.current.isCreateOpen).toBe(false);
+      expect(result.current.modalState).toEqual({ kind: 'closed' });
       expect(result.current.snapshotToDelete).toBeNull();
     });
   });
@@ -177,8 +203,8 @@ describe('useNetWorthData', () => {
     });
   });
 
-  describe('create modal', () => {
-    it('opens create modal via onOpenCreate', () => {
+  describe('modal state transitions', () => {
+    it('opens the create modal via onOpenCreate', () => {
       const { result } = renderHook(() => useNetWorthData(), {
         wrapper: createWrapper([mockSnapshotsQuery]),
       });
@@ -187,10 +213,44 @@ describe('useNetWorthData', () => {
         result.current.onOpenCreate();
       });
 
-      expect(result.current.isCreateOpen).toBe(true);
+      expect(result.current.modalState).toEqual({ kind: 'create' });
     });
 
-    it('closes create modal via onCloseCreate', () => {
+    it('opens the duplicate modal with the source snapshot', async () => {
+      const { result } = renderHook(() => useNetWorthData(), {
+        wrapper: createWrapper([mockSnapshotsQuery]),
+      });
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      act(() => {
+        result.current.onOpenDuplicate(mockSnapshot);
+      });
+
+      expect(result.current.modalState).toEqual({
+        kind: 'duplicate',
+        source: mockSnapshot,
+      });
+    });
+
+    it('opens the edit modal with the target snapshot', async () => {
+      const { result } = renderHook(() => useNetWorthData(), {
+        wrapper: createWrapper([mockSnapshotsQuery]),
+      });
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      act(() => {
+        result.current.onOpenEdit(mockSnapshot);
+      });
+
+      expect(result.current.modalState).toEqual({
+        kind: 'edit',
+        snapshot: mockSnapshot,
+      });
+    });
+
+    it('closes the modal via onCloseModal', () => {
       const { result } = renderHook(() => useNetWorthData(), {
         wrapper: createWrapper([mockSnapshotsQuery]),
       });
@@ -198,20 +258,21 @@ describe('useNetWorthData', () => {
       act(() => {
         result.current.onOpenCreate();
       });
-
       act(() => {
-        result.current.onCloseCreate();
+        result.current.onCloseModal();
       });
 
-      expect(result.current.isCreateOpen).toBe(false);
+      expect(result.current.modalState).toEqual({ kind: 'closed' });
     });
+  });
 
-    it('creates a snapshot and closes modal', async () => {
+  describe('onModalSubmit for create', () => {
+    it('creates a snapshot and closes the modal', async () => {
       const createInput = {
         title: 'Test Snapshot',
         entries: [
           {
-            type: 'ASSET',
+            type: 'ASSET' as const,
             label: 'Savings',
             amount: 5000,
             category: 'Savings',
@@ -264,11 +325,86 @@ describe('useNetWorthData', () => {
       });
 
       await act(async () => {
-        await result.current.onCreate(createInput);
+        await result.current.onModalSubmit(createInput);
       });
 
-      expect(result.current.isCreateOpen).toBe(false);
+      expect(result.current.modalState).toEqual({ kind: 'closed' });
       expect(result.current.page).toBe(1);
+    });
+  });
+
+  describe('onModalSubmit for edit', () => {
+    it('updates a snapshot and closes the modal', async () => {
+      const updateInput = {
+        title: 'January 2026 (updated)',
+        entries: [
+          {
+            type: 'ASSET' as const,
+            label: 'Savings',
+            amount: 15000,
+            category: 'Savings',
+          },
+        ],
+      };
+
+      const updateMock: MockLink.MockedResponse = {
+        request: {
+          query: UPDATE_NET_WORTH_SNAPSHOT,
+          variables: { id: '1', input: updateInput },
+        },
+        result: {
+          data: {
+            updateNetWorthSnapshot: {
+              ...mockSnapshot,
+              title: 'January 2026 (updated)',
+              totalAssets: 15000,
+              totalLiabilities: 0,
+              netWorth: 15000,
+              entries: [
+                {
+                  id: 'e1',
+                  type: 'ASSET',
+                  label: 'Savings',
+                  amount: 15000,
+                  category: 'Savings',
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      const listRefetchMock: MockLink.MockedResponse = {
+        request: {
+          query: GET_NET_WORTH_SNAPSHOTS,
+          variables: { page: 1, pageSize: PAGE_SIZE },
+        },
+        result: {
+          data: {
+            netWorthSnapshots: { items: [mockSnapshot], totalCount: 1 },
+          },
+        },
+      };
+
+      const { result } = renderHook(() => useNetWorthData(), {
+        wrapper: createWrapper([
+          mockSnapshotsQuery,
+          updateMock,
+          listRefetchMock,
+        ]),
+      });
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      act(() => {
+        result.current.onOpenEdit(mockSnapshot);
+      });
+
+      await act(async () => {
+        await result.current.onModalSubmit(updateInput);
+      });
+
+      expect(result.current.modalState).toEqual({ kind: 'closed' });
     });
   });
 
@@ -279,7 +415,7 @@ describe('useNetWorthData', () => {
       });
 
       act(() => {
-        result.current.onSelectForDelete(mockSnapshot as never);
+        result.current.onSelectForDelete(mockSnapshot);
       });
 
       expect(result.current.snapshotToDelete?.id).toBe('1');
@@ -291,9 +427,8 @@ describe('useNetWorthData', () => {
       });
 
       act(() => {
-        result.current.onSelectForDelete(mockSnapshot as never);
+        result.current.onSelectForDelete(mockSnapshot);
       });
-
       act(() => {
         result.current.onSelectForDelete(null);
       });
@@ -341,7 +476,7 @@ describe('useNetWorthData', () => {
       await waitFor(() => expect(result.current.loading).toBe(false));
 
       act(() => {
-        result.current.onSelectForDelete(mockSnapshot as never);
+        result.current.onSelectForDelete(mockSnapshot);
       });
 
       await act(async () => {

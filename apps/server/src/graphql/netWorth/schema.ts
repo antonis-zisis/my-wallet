@@ -37,6 +37,11 @@ export const netWorthTypeDefs = `#graphql
     entries: [NetWorthEntryInput!]!
   }
 
+  input UpdateNetWorthSnapshotInput {
+    title: String!
+    entries: [NetWorthEntryInput!]!
+  }
+
   extend type Query {
     netWorthSnapshots(page: Int, pageSize: Int): NetWorthSnapshotsResult!
     netWorthSnapshot(id: ID!): NetWorthSnapshot
@@ -44,6 +49,7 @@ export const netWorthTypeDefs = `#graphql
 
   extend type Mutation {
     createNetWorthSnapshot(input: CreateNetWorthSnapshotInput!): NetWorthSnapshot!
+    updateNetWorthSnapshot(id: ID!, input: UpdateNetWorthSnapshotInput!): NetWorthSnapshot!
     deleteNetWorthSnapshot(id: ID!): Boolean!
   }
 `;

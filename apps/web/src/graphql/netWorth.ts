@@ -9,6 +9,13 @@ export const GET_NET_WORTH_SNAPSHOTS = gql`
         totalAssets
         totalLiabilities
         netWorth
+        entries {
+          id
+          type
+          label
+          amount
+          category
+        }
         createdAt
       }
       totalCount
@@ -46,6 +53,30 @@ export const CREATE_NET_WORTH_SNAPSHOT = gql`
       totalLiabilities
       netWorth
       createdAt
+    }
+  }
+`;
+
+export const UPDATE_NET_WORTH_SNAPSHOT = gql`
+  mutation UpdateNetWorthSnapshot(
+    $id: ID!
+    $input: UpdateNetWorthSnapshotInput!
+  ) {
+    updateNetWorthSnapshot(id: $id, input: $input) {
+      id
+      title
+      totalAssets
+      totalLiabilities
+      netWorth
+      entries {
+        id
+        type
+        label
+        amount
+        category
+      }
+      createdAt
+      updatedAt
     }
   }
 `;

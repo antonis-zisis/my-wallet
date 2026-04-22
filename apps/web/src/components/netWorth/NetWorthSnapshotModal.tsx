@@ -16,18 +16,26 @@ interface EntryDraft {
   amount: string;
 }
 
-interface CreateNetWorthSnapshotModalProps {
+export interface EntryInput {
+  type: NetWorthEntryType;
+  category: string;
+  label: string;
+  amount: number;
+}
+
+export interface SnapshotFormValues {
+  title: string;
+  entries: Array<EntryInput>;
+}
+
+interface NetWorthSnapshotModalProps {
+  initialEntries?: Array<EntryInput>;
+  initialTitle?: string;
   isOpen: boolean;
+  modalTitle: string;
   onClose: () => void;
-  onSubmit: (input: {
-    title: string;
-    entries: Array<{
-      type: string;
-      label: string;
-      amount: number;
-      category: string;
-    }>;
-  }) => void;
+  onSubmit: (input: SnapshotFormValues) => void;
+  submitLabel: string;
 }
 
 let nextKey = 0;
@@ -43,17 +51,48 @@ function makeEntry(type: NetWorthEntryType = 'ASSET'): EntryDraft {
   };
 }
 
-export function CreateNetWorthSnapshotModal({
+function toDraft(entry: EntryInput): EntryDraft {
+  return {
+    key: nextKey++,
+    type: entry.type,
+    category: entry.category,
+    label: entry.label,
+    amount: String(entry.amount),
+  };
+}
+
+function buildInitialEntries(
+  initialEntries: Array<EntryInput> | undefined
+): Array<EntryDraft> {
+  if (initialEntries && initialEntries.length > 0) {
+    return initialEntries.map(toDraft);
+  }
+  return [makeEntry('ASSET')];
+}
+
+export function NetWorthSnapshotModal({
+  initialEntries,
+  initialTitle = '',
   isOpen,
+  modalTitle,
   onClose,
   onSubmit,
-}: CreateNetWorthSnapshotModalProps) {
-  const [title, setTitle] = useState('');
-  const [entries, setEntries] = useState<Array<EntryDraft>>([
-    makeEntry('ASSET'),
-  ]);
+  submitLabel,
+}: NetWorthSnapshotModalProps) {
+  const [title, setTitle] = useState(initialTitle);
+  const [entries, setEntries] = useState<Array<EntryDraft>>(() =>
+    buildInitialEntries(initialEntries)
+  );
   const entriesContainerRef = useRef<HTMLDivElement>(null);
   const prevEntriesLengthRef = useRef(entries.length);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    setTitle(initialTitle);
+    setEntries(buildInitialEntries(initialEntries));
+  }, [isOpen, initialTitle, initialEntries]);
 
   useEffect(() => {
     if (
@@ -67,8 +106,6 @@ export function CreateNetWorthSnapshotModal({
   }, [entries.length]);
 
   const handleClose = () => {
-    setTitle('');
-    setEntries([makeEntry('ASSET')]);
     onClose();
   };
 
@@ -101,6 +138,7 @@ export function CreateNetWorthSnapshotModal({
             category: categories[0],
           };
         }
+
         return { ...entry, [field]: value };
       })
     );
@@ -137,24 +175,22 @@ export function CreateNetWorthSnapshotModal({
         category: entry.category,
       })),
     });
-
-    setTitle('');
-    setEntries([makeEntry('ASSET')]);
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="New Net Worth Snapshot"
+      title={modalTitle}
       size="lg"
       footer={
         <>
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
+
           <Button onClick={handleSubmit} disabled={!isValid}>
-            Save Snapshot
+            {submitLabel}
           </Button>
         </>
       }

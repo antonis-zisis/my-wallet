@@ -1,19 +1,65 @@
-import { CreateNetWorthSnapshotModal } from '../components/netWorth/CreateNetWorthSnapshotModal';
 import { DeleteNetWorthSnapshotModal } from '../components/netWorth/DeleteNetWorthSnapshotModal';
 import { NetWorthList } from '../components/netWorth/NetWorthList';
+import {
+  EntryInput,
+  NetWorthSnapshotModal,
+} from '../components/netWorth/NetWorthSnapshotModal';
 import { Button, PageLayout, Pagination } from '../components/ui';
 import { PAGE_SIZE, useNetWorthData } from '../hooks/useNetWorthData';
+import { NetWorthEntry, NetWorthSnapshot } from '../types/netWorth';
+
+function toEntryInputs(snapshot: NetWorthSnapshot): Array<EntryInput> {
+  return snapshot.entries.map((entry: NetWorthEntry) => ({
+    type: entry.type,
+    category: entry.category,
+    label: entry.label,
+    amount: entry.amount,
+  }));
+}
+
+function getModalConfig(
+  modalState: ReturnType<typeof useNetWorthData>['modalState']
+): {
+  initialEntries?: Array<EntryInput>;
+  initialTitle?: string;
+  modalTitle: string;
+  submitLabel: string;
+} {
+  if (modalState.kind === 'edit') {
+    return {
+      initialEntries: toEntryInputs(modalState.snapshot),
+      initialTitle: modalState.snapshot.title,
+      modalTitle: 'Edit Net Worth Snapshot',
+      submitLabel: 'Update Snapshot',
+    };
+  }
+
+  if (modalState.kind === 'duplicate') {
+    return {
+      initialEntries: toEntryInputs(modalState.source),
+      modalTitle: 'Duplicate Net Worth Snapshot',
+      submitLabel: 'Save Snapshot',
+    };
+  }
+
+  return {
+    modalTitle: 'New Net Worth Snapshot',
+    submitLabel: 'Save Snapshot',
+  };
+}
 
 export function NetWorth() {
   const {
     error,
-    isCreateOpen,
     isDeleting,
     loading,
-    onCloseCreate,
-    onCreate,
+    modalState,
+    onCloseModal,
     onDeleteConfirm,
+    onModalSubmit,
     onOpenCreate,
+    onOpenDuplicate,
+    onOpenEdit,
     onPageChange,
     onSelectForDelete,
     page,
@@ -22,6 +68,8 @@ export function NetWorth() {
     totalCount,
     totalPages,
   } = useNetWorthData();
+
+  const modalConfig = getModalConfig(modalState);
 
   return (
     <>
@@ -35,6 +83,8 @@ export function NetWorth() {
           loading={loading}
           snapshots={snapshots}
           onDelete={onSelectForDelete}
+          onDuplicate={onOpenDuplicate}
+          onEdit={onOpenEdit}
         />
 
         {!loading && !error && totalCount > 0 && (
@@ -49,10 +99,14 @@ export function NetWorth() {
         )}
       </PageLayout>
 
-      <CreateNetWorthSnapshotModal
-        isOpen={isCreateOpen}
-        onClose={onCloseCreate}
-        onSubmit={onCreate}
+      <NetWorthSnapshotModal
+        initialEntries={modalConfig.initialEntries}
+        initialTitle={modalConfig.initialTitle}
+        isOpen={modalState.kind !== 'closed'}
+        modalTitle={modalConfig.modalTitle}
+        submitLabel={modalConfig.submitLabel}
+        onClose={onCloseModal}
+        onSubmit={onModalSubmit}
       />
 
       <DeleteNetWorthSnapshotModal

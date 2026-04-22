@@ -15,6 +15,11 @@ export interface CreateNetWorthSnapshotInput {
   entries: Array<NetWorthEntryInput>;
 }
 
+export interface UpdateNetWorthSnapshotInput {
+  title: string;
+  entries: Array<NetWorthEntryInput>;
+}
+
 type SnapshotParent = {
   id: string;
   entries?: Array<NetWorthEntry>;
@@ -114,6 +119,38 @@ export const netWorthResolvers = {
           title: input.title,
           userId,
           entries: {
+            create: input.entries.map((entry) => ({
+              type: entry.type,
+              label: entry.label,
+              amount: entry.amount,
+              category: entry.category,
+            })),
+          },
+        },
+        include: { entries: { orderBy: { createdAt: 'asc' } } },
+      });
+    },
+    updateNetWorthSnapshot: async (
+      _parent: unknown,
+      { id, input }: { id: string; input: UpdateNetWorthSnapshotInput },
+      { userId }: { userId: string }
+    ) => {
+      const existing = await prisma.netWorthSnapshot.findFirst({
+        where: { id, userId },
+      });
+
+      if (!existing) {
+        throw new GraphQLError('Net worth snapshot not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return prisma.netWorthSnapshot.update({
+        where: { id },
+        data: {
+          title: input.title,
+          entries: {
+            deleteMany: {},
             create: input.entries.map((entry) => ({
               type: entry.type,
               label: entry.label,
