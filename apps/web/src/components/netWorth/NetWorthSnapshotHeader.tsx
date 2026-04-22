@@ -1,6 +1,6 @@
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
-import { Button, Card } from '../ui';
+import { Card, Dropdown } from '../ui';
 
 interface NetWorthSnapshotHeaderProps {
   snapshotDate: string;
@@ -9,7 +9,9 @@ interface NetWorthSnapshotHeaderProps {
   deltaNetWorth?: number | null;
   isPositive: boolean;
   netWorth: number;
-  onEdit?: () => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onEdit: () => void;
   title: string;
   totalAssets: number;
   totalLiabilities: number;
@@ -36,6 +38,8 @@ export function NetWorthSnapshotHeader({
   deltaNetWorth,
   isPositive,
   netWorth,
+  onDelete,
+  onDuplicate,
   onEdit,
   snapshotDate,
   title,
@@ -55,11 +59,13 @@ export function NetWorthSnapshotHeader({
           </p>
         </div>
 
-        {onEdit && (
-          <Button size="sm" variant="secondary" onClick={onEdit}>
-            Edit
-          </Button>
-        )}
+        <Dropdown
+          items={[
+            { label: 'Edit', onClick: onEdit },
+            { label: 'Duplicate', onClick: onDuplicate },
+            { label: 'Delete', onClick: onDelete, variant: 'danger' },
+          ]}
+        />
       </div>
 
       <div className="grid grid-cols-3 gap-4 text-center">

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { NetWorthSnapshotHeader } from './NetWorthSnapshotHeader';
 
@@ -7,6 +7,9 @@ const defaultProps = {
   snapshotDate: '2026-01-15T00:00:00Z',
   isPositive: true,
   netWorth: 12000,
+  onDelete: vi.fn(),
+  onDuplicate: vi.fn(),
+  onEdit: vi.fn(),
   title: 'January 2026',
   totalAssets: 15000,
   totalLiabilities: 3000,

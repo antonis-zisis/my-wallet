@@ -3,15 +3,12 @@ import { Link } from 'react-router-dom';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
-import { TrendingChartIcon } from '../icons';
-import { Card, Dropdown, Skeleton } from '../ui';
+import { ChevronRightIcon, TrendingChartIcon } from '../icons';
+import { Card, Skeleton } from '../ui';
 
 interface NetWorthListProps {
   error: boolean;
   loading: boolean;
-  onDelete: (snapshot: NetWorthSnapshot) => void;
-  onDuplicate: (snapshot: NetWorthSnapshot) => void;
-  onEdit: (snapshot: NetWorthSnapshot) => void;
   snapshots: Array<NetWorthSnapshot>;
 }
 
@@ -22,7 +19,6 @@ function SkeletonRow() {
       <div className="flex items-center gap-6">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-3 w-20" />
-        <Skeleton className="h-6 w-6 rounded-full" />
       </div>
     </li>
   );
@@ -53,14 +49,7 @@ function EmptyState({ onAdd }: { onAdd?: () => void }) {
   );
 }
 
-export function NetWorthList({
-  error,
-  loading,
-  onDelete,
-  onDuplicate,
-  onEdit,
-  snapshots,
-}: NetWorthListProps) {
+export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
   if (loading) {
     return (
       <Card>
@@ -93,9 +82,9 @@ export function NetWorthList({
           const isPositive = snapshot.netWorth >= 0;
 
           return (
-            <li key={snapshot.id} className="flex items-center">
+            <li key={snapshot.id}>
               <Link
-                className="flex min-w-0 flex-1 items-center justify-between gap-4 px-3 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                className="flex items-center justify-between gap-4 px-3 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
                 to={`/net-worth/${snapshot.id}`}
               >
                 <span className="font-medium text-gray-800 dark:text-gray-100">
@@ -117,26 +106,10 @@ export function NetWorthList({
                   <span className="text-xs text-gray-400 dark:text-gray-500">
                     {formatDate(snapshot.snapshotDate)}
                   </span>
+
+                  <ChevronRightIcon className="size-4 text-gray-400 dark:text-gray-500" />
                 </div>
               </Link>
-
-              <Dropdown
-                items={[
-                  {
-                    label: 'Edit',
-                    onClick: () => onEdit(snapshot),
-                  },
-                  {
-                    label: 'Duplicate',
-                    onClick: () => onDuplicate(snapshot),
-                  },
-                  {
-                    label: 'Delete',
-                    onClick: () => onDelete(snapshot),
-                    variant: 'danger',
-                  },
-                ]}
-              />
             </li>
           );
         })}

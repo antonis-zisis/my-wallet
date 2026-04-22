@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { SnapshotFormValues } from '../components/netWorth/NetWorthSnapshotModal';
 import {
+  CREATE_NET_WORTH_SNAPSHOT,
+  DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOT,
   UPDATE_NET_WORTH_SNAPSHOT,
 } from '../graphql/netWorth';
@@ -38,11 +40,20 @@ function buildEntryDeltas(
 
 export function useNetWorthSnapshotData() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const { data, error, loading } = useQuery<SnapshotData>(
     GET_NET_WORTH_SNAPSHOT,
     { variables: { id } }
+  );
+
+  const [createSnapshot] = useMutation(CREATE_NET_WORTH_SNAPSHOT);
+
+  const [deleteSnapshot, { loading: isDeleting }] = useMutation(
+    DELETE_NET_WORTH_SNAPSHOT
   );
 
   const [updateSnapshot, { loading: isUpdating }] = useMutation(
@@ -86,6 +97,19 @@ export function useNetWorthSnapshotData() {
     ? (snapshot?.netWorth ?? 0) - previousSnapshot.netWorth
     : null;
 
+  const handleDeleteConfirm = async () => {
+    if (!snapshot) {
+      return;
+    }
+    await deleteSnapshot({ variables: { id: snapshot.id } });
+    navigate('/net-worth');
+  };
+
+  const handleDuplicateSubmit = async (input: SnapshotFormValues) => {
+    await createSnapshot({ variables: { input } });
+    navigate('/net-worth');
+  };
+
   const handleEditSubmit = async (input: SnapshotFormValues) => {
     if (!snapshot) {
       return;
@@ -108,14 +132,23 @@ export function useNetWorthSnapshotData() {
     deltaLiabilities,
     deltaNetWorth,
     error: !!error,
+    isDeleteOpen,
+    isDeleting,
+    isDuplicateOpen,
     isEditOpen,
     isPositive,
     isUpdating,
     liabilities,
     liabilityDeltas,
     loading,
+    onCloseDelete: () => setIsDeleteOpen(false),
+    onCloseDuplicate: () => setIsDuplicateOpen(false),
     onCloseEdit: () => setIsEditOpen(false),
+    onDeleteConfirm: handleDeleteConfirm,
+    onDuplicateSubmit: handleDuplicateSubmit,
     onEditSubmit: handleEditSubmit,
+    onOpenDelete: () => setIsDeleteOpen(true),
+    onOpenDuplicate: () => setIsDuplicateOpen(true),
     onOpenEdit: () => setIsEditOpen(true),
     snapshot,
   };
