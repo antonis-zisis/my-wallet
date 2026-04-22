@@ -3,8 +3,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { ThemeProvider } from '../contexts/ThemeContext';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
@@ -14,6 +15,28 @@ import {
 import { PAGE_SIZE, TREND_PAGE_SIZE } from '../hooks/useNetWorthData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { NetWorth } from './NetWorth';
+
+beforeAll(() => {
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      constructor(private callback: ResizeObserverCallback) {}
+      observe(target: Element) {
+        this.callback(
+          [
+            {
+              contentRect: { width: 800, height: 260 },
+              target,
+            } as ResizeObserverEntry,
+          ],
+          this as unknown as ResizeObserver
+        );
+      }
+      unobserve() {}
+      disconnect() {}
+    }
+  );
+});
 
 const mockSnapshot = {
   id: '1',
@@ -49,6 +72,38 @@ const mockTrendQueryEmpty: MockLink.MockedResponse = {
       netWorthSnapshots: {
         items: [],
         totalCount: 0,
+      },
+    },
+  },
+};
+
+const mockTrendQueryWithChart: MockLink.MockedResponse = {
+  request: {
+    query: GET_NET_WORTH_TREND,
+    variables: { pageSize: TREND_PAGE_SIZE },
+  },
+  result: {
+    data: {
+      netWorthSnapshots: {
+        items: [
+          {
+            id: 'trend-1',
+            title: 'January 2026',
+            totalAssets: 10000,
+            totalLiabilities: 5000,
+            netWorth: 5000,
+            createdAt: '2026-01-01T00:00:00.000Z',
+          },
+          {
+            id: 'trend-2',
+            title: 'February 2026',
+            totalAssets: 12000,
+            totalLiabilities: 4000,
+            netWorth: 8000,
+            createdAt: '2026-02-01T00:00:00.000Z',
+          },
+        ],
+        totalCount: 2,
       },
     },
   },
@@ -101,7 +156,9 @@ const renderNetWorth = (
   return render(
     <MockedProvider mocks={[trendMock, ...mocks]}>
       <MemoryRouter>
-        <NetWorth />
+        <ThemeProvider>
+          <NetWorth />
+        </ThemeProvider>
       </MemoryRouter>
     </MockedProvider>
   );
@@ -242,6 +299,58 @@ describe('NetWorth', () => {
         ).not.toBeInTheDocument();
       });
       expect(screen.getByText('January 2026')).toBeInTheDocument();
+    });
+  });
+
+  describe('trend chart', () => {
+    it('shows the chart header when trend has 2+ snapshots', async () => {
+      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
+      expect(
+        await screen.findByText('Net Worth Over Time')
+      ).toBeInTheDocument();
+    });
+
+    it('collapses the chart when the toggle button is clicked', async () => {
+      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
+      await screen.findByText('Net Worth Over Time');
+
+      const toggleButton = screen.getByRole('button', {
+        name: 'Net Worth Over Time',
+      });
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+
+      await userEvent.click(toggleButton);
+
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('hides the view toggle when collapsed', async () => {
+      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
+      await screen.findByText('Net Worth Over Time');
+
+      expect(
+        screen.getByRole('button', { name: 'Assets & Liabilities' })
+      ).toBeInTheDocument();
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Net Worth Over Time' })
+      );
+
+      expect(
+        screen.queryByRole('button', { name: 'Assets & Liabilities' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('switches to breakdown view when Assets & Liabilities is clicked', async () => {
+      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
+      await screen.findByText('Net Worth Over Time');
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Assets & Liabilities' })
+      );
+
+      expect(await screen.findByText('Assets')).toBeInTheDocument();
+      expect(screen.getByText('Liabilities')).toBeInTheDocument();
     });
   });
 
