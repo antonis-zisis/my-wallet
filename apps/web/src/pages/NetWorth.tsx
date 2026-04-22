@@ -1,10 +1,17 @@
+import { NetWorthTrendChart } from '../components/charts';
 import { DeleteNetWorthSnapshotModal } from '../components/netWorth/DeleteNetWorthSnapshotModal';
 import { NetWorthList } from '../components/netWorth/NetWorthList';
 import {
   EntryInput,
   NetWorthSnapshotModal,
 } from '../components/netWorth/NetWorthSnapshotModal';
-import { Button, PageLayout, Pagination } from '../components/ui';
+import {
+  Button,
+  Card,
+  PageLayout,
+  Pagination,
+  Skeleton,
+} from '../components/ui';
 import { PAGE_SIZE, useNetWorthData } from '../hooks/useNetWorthData';
 import { NetWorthEntry, NetWorthSnapshot } from '../types/netWorth';
 
@@ -67,6 +74,8 @@ export function NetWorth() {
     snapshots,
     totalCount,
     totalPages,
+    trendLoading,
+    trendSnapshots,
   } = useNetWorthData();
 
   const modalConfig = getModalConfig(modalState);
@@ -77,6 +86,20 @@ export function NetWorth() {
         <div className="mb-4 flex items-center justify-end">
           <Button onClick={onOpenCreate}>New Snapshot</Button>
         </div>
+
+        {trendLoading ? (
+          <Card className="mb-4">
+            <Skeleton className="h-65 w-full" />
+          </Card>
+        ) : trendSnapshots.length >= 2 ? (
+          <Card className="mb-4">
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Net Worth Over Time
+            </h2>
+
+            <NetWorthTrendChart snapshots={trendSnapshots} />
+          </Card>
+        ) : null}
 
         <NetWorthList
           error={error}

@@ -23,6 +23,22 @@ export const GET_NET_WORTH_SNAPSHOTS = gql`
   }
 `;
 
+export const GET_NET_WORTH_TREND = gql`
+  query GetNetWorthTrend($pageSize: Int) {
+    netWorthSnapshots(page: 1, pageSize: $pageSize) {
+      items {
+        id
+        title
+        totalAssets
+        totalLiabilities
+        netWorth
+        createdAt
+      }
+      totalCount
+    }
+  }
+`;
+
 export const GET_NET_WORTH_SNAPSHOT = gql`
   query GetNetWorthSnapshot($id: ID!) {
     netWorthSnapshot(id: $id) {

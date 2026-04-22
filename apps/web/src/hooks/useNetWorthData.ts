@@ -7,11 +7,13 @@ import {
   DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOTS,
+  GET_NET_WORTH_TREND,
   UPDATE_NET_WORTH_SNAPSHOT,
 } from '../graphql/netWorth';
 import { NetWorthSnapshot, NetWorthSnapshotsData } from '../types/netWorth';
 
 export const PAGE_SIZE = 10;
+export const TREND_PAGE_SIZE = 500;
 
 export type SnapshotModalState =
   | { kind: 'closed' }
@@ -32,11 +34,20 @@ export function useNetWorthData() {
     { variables: { page, pageSize: PAGE_SIZE } }
   );
 
+  const { data: trendData, loading: trendLoading } =
+    useQuery<NetWorthSnapshotsData>(GET_NET_WORTH_TREND, {
+      variables: { pageSize: TREND_PAGE_SIZE },
+    });
+
   const [createSnapshot] = useMutation(CREATE_NET_WORTH_SNAPSHOT, {
     refetchQueries: [
       {
         query: GET_NET_WORTH_SNAPSHOTS,
         variables: { page: 1, pageSize: PAGE_SIZE },
+      },
+      {
+        query: GET_NET_WORTH_TREND,
+        variables: { pageSize: TREND_PAGE_SIZE },
       },
     ],
   });
@@ -53,6 +64,10 @@ export function useNetWorthData() {
           query: GET_NET_WORTH_SNAPSHOTS,
           variables: { page, pageSize: PAGE_SIZE },
         },
+        {
+          query: GET_NET_WORTH_TREND,
+          variables: { pageSize: TREND_PAGE_SIZE },
+        },
       ],
     }
   );
@@ -60,6 +75,7 @@ export function useNetWorthData() {
   const snapshots = data?.netWorthSnapshots.items ?? [];
   const totalCount = data?.netWorthSnapshots.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const trendSnapshots = trendData?.netWorthSnapshots.items ?? [];
 
   const handleCloseModal = () => setModalState({ kind: 'closed' });
 
@@ -76,6 +92,10 @@ export function useNetWorthData() {
         {
           query: GET_NET_WORTH_SNAPSHOTS,
           variables: { page, pageSize: PAGE_SIZE },
+        },
+        {
+          query: GET_NET_WORTH_TREND,
+          variables: { pageSize: TREND_PAGE_SIZE },
         },
         { query: GET_NET_WORTH_SNAPSHOT, variables: { id } },
       ],
@@ -120,5 +140,7 @@ export function useNetWorthData() {
     snapshots,
     totalCount,
     totalPages,
+    trendLoading,
+    trendSnapshots,
   };
 }

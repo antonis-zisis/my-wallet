@@ -9,8 +9,9 @@ import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOTS,
+  GET_NET_WORTH_TREND,
 } from '../graphql/netWorth';
-import { PAGE_SIZE } from '../hooks/useNetWorthData';
+import { PAGE_SIZE, TREND_PAGE_SIZE } from '../hooks/useNetWorthData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { NetWorth } from './NetWorth';
 
@@ -21,6 +22,36 @@ const mockSnapshot = {
   totalLiabilities: 5000,
   netWorth: 5000,
   createdAt: '2026-01-01T00:00:00.000Z',
+};
+
+const mockTrendQuery: MockLink.MockedResponse = {
+  request: {
+    query: GET_NET_WORTH_TREND,
+    variables: { pageSize: TREND_PAGE_SIZE },
+  },
+  result: {
+    data: {
+      netWorthSnapshots: {
+        items: [mockSnapshot],
+        totalCount: 1,
+      },
+    },
+  },
+};
+
+const mockTrendQueryEmpty: MockLink.MockedResponse = {
+  request: {
+    query: GET_NET_WORTH_TREND,
+    variables: { pageSize: TREND_PAGE_SIZE },
+  },
+  result: {
+    data: {
+      netWorthSnapshots: {
+        items: [],
+        totalCount: 0,
+      },
+    },
+  },
 };
 
 const mockSnapshotsQuery: MockLink.MockedResponse = {
@@ -63,9 +94,12 @@ const mockSnapshotsQueryError: MockLink.MockedResponse = {
   },
 };
 
-const renderNetWorth = (mocks: Array<MockLink.MockedResponse>) => {
+const renderNetWorth = (
+  mocks: Array<MockLink.MockedResponse>,
+  trendMock: MockLink.MockedResponse = mockTrendQuery
+) => {
   return render(
-    <MockedProvider mocks={mocks}>
+    <MockedProvider mocks={[trendMock, ...mocks]}>
       <MemoryRouter>
         <NetWorth />
       </MemoryRouter>
@@ -91,7 +125,7 @@ describe('NetWorth', () => {
   });
 
   it('shows empty state when no snapshots exist', async () => {
-    renderNetWorth([mockSnapshotsQueryEmpty]);
+    renderNetWorth([mockSnapshotsQueryEmpty], mockTrendQueryEmpty);
     expect(await screen.findByText('No snapshots yet')).toBeInTheDocument();
   });
 
