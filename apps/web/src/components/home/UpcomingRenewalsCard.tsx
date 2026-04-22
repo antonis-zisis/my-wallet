@@ -3,8 +3,8 @@ import { BillingCycle, Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
-import { ChevronDownIcon } from '../icons';
-import { Card, Skeleton } from '../ui';
+import { ChevronDownIcon, InfoIcon } from '../icons';
+import { Card, Skeleton, Tooltip } from '../ui';
 
 interface UpcomingRenewalsCardProps {
   loading?: boolean;
@@ -100,6 +100,12 @@ export function UpcomingRenewalsCard({
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           Upcoming Renewals
         </h2>
+
+        <span onClick={(event) => event.stopPropagation()}>
+          <Tooltip content="Shows up to 5 active subscriptions renewing within the next 40 days, sorted by nearest date.">
+            <InfoIcon className="h-3.5 w-3.5 cursor-pointer text-gray-400 dark:text-gray-500" />
+          </Tooltip>
+        </span>
 
         <ChevronDownIcon
           className={`ml-auto h-5 w-5 text-gray-500 transition-transform duration-300 dark:text-gray-400 ${isOpen ? 'rotate-180' : ''}`}

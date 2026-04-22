@@ -44,7 +44,7 @@ export function ReportSummaryGrid({
         </Card>
       )}
 
-      {currentLoading && !currentReport ? (
+      {reportsLoading || (currentLoading && !currentReport) ? (
         <SkeletonCard />
       ) : currentReport ? (
         <ReportCard label="Current" report={currentReport} />
@@ -60,7 +60,7 @@ export function ReportSummaryGrid({
         </Card>
       )}
 
-      {previousLoading && !previousReport ? (
+      {reportsLoading || (previousLoading && !previousReport) ? (
         <SkeletonCard />
       ) : previousReport ? (
         <ReportCard label="Previous" report={previousReport} />
