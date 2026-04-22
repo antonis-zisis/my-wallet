@@ -35,7 +35,7 @@ describe('getNextRenewalDate', () => {
       expect(toDateString(result)).toBe('2026-05-01');
     });
 
-    it('returns a future date when start date is today', () => {
+    it('returns today when start date matches today', () => {
       const result = getNextRenewalDate('2026-02-22T00:00:00.000Z', 'MONTHLY');
       const today = new Date('2026-02-22');
       expect(result.getTime()).toBeGreaterThanOrEqual(today.getTime());
