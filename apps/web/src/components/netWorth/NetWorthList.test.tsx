@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { type NetWorthSnapshot } from '../../types/netWorth';
 import { NetWorthList } from './NetWorthList';
@@ -23,9 +22,6 @@ const makeSnapshot = (
 const defaultProps = {
   error: false,
   loading: false,
-  onDelete: vi.fn(),
-  onDuplicate: vi.fn(),
-  onEdit: vi.fn(),
   snapshots: [],
 };
 
@@ -70,32 +66,5 @@ describe('NetWorthList', () => {
     const snapshot = makeSnapshot({ title: 'January 2026', netWorth: -2000 });
     renderList({ ...defaultProps, snapshots: [snapshot] });
     expect(screen.getByText(/^-/)).toBeInTheDocument();
-  });
-
-  it('calls onDelete with the snapshot when Delete is clicked', async () => {
-    const onDelete = vi.fn();
-    const snapshot = makeSnapshot({ title: 'January 2026' });
-    renderList({ ...defaultProps, snapshots: [snapshot], onDelete });
-    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
-    expect(onDelete).toHaveBeenCalledWith(snapshot);
-  });
-
-  it('calls onEdit with the snapshot when Edit is clicked', async () => {
-    const onEdit = vi.fn();
-    const snapshot = makeSnapshot({ title: 'January 2026' });
-    renderList({ ...defaultProps, snapshots: [snapshot], onEdit });
-    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
-    expect(onEdit).toHaveBeenCalledWith(snapshot);
-  });
-
-  it('calls onDuplicate with the snapshot when Duplicate is clicked', async () => {
-    const onDuplicate = vi.fn();
-    const snapshot = makeSnapshot({ title: 'January 2026' });
-    renderList({ ...defaultProps, snapshots: [snapshot], onDuplicate });
-    await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Duplicate' }));
-    expect(onDuplicate).toHaveBeenCalledWith(snapshot);
   });
 });

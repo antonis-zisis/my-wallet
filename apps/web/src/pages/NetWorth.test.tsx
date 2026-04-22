@@ -8,7 +8,6 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
-  DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOTS,
   GET_NET_WORTH_TREND,
 } from '../graphql/netWorth';
@@ -375,69 +374,6 @@ describe('NetWorth', () => {
 
       expect(await screen.findByText('Assets')).toBeInTheDocument();
       expect(screen.getByText('Liabilities')).toBeInTheDocument();
-    });
-  });
-
-  describe('delete snapshot modal', () => {
-    it('opens delete modal when delete button is clicked', async () => {
-      renderNetWorth([mockSnapshotsQuery]);
-      await screen.findByText('January 2026');
-
-      await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-      await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
-
-      expect(screen.getByText('Delete Snapshot')).toBeInTheDocument();
-      expect(
-        screen.getByText(/Are you sure you want to delete/)
-      ).toBeInTheDocument();
-    });
-
-    it('closes delete modal when Cancel is clicked', async () => {
-      renderNetWorth([mockSnapshotsQuery]);
-      await screen.findByText('January 2026');
-
-      await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-      await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
-      await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-
-      expect(screen.queryByText('Delete Snapshot')).not.toBeInTheDocument();
-    });
-
-    it('deletes snapshot on confirm and closes modal', async () => {
-      const deleteMock: MockLink.MockedResponse = {
-        request: {
-          query: DELETE_NET_WORTH_SNAPSHOT,
-          variables: { id: '1' },
-        },
-        result: { data: { deleteNetWorthSnapshot: true } },
-      };
-      const refetchMock: MockLink.MockedResponse = {
-        request: {
-          query: GET_NET_WORTH_SNAPSHOTS,
-          variables: { page: 1, pageSize: PAGE_SIZE },
-        },
-        result: {
-          data: {
-            netWorthSnapshots: { items: [], totalCount: 0 },
-          },
-        },
-      };
-
-      renderNetWorth([
-        mockSnapshotsQuery,
-        deleteMock,
-        refetchMock,
-        mockTrendQuery,
-      ]);
-      await screen.findByText('January 2026');
-
-      await userEvent.click(screen.getByRole('button', { name: 'Options' }));
-      await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
-      await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
-
-      await waitFor(() => {
-        expect(screen.queryByText('Delete Snapshot')).not.toBeInTheDocument();
-      });
     });
   });
 });

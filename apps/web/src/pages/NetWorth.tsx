@@ -1,11 +1,7 @@
 import { type ChartView, NetWorthTrendChart } from '../components/charts';
 import { ChevronDownIcon } from '../components/icons';
-import { DeleteNetWorthSnapshotModal } from '../components/netWorth/DeleteNetWorthSnapshotModal';
 import { NetWorthList } from '../components/netWorth/NetWorthList';
-import {
-  EntryInput,
-  NetWorthSnapshotModal,
-} from '../components/netWorth/NetWorthSnapshotModal';
+import { NetWorthSnapshotModal } from '../components/netWorth/NetWorthSnapshotModal';
 import {
   Button,
   Card,
@@ -15,58 +11,6 @@ import {
 } from '../components/ui';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { PAGE_SIZE, useNetWorthData } from '../hooks/useNetWorthData';
-import { NetWorthEntry, NetWorthSnapshot } from '../types/netWorth';
-
-function toEntryInputs(snapshot: NetWorthSnapshot): Array<EntryInput> {
-  return snapshot.entries.map((entry: NetWorthEntry) => ({
-    type: entry.type,
-    category: entry.category,
-    label: entry.label,
-    amount: entry.amount,
-  }));
-}
-
-function toDateInputValue(isoString: string): string {
-  const date = new Date(isoString);
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function getModalConfig(
-  modalState: ReturnType<typeof useNetWorthData>['modalState']
-): {
-  initialEntries?: Array<EntryInput>;
-  initialSnapshotDate?: string;
-  initialTitle?: string;
-  modalTitle: string;
-  submitLabel: string;
-} {
-  if (modalState.kind === 'edit') {
-    return {
-      initialEntries: toEntryInputs(modalState.snapshot),
-      initialSnapshotDate: toDateInputValue(modalState.snapshot.snapshotDate),
-      initialTitle: modalState.snapshot.title,
-      modalTitle: 'Edit Net Worth Snapshot',
-      submitLabel: 'Update Snapshot',
-    };
-  }
-
-  if (modalState.kind === 'duplicate') {
-    return {
-      initialEntries: toEntryInputs(modalState.source),
-      initialSnapshotDate: toDateInputValue(modalState.source.snapshotDate),
-      modalTitle: 'Duplicate Net Worth Snapshot',
-      submitLabel: 'Save Snapshot',
-    };
-  }
-
-  return {
-    modalTitle: 'New Net Worth Snapshot',
-    submitLabel: 'Save Snapshot',
-  };
-}
 
 export function NetWorth() {
   const [isChartOpen, setIsChartOpen] = useLocalStorage(
@@ -80,27 +24,19 @@ export function NetWorth() {
 
   const {
     error,
-    isDeleting,
     loading,
     modalState,
     onCloseModal,
-    onDeleteConfirm,
     onModalSubmit,
     onOpenCreate,
-    onOpenDuplicate,
-    onOpenEdit,
     onPageChange,
-    onSelectForDelete,
     page,
-    snapshotToDelete,
     snapshots,
     totalCount,
     totalPages,
     trendLoading,
     trendSnapshots,
   } = useNetWorthData();
-
-  const modalConfig = getModalConfig(modalState);
 
   return (
     <>
@@ -185,14 +121,11 @@ export function NetWorth() {
           </Card>
         ) : null}
 
-        <NetWorthList
-          error={error}
-          loading={loading}
-          snapshots={snapshots}
-          onDelete={onSelectForDelete}
-          onDuplicate={onOpenDuplicate}
-          onEdit={onOpenEdit}
-        />
+        <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Snapshots
+        </h2>
+
+        <NetWorthList error={error} loading={loading} snapshots={snapshots} />
 
         {!loading && !error && totalCount > 0 && (
           <Pagination
@@ -207,22 +140,11 @@ export function NetWorth() {
       </PageLayout>
 
       <NetWorthSnapshotModal
-        initialEntries={modalConfig.initialEntries}
-        initialSnapshotDate={modalConfig.initialSnapshotDate}
-        initialTitle={modalConfig.initialTitle}
         isOpen={modalState.kind !== 'closed'}
-        modalTitle={modalConfig.modalTitle}
-        submitLabel={modalConfig.submitLabel}
+        modalTitle="New Net Worth Snapshot"
+        submitLabel="Save Snapshot"
         onClose={onCloseModal}
         onSubmit={onModalSubmit}
-      />
-
-      <DeleteNetWorthSnapshotModal
-        isDeleting={isDeleting}
-        isOpen={!!snapshotToDelete}
-        snapshotTitle={snapshotToDelete?.title ?? ''}
-        onClose={() => onSelectForDelete(null)}
-        onConfirm={onDeleteConfirm}
       />
     </>
   );

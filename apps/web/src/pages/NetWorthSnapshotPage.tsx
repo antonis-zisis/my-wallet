@@ -1,3 +1,4 @@
+import { DeleteNetWorthSnapshotModal } from '../components/netWorth/DeleteNetWorthSnapshotModal';
 import { NetWorthBackLink } from '../components/netWorth/NetWorthBackLink';
 import { NetWorthEntriesSection } from '../components/netWorth/NetWorthEntriesSection';
 import { NetWorthSnapshotHeader } from '../components/netWorth/NetWorthSnapshotHeader';
@@ -17,13 +18,22 @@ export function NetWorthSnapshotPage() {
     deltaLiabilities,
     deltaNetWorth,
     error,
+    isDeleteOpen,
+    isDeleting,
+    isDuplicateOpen,
     isEditOpen,
     isPositive,
     liabilities,
     liabilityDeltas,
     loading,
+    onCloseDelete,
+    onCloseDuplicate,
     onCloseEdit,
+    onDeleteConfirm,
+    onDuplicateSubmit,
     onEditSubmit,
+    onOpenDelete,
+    onOpenDuplicate,
     onOpenEdit,
     snapshot,
   } = useNetWorthSnapshotData();
@@ -74,6 +84,8 @@ export function NetWorthSnapshotPage() {
           title={snapshot.title}
           totalAssets={snapshot.totalAssets}
           totalLiabilities={snapshot.totalLiabilities}
+          onDelete={onOpenDelete}
+          onDuplicate={onOpenDuplicate}
           onEdit={onOpenEdit}
         />
 
@@ -103,6 +115,24 @@ export function NetWorthSnapshotPage() {
         submitLabel="Update Snapshot"
         onClose={onCloseEdit}
         onSubmit={onEditSubmit}
+      />
+
+      <NetWorthSnapshotModal
+        initialEntries={initialEntries}
+        initialSnapshotDate={toDateInputValue(snapshot.snapshotDate)}
+        isOpen={isDuplicateOpen}
+        modalTitle="Duplicate Net Worth Snapshot"
+        submitLabel="Save Snapshot"
+        onClose={onCloseDuplicate}
+        onSubmit={onDuplicateSubmit}
+      />
+
+      <DeleteNetWorthSnapshotModal
+        isDeleting={isDeleting}
+        isOpen={isDeleteOpen}
+        snapshotTitle={snapshot.title}
+        onClose={onCloseDelete}
+        onConfirm={onDeleteConfirm}
       />
     </>
   );
