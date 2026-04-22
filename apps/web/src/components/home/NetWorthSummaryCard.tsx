@@ -48,7 +48,10 @@ export function NetWorthSummaryCard({
   if (loading) {
     return (
       <Card>
-        <Skeleton className="h-6 w-1/3" />
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-7 w-30" />
+          <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
+        </div>
       </Card>
     );
   }

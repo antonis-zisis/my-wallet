@@ -31,7 +31,14 @@ export function IncomeExpensesSection({
   if (loading) {
     return (
       <Card className="mt-4">
-        <Skeleton className="h-86 w-full" />
+        {isOpen ? (
+          <Skeleton className="h-86 w-full" />
+        ) : (
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-7 w-40" />
+            <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
+          </div>
+        )}
       </Card>
     );
   }
