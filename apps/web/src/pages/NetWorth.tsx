@@ -100,7 +100,14 @@ export function NetWorth() {
 
         {trendLoading ? (
           <Card className="mb-4">
-            <Skeleton className="h-65 w-full" />
+            {isChartOpen ? (
+              <Skeleton className="h-76.25 w-full" />
+            ) : (
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-7 w-48" />
+                <Skeleton className="h-5 w-5 rounded-full" />
+              </div>
+            )}
           </Card>
         ) : trendSnapshots.length >= 2 ? (
           <Card className="mb-4">
