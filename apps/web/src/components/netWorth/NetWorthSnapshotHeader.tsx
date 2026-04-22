@@ -3,7 +3,7 @@ import { formatMoney } from '../../utils/formatMoney';
 import { Button, Card } from '../ui';
 
 interface NetWorthSnapshotHeaderProps {
-  createdAt: string;
+  snapshotDate: string;
   deltaAssets?: number | null;
   deltaLiabilities?: number | null;
   deltaNetWorth?: number | null;
@@ -31,13 +31,13 @@ function DeltaLabel({ delta }: { delta: number }) {
 }
 
 export function NetWorthSnapshotHeader({
-  createdAt,
   deltaAssets,
   deltaLiabilities,
   deltaNetWorth,
   isPositive,
   netWorth,
   onEdit,
+  snapshotDate,
   title,
   totalAssets,
   totalLiabilities,
@@ -51,7 +51,7 @@ export function NetWorthSnapshotHeader({
           </h1>
 
           <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            {formatDate(createdAt)}
+            {formatDate(snapshotDate)}
           </p>
         </div>
 

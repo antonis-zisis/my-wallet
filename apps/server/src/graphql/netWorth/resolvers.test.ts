@@ -31,6 +31,7 @@ const mockEntries = [
 const mockSnapshot = {
   id: 'snapshot-1',
   title: 'January 2024',
+  snapshotDate: new Date('2024-01-01T00:00:00Z'),
   userId: USER_ID,
   createdAt: new Date('2024-01-01T10:00:00Z'),
   updatedAt: new Date('2024-01-01T10:00:00Z'),
@@ -95,6 +96,7 @@ describe('netWorthResolvers', () => {
     const mockPreviousSnapshot = {
       id: 'snapshot-0',
       title: 'December 2023',
+      snapshotDate: new Date('2023-12-01T00:00:00Z'),
       userId: USER_ID,
       createdAt: new Date('2023-12-01T10:00:00Z'),
       updatedAt: new Date('2023-12-01T10:00:00Z'),
@@ -113,9 +115,9 @@ describe('netWorthResolvers', () => {
       expect(prisma.netWorthSnapshot.findFirst).toHaveBeenCalledWith({
         where: {
           userId: USER_ID,
-          createdAt: { lt: mockSnapshot.createdAt },
+          snapshotDate: { lt: mockSnapshot.snapshotDate },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { snapshotDate: 'desc' },
         include: { entries: { orderBy: { createdAt: 'asc' } } },
       });
       expect(result).toEqual(mockPreviousSnapshot);
@@ -180,7 +182,7 @@ describe('netWorthResolvers', () => {
 
       expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith({
         where: { userId: USER_ID },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { snapshotDate: 'desc' },
         include: { entries: { orderBy: { createdAt: 'asc' } } },
         skip: 0,
         take: 10,
@@ -265,6 +267,7 @@ describe('netWorthResolvers', () => {
         {
           input: {
             title: 'January 2024',
+            snapshotDate: '2024-01-01',
             entries: [
               {
                 type: 'ASSET',
@@ -281,6 +284,7 @@ describe('netWorthResolvers', () => {
       expect(prisma.netWorthSnapshot.create).toHaveBeenCalledWith({
         data: {
           title: 'January 2024',
+          snapshotDate: new Date('2024-01-01'),
           userId: USER_ID,
           entries: {
             create: [
@@ -314,6 +318,7 @@ describe('netWorthResolvers', () => {
           id: 'snapshot-1',
           input: {
             title: 'January 2024 (updated)',
+            snapshotDate: '2024-01-15',
             entries: [
               {
                 type: 'ASSET',
@@ -334,6 +339,7 @@ describe('netWorthResolvers', () => {
         where: { id: 'snapshot-1' },
         data: {
           title: 'January 2024 (updated)',
+          snapshotDate: new Date('2024-01-15'),
           entries: {
             deleteMany: {},
             create: [
@@ -359,7 +365,7 @@ describe('netWorthResolvers', () => {
           undefined as unknown,
           {
             id: 'other-snapshot',
-            input: { title: 'X', entries: [] },
+            input: { title: 'X', snapshotDate: '2024-01-01', entries: [] },
           },
           CTX
         )

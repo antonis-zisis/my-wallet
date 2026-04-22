@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { NetWorthSnapshotHeader } from './NetWorthSnapshotHeader';
 
 const defaultProps = {
-  createdAt: '2026-01-15T00:00:00Z',
+  snapshotDate: '2026-01-15T00:00:00Z',
   isPositive: true,
   netWorth: 12000,
   title: 'January 2026',
@@ -16,6 +16,11 @@ describe('NetWorthSnapshotHeader', () => {
   it('renders the snapshot title', () => {
     render(<NetWorthSnapshotHeader {...defaultProps} />);
     expect(screen.getByText('January 2026')).toBeInTheDocument();
+  });
+
+  it('renders the formatted snapshotDate', () => {
+    render(<NetWorthSnapshotHeader {...defaultProps} />);
+    expect(screen.getByText('Jan 15, 2026')).toBeInTheDocument();
   });
 
   it('renders formatted totalAssets, totalLiabilities and netWorth', () => {

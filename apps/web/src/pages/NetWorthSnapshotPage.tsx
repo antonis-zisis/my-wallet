@@ -44,6 +44,14 @@ export function NetWorthSnapshotPage() {
     );
   }
 
+  function toDateInputValue(isoString: string): string {
+    const date = new Date(isoString);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   const initialEntries: Array<EntryInput> = snapshot.entries.map((entry) => ({
     type: entry.type,
     category: entry.category,
@@ -57,7 +65,7 @@ export function NetWorthSnapshotPage() {
         <NetWorthBackLink />
 
         <NetWorthSnapshotHeader
-          createdAt={snapshot.createdAt}
+          snapshotDate={snapshot.snapshotDate}
           deltaAssets={deltaAssets}
           deltaLiabilities={deltaLiabilities}
           deltaNetWorth={deltaNetWorth}
@@ -88,6 +96,7 @@ export function NetWorthSnapshotPage() {
 
       <NetWorthSnapshotModal
         initialEntries={initialEntries}
+        initialSnapshotDate={toDateInputValue(snapshot.snapshotDate)}
         initialTitle={snapshot.title}
         isOpen={isEditOpen}
         modalTitle="Edit Net Worth Snapshot"

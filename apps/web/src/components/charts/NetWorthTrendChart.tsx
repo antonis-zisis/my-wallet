@@ -21,7 +21,12 @@ import { formatMoney } from '../../utils/formatMoney';
 
 type TrendSnapshot = Pick<
   NetWorthSnapshot,
-  'id' | 'title' | 'netWorth' | 'totalAssets' | 'totalLiabilities' | 'createdAt'
+  | 'id'
+  | 'title'
+  | 'netWorth'
+  | 'totalAssets'
+  | 'totalLiabilities'
+  | 'snapshotDate'
 >;
 
 export type ChartView = 'netWorth' | 'breakdown';
@@ -33,7 +38,7 @@ interface NetWorthTrendChartProps {
 
 interface NetWorthTooltipPayloadEntry {
   payload: {
-    createdAt: string;
+    snapshotDate: string;
     id: string;
     netWorth: number;
     title: string;
@@ -50,7 +55,7 @@ function NetWorthChartTooltip({ active, payload }: NetWorthTooltipProps) {
     return null;
   }
 
-  const { createdAt, netWorth, title } = payload[0].payload;
+  const { netWorth, snapshotDate, title } = payload[0].payload;
   const sign = netWorth < 0 ? '-' : '';
 
   return (
@@ -60,7 +65,7 @@ function NetWorthChartTooltip({ active, payload }: NetWorthTooltipProps) {
       </p>
 
       <p className="text-xs text-gray-500 dark:text-gray-400">
-        {formatDate(createdAt)}
+        {formatDate(snapshotDate)}
       </p>
 
       <p className="mt-1 text-xs font-semibold text-gray-800 dark:text-gray-100">
@@ -73,7 +78,7 @@ function NetWorthChartTooltip({ active, payload }: NetWorthTooltipProps) {
 
 interface BreakdownTooltipPayloadEntry {
   payload: {
-    createdAt: string;
+    snapshotDate: string;
     id: string;
     totalAssets: number;
     totalLiabilities: number;
@@ -91,7 +96,7 @@ function BreakdownChartTooltip({ active, payload }: BreakdownTooltipProps) {
     return null;
   }
 
-  const { createdAt, title, totalAssets, totalLiabilities } =
+  const { snapshotDate, title, totalAssets, totalLiabilities } =
     payload[0].payload;
 
   return (
@@ -101,7 +106,7 @@ function BreakdownChartTooltip({ active, payload }: BreakdownTooltipProps) {
       </p>
 
       <p className="text-xs text-gray-500 dark:text-gray-400">
-        {formatDate(createdAt)}
+        {formatDate(snapshotDate)}
       </p>
 
       <div className="mt-1 space-y-0.5">
@@ -134,17 +139,13 @@ export function NetWorthTrendChart({
 
   const chartData = useMemo(() => {
     return [...snapshots]
-      .sort((first, second) => {
-        const firstValue = /^\d+$/.test(first.createdAt)
-          ? Number(first.createdAt)
-          : new Date(first.createdAt).getTime();
-        const secondValue = /^\d+$/.test(second.createdAt)
-          ? Number(second.createdAt)
-          : new Date(second.createdAt).getTime();
-        return firstValue - secondValue;
-      })
+      .sort(
+        (first, second) =>
+          new Date(first.snapshotDate).getTime() -
+          new Date(second.snapshotDate).getTime()
+      )
       .map((snapshot) => ({
-        createdAt: snapshot.createdAt,
+        snapshotDate: snapshot.snapshotDate,
         id: snapshot.id,
         name: abbreviateReportTitle(snapshot.title),
         netWorth: snapshot.netWorth,

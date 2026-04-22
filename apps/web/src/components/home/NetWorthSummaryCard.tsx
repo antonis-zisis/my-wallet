@@ -93,7 +93,7 @@ export function NetWorthSummaryCard({
     ? 'text-green-600 dark:text-green-400'
     : 'text-red-600 dark:text-red-400';
 
-  const daysAgo = daysSince(snapshot.createdAt);
+  const daysAgo = daysSince(snapshot.snapshotDate);
   const isStale = daysAgo > STALE_DAYS;
 
   return (
@@ -127,7 +127,7 @@ export function NetWorthSummaryCard({
               </Link>
 
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                {formatDate(snapshot.createdAt)}
+                {formatDate(snapshot.snapshotDate)}
               </span>
             </div>
 

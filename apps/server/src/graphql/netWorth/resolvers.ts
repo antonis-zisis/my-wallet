@@ -12,17 +12,20 @@ interface NetWorthEntryInput {
 
 export interface CreateNetWorthSnapshotInput {
   title: string;
+  snapshotDate: string;
   entries: Array<NetWorthEntryInput>;
 }
 
 export interface UpdateNetWorthSnapshotInput {
   title: string;
+  snapshotDate: string;
   entries: Array<NetWorthEntryInput>;
 }
 
 type SnapshotParent = {
   id: string;
   userId: string;
+  snapshotDate: Date;
   createdAt: Date;
   entries?: Array<NetWorthEntry>;
 };
@@ -65,9 +68,9 @@ export const netWorthResolvers = {
       return prisma.netWorthSnapshot.findFirst({
         where: {
           userId: parent.userId,
-          createdAt: { lt: parent.createdAt },
+          snapshotDate: { lt: parent.snapshotDate },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { snapshotDate: 'desc' },
         include: { entries: { orderBy: { createdAt: 'asc' } } },
       });
     },
@@ -99,7 +102,7 @@ export const netWorthResolvers = {
       const [items, totalCount] = await Promise.all([
         prisma.netWorthSnapshot.findMany({
           where: { userId },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { snapshotDate: 'desc' },
           include: { entries: { orderBy: { createdAt: 'asc' } } },
           skip,
           take: pageSize,
@@ -129,6 +132,7 @@ export const netWorthResolvers = {
       return prisma.netWorthSnapshot.create({
         data: {
           title: input.title,
+          snapshotDate: new Date(input.snapshotDate),
           userId,
           entries: {
             create: input.entries.map((entry) => ({
@@ -161,6 +165,7 @@ export const netWorthResolvers = {
         where: { id },
         data: {
           title: input.title,
+          snapshotDate: new Date(input.snapshotDate),
           entries: {
             deleteMany: {},
             create: input.entries.map((entry) => ({

@@ -52,12 +52,13 @@ model Transaction {
 }
 
 model NetWorthSnapshot {
-  id        String          @id @default(uuid())
-  title     String
-  userId    String          @map("user_id")
-  entries   NetWorthEntry[]
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime        @updatedAt @map("updated_at")
+  id           String          @id @default(uuid())
+  title        String
+  snapshotDate DateTime        @map("snapshot_date")
+  userId       String          @map("user_id")
+  entries      NetWorthEntry[]
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
 
   @@map("net_worth_snapshots")
 }

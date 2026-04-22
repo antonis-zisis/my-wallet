@@ -6,6 +6,7 @@ export const GET_NET_WORTH_SNAPSHOTS = gql`
       items {
         id
         title
+        snapshotDate
         totalAssets
         totalLiabilities
         netWorth
@@ -29,6 +30,7 @@ export const GET_NET_WORTH_TREND = gql`
       items {
         id
         title
+        snapshotDate
         totalAssets
         totalLiabilities
         netWorth
@@ -44,6 +46,7 @@ export const GET_NET_WORTH_SNAPSHOT = gql`
     netWorthSnapshot(id: $id) {
       id
       title
+      snapshotDate
       totalAssets
       totalLiabilities
       netWorth
@@ -76,6 +79,7 @@ export const CREATE_NET_WORTH_SNAPSHOT = gql`
     createNetWorthSnapshot(input: $input) {
       id
       title
+      snapshotDate
       totalAssets
       totalLiabilities
       netWorth
@@ -92,6 +96,7 @@ export const UPDATE_NET_WORTH_SNAPSHOT = gql`
     updateNetWorthSnapshot(id: $id, input: $input) {
       id
       title
+      snapshotDate
       totalAssets
       totalLiabilities
       netWorth

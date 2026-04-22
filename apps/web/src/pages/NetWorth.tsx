@@ -26,10 +26,19 @@ function toEntryInputs(snapshot: NetWorthSnapshot): Array<EntryInput> {
   }));
 }
 
+function toDateInputValue(isoString: string): string {
+  const date = new Date(isoString);
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getModalConfig(
   modalState: ReturnType<typeof useNetWorthData>['modalState']
 ): {
   initialEntries?: Array<EntryInput>;
+  initialSnapshotDate?: string;
   initialTitle?: string;
   modalTitle: string;
   submitLabel: string;
@@ -37,6 +46,7 @@ function getModalConfig(
   if (modalState.kind === 'edit') {
     return {
       initialEntries: toEntryInputs(modalState.snapshot),
+      initialSnapshotDate: toDateInputValue(modalState.snapshot.snapshotDate),
       initialTitle: modalState.snapshot.title,
       modalTitle: 'Edit Net Worth Snapshot',
       submitLabel: 'Update Snapshot',
@@ -46,6 +56,7 @@ function getModalConfig(
   if (modalState.kind === 'duplicate') {
     return {
       initialEntries: toEntryInputs(modalState.source),
+      initialSnapshotDate: toDateInputValue(modalState.source.snapshotDate),
       modalTitle: 'Duplicate Net Worth Snapshot',
       submitLabel: 'Save Snapshot',
     };
@@ -197,6 +208,7 @@ export function NetWorth() {
 
       <NetWorthSnapshotModal
         initialEntries={modalConfig.initialEntries}
+        initialSnapshotDate={modalConfig.initialSnapshotDate}
         initialTitle={modalConfig.initialTitle}
         isOpen={modalState.kind !== 'closed'}
         modalTitle={modalConfig.modalTitle}

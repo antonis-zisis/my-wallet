@@ -12,6 +12,7 @@ export const netWorthTypeDefs = `#graphql
   type NetWorthSnapshot {
     id: ID!
     title: String!
+    snapshotDate: String!
     totalAssets: Float!
     totalLiabilities: Float!
     netWorth: Float!
@@ -35,11 +36,13 @@ export const netWorthTypeDefs = `#graphql
 
   input CreateNetWorthSnapshotInput {
     title: String!
+    snapshotDate: String!
     entries: [NetWorthEntryInput!]!
   }
 
   input UpdateNetWorthSnapshotInput {
     title: String!
+    snapshotDate: String!
     entries: [NetWorthEntryInput!]!
   }
 

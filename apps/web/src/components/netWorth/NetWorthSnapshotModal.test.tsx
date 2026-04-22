@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ComponentProps } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -93,6 +93,38 @@ describe('NetWorthSnapshotModal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it('renders a Snapshot Date input with a non-empty default value', () => {
+    renderModal();
+    const dateInput = screen.getByLabelText('Snapshot Date');
+    expect(dateInput).toBeInTheDocument();
+    expect((dateInput as HTMLInputElement).value).toMatch(
+      /^\d{4}-\d{2}-\d{2}$/
+    );
+  });
+
+  it('submits the snapshotDate from the date input', async () => {
+    const onSubmit = vi.fn();
+    renderModal({ onSubmit });
+
+    fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+      target: { value: '2026-03-01' },
+    });
+    await userEvent.type(
+      screen.getByPlaceholderText('e.g. February 2026'),
+      'March 2026'
+    );
+    await userEvent.type(screen.getByPlaceholderText('Label'), 'Savings');
+    await userEvent.type(screen.getByPlaceholderText('Amount'), '1000');
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Save Snapshot' })
+    );
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ snapshotDate: '2026-03-01' })
+    );
+  });
+
   it('submits trimmed title and entry data', async () => {
     const onSubmit = vi.fn();
     renderModal({ onSubmit });
@@ -108,17 +140,19 @@ describe('NetWorthSnapshotModal', () => {
       screen.getByRole('button', { name: 'Save Snapshot' })
     );
 
-    expect(onSubmit).toHaveBeenCalledWith({
-      title: 'January 2026',
-      entries: [
-        {
-          type: 'ASSET',
-          label: 'Savings',
-          amount: 5000,
-          category: 'Savings',
-        },
-      ],
-    });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'January 2026',
+        entries: [
+          {
+            type: 'ASSET',
+            label: 'Savings',
+            amount: 5000,
+            category: 'Savings',
+          },
+        ],
+      })
+    );
   });
 
   describe('with initial values (duplicate / edit)', () => {
@@ -136,6 +170,14 @@ describe('NetWorthSnapshotModal', () => {
         category: 'Car Loan',
       },
     ];
+
+    it('pre-fills the snapshotDate when initialSnapshotDate is provided', () => {
+      renderModal({
+        initialSnapshotDate: '2026-02-01',
+        initialTitle: 'February 2026',
+      });
+      expect(screen.getByLabelText('Snapshot Date')).toHaveValue('2026-02-01');
+    });
 
     it('prefills the title and entries when provided', () => {
       renderModal({
@@ -180,23 +222,25 @@ describe('NetWorthSnapshotModal', () => {
         screen.getByRole('button', { name: 'Update Snapshot' })
       );
 
-      expect(onSubmit).toHaveBeenCalledWith({
-        title: 'February 2026',
-        entries: [
-          {
-            type: 'ASSET',
-            label: 'Savings Account',
-            amount: 15000,
-            category: 'Savings',
-          },
-          {
-            type: 'LIABILITY',
-            label: 'Car Loan',
-            amount: 5000,
-            category: 'Car Loan',
-          },
-        ],
-      });
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'February 2026',
+          entries: [
+            {
+              type: 'ASSET',
+              label: 'Savings Account',
+              amount: 15000,
+              category: 'Savings',
+            },
+            {
+              type: 'LIABILITY',
+              label: 'Car Loan',
+              amount: 5000,
+              category: 'Car Loan',
+            },
+          ],
+        })
+      );
     });
   });
 });

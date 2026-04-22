@@ -10,6 +10,7 @@ const makeSnapshot = (
   overrides: Partial<NetWorthSnapshot> & Pick<NetWorthSnapshot, 'title'>
 ): NetWorthSnapshot => ({
   id: crypto.randomUUID(),
+  snapshotDate: '2026-01-01T00:00:00Z',
   totalAssets: 10000,
   totalLiabilities: 2000,
   netWorth: 8000,

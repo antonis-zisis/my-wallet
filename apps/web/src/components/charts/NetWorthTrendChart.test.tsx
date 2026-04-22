@@ -33,7 +33,7 @@ const makeSnapshot = (overrides: {
   netWorth: number;
   totalAssets?: number;
   totalLiabilities?: number;
-  createdAt: string;
+  snapshotDate: string;
 }) => ({
   totalAssets: 0,
   totalLiabilities: 0,
@@ -59,7 +59,7 @@ describe('NetWorthTrendChart', () => {
         id: '1',
         title: 'January 2026',
         netWorth: 1000,
-        createdAt: '2026-01-01T00:00:00Z',
+        snapshotDate: '2026-01-01T00:00:00Z',
       }),
     ]);
     expect(container.innerHTML).toBe('');
@@ -71,13 +71,13 @@ describe('NetWorthTrendChart', () => {
         id: '1',
         title: 'January 2026',
         netWorth: 1000,
-        createdAt: '2026-01-01T00:00:00Z',
+        snapshotDate: '2026-01-01T00:00:00Z',
       }),
       makeSnapshot({
         id: '2',
         title: 'February 2026',
         netWorth: 2000,
-        createdAt: '2026-02-01T00:00:00Z',
+        snapshotDate: '2026-02-01T00:00:00Z',
       }),
     ]);
     expect(container.querySelector('.recharts-wrapper')).toBeInTheDocument();
@@ -89,13 +89,13 @@ describe('NetWorthTrendChart', () => {
         id: '2',
         title: 'February 2026',
         netWorth: 2000,
-        createdAt: '2026-02-01T00:00:00Z',
+        snapshotDate: '2026-02-01T00:00:00Z',
       }),
       makeSnapshot({
         id: '1',
         title: 'January 2026',
         netWorth: 1000,
-        createdAt: '2026-01-01T00:00:00Z',
+        snapshotDate: '2026-01-01T00:00:00Z',
       }),
     ]);
     expect(getByText("Jan '26")).toBeInTheDocument();
@@ -108,13 +108,13 @@ describe('NetWorthTrendChart', () => {
         id: '1',
         title: 'January 2026',
         netWorth: 1000,
-        createdAt: '2026-01-01T00:00:00Z',
+        snapshotDate: '2026-01-01T00:00:00Z',
       }),
       makeSnapshot({
         id: '2',
         title: 'February 2026',
         netWorth: 2000,
-        createdAt: '2026-02-01T00:00:00Z',
+        snapshotDate: '2026-02-01T00:00:00Z',
       }),
     ]);
     expect(getByText('Net Worth')).toBeInTheDocument();
@@ -129,7 +129,7 @@ describe('NetWorthTrendChart', () => {
           netWorth: 8000,
           totalAssets: 10000,
           totalLiabilities: 2000,
-          createdAt: '2026-01-01T00:00:00Z',
+          snapshotDate: '2026-01-01T00:00:00Z',
         }),
         makeSnapshot({
           id: '2',
@@ -137,7 +137,7 @@ describe('NetWorthTrendChart', () => {
           netWorth: 9000,
           totalAssets: 11000,
           totalLiabilities: 2000,
-          createdAt: '2026-02-01T00:00:00Z',
+          snapshotDate: '2026-02-01T00:00:00Z',
         }),
       ],
       'breakdown'

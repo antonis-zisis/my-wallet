@@ -13,6 +13,7 @@ export interface NetWorthEntry {
 export interface NetWorthSnapshot {
   id: string;
   title: string;
+  snapshotDate: string;
   totalAssets: number;
   totalLiabilities: number;
   netWorth: number;

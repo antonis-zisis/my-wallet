@@ -6,16 +6,19 @@ import { describe, expect, it } from 'vitest';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
+  GET_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOTS,
+  GET_NET_WORTH_TREND,
   UPDATE_NET_WORTH_SNAPSHOT,
 } from '../graphql/netWorth';
 import { createWrapper } from '../test/hook-test-utils';
 import { NetWorthSnapshot } from '../types/netWorth';
-import { PAGE_SIZE, useNetWorthData } from './useNetWorthData';
+import { PAGE_SIZE, TREND_PAGE_SIZE, useNetWorthData } from './useNetWorthData';
 
 const mockSnapshot: NetWorthSnapshot = {
   id: '1',
   title: 'January 2026',
+  snapshotDate: '2026-01-01T00:00:00.000Z',
   totalAssets: 10000,
   totalLiabilities: 5000,
   netWorth: 5000,
@@ -92,11 +95,23 @@ const mockSnapshotsQueryError: MockLink.MockedResponse = {
   },
 };
 
+const mockTrendQuery: MockLink.MockedResponse = {
+  request: {
+    query: GET_NET_WORTH_TREND,
+    variables: { pageSize: TREND_PAGE_SIZE },
+  },
+  result: {
+    data: {
+      netWorthSnapshots: { items: [], totalCount: 0 },
+    },
+  },
+};
+
 describe('useNetWorthData', () => {
   describe('initial state', () => {
     it('starts on page 1 with loading state', () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       expect(result.current.page).toBe(1);
@@ -106,7 +121,7 @@ describe('useNetWorthData', () => {
 
     it('modal is closed and delete selection is null initially', () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       expect(result.current.modalState).toEqual({ kind: 'closed' });
@@ -117,7 +132,7 @@ describe('useNetWorthData', () => {
   describe('data loading', () => {
     it('loads snapshots successfully', async () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       await waitFor(() => expect(result.current.loading).toBe(false));
@@ -129,7 +144,7 @@ describe('useNetWorthData', () => {
 
     it('returns empty snapshots when there are none', async () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQueryEmpty]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQueryEmpty]),
       });
 
       await waitFor(() => expect(result.current.loading).toBe(false));
@@ -140,7 +155,7 @@ describe('useNetWorthData', () => {
 
     it('sets error to true on query failure', async () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQueryError]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQueryError]),
       });
 
       await waitFor(() => expect(result.current.error).toBe(true));
@@ -165,7 +180,7 @@ describe('useNetWorthData', () => {
       };
 
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([multiPageQuery]),
+        wrapper: createWrapper([mockTrendQuery, multiPageQuery]),
       });
 
       await waitFor(() => expect(result.current.loading).toBe(false));
@@ -190,7 +205,11 @@ describe('useNetWorthData', () => {
       };
 
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery, page2Query]),
+        wrapper: createWrapper([
+          mockTrendQuery,
+          mockSnapshotsQuery,
+          page2Query,
+        ]),
       });
 
       await waitFor(() => expect(result.current.loading).toBe(false));
@@ -206,7 +225,7 @@ describe('useNetWorthData', () => {
   describe('modal state transitions', () => {
     it('opens the create modal via onOpenCreate', () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       act(() => {
@@ -218,7 +237,7 @@ describe('useNetWorthData', () => {
 
     it('opens the duplicate modal with the source snapshot', async () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       await waitFor(() => expect(result.current.loading).toBe(false));
@@ -235,7 +254,7 @@ describe('useNetWorthData', () => {
 
     it('opens the edit modal with the target snapshot', async () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       await waitFor(() => expect(result.current.loading).toBe(false));
@@ -252,7 +271,7 @@ describe('useNetWorthData', () => {
 
     it('closes the modal via onCloseModal', () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       act(() => {
@@ -270,6 +289,7 @@ describe('useNetWorthData', () => {
     it('creates a snapshot and closes the modal', async () => {
       const createInput = {
         title: 'Test Snapshot',
+        snapshotDate: '2026-02-01',
         entries: [
           {
             type: 'ASSET' as const,
@@ -290,6 +310,7 @@ describe('useNetWorthData', () => {
             createNetWorthSnapshot: {
               id: '2',
               title: 'Test Snapshot',
+              snapshotDate: '2026-02-01T00:00:00.000Z',
               totalAssets: 5000,
               totalLiabilities: 0,
               netWorth: 5000,
@@ -315,7 +336,13 @@ describe('useNetWorthData', () => {
       };
 
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery, createMock, refetchMock]),
+        wrapper: createWrapper([
+          mockTrendQuery,
+          mockTrendQuery,
+          mockSnapshotsQuery,
+          createMock,
+          refetchMock,
+        ]),
       });
 
       await waitFor(() => expect(result.current.loading).toBe(false));
@@ -337,6 +364,7 @@ describe('useNetWorthData', () => {
     it('updates a snapshot and closes the modal', async () => {
       const updateInput = {
         title: 'January 2026 (updated)',
+        snapshotDate: '2026-01-15',
         entries: [
           {
             type: 'ASSET' as const,
@@ -386,11 +414,45 @@ describe('useNetWorthData', () => {
         },
       };
 
+      const snapshotRefetchMock: MockLink.MockedResponse = {
+        request: {
+          query: GET_NET_WORTH_SNAPSHOT,
+          variables: { id: '1' },
+        },
+        result: {
+          data: {
+            netWorthSnapshot: {
+              id: '1',
+              title: 'January 2026 (updated)',
+              snapshotDate: '2026-01-15T00:00:00.000Z',
+              totalAssets: 15000,
+              totalLiabilities: 0,
+              netWorth: 15000,
+              entries: [
+                {
+                  id: 'e1',
+                  type: 'ASSET',
+                  label: 'Savings',
+                  amount: 15000,
+                  category: 'Savings',
+                },
+              ],
+              previousSnapshot: null,
+              createdAt: '2026-01-01T00:00:00.000Z',
+              updatedAt: '2026-01-15T00:00:00.000Z',
+            },
+          },
+        },
+      };
+
       const { result } = renderHook(() => useNetWorthData(), {
         wrapper: createWrapper([
+          mockTrendQuery,
+          mockTrendQuery,
           mockSnapshotsQuery,
           updateMock,
           listRefetchMock,
+          snapshotRefetchMock,
         ]),
       });
 
@@ -411,7 +473,7 @@ describe('useNetWorthData', () => {
   describe('delete', () => {
     it('sets snapshotToDelete via onSelectForDelete', () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       act(() => {
@@ -423,7 +485,7 @@ describe('useNetWorthData', () => {
 
     it('clears snapshotToDelete when set to null', () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       act(() => {
@@ -438,7 +500,7 @@ describe('useNetWorthData', () => {
 
     it('does nothing on confirm when no snapshot is selected', async () => {
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery]),
+        wrapper: createWrapper([mockTrendQuery, mockSnapshotsQuery]),
       });
 
       await act(async () => {
@@ -470,7 +532,13 @@ describe('useNetWorthData', () => {
       };
 
       const { result } = renderHook(() => useNetWorthData(), {
-        wrapper: createWrapper([mockSnapshotsQuery, deleteMock, refetchMock]),
+        wrapper: createWrapper([
+          mockTrendQuery,
+          mockTrendQuery,
+          mockSnapshotsQuery,
+          deleteMock,
+          refetchMock,
+        ]),
       });
 
       await waitFor(() => expect(result.current.loading).toBe(false));

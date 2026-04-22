@@ -25,17 +25,27 @@ export interface EntryInput {
 
 export interface SnapshotFormValues {
   title: string;
+  snapshotDate: string;
   entries: Array<EntryInput>;
 }
 
 interface NetWorthSnapshotModalProps {
   initialEntries?: Array<EntryInput>;
+  initialSnapshotDate?: string;
   initialTitle?: string;
   isOpen: boolean;
   modalTitle: string;
   onClose: () => void;
   onSubmit: (input: SnapshotFormValues) => void;
   submitLabel: string;
+}
+
+function todayAsDateInput(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 let nextKey = 0;
@@ -72,6 +82,7 @@ function buildInitialEntries(
 
 export function NetWorthSnapshotModal({
   initialEntries,
+  initialSnapshotDate,
   initialTitle = '',
   isOpen,
   modalTitle,
@@ -80,6 +91,9 @@ export function NetWorthSnapshotModal({
   submitLabel,
 }: NetWorthSnapshotModalProps) {
   const [title, setTitle] = useState(initialTitle);
+  const [snapshotDate, setSnapshotDate] = useState(
+    initialSnapshotDate ?? todayAsDateInput()
+  );
   const [entries, setEntries] = useState<Array<EntryDraft>>(() =>
     buildInitialEntries(initialEntries)
   );
@@ -91,8 +105,9 @@ export function NetWorthSnapshotModal({
       return;
     }
     setTitle(initialTitle);
+    setSnapshotDate(initialSnapshotDate ?? todayAsDateInput());
     setEntries(buildInitialEntries(initialEntries));
-  }, [isOpen, initialTitle, initialEntries]);
+  }, [isOpen, initialTitle, initialSnapshotDate, initialEntries]);
 
   useEffect(() => {
     if (
@@ -156,6 +171,7 @@ export function NetWorthSnapshotModal({
 
   const isValid =
     title.trim().length > 0 &&
+    snapshotDate.length > 0 &&
     entries.length > 0 &&
     entries.every(
       (entry) => entry.label.trim().length > 0 && parseFloat(entry.amount) > 0
@@ -168,6 +184,7 @@ export function NetWorthSnapshotModal({
 
     onSubmit({
       title: title.trim(),
+      snapshotDate,
       entries: entries.map((entry) => ({
         type: entry.type,
         label: entry.label.trim(),
@@ -203,6 +220,14 @@ export function NetWorthSnapshotModal({
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           autoFocus
+        />
+
+        <Input
+          label="Snapshot Date"
+          id="snapshot-date"
+          type="date"
+          value={snapshotDate}
+          onChange={(event) => setSnapshotDate(event.target.value)}
         />
 
         <div>

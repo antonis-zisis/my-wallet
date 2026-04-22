@@ -8,6 +8,7 @@ import { NetWorthSummaryCard } from './NetWorthSummaryCard';
 const positiveSnapshot: NetWorthSnapshot = {
   id: 'nw1',
   title: 'February 2026',
+  snapshotDate: '2026-04-15T00:00:00.000Z',
   totalAssets: 15000,
   totalLiabilities: 3000,
   netWorth: 12000,
@@ -19,6 +20,7 @@ const positiveSnapshot: NetWorthSnapshot = {
 const previousSnapshot: NetWorthSnapshot = {
   id: 'nw0',
   title: 'January 2026',
+  snapshotDate: '2026-03-01T00:00:00.000Z',
   totalAssets: 11000,
   totalLiabilities: 1000,
   netWorth: 10000,
@@ -30,6 +32,7 @@ const previousSnapshot: NetWorthSnapshot = {
 const negativeSnapshot: NetWorthSnapshot = {
   id: 'nw2',
   title: 'January 2026',
+  snapshotDate: '2026-04-15T00:00:00.000Z',
   totalAssets: 1000,
   totalLiabilities: 5000,
   netWorth: -4000,
@@ -40,6 +43,7 @@ const negativeSnapshot: NetWorthSnapshot = {
 
 const staleSnapshot: NetWorthSnapshot = {
   ...positiveSnapshot,
+  snapshotDate: '2025-12-01T00:00:00.000Z',
   createdAt: '2025-12-01T00:00:00.000Z',
   updatedAt: '2025-12-01T00:00:00.000Z',
 };
@@ -193,12 +197,12 @@ describe('NetWorthSummaryCard', () => {
       expect(stalenessText).toHaveClass('text-orange-600');
     });
 
-    it('handles createdAt delivered as a numeric timestamp string', () => {
+    it('handles snapshotDate delivered as a numeric timestamp string', () => {
       const timestamp = new Date('2026-04-15T00:00:00.000Z').getTime();
       renderCard({
         snapshot: {
           ...positiveSnapshot,
-          createdAt: String(timestamp),
+          snapshotDate: String(timestamp),
         },
       });
       fireEvent.click(screen.getByRole('button', { name: /net worth/i }));

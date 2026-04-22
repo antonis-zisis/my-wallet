@@ -1,5 +1,5 @@
 import { MockLink } from '@apollo/client/testing';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
@@ -41,9 +41,11 @@ beforeAll(() => {
 const mockSnapshot = {
   id: '1',
   title: 'January 2026',
+  snapshotDate: '2026-01-01T00:00:00.000Z',
   totalAssets: 10000,
   totalLiabilities: 5000,
   netWorth: 5000,
+  entries: [],
   createdAt: '2026-01-01T00:00:00.000Z',
 };
 
@@ -55,7 +57,17 @@ const mockTrendQuery: MockLink.MockedResponse = {
   result: {
     data: {
       netWorthSnapshots: {
-        items: [mockSnapshot],
+        items: [
+          {
+            id: mockSnapshot.id,
+            title: mockSnapshot.title,
+            snapshotDate: mockSnapshot.snapshotDate,
+            totalAssets: mockSnapshot.totalAssets,
+            totalLiabilities: mockSnapshot.totalLiabilities,
+            netWorth: mockSnapshot.netWorth,
+            createdAt: mockSnapshot.createdAt,
+          },
+        ],
         totalCount: 1,
       },
     },
@@ -89,6 +101,7 @@ const mockTrendQueryWithChart: MockLink.MockedResponse = {
           {
             id: 'trend-1',
             title: 'January 2026',
+            snapshotDate: '2026-01-01T00:00:00.000Z',
             totalAssets: 10000,
             totalLiabilities: 5000,
             netWorth: 5000,
@@ -97,6 +110,7 @@ const mockTrendQueryWithChart: MockLink.MockedResponse = {
           {
             id: 'trend-2',
             title: 'February 2026',
+            snapshotDate: '2026-02-01T00:00:00.000Z',
             totalAssets: 12000,
             totalLiabilities: 4000,
             netWorth: 8000,
@@ -237,6 +251,7 @@ describe('NetWorth', () => {
           variables: {
             input: {
               title: 'Test Snapshot',
+              snapshotDate: '2026-04-15',
               entries: [
                 {
                   type: 'ASSET',
@@ -253,6 +268,7 @@ describe('NetWorth', () => {
             createNetWorthSnapshot: {
               id: '2',
               title: 'Test Snapshot',
+              snapshotDate: '2026-04-15T00:00:00.000Z',
               totalAssets: 1000,
               totalLiabilities: 0,
               netWorth: 1000,
@@ -276,7 +292,12 @@ describe('NetWorth', () => {
         },
       };
 
-      renderNetWorth([mockSnapshotsQuery, createMock, refetchMock]);
+      renderNetWorth([
+        mockSnapshotsQuery,
+        createMock,
+        refetchMock,
+        mockTrendQuery,
+      ]);
 
       await userEvent.click(
         screen.getByRole('button', { name: 'New Snapshot' })
@@ -286,6 +307,9 @@ describe('NetWorth', () => {
         screen.getByPlaceholderText('e.g. February 2026'),
         'Test Snapshot'
       );
+      fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+        target: { value: '2026-04-15' },
+      });
       await userEvent.type(screen.getByPlaceholderText('Label'), 'Savings');
       await userEvent.type(screen.getByPlaceholderText('Amount'), '1000');
 
@@ -399,7 +423,12 @@ describe('NetWorth', () => {
         },
       };
 
-      renderNetWorth([mockSnapshotsQuery, deleteMock, refetchMock]);
+      renderNetWorth([
+        mockSnapshotsQuery,
+        deleteMock,
+        refetchMock,
+        mockTrendQuery,
+      ]);
       await screen.findByText('January 2026');
 
       await userEvent.click(screen.getByRole('button', { name: 'Options' }));
