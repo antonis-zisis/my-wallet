@@ -54,6 +54,17 @@ export const GET_NET_WORTH_SNAPSHOT = gql`
         amount
         category
       }
+      previousSnapshot {
+        totalAssets
+        totalLiabilities
+        netWorth
+        entries {
+          type
+          label
+          amount
+          category
+        }
+      }
       createdAt
       updatedAt
     }

@@ -17,8 +17,14 @@ export interface NetWorthSnapshot {
   totalLiabilities: number;
   netWorth: number;
   entries: Array<NetWorthEntry>;
+  previousSnapshot?: NetWorthSnapshot | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface EntryDelta {
+  delta: number;
+  isNew: boolean;
 }
 
 export interface NetWorthSnapshotsData {

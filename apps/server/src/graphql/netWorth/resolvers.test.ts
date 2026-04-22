@@ -91,6 +91,47 @@ describe('netWorthResolvers', () => {
     });
   });
 
+  describe('NetWorthSnapshot.previousSnapshot', () => {
+    const mockPreviousSnapshot = {
+      id: 'snapshot-0',
+      title: 'December 2023',
+      userId: USER_ID,
+      createdAt: new Date('2023-12-01T10:00:00Z'),
+      updatedAt: new Date('2023-12-01T10:00:00Z'),
+      entries: [],
+    };
+
+    it('returns the most recent snapshot created before the current one', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findFirst).mockResolvedValue(
+        mockPreviousSnapshot as never
+      );
+
+      const result = await netWorthResolvers.NetWorthSnapshot.previousSnapshot(
+        mockSnapshotWithEntries
+      );
+
+      expect(prisma.netWorthSnapshot.findFirst).toHaveBeenCalledWith({
+        where: {
+          userId: USER_ID,
+          createdAt: { lt: mockSnapshot.createdAt },
+        },
+        orderBy: { createdAt: 'desc' },
+        include: { entries: { orderBy: { createdAt: 'asc' } } },
+      });
+      expect(result).toEqual(mockPreviousSnapshot);
+    });
+
+    it('returns null when no earlier snapshot exists', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findFirst).mockResolvedValue(null);
+
+      const result = await netWorthResolvers.NetWorthSnapshot.previousSnapshot(
+        mockSnapshotWithEntries
+      );
+
+      expect(result).toBeNull();
+    });
+  });
+
   describe('NetWorthSnapshot.totalAssets', () => {
     it('sums ASSET entries from pre-loaded parent', async () => {
       const result = await netWorthResolvers.NetWorthSnapshot.totalAssets(

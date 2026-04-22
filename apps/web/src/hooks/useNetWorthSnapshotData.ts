@@ -7,10 +7,33 @@ import {
   GET_NET_WORTH_SNAPSHOT,
   UPDATE_NET_WORTH_SNAPSHOT,
 } from '../graphql/netWorth';
-import { NetWorthSnapshot } from '../types/netWorth';
+import { EntryDelta, NetWorthEntry, NetWorthSnapshot } from '../types/netWorth';
 
 interface SnapshotData {
   netWorthSnapshot: NetWorthSnapshot | null;
+}
+
+function buildEntryDeltas(
+  entries: Array<NetWorthEntry>,
+  previousEntryAmounts: Record<string, number>
+): Record<string, EntryDelta> {
+  const result: Record<string, EntryDelta> = {};
+
+  for (const entry of entries) {
+    const key = `${entry.category}:${entry.label}`;
+    const lookupKey = `${entry.type}:${entry.category}:${entry.label}`;
+
+    if (lookupKey in previousEntryAmounts) {
+      result[key] = {
+        delta: entry.amount - previousEntryAmounts[lookupKey],
+        isNew: false,
+      };
+    } else {
+      result[key] = { delta: 0, isNew: true };
+    }
+  }
+
+  return result;
 }
 
 export function useNetWorthSnapshotData() {
@@ -33,6 +56,36 @@ export function useNetWorthSnapshotData() {
     snapshot?.entries.filter((entry) => entry.type === 'LIABILITY') ?? [];
   const isPositive = (snapshot?.netWorth ?? 0) >= 0;
 
+  const previousSnapshot = snapshot?.previousSnapshot ?? null;
+
+  const previousEntryAmounts: Record<string, number> = {};
+  if (previousSnapshot) {
+    for (const entry of previousSnapshot.entries ?? []) {
+      const key = `${entry.type}:${entry.category}:${entry.label}`;
+      previousEntryAmounts[key] = entry.amount;
+    }
+  }
+
+  const assetDeltas = previousSnapshot
+    ? buildEntryDeltas(assets, previousEntryAmounts)
+    : undefined;
+
+  const liabilityDeltas = previousSnapshot
+    ? buildEntryDeltas(liabilities, previousEntryAmounts)
+    : undefined;
+
+  const deltaAssets = previousSnapshot
+    ? (snapshot?.totalAssets ?? 0) - previousSnapshot.totalAssets
+    : null;
+
+  const deltaLiabilities = previousSnapshot
+    ? (snapshot?.totalLiabilities ?? 0) - previousSnapshot.totalLiabilities
+    : null;
+
+  const deltaNetWorth = previousSnapshot
+    ? (snapshot?.netWorth ?? 0) - previousSnapshot.netWorth
+    : null;
+
   const handleEditSubmit = async (input: SnapshotFormValues) => {
     if (!snapshot) {
       return;
@@ -49,12 +102,17 @@ export function useNetWorthSnapshotData() {
   };
 
   return {
+    assetDeltas,
     assets,
+    deltaAssets,
+    deltaLiabilities,
+    deltaNetWorth,
     error: !!error,
     isEditOpen,
     isPositive,
     isUpdating,
     liabilities,
+    liabilityDeltas,
     loading,
     onCloseEdit: () => setIsEditOpen(false),
     onEditSubmit: handleEditSubmit,

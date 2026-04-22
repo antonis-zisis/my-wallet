@@ -11,11 +11,16 @@ import { useNetWorthSnapshotData } from '../hooks/useNetWorthSnapshotData';
 
 export function NetWorthSnapshotPage() {
   const {
+    assetDeltas,
     assets,
+    deltaAssets,
+    deltaLiabilities,
+    deltaNetWorth,
     error,
     isEditOpen,
     isPositive,
     liabilities,
+    liabilityDeltas,
     loading,
     onCloseEdit,
     onEditSubmit,
@@ -53,6 +58,9 @@ export function NetWorthSnapshotPage() {
 
         <NetWorthSnapshotHeader
           createdAt={snapshot.createdAt}
+          deltaAssets={deltaAssets}
+          deltaLiabilities={deltaLiabilities}
+          deltaNetWorth={deltaNetWorth}
           isPositive={isPositive}
           netWorth={snapshot.netWorth}
           title={snapshot.title}
@@ -64,6 +72,7 @@ export function NetWorthSnapshotPage() {
         <NetWorthEntriesSection
           colorClass="text-green-600 dark:text-green-400"
           entries={assets}
+          entryDeltas={assetDeltas}
           title="Assets"
           total={snapshot.totalAssets}
         />
@@ -71,6 +80,7 @@ export function NetWorthSnapshotPage() {
         <NetWorthEntriesSection
           colorClass="text-red-600 dark:text-red-400"
           entries={liabilities}
+          entryDeltas={liabilityDeltas}
           title="Liabilities"
           total={snapshot.totalLiabilities}
         />

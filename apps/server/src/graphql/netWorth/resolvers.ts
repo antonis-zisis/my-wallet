@@ -22,6 +22,8 @@ export interface UpdateNetWorthSnapshotInput {
 
 type SnapshotParent = {
   id: string;
+  userId: string;
+  createdAt: Date;
   entries?: Array<NetWorthEntry>;
 };
 
@@ -58,6 +60,16 @@ export const netWorthResolvers = {
       return entries
         .filter((entry) => entry.type === 'LIABILITY')
         .reduce((sum, entry) => sum + entry.amount, 0);
+    },
+    previousSnapshot: async (parent: SnapshotParent) => {
+      return prisma.netWorthSnapshot.findFirst({
+        where: {
+          userId: parent.userId,
+          createdAt: { lt: parent.createdAt },
+        },
+        orderBy: { createdAt: 'desc' },
+        include: { entries: { orderBy: { createdAt: 'asc' } } },
+      });
     },
     netWorth: async (parent: SnapshotParent) => {
       const entries =

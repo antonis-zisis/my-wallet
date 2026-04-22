@@ -16,6 +16,7 @@ export const netWorthTypeDefs = `#graphql
     totalLiabilities: Float!
     netWorth: Float!
     entries: [NetWorthEntry!]!
+    previousSnapshot: NetWorthSnapshot
     createdAt: String!
     updatedAt: String!
   }

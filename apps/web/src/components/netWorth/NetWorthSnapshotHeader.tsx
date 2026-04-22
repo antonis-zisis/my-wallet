@@ -4,6 +4,9 @@ import { Button, Card } from '../ui';
 
 interface NetWorthSnapshotHeaderProps {
   createdAt: string;
+  deltaAssets?: number | null;
+  deltaLiabilities?: number | null;
+  deltaNetWorth?: number | null;
   isPositive: boolean;
   netWorth: number;
   onEdit?: () => void;
@@ -12,8 +15,26 @@ interface NetWorthSnapshotHeaderProps {
   totalLiabilities: number;
 }
 
+function DeltaLabel({ delta }: { delta: number }) {
+  const isPositive = delta > 0;
+  const sign = isPositive ? '+' : '−';
+  const colorClass = isPositive
+    ? 'text-green-600 dark:text-green-400'
+    : 'text-red-600 dark:text-red-400';
+
+  return (
+    <p className={`mt-1 text-xs font-medium ${colorClass}`}>
+      {sign}
+      {formatMoney(Math.abs(delta))} €
+    </p>
+  );
+}
+
 export function NetWorthSnapshotHeader({
   createdAt,
+  deltaAssets,
+  deltaLiabilities,
+  deltaNetWorth,
   isPositive,
   netWorth,
   onEdit,
@@ -50,6 +71,10 @@ export function NetWorthSnapshotHeader({
           <p className="text-xl font-semibold text-green-600 dark:text-green-400">
             {formatMoney(totalAssets)} €
           </p>
+
+          {deltaAssets != null && deltaAssets !== 0 && (
+            <DeltaLabel delta={deltaAssets} />
+          )}
         </div>
 
         <div className="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
@@ -60,6 +85,10 @@ export function NetWorthSnapshotHeader({
           <p className="text-xl font-semibold text-red-600 dark:text-red-400">
             {formatMoney(totalLiabilities)} €
           </p>
+
+          {deltaLiabilities != null && deltaLiabilities !== 0 && (
+            <DeltaLabel delta={deltaLiabilities} />
+          )}
         </div>
 
         <div
@@ -81,6 +110,10 @@ export function NetWorthSnapshotHeader({
             {isPositive ? '' : '-'}
             {formatMoney(Math.abs(netWorth))} €
           </p>
+
+          {deltaNetWorth != null && deltaNetWorth !== 0 && (
+            <DeltaLabel delta={deltaNetWorth} />
+          )}
         </div>
       </div>
     </Card>

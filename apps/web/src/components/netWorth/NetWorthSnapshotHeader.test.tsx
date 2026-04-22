@@ -58,4 +58,38 @@ describe('NetWorthSnapshotHeader', () => {
     const netWorthValue = screen.getByText(/12\.000,00 €/);
     expect(netWorthValue.textContent).not.toMatch(/^-/);
   });
+
+  describe('delta labels', () => {
+    it('shows positive delta for assets in green with a plus sign', () => {
+      render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={2000} />);
+      expect(screen.getByText(/\+2\.000,00 €/)).toHaveClass('text-green-600');
+    });
+
+    it('shows negative delta for assets in red with a minus sign', () => {
+      render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={-500} />);
+      expect(screen.getByText(/−500,00 €/)).toHaveClass('text-red-600');
+    });
+
+    it('hides the delta label when delta is zero', () => {
+      render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={0} />);
+      expect(screen.queryByText(/[+−]\d/)).not.toBeInTheDocument();
+    });
+
+    it('hides the delta label when delta is null (no previous snapshot)', () => {
+      render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={null} />);
+      expect(screen.queryByText(/[+−]\d/)).not.toBeInTheDocument();
+    });
+
+    it('shows delta for net worth', () => {
+      render(<NetWorthSnapshotHeader {...defaultProps} deltaNetWorth={1200} />);
+      expect(screen.getByText(/\+1\.200,00 €/)).toBeInTheDocument();
+    });
+
+    it('shows delta for liabilities', () => {
+      render(
+        <NetWorthSnapshotHeader {...defaultProps} deltaLiabilities={300} />
+      );
+      expect(screen.getByText(/\+300,00 €/)).toBeInTheDocument();
+    });
+  });
 });
