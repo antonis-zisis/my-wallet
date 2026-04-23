@@ -1,19 +1,6 @@
-import { Card, Divider, PageLayout, Skeleton } from '../ui';
+import { Card, PageLayout, Skeleton } from '../ui';
 
-function readCollapsed(title: string): boolean {
-  try {
-    const stored = localStorage.getItem(
-      `netWorthSnapshot.${title}.isCollapsed`
-    );
-    return stored !== null ? (JSON.parse(stored) as boolean) : false;
-  } catch {
-    return false;
-  }
-}
-
-function EntriesSectionSkeleton({ title }: { title: string }) {
-  const isCollapsed = readCollapsed(title);
-
+function EntriesSectionSkeleton() {
   return (
     <Card className="p-6">
       <div className="mt-2 flex items-center justify-between">
@@ -32,25 +19,6 @@ function EntriesSectionSkeleton({ title }: { title: string }) {
           ))}
         </div>
       </div>
-
-      {!isCollapsed && (
-        <>
-          <div className="my-4">
-            <Divider />
-          </div>
-          <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-            {[0, 1, 2].map((rowIndex) => (
-              <div
-                key={rowIndex}
-                className="flex items-center justify-between border-b border-gray-100 px-4 py-3 last:border-b-0 dark:border-gray-700"
-              >
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-4 w-20" />
-              </div>
-            ))}
-          </div>
-        </>
-      )}
     </Card>
   );
 }
@@ -78,8 +46,8 @@ export function NetWorthSnapshotSkeleton() {
         ))}
       </div>
 
-      <EntriesSectionSkeleton title="assets" />
-      <EntriesSectionSkeleton title="liabilities" />
+      <EntriesSectionSkeleton />
+      <EntriesSectionSkeleton />
     </PageLayout>
   );
 }

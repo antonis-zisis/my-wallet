@@ -72,6 +72,19 @@ describe('NetWorthSnapshotModal', () => {
     );
   });
 
+  it('prepends new asset entries so the newest appears first', async () => {
+    renderModal();
+    const labelInput = screen.getByPlaceholderText('e.g. Savings Account');
+    await userEvent.type(labelInput, 'Existing');
+
+    const addButtons = screen.getAllByRole('button', { name: '+ Add' });
+    await userEvent.click(addButtons[0]);
+
+    const labelInputs = screen.getAllByPlaceholderText('e.g. Savings Account');
+    expect(labelInputs[0]).toHaveValue('');
+    expect(labelInputs[1]).toHaveValue('Existing');
+  });
+
   it('removes an entry when the remove button is clicked', async () => {
     renderModal();
     const addButtons = screen.getAllByRole('button', { name: '+ Add' });
@@ -99,7 +112,7 @@ describe('NetWorthSnapshotModal', () => {
 
   it('renders a Snapshot Date input with a non-empty default value', () => {
     renderModal();
-    const dateInput = screen.getByLabelText('Snapshot Date');
+    const dateInput = screen.getByLabelText('Date');
     expect(dateInput).toBeInTheDocument();
     expect((dateInput as HTMLInputElement).value).toMatch(
       /^\d{4}-\d{2}-\d{2}$/
@@ -116,7 +129,7 @@ describe('NetWorthSnapshotModal', () => {
 
   it('updates the title when the date changes and the title was not manually edited', () => {
     renderModal();
-    fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+    fireEvent.change(screen.getByLabelText('Date'), {
       target: { value: '2026-01-15' },
     });
     expect(screen.getByPlaceholderText('e.g. February 2026')).toHaveValue(
@@ -129,7 +142,7 @@ describe('NetWorthSnapshotModal', () => {
     const titleInput = screen.getByPlaceholderText('e.g. February 2026');
     await userEvent.clear(titleInput);
     await userEvent.type(titleInput, 'My Custom Title');
-    fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+    fireEvent.change(screen.getByLabelText('Date'), {
       target: { value: '2026-01-15' },
     });
     expect(titleInput).toHaveValue('My Custom Title');
@@ -139,7 +152,7 @@ describe('NetWorthSnapshotModal', () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     renderModal({ onSubmit });
 
-    fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+    fireEvent.change(screen.getByLabelText('Date'), {
       target: { value: '2026-03-01' },
     });
     await userEvent.type(
@@ -254,7 +267,7 @@ describe('NetWorthSnapshotModal', () => {
         initialSnapshotDate: '2026-02-01',
         initialTitle: 'February 2026',
       });
-      expect(screen.getByLabelText('Snapshot Date')).toHaveValue('2026-02-01');
+      expect(screen.getByLabelText('Date')).toHaveValue('2026-02-01');
     });
 
     it('prefills the title and entries when provided', () => {

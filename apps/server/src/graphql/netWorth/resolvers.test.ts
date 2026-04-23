@@ -66,6 +66,23 @@ beforeEach(async () => {
 });
 
 describe('netWorthResolvers', () => {
+  describe('NetWorthSnapshot.snapshotDate', () => {
+    it('serializes the date as a YYYY-MM-DD string using UTC', () => {
+      const result =
+        netWorthResolvers.NetWorthSnapshot.snapshotDate(mockSnapshot);
+      expect(result).toBe('2024-01-01');
+    });
+
+    it('pads month and day with leading zeros', () => {
+      const parent = {
+        ...mockSnapshot,
+        snapshotDate: new Date('2024-03-05T00:00:00Z'),
+      };
+      const result = netWorthResolvers.NetWorthSnapshot.snapshotDate(parent);
+      expect(result).toBe('2024-03-05');
+    });
+  });
+
   describe('NetWorthSnapshot.entries', () => {
     it('returns pre-loaded entries from parent without querying DB', async () => {
       const result = await netWorthResolvers.NetWorthSnapshot.entries(

@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { type NetWorthEntry } from '../../types/netWorth';
@@ -208,6 +209,81 @@ describe('NetWorthEntriesSection', () => {
     );
     expect(screen.getByText(/\+200,00 €/)).toBeInTheDocument();
     expect(screen.getByText(/\+4\.0%/)).toBeInTheDocument();
+  });
+
+  describe('collapse / expand', () => {
+    it('renders a collapse toggle button when entries exist', () => {
+      const entries = [
+        makeEntry({ label: 'Savings', amount: 3000, category: 'Savings' }),
+      ];
+      render(
+        <NetWorthEntriesSection
+          {...defaultProps}
+          entries={entries}
+          total={3000}
+        />
+      );
+      expect(
+        screen.getByRole('button', { name: /collapse/i })
+      ).toBeInTheDocument();
+    });
+
+    it('sets aria-expanded to false after collapsing', async () => {
+      const entries = [
+        makeEntry({
+          label: 'Savings Account',
+          amount: 3000,
+          category: 'Savings',
+        }),
+      ];
+      render(
+        <NetWorthEntriesSection
+          {...defaultProps}
+          entries={entries}
+          total={3000}
+        />
+      );
+      const toggle = screen.getByRole('button', { name: /collapse/i });
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      await userEvent.click(toggle);
+      expect(screen.getByRole('button', { name: /expand/i })).toHaveAttribute(
+        'aria-expanded',
+        'false'
+      );
+    });
+
+    it('sets aria-expanded back to true after expanding', async () => {
+      const entries = [
+        makeEntry({
+          label: 'Savings Account',
+          amount: 3000,
+          category: 'Savings',
+        }),
+      ];
+      render(
+        <NetWorthEntriesSection
+          {...defaultProps}
+          entries={entries}
+          total={3000}
+        />
+      );
+      const toggle = screen.getByRole('button', { name: /collapse/i });
+      await userEvent.click(toggle);
+      await userEvent.click(screen.getByRole('button', { name: /expand/i }));
+      expect(screen.getByRole('button', { name: /collapse/i })).toHaveAttribute(
+        'aria-expanded',
+        'true'
+      );
+    });
+
+    it('does not render a collapse toggle for the empty state', () => {
+      render(
+        <NetWorthEntriesSection {...defaultProps} entries={[]} total={0} />
+      );
+      expect(
+        screen.queryByRole('button', { name: /collapse|expand/i })
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('groups entries under their category headings', () => {

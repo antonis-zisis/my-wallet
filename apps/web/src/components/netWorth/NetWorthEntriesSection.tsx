@@ -137,7 +137,7 @@ export function NetWorthEntriesSection({
           )}
 
           <div
-            className={`overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 ${categoryCount >= 1 ? '' : 'mt-4'}`}
+            className={`overflow-hidden rounded border border-gray-200 dark:border-gray-700 ${categoryCount >= 1 ? '' : 'mt-4'}`}
           >
             {Object.entries(byCategory).map(([category, categoryEntries]) => (
               <div key={category}>
@@ -156,26 +156,26 @@ export function NetWorthEntriesSection({
                   return (
                     <div
                       key={entry.id}
-                      className={`flex items-center justify-between px-4 py-3 ${
+                      className={`grid grid-cols-[1fr_152px_136px] items-center px-4 py-2 ${
                         index < categoryEntries.length - 1
                           ? 'border-b border-gray-100 dark:border-gray-700'
                           : ''
                       }`}
                     >
-                      <span className="text-sm text-gray-700 dark:text-gray-200">
+                      <span className="min-w-0 truncate text-sm text-gray-700 dark:text-gray-200">
                         {entry.label}
                       </span>
 
-                      <div className="flex flex-col items-end gap-0.5">
-                        <span className={`text-sm font-medium ${colorClass}`}>
-                          {formatMoney(entry.amount)} €
-                          {percentOfTotal != null && (
-                            <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">
-                              ({percentOfTotal}%)
-                            </span>
-                          )}
-                        </span>
+                      <span className="text-right text-sm font-medium text-gray-800 dark:text-gray-100">
+                        {formatMoney(entry.amount)} €
+                        {percentOfTotal != null && (
+                          <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">
+                            ({percentOfTotal}%)
+                          </span>
+                        )}
+                      </span>
 
+                      <div className="flex justify-end">
                         {entryDelta && (
                           <EntryDeltaLabel
                             currentAmount={entry.amount}

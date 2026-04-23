@@ -110,6 +110,8 @@ export function NetWorthSnapshotModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isTitleAutoRef = useRef(true);
   const entriesContainerRef = useRef<HTMLDivElement>(null);
+  const liabilitiesSectionRef = useRef<HTMLDivElement>(null);
+  const lastAddedTypeRef = useRef<NetWorthEntryType | null>(null);
   const prevEntriesLengthRef = useRef(entries.length);
 
   useEffect(() => {
@@ -130,8 +132,18 @@ export function NetWorthSnapshotModal({
       entries.length > prevEntriesLengthRef.current &&
       entriesContainerRef.current
     ) {
-      entriesContainerRef.current.scrollTop =
-        entriesContainerRef.current.scrollHeight;
+      const container = entriesContainerRef.current;
+      if (
+        lastAddedTypeRef.current === 'LIABILITY' &&
+        liabilitiesSectionRef.current
+      ) {
+        const containerTop = container.getBoundingClientRect().top;
+        const sectionTop =
+          liabilitiesSectionRef.current.getBoundingClientRect().top;
+        container.scrollTop += sectionTop - containerTop;
+      } else {
+        container.scrollTop = 0;
+      }
     }
     prevEntriesLengthRef.current = entries.length;
   }, [entries.length]);
@@ -150,7 +162,8 @@ export function NetWorthSnapshotModal({
   };
 
   const addEntry = (type: NetWorthEntryType) => {
-    setEntries((previous) => [...previous, makeEntry(type)]);
+    lastAddedTypeRef.current = type;
+    setEntries((previous) => [makeEntry(type), ...previous]);
   };
 
   const removeEntry = (key: number) => {
@@ -334,7 +347,7 @@ export function NetWorthSnapshotModal({
 
           <div
             ref={entriesContainerRef}
-            className="max-h-80 space-y-4 overflow-y-auto pr-1"
+            className="max-h-120 space-y-4 overflow-y-auto pr-1"
           >
             <div>
               <div className="mb-1 flex items-center justify-between">
@@ -361,7 +374,7 @@ export function NetWorthSnapshotModal({
               </div>
             </div>
 
-            <div>
+            <div ref={liabilitiesSectionRef}>
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
                   Liabilities

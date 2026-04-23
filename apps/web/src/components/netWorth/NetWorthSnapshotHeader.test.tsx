@@ -102,6 +102,20 @@ describe('NetWorthSnapshotHeader', () => {
       expect(screen.getByText(/\+300,00 €/)).toBeInTheDocument();
     });
 
+    it('shows a positive liabilities delta in red (more debt is bad)', () => {
+      render(
+        <NetWorthSnapshotHeader {...defaultProps} deltaLiabilities={500} />
+      );
+      expect(screen.getByText(/\+500,00 €/)).toHaveClass('text-red-600');
+    });
+
+    it('shows a negative liabilities delta in green (less debt is good)', () => {
+      render(
+        <NetWorthSnapshotHeader {...defaultProps} deltaLiabilities={-500} />
+      );
+      expect(screen.getByText(/−500,00 €/)).toHaveClass('text-green-600');
+    });
+
     it('appends a percentage change alongside the absolute delta', () => {
       render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={2000} />);
       // previousAssets = 15000 - 2000 = 13000; percentage = 2000/13000 * 100 ≈ 15.4%
