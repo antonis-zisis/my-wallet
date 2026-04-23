@@ -1,5 +1,5 @@
 import { type ChartView, NetWorthTrendChart } from '../components/charts';
-import { ChevronDownIcon } from '../components/icons';
+import { ChevronDownIcon, InfoIcon } from '../components/icons';
 import { NetWorthList } from '../components/netWorth/NetWorthList';
 import { NetWorthSnapshotModal } from '../components/netWorth/NetWorthSnapshotModal';
 import {
@@ -8,6 +8,7 @@ import {
   PageLayout,
   Pagination,
   Skeleton,
+  Tooltip,
 } from '../components/ui';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { PAGE_SIZE, useNetWorthData } from '../hooks/useNetWorthData';
@@ -60,9 +61,15 @@ export function NetWorth() {
           <Card className="mb-4">
             {isChartOpen ? (
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Net Worth Over Time
-                </h2>
+                <div className="flex items-center gap-1.5">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Net Worth Over Time
+                  </h2>
+
+                  <Tooltip content="Shows the 10 most recent snapshots, from oldest to newest.">
+                    <InfoIcon className="h-4 w-4 cursor-pointer text-gray-400 dark:text-gray-500" />
+                  </Tooltip>
+                </div>
 
                 <div className="flex items-center gap-2">
                   <div className="flex overflow-hidden rounded border border-gray-200 text-xs dark:border-gray-700">
@@ -103,18 +110,28 @@ export function NetWorth() {
                 </div>
               </div>
             ) : (
-              <button
-                aria-expanded={false}
-                aria-label="Net Worth Over Time"
-                type="button"
-                className="flex w-full cursor-pointer items-center gap-3"
-                onClick={() => setIsChartOpen((previous) => !previous)}
-              >
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Net Worth Over Time
-                </h2>
-                <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-500 dark:text-gray-400" />
-              </button>
+              <div className="flex w-full cursor-pointer items-center gap-3">
+                <button
+                  aria-expanded={false}
+                  aria-label="Net Worth Over Time"
+                  type="button"
+                  className="flex flex-1 items-center gap-1.5"
+                  onClick={() => setIsChartOpen((previous) => !previous)}
+                >
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Net Worth Over Time
+                  </h2>
+                </button>
+
+                <Tooltip content="Shows the 10 most recent snapshots, from oldest to newest.">
+                  <InfoIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                </Tooltip>
+
+                <ChevronDownIcon
+                  className="h-5 w-5 cursor-pointer text-gray-500 dark:text-gray-400"
+                  onClick={() => setIsChartOpen((previous) => !previous)}
+                />
+              </div>
             )}
 
             <div

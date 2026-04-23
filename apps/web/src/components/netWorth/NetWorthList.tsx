@@ -40,11 +40,11 @@ function ColumnHeaders() {
 function SkeletonRow() {
   return (
     <li className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-3 py-3">
-      <Skeleton className="h-4 w-48" />
+      <Skeleton className="h-6 w-48" />
       <Skeleton className="h-4 w-28" />
       <Skeleton className="h-4 w-28" />
       <Skeleton className="h-3 w-20" />
-      <div className="w-4" />
+      <ChevronRightIcon className="size-4 text-gray-200 dark:text-gray-700" />
     </li>
   );
 }
