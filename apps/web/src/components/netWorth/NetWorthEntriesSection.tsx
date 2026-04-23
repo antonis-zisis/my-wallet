@@ -1,6 +1,7 @@
-import { EntryDelta, NetWorthEntry } from '../../types/netWorth';
+import { type EntryDelta, type NetWorthEntry } from '../../types/netWorth';
 import { formatMoney } from '../../utils/formatMoney';
-import { Card } from '../ui';
+import { NetWorthCategoryBreakdownChart } from '../charts/NetWorthCategoryBreakdownChart';
+import { Badge, Card, Divider } from '../ui';
 
 interface NetWorthEntriesSectionProps {
   colorClass: string;
@@ -10,12 +11,18 @@ interface NetWorthEntriesSectionProps {
   total: number;
 }
 
-function EntryDeltaLabel({ entryDelta }: { entryDelta: EntryDelta }) {
+function EntryDeltaLabel({
+  currentAmount,
+  entryDelta,
+}: {
+  currentAmount: number;
+  entryDelta: EntryDelta;
+}) {
   if (entryDelta.isNew) {
     return (
-      <span className="text-xs font-medium text-blue-500 dark:text-blue-400">
+      <Badge size="sm" variant="info">
         New
-      </span>
+      </Badge>
     );
   }
 
@@ -29,10 +36,22 @@ function EntryDeltaLabel({ entryDelta }: { entryDelta: EntryDelta }) {
     ? 'text-green-600 dark:text-green-400'
     : 'text-red-600 dark:text-red-400';
 
+  const previousAmount = currentAmount - entryDelta.delta;
+  const percentage =
+    previousAmount !== 0
+      ? Math.abs((entryDelta.delta / Math.abs(previousAmount)) * 100)
+      : null;
+
   return (
     <span className={`text-xs font-medium ${colorClass}`}>
       {sign}
       {formatMoney(Math.abs(entryDelta.delta))} €
+      {percentage != null && (
+        <span className="ml-1 opacity-70">
+          ({sign}
+          {percentage.toFixed(1)}%)
+        </span>
+      )}
     </span>
   );
 }
@@ -45,7 +64,20 @@ export function NetWorthEntriesSection({
   total,
 }: NetWorthEntriesSectionProps) {
   if (entries.length === 0) {
-    return null;
+    return (
+      <Card className="p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className={`text-lg font-semibold ${colorClass}`}>{title}</h2>
+          <span className={`font-semibold ${colorClass}`}>
+            {formatMoney(total)} €
+          </span>
+        </div>
+
+        <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">
+          No {title.toLowerCase()} recorded
+        </p>
+      </Card>
+    );
   }
 
   const byCategory = entries.reduce<Record<string, Array<NetWorthEntry>>>(
@@ -59,6 +91,9 @@ export function NetWorthEntriesSection({
     {}
   );
 
+  const categoryCount = Object.keys(byCategory).length;
+  const entryType = entries[0].type;
+
   return (
     <Card className="p-6">
       <div className="mb-4 flex items-center justify-between">
@@ -67,6 +102,15 @@ export function NetWorthEntriesSection({
           {formatMoney(total)} €
         </span>
       </div>
+
+      {categoryCount >= 1 && (
+        <>
+          <NetWorthCategoryBreakdownChart entries={entries} type={entryType} />
+          <div className="my-4">
+            <Divider />
+          </div>
+        </>
+      )}
 
       <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
         {Object.entries(byCategory).map(([category, categoryEntries]) => (
@@ -78,6 +122,8 @@ export function NetWorthEntriesSection({
             {categoryEntries.map((entry, index) => {
               const deltaKey = `${entry.category}:${entry.label}`;
               const entryDelta = entryDeltas?.[deltaKey];
+              const percentOfTotal =
+                total > 0 ? ((entry.amount / total) * 100).toFixed(1) : null;
 
               return (
                 <div
@@ -95,9 +141,19 @@ export function NetWorthEntriesSection({
                   <div className="flex flex-col items-end gap-0.5">
                     <span className={`text-sm font-medium ${colorClass}`}>
                       {formatMoney(entry.amount)} €
+                      {percentOfTotal != null && (
+                        <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">
+                          ({percentOfTotal}%)
+                        </span>
+                      )}
                     </span>
 
-                    {entryDelta && <EntryDeltaLabel entryDelta={entryDelta} />}
+                    {entryDelta && (
+                      <EntryDeltaLabel
+                        currentAmount={entry.amount}
+                        entryDelta={entryDelta}
+                      />
+                    )}
                   </div>
                 </div>
               );

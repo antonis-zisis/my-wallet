@@ -35,12 +35,13 @@ const mockEntries = [
 const mockSnapshot = {
   id: '1',
   title: 'January 2026',
+  snapshotDate: '2026-01-15T00:00:00.000Z',
   totalAssets: 15000,
   totalLiabilities: 3000,
   netWorth: 12000,
   entries: mockEntries,
   createdAt: '2026-01-01T00:00:00.000Z',
-  updatedAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-04-20T00:00:00.000Z',
 };
 
 const mockSnapshotQuery: MockLink.MockedResponse = {
@@ -124,6 +125,13 @@ describe('NetWorthSnapshotPage', () => {
     await screen.findByText('January 2026');
     expect(screen.getByText('Assets')).toBeInTheDocument();
     expect(screen.getByText('Liabilities')).toBeInTheDocument();
+  });
+
+  it('shows created and updated dates in the header', async () => {
+    renderPage([mockSnapshotQuery]);
+    await screen.findByText('January 2026');
+    expect(screen.getByText(/Created Jan 1, 2026/)).toBeInTheDocument();
+    expect(screen.getByText(/Updated Apr 20, 2026/)).toBeInTheDocument();
   });
 
   it('shows error message on query failure', async () => {

@@ -75,7 +75,7 @@ export function NetWorthSnapshotPage() {
         <NetWorthBackLink />
 
         <NetWorthSnapshotHeader
-          snapshotDate={snapshot.snapshotDate}
+          createdAt={snapshot.createdAt}
           deltaAssets={deltaAssets}
           deltaLiabilities={deltaLiabilities}
           deltaNetWorth={deltaNetWorth}
@@ -84,6 +84,7 @@ export function NetWorthSnapshotPage() {
           title={snapshot.title}
           totalAssets={snapshot.totalAssets}
           totalLiabilities={snapshot.totalLiabilities}
+          updatedAt={snapshot.updatedAt}
           onDelete={onOpenDelete}
           onDuplicate={onOpenDuplicate}
           onEdit={onOpenEdit}

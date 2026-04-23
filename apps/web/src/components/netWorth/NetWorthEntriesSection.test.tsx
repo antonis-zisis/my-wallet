@@ -22,11 +22,9 @@ const defaultProps = {
 };
 
 describe('NetWorthEntriesSection', () => {
-  it('renders nothing when entries is empty', () => {
-    const { container } = render(
-      <NetWorthEntriesSection {...defaultProps} entries={[]} total={0} />
-    );
-    expect(container.innerHTML).toBe('');
+  it('renders an empty state when entries is empty', () => {
+    render(<NetWorthEntriesSection {...defaultProps} entries={[]} total={0} />);
+    expect(screen.getByText(/no assets recorded/i)).toBeInTheDocument();
   });
 
   it('renders the section title and formatted total', () => {
@@ -62,8 +60,8 @@ describe('NetWorthEntriesSection', () => {
     );
     expect(screen.getByText('Savings Account')).toBeInTheDocument();
     expect(screen.getByText('Stocks')).toBeInTheDocument();
-    expect(screen.getByText(/3\.000,00 €/)).toBeInTheDocument();
-    expect(screen.getByText(/7\.000,00 €/)).toBeInTheDocument();
+    expect(screen.getAllByText(/3\.000,00 €/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/7\.000,00 €/).length).toBeGreaterThan(0);
   });
 
   describe('entryDeltas', () => {
@@ -170,6 +168,48 @@ describe('NetWorthEntriesSection', () => {
     });
   });
 
+  it('shows each entry amount as a percentage of the total', () => {
+    const entries = [
+      makeEntry({
+        label: 'Savings Account',
+        amount: 3000,
+        category: 'Savings',
+      }),
+      makeEntry({ label: 'Index Fund', amount: 7000, category: 'Investments' }),
+    ];
+    render(
+      <NetWorthEntriesSection
+        {...defaultProps}
+        entries={entries}
+        total={10000}
+      />
+    );
+    expect(screen.getAllByText('(30.0%)').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('(70.0%)').length).toBeGreaterThan(0);
+  });
+
+  it('appends a percentage change alongside the absolute delta', () => {
+    const entries = [
+      makeEntry({
+        label: 'Savings Account',
+        amount: 5200,
+        category: 'Savings',
+      }),
+    ];
+    render(
+      <NetWorthEntriesSection
+        {...defaultProps}
+        entries={entries}
+        total={5200}
+        entryDeltas={{
+          'Savings:Savings Account': { delta: 200, isNew: false },
+        }}
+      />
+    );
+    expect(screen.getByText(/\+200,00 €/)).toBeInTheDocument();
+    expect(screen.getByText(/\+4\.0%/)).toBeInTheDocument();
+  });
+
   it('groups entries under their category headings', () => {
     const entries = [
       makeEntry({ label: 'Emergency Fund', amount: 2000, category: 'Savings' }),
@@ -183,7 +223,7 @@ describe('NetWorthEntriesSection', () => {
         total={10000}
       />
     );
-    expect(screen.getByText('Savings')).toBeInTheDocument();
-    expect(screen.getByText('Investments')).toBeInTheDocument();
+    expect(screen.getAllByText('Savings').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Investments').length).toBeGreaterThan(0);
   });
 });
