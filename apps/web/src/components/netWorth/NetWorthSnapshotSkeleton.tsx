@@ -16,7 +16,7 @@ function EntriesSectionSkeleton({ title }: { title: string }) {
 
   return (
     <Card className="p-6">
-      <div className="flex items-center justify-between">
+      <div className="mt-2 flex items-center justify-between">
         <Skeleton className="h-5 w-16" />
         <div className="flex items-center gap-3">
           <Skeleton className="h-5 w-24" />
@@ -24,11 +24,17 @@ function EntriesSectionSkeleton({ title }: { title: string }) {
         </div>
       </div>
 
+      <div className="mt-4 space-y-3">
+        <Skeleton className="h-2.5 w-full rounded-full" />
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          {[80, 56, 64].map((width) => (
+            <Skeleton key={width} className={`h-3 w-${width}`} />
+          ))}
+        </div>
+      </div>
+
       {!isCollapsed && (
         <>
-          <div className="mt-4">
-            <Skeleton className="h-40 w-full rounded-lg" />
-          </div>
           <div className="my-4">
             <Divider />
           </div>
