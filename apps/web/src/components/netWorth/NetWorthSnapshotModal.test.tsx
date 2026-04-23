@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ComponentProps } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -11,7 +11,7 @@ const baseProps: ModalProps = {
   isOpen: true,
   modalTitle: 'New Net Worth Snapshot',
   onClose: vi.fn(),
-  onSubmit: vi.fn(),
+  onSubmit: vi.fn().mockResolvedValue(undefined),
   submitLabel: 'Save Snapshot',
 };
 
@@ -45,10 +45,9 @@ describe('NetWorthSnapshotModal', () => {
 
   it('submit button is disabled when only title is filled', async () => {
     renderModal();
-    await userEvent.type(
-      screen.getByPlaceholderText('e.g. February 2026'),
-      'January 2026'
-    );
+    const titleInput = screen.getByPlaceholderText('e.g. February 2026');
+    await userEvent.clear(titleInput);
+    await userEvent.type(titleInput, 'January 2026');
     expect(
       screen.getByRole('button', { name: 'Save Snapshot' })
     ).toBeDisabled();
@@ -57,28 +56,33 @@ describe('NetWorthSnapshotModal', () => {
   it('enables the submit button when title and one entry are filled', async () => {
     renderModal();
     await userEvent.type(
-      screen.getByPlaceholderText('e.g. February 2026'),
-      'January 2026'
+      screen.getByPlaceholderText('e.g. Savings Account'),
+      'Savings'
     );
-    await userEvent.type(screen.getByPlaceholderText('Label'), 'Savings');
-    await userEvent.type(screen.getByPlaceholderText('Amount'), '1000');
+    await userEvent.type(screen.getByPlaceholderText('0.00'), '1000');
     expect(screen.getByRole('button', { name: 'Save Snapshot' })).toBeEnabled();
   });
 
-  it('adds a new asset entry when + Asset is clicked', async () => {
+  it('adds a new asset entry when the Assets + Add button is clicked', async () => {
     renderModal();
-    await userEvent.click(screen.getByRole('button', { name: '+ Asset' }));
-    expect(screen.getAllByPlaceholderText('Label')).toHaveLength(2);
+    const addButtons = screen.getAllByRole('button', { name: '+ Add' });
+    await userEvent.click(addButtons[0]);
+    expect(screen.getAllByPlaceholderText('e.g. Savings Account')).toHaveLength(
+      2
+    );
   });
 
   it('removes an entry when the remove button is clicked', async () => {
     renderModal();
-    await userEvent.click(screen.getByRole('button', { name: '+ Asset' }));
+    const addButtons = screen.getAllByRole('button', { name: '+ Add' });
+    await userEvent.click(addButtons[0]);
     const removeButtons = screen.getAllByRole('button', {
       name: 'Remove entry',
     });
     await userEvent.click(removeButtons[0]);
-    expect(screen.getAllByPlaceholderText('Label')).toHaveLength(1);
+    expect(screen.getAllByPlaceholderText('e.g. Savings Account')).toHaveLength(
+      1
+    );
   });
 
   it('disables the remove button when only one entry remains', () => {
@@ -102,19 +106,47 @@ describe('NetWorthSnapshotModal', () => {
     );
   });
 
+  it("auto-populates the title from today's date when no initialTitle is provided", () => {
+    renderModal();
+    const titleInput = screen.getByPlaceholderText(
+      'e.g. February 2026'
+    ) as HTMLInputElement;
+    expect(titleInput.value).toMatch(/^\w+ \d{4}$/);
+  });
+
+  it('updates the title when the date changes and the title was not manually edited', () => {
+    renderModal();
+    fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+      target: { value: '2026-01-15' },
+    });
+    expect(screen.getByPlaceholderText('e.g. February 2026')).toHaveValue(
+      'January 2026'
+    );
+  });
+
+  it('does not update the title when the date changes after a manual edit', async () => {
+    renderModal();
+    const titleInput = screen.getByPlaceholderText('e.g. February 2026');
+    await userEvent.clear(titleInput);
+    await userEvent.type(titleInput, 'My Custom Title');
+    fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+      target: { value: '2026-01-15' },
+    });
+    expect(titleInput).toHaveValue('My Custom Title');
+  });
+
   it('submits the snapshotDate from the date input', async () => {
-    const onSubmit = vi.fn();
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
     renderModal({ onSubmit });
 
     fireEvent.change(screen.getByLabelText('Snapshot Date'), {
       target: { value: '2026-03-01' },
     });
     await userEvent.type(
-      screen.getByPlaceholderText('e.g. February 2026'),
-      'March 2026'
+      screen.getByPlaceholderText('e.g. Savings Account'),
+      'Savings'
     );
-    await userEvent.type(screen.getByPlaceholderText('Label'), 'Savings');
-    await userEvent.type(screen.getByPlaceholderText('Amount'), '1000');
+    await userEvent.type(screen.getByPlaceholderText('0.00'), '1000');
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Save Snapshot' })
@@ -126,15 +158,17 @@ describe('NetWorthSnapshotModal', () => {
   });
 
   it('submits trimmed title and entry data', async () => {
-    const onSubmit = vi.fn();
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
     renderModal({ onSubmit });
 
+    const titleInput = screen.getByPlaceholderText('e.g. February 2026');
+    await userEvent.clear(titleInput);
+    await userEvent.type(titleInput, '  January 2026  ');
     await userEvent.type(
-      screen.getByPlaceholderText('e.g. February 2026'),
-      '  January 2026  '
+      screen.getByPlaceholderText('e.g. Savings Account'),
+      'Savings'
     );
-    await userEvent.type(screen.getByPlaceholderText('Label'), 'Savings');
-    await userEvent.type(screen.getByPlaceholderText('Amount'), '5000');
+    await userEvent.type(screen.getByPlaceholderText('0.00'), '5000');
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Save Snapshot' })
@@ -153,6 +187,50 @@ describe('NetWorthSnapshotModal', () => {
         ],
       })
     );
+  });
+
+  it('disables Cancel and the submit button while saving', async () => {
+    let resolveSubmit!: () => void;
+    const onSubmit = vi
+      .fn()
+      .mockReturnValue(
+        new Promise<void>((resolve) => (resolveSubmit = resolve))
+      );
+    renderModal({ onSubmit });
+
+    await userEvent.type(
+      screen.getByPlaceholderText('e.g. Savings Account'),
+      'Savings'
+    );
+    await userEvent.type(screen.getByPlaceholderText('0.00'), '1000');
+
+    const clickPromise = userEvent.click(
+      screen.getByRole('button', { name: 'Save Snapshot' })
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled()
+    );
+
+    resolveSubmit();
+    await clickPromise;
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeEnabled()
+    );
+  });
+
+  it('shows a validation hint when an entry is partially filled', async () => {
+    renderModal();
+    await userEvent.type(screen.getByPlaceholderText('0.00'), '1000');
+    expect(screen.getByText(/all entries need a label/i)).toBeInTheDocument();
+  });
+
+  it('hides totals until an amount is entered', async () => {
+    renderModal();
+    expect(screen.queryByText(/assets:/i)).not.toBeInTheDocument();
+    await userEvent.type(screen.getByPlaceholderText('0.00'), '500');
+    expect(screen.getByText(/assets:/i)).toBeInTheDocument();
   });
 
   describe('with initial values (duplicate / edit)', () => {
@@ -189,24 +267,29 @@ describe('NetWorthSnapshotModal', () => {
         'February 2026'
       );
 
-      const labels = screen.getAllByPlaceholderText('Label');
+      const labels = screen.getAllByPlaceholderText('e.g. Savings Account');
       expect(labels).toHaveLength(2);
       expect(labels[0]).toHaveValue('Savings Account');
       expect(labels[1]).toHaveValue('Car Loan');
 
-      const amounts = screen.getAllByPlaceholderText('Amount');
+      const amounts = screen.getAllByPlaceholderText('0.00');
       expect(amounts[0]).toHaveValue(12000);
       expect(amounts[1]).toHaveValue(5000);
     });
 
-    it('leaves the title blank when only entries are prefilled (duplicate flow)', () => {
+    it("auto-generates the title from today's date when only entries are prefilled (duplicate flow)", () => {
       renderModal({ initialEntries });
-      expect(screen.getByPlaceholderText('e.g. February 2026')).toHaveValue('');
-      expect(screen.getAllByPlaceholderText('Label')).toHaveLength(2);
+      const titleInput = screen.getByPlaceholderText(
+        'e.g. February 2026'
+      ) as HTMLInputElement;
+      expect(titleInput.value).toMatch(/^\w+ \d{4}$/);
+      expect(
+        screen.getAllByPlaceholderText('e.g. Savings Account')
+      ).toHaveLength(2);
     });
 
     it('submits updated values preserving the prefilled entries', async () => {
-      const onSubmit = vi.fn();
+      const onSubmit = vi.fn().mockResolvedValue(undefined);
       renderModal({
         initialEntries,
         initialTitle: 'February 2026',
@@ -214,7 +297,7 @@ describe('NetWorthSnapshotModal', () => {
         submitLabel: 'Update Snapshot',
       });
 
-      const amounts = screen.getAllByPlaceholderText('Amount');
+      const amounts = screen.getAllByPlaceholderText('0.00');
       await userEvent.clear(amounts[0]);
       await userEvent.type(amounts[0], '15000');
 

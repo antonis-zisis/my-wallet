@@ -45,6 +45,7 @@ const mockSnapshot = {
   totalLiabilities: 5000,
   netWorth: 5000,
   entries: [],
+  previousSnapshot: null,
   createdAt: '2026-01-01T00:00:00.000Z',
 };
 
@@ -302,15 +303,17 @@ describe('NetWorth', () => {
         screen.getByRole('button', { name: 'New Snapshot' })
       );
 
-      await userEvent.type(
-        screen.getByPlaceholderText('e.g. February 2026'),
-        'Test Snapshot'
-      );
+      const titleInput = screen.getByPlaceholderText('e.g. February 2026');
+      await userEvent.clear(titleInput);
+      await userEvent.type(titleInput, 'Test Snapshot');
       fireEvent.change(screen.getByLabelText('Snapshot Date'), {
         target: { value: '2026-04-15' },
       });
-      await userEvent.type(screen.getByPlaceholderText('Label'), 'Savings');
-      await userEvent.type(screen.getByPlaceholderText('Amount'), '1000');
+      await userEvent.type(
+        screen.getByPlaceholderText('e.g. Savings Account'),
+        'Savings'
+      );
+      await userEvent.type(screen.getByPlaceholderText('0.00'), '1000');
 
       await userEvent.click(
         screen.getByRole('button', { name: 'Save Snapshot' })

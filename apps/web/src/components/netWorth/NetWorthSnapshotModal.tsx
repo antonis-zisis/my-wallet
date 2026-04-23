@@ -6,6 +6,7 @@ import {
   NetWorthEntryType,
 } from '../../types/netWorth';
 import { formatMoney } from '../../utils/formatMoney';
+import { XMarkIcon } from '../icons';
 import { Button, Input, Modal, Select } from '../ui';
 
 interface EntryDraft {
@@ -36,7 +37,7 @@ interface NetWorthSnapshotModalProps {
   isOpen: boolean;
   modalTitle: string;
   onClose: () => void;
-  onSubmit: (input: SnapshotFormValues) => void;
+  onSubmit: (input: SnapshotFormValues) => Promise<void>;
   submitLabel: string;
 }
 
@@ -46,6 +47,14 @@ function todayAsDateInput(): string {
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+function dateToTitle(dateString: string): string {
+  const [year, month] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 let nextKey = 0;
@@ -90,13 +99,16 @@ export function NetWorthSnapshotModal({
   onSubmit,
   submitLabel,
 }: NetWorthSnapshotModalProps) {
-  const [title, setTitle] = useState(initialTitle);
-  const [snapshotDate, setSnapshotDate] = useState(
-    initialSnapshotDate ?? todayAsDateInput()
-  );
+  const defaultDate = initialSnapshotDate ?? todayAsDateInput();
+  const defaultTitle = initialTitle || dateToTitle(defaultDate);
+
+  const [title, setTitle] = useState(defaultTitle);
+  const [snapshotDate, setSnapshotDate] = useState(defaultDate);
   const [entries, setEntries] = useState<Array<EntryDraft>>(() =>
     buildInitialEntries(initialEntries)
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isTitleAutoRef = useRef(true);
   const entriesContainerRef = useRef<HTMLDivElement>(null);
   const prevEntriesLengthRef = useRef(entries.length);
 
@@ -104,9 +116,13 @@ export function NetWorthSnapshotModal({
     if (!isOpen) {
       return;
     }
-    setTitle(initialTitle);
-    setSnapshotDate(initialSnapshotDate ?? todayAsDateInput());
+    const date = initialSnapshotDate ?? todayAsDateInput();
+    const autoTitle = dateToTitle(date);
+    const resolvedTitle = initialTitle || autoTitle;
+    setTitle(resolvedTitle);
+    setSnapshotDate(date);
     setEntries(buildInitialEntries(initialEntries));
+    isTitleAutoRef.current = !initialTitle;
   }, [isOpen, initialTitle, initialSnapshotDate, initialEntries]);
 
   useEffect(() => {
@@ -120,94 +136,172 @@ export function NetWorthSnapshotModal({
     prevEntriesLengthRef.current = entries.length;
   }, [entries.length]);
 
-  const handleClose = () => {
-    onClose();
+  const handleDateChange = (newDate: string) => {
+    if (isTitleAutoRef.current) {
+      setTitle(dateToTitle(newDate));
+    }
+
+    setSnapshotDate(newDate);
+  };
+
+  const handleTitleChange = (value: string) => {
+    isTitleAutoRef.current = false;
+    setTitle(value);
   };
 
   const addEntry = (type: NetWorthEntryType) => {
-    setEntries((prev) => [...prev, makeEntry(type)]);
+    setEntries((previous) => [...previous, makeEntry(type)]);
   };
 
   const removeEntry = (key: number) => {
-    setEntries((prev) => prev.filter((entry) => entry.key !== key));
+    setEntries((previous) => previous.filter((entry) => entry.key !== key));
   };
 
   const updateEntry = (
     key: number,
-    field: keyof Omit<EntryDraft, 'key'>,
+    field: keyof Omit<EntryDraft, 'key' | 'type'>,
     value: string
   ) => {
-    setEntries((prev) =>
-      prev.map((entry) => {
+    setEntries((previous) =>
+      previous.map((entry) => {
         if (entry.key !== key) {
           return entry;
         }
-
-        if (field === 'type') {
-          const newType = value as NetWorthEntryType;
-          const categories =
-            newType === 'ASSET' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES;
-          return {
-            ...entry,
-            type: newType,
-            category: categories[0],
-          };
-        }
-
         return { ...entry, [field]: value };
       })
     );
   };
 
-  const totalAssets = entries
-    .filter((entry) => entry.type === 'ASSET')
-    .reduce((sum, entry) => sum + (parseFloat(entry.amount) || 0), 0);
+  const assetEntries = entries.filter((entry) => entry.type === 'ASSET');
+  const liabilityEntries = entries.filter(
+    (entry) => entry.type === 'LIABILITY'
+  );
 
-  const totalLiabilities = entries
-    .filter((entry) => entry.type === 'LIABILITY')
-    .reduce((sum, entry) => sum + (parseFloat(entry.amount) || 0), 0);
-
+  const totalAssets = assetEntries.reduce(
+    (sum, entry) => sum + (parseFloat(entry.amount) || 0),
+    0
+  );
+  const totalLiabilities = liabilityEntries.reduce(
+    (sum, entry) => sum + (parseFloat(entry.amount) || 0),
+    0
+  );
   const netWorth = totalAssets - totalLiabilities;
+
+  const hasSomeAmount = entries.some((entry) => parseFloat(entry.amount) > 0);
+  const hasIncompleteEntries = entries.some(
+    (entry) => !entry.label.trim() || !(parseFloat(entry.amount) > 0)
+  );
 
   const isValid =
     title.trim().length > 0 &&
     snapshotDate.length > 0 &&
     entries.length > 0 &&
-    entries.every(
-      (entry) => entry.label.trim().length > 0 && parseFloat(entry.amount) > 0
-    );
+    !hasIncompleteEntries;
 
-  const handleSubmit = () => {
-    if (!isValid) {
+  const handleSubmit = async () => {
+    if (!isValid || isSubmitting) {
       return;
     }
 
-    onSubmit({
-      title: title.trim(),
-      snapshotDate,
-      entries: entries.map((entry) => ({
-        type: entry.type,
-        label: entry.label.trim(),
-        amount: parseFloat(entry.amount),
-        category: entry.category,
-      })),
-    });
+    setIsSubmitting(true);
+
+    try {
+      await onSubmit({
+        title: title.trim(),
+        snapshotDate,
+        entries: entries.map((entry) => ({
+          type: entry.type,
+          label: entry.label.trim(),
+          amount: parseFloat(entry.amount),
+          category: entry.category,
+        })),
+      });
+    } catch {
+      // error handling is the caller's responsibility
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const columnHeaders = (
+    <div className="mb-1 grid grid-cols-[144px_1fr_112px_32px] gap-2 px-2 text-xs font-medium text-gray-400 dark:text-gray-500">
+      <span>Category</span>
+      <span>Label</span>
+      <span>Amount</span>
+      <span />
+    </div>
+  );
+
+  const renderEntryRow = (entry: EntryDraft) => {
+    const categoryOptions = (
+      entry.type === 'ASSET' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES
+    ).map((cat) => ({ value: cat, label: cat }));
+
+    return (
+      <div
+        key={entry.key}
+        className="grid grid-cols-[144px_1fr_112px_32px] items-center gap-2 rounded-lg bg-gray-50 p-2 dark:bg-gray-700/50"
+      >
+        <Select
+          id={`category-${entry.key}`}
+          value={entry.category}
+          options={categoryOptions}
+          onChange={(event) =>
+            updateEntry(entry.key, 'category', event.target.value)
+          }
+        />
+
+        <Input
+          id={`label-${entry.key}`}
+          placeholder="e.g. Savings Account"
+          value={entry.label}
+          onChange={(event) =>
+            updateEntry(entry.key, 'label', event.target.value)
+          }
+        />
+
+        <Input
+          id={`amount-${entry.key}`}
+          type="number"
+          placeholder="0.00"
+          min="0"
+          step="0.01"
+          value={entry.amount}
+          onChange={(event) =>
+            updateEntry(entry.key, 'amount', event.target.value)
+          }
+        />
+
+        <button
+          onClick={() => removeEntry(entry.key)}
+          className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 dark:text-gray-500 dark:hover:text-red-400"
+          aria-label="Remove entry"
+          disabled={entries.length === 1}
+        >
+          <XMarkIcon className="h-4 w-4" />
+        </button>
+      </div>
+    );
   };
 
   return (
     <Modal
       closeOnBackdropClick={false}
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onClose}
       title={modalTitle}
       size="lg"
       footer={
         <>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
 
-          <Button onClick={handleSubmit} disabled={!isValid}>
+          <Button
+            onClick={handleSubmit}
+            disabled={!isValid}
+            isLoading={isSubmitting}
+          >
             {submitLabel}
           </Button>
         </>
@@ -219,7 +313,7 @@ export function NetWorthSnapshotModal({
           id="snapshot-title"
           placeholder="e.g. February 2026"
           value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={(event) => handleTitleChange(event.target.value)}
           autoFocus
         />
 
@@ -228,7 +322,7 @@ export function NetWorthSnapshotModal({
           id="snapshot-date"
           type="date"
           value={snapshotDate}
-          onChange={(event) => setSnapshotDate(event.target.value)}
+          onChange={(event) => handleDateChange(event.target.value)}
         />
 
         <div>
@@ -238,120 +332,88 @@ export function NetWorthSnapshotModal({
 
           <div
             ref={entriesContainerRef}
-            className="max-h-72 space-y-2 overflow-y-auto pr-1"
+            className="max-h-80 space-y-4 overflow-y-auto pr-1"
           >
-            {entries.map((entry) => {
-              const categoryOptions = (
-                entry.type === 'ASSET' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES
-              ).map((cat) => ({ value: cat, label: cat }));
-
-              return (
-                <div
-                  key={entry.key}
-                  className="flex items-end gap-2 rounded-lg bg-gray-50 p-2 dark:bg-gray-700/50"
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <span className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                  Assets
+                </span>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => addEntry('ASSET')}
                 >
-                  <div className="w-28 shrink-0">
-                    <Select
-                      id={`type-${entry.key}`}
-                      value={entry.type}
-                      options={[
-                        { value: 'ASSET', label: 'Asset' },
-                        { value: 'LIABILITY', label: 'Liability' },
-                      ]}
-                      onChange={(event) =>
-                        updateEntry(entry.key, 'type', event.target.value)
-                      }
-                    />
-                  </div>
+                  + Add
+                </Button>
+              </div>
+              {columnHeaders}
+              <div className="space-y-2">
+                {assetEntries.length === 0 ? (
+                  <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
+                    No assets added yet.
+                  </p>
+                ) : (
+                  assetEntries.map(renderEntryRow)
+                )}
+              </div>
+            </div>
 
-                  <div className="w-36 shrink-0">
-                    <Select
-                      id={`category-${entry.key}`}
-                      value={entry.category}
-                      options={categoryOptions}
-                      onChange={(event) =>
-                        updateEntry(entry.key, 'category', event.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <Input
-                      id={`label-${entry.key}`}
-                      placeholder="Label"
-                      value={entry.label}
-                      onChange={(event) =>
-                        updateEntry(entry.key, 'label', event.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="w-28 shrink-0">
-                    <Input
-                      id={`amount-${entry.key}`}
-                      type="number"
-                      placeholder="Amount"
-                      min="0"
-                      step="0.01"
-                      value={entry.amount}
-                      onChange={(event) =>
-                        updateEntry(entry.key, 'amount', event.target.value)
-                      }
-                    />
-                  </div>
-
-                  <button
-                    onClick={() => removeEntry(entry.key)}
-                    className="mb-0.5 shrink-0 cursor-pointer p-2 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
-                    aria-label="Remove entry"
-                    disabled={entries.length === 1}
-                  >
-                    ✕
-                  </button>
-                </div>
-              );
-            })}
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <span className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                  Liabilities
+                </span>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => addEntry('LIABILITY')}
+                >
+                  + Add
+                </Button>
+              </div>
+              {columnHeaders}
+              <div className="space-y-2">
+                {liabilityEntries.length === 0 ? (
+                  <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
+                    No liabilities added yet.
+                  </p>
+                ) : (
+                  liabilityEntries.map(renderEntryRow)
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="mt-2 flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => addEntry('ASSET')}
-            >
-              + Asset
-            </Button>
+          {hasIncompleteEntries && hasSomeAmount && (
+            <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+              All entries need a label and an amount greater than zero.
+            </p>
+          )}
+        </div>
 
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => addEntry('LIABILITY')}
+        {hasSomeAmount && (
+          <div className="flex justify-between rounded-lg bg-gray-100 px-4 py-3 text-sm dark:bg-gray-700">
+            <span className="text-green-600 dark:text-green-400">
+              Assets: {formatMoney(totalAssets)} €
+            </span>
+
+            <span className="text-red-600 dark:text-red-400">
+              Liabilities: {formatMoney(totalLiabilities)} €
+            </span>
+
+            <span
+              className={`font-semibold ${
+                netWorth >= 0
+                  ? 'text-green-700 dark:text-green-300'
+                  : 'text-red-700 dark:text-red-300'
+              }`}
             >
-              + Liability
-            </Button>
+              Net Worth: {netWorth >= 0 ? '' : '-'}
+              {formatMoney(Math.abs(netWorth))} €
+            </span>
           </div>
-        </div>
-
-        <div className="flex justify-between rounded-lg bg-gray-100 px-4 py-3 text-sm dark:bg-gray-700">
-          <span className="text-green-600 dark:text-green-400">
-            Assets: {formatMoney(totalAssets)} €
-          </span>
-
-          <span className="text-red-600 dark:text-red-400">
-            Liabilities: {formatMoney(totalLiabilities)} €
-          </span>
-
-          <span
-            className={`font-semibold ${
-              netWorth >= 0
-                ? 'text-green-700 dark:text-green-300'
-                : 'text-red-700 dark:text-red-300'
-            }`}
-          >
-            Net Worth: {netWorth >= 0 ? '' : '-'}
-            {formatMoney(Math.abs(netWorth))} €
-          </span>
-        </div>
+        )}
       </div>
     </Modal>
   );
