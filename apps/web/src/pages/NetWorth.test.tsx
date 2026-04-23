@@ -344,7 +344,9 @@ describe('NetWorth', () => {
 
       await userEvent.click(toggleButton);
 
-      expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+      expect(
+        screen.getByRole('button', { name: 'Net Worth Over Time' })
+      ).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('hides the view toggle when collapsed', async () => {

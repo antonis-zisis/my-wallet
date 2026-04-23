@@ -50,21 +50,21 @@ export function NetWorth() {
             {isChartOpen ? (
               <Skeleton className="h-76.25 w-full" />
             ) : (
-              <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 <Skeleton className="h-7 w-48" />
-                <Skeleton className="h-5 w-5 rounded-full" />
+                <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
               </div>
             )}
           </Card>
         ) : trendSnapshots.length >= 2 ? (
           <Card className="mb-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Net Worth Over Time
-              </h2>
+            {isChartOpen ? (
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  Net Worth Over Time
+                </h2>
 
-              <div className="flex items-center gap-2">
-                {isChartOpen && (
+                <div className="flex items-center gap-2">
                   <div className="flex overflow-hidden rounded border border-gray-200 text-xs dark:border-gray-700">
                     <button
                       type="button"
@@ -90,21 +90,32 @@ export function NetWorth() {
                       Assets & Liabilities
                     </button>
                   </div>
-                )}
 
-                <button
-                  aria-expanded={isChartOpen}
-                  aria-label="Net Worth Over Time"
-                  type="button"
-                  onClick={() => setIsChartOpen((previous) => !previous)}
-                  className="cursor-pointer"
-                >
-                  <ChevronDownIcon
-                    className={`h-5 w-5 text-gray-500 transition-transform duration-300 dark:text-gray-400 ${isChartOpen ? 'rotate-180' : ''}`}
-                  />
-                </button>
+                  <button
+                    aria-expanded={true}
+                    aria-label="Net Worth Over Time"
+                    type="button"
+                    onClick={() => setIsChartOpen((previous) => !previous)}
+                    className="cursor-pointer"
+                  >
+                    <ChevronDownIcon className="h-5 w-5 rotate-180 text-gray-500 transition-transform duration-300 dark:text-gray-400" />
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <button
+                aria-expanded={false}
+                aria-label="Net Worth Over Time"
+                type="button"
+                className="flex w-full cursor-pointer items-center gap-3"
+                onClick={() => setIsChartOpen((previous) => !previous)}
+              >
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  Net Worth Over Time
+                </h2>
+                <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-500 dark:text-gray-400" />
+              </button>
+            )}
 
             <div
               className={`grid transition-all duration-300 ${isChartOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
