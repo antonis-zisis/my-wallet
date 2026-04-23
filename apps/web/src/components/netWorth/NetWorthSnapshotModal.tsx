@@ -308,22 +308,24 @@ export function NetWorthSnapshotModal({
       }
     >
       <div className="space-y-4">
-        <Input
-          label="Snapshot Title"
-          id="snapshot-title"
-          placeholder="e.g. February 2026"
-          value={title}
-          onChange={(event) => handleTitleChange(event.target.value)}
-          autoFocus
-        />
+        <div className="grid grid-cols-[1fr_160px] gap-3">
+          <Input
+            label="Snapshot Title"
+            id="snapshot-title"
+            placeholder="e.g. February 2026"
+            value={title}
+            onChange={(event) => handleTitleChange(event.target.value)}
+            autoFocus
+          />
 
-        <Input
-          label="Snapshot Date"
-          id="snapshot-date"
-          type="date"
-          value={snapshotDate}
-          onChange={(event) => handleDateChange(event.target.value)}
-        />
+          <Input
+            label="Date"
+            id="snapshot-date"
+            type="date"
+            value={snapshotDate}
+            onChange={(event) => handleDateChange(event.target.value)}
+          />
+        </div>
 
         <div>
           <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">

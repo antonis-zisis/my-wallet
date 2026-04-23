@@ -21,13 +21,16 @@ interface NetWorthSnapshotHeaderProps {
 function DeltaLabel({
   currentValue,
   delta,
+  invertColors = false,
 }: {
   currentValue: number;
   delta: number;
+  invertColors?: boolean;
 }) {
   const isPositive = delta > 0;
   const sign = isPositive ? '+' : '−';
-  const colorClass = isPositive
+  const isGood = invertColors ? !isPositive : isPositive;
+  const colorClass = isGood
     ? 'text-green-600 dark:text-green-400'
     : 'text-red-600 dark:text-red-400';
 
@@ -133,6 +136,7 @@ export function NetWorthSnapshotHeader({
             <DeltaLabel
               currentValue={totalLiabilities}
               delta={deltaLiabilities}
+              invertColors
             />
           )}
         </Card>

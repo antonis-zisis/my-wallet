@@ -1,6 +1,8 @@
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { type EntryDelta, type NetWorthEntry } from '../../types/netWorth';
 import { formatMoney } from '../../utils/formatMoney';
 import { NetWorthCategoryBreakdownChart } from '../charts/NetWorthCategoryBreakdownChart';
+import { ChevronDownIcon, ChevronUpIcon } from '../icons';
 import { Badge, Card, Divider } from '../ui';
 
 interface NetWorthEntriesSectionProps {
@@ -63,10 +65,13 @@ export function NetWorthEntriesSection({
   title,
   total,
 }: NetWorthEntriesSectionProps) {
+  const storageKey = `netWorthSnapshot.${title.toLowerCase()}.isCollapsed`;
+  const [isCollapsed, setIsCollapsed] = useLocalStorage(storageKey, false);
+
   if (entries.length === 0) {
     return (
       <Card className="p-6">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <h2 className={`text-lg font-semibold ${colorClass}`}>{title}</h2>
           <span className={`font-semibold ${colorClass}`}>
             {formatMoney(total)} €
@@ -93,74 +98,91 @@ export function NetWorthEntriesSection({
 
   const categoryCount = Object.keys(byCategory).length;
   const entryType = entries[0].type;
+  const ChevronIcon = isCollapsed ? ChevronDownIcon : ChevronUpIcon;
 
   return (
     <Card className="p-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <h2 className={`text-lg font-semibold ${colorClass}`}>{title}</h2>
-        <span className={`font-semibold ${colorClass}`}>
-          {formatMoney(total)} €
-        </span>
+        <div className="flex items-center gap-3">
+          <span className={`font-semibold ${colorClass}`}>
+            {formatMoney(total)} €
+          </span>
+          <button
+            onClick={() => setIsCollapsed((previous) => !previous)}
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label={isCollapsed ? 'Expand' : 'Collapse'}
+          >
+            <ChevronIcon className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {categoryCount >= 1 && (
-        <>
+        <div className="mt-4">
           <NetWorthCategoryBreakdownChart entries={entries} type={entryType} />
-          <div className="my-4">
-            <Divider />
-          </div>
-        </>
+        </div>
       )}
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-        {Object.entries(byCategory).map(([category, categoryEntries]) => (
-          <div key={category}>
-            <div className="bg-gray-50 px-4 py-2 text-xs font-medium tracking-wider text-gray-500 uppercase dark:bg-gray-700/50 dark:text-gray-400">
-              {category}
-            </div>
+      {categoryCount >= 1 && !isCollapsed && (
+        <div className="my-4">
+          <Divider />
+        </div>
+      )}
 
-            {categoryEntries.map((entry, index) => {
-              const deltaKey = `${entry.category}:${entry.label}`;
-              const entryDelta = entryDeltas?.[deltaKey];
-              const percentOfTotal =
-                total > 0 ? ((entry.amount / total) * 100).toFixed(1) : null;
+      {!isCollapsed && (
+        <div
+          className={`overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 ${categoryCount >= 1 ? '' : 'mt-4'}`}
+        >
+          {Object.entries(byCategory).map(([category, categoryEntries]) => (
+            <div key={category}>
+              <div className="bg-gray-50 px-4 py-2 text-xs font-medium tracking-wider text-gray-500 uppercase dark:bg-gray-700/50 dark:text-gray-400">
+                {category}
+              </div>
 
-              return (
-                <div
-                  key={entry.id}
-                  className={`flex items-center justify-between px-4 py-3 ${
-                    index < categoryEntries.length - 1
-                      ? 'border-b border-gray-100 dark:border-gray-700'
-                      : ''
-                  }`}
-                >
-                  <span className="text-sm text-gray-700 dark:text-gray-200">
-                    {entry.label}
-                  </span>
+              {categoryEntries.map((entry, index) => {
+                const deltaKey = `${entry.category}:${entry.label}`;
+                const entryDelta = entryDeltas?.[deltaKey];
+                const percentOfTotal =
+                  total > 0 ? ((entry.amount / total) * 100).toFixed(1) : null;
 
-                  <div className="flex flex-col items-end gap-0.5">
-                    <span className={`text-sm font-medium ${colorClass}`}>
-                      {formatMoney(entry.amount)} €
-                      {percentOfTotal != null && (
-                        <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">
-                          ({percentOfTotal}%)
-                        </span>
-                      )}
+                return (
+                  <div
+                    key={entry.id}
+                    className={`flex items-center justify-between px-4 py-3 ${
+                      index < categoryEntries.length - 1
+                        ? 'border-b border-gray-100 dark:border-gray-700'
+                        : ''
+                    }`}
+                  >
+                    <span className="text-sm text-gray-700 dark:text-gray-200">
+                      {entry.label}
                     </span>
 
-                    {entryDelta && (
-                      <EntryDeltaLabel
-                        currentAmount={entry.amount}
-                        entryDelta={entryDelta}
-                      />
-                    )}
+                    <div className="flex flex-col items-end gap-0.5">
+                      <span className={`text-sm font-medium ${colorClass}`}>
+                        {formatMoney(entry.amount)} €
+                        {percentOfTotal != null && (
+                          <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">
+                            ({percentOfTotal}%)
+                          </span>
+                        )}
+                      </span>
+
+                      {entryDelta && (
+                        <EntryDeltaLabel
+                          currentAmount={entry.amount}
+                          entryDelta={entryDelta}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }
