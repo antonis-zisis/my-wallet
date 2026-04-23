@@ -196,6 +196,7 @@ export function NetWorthSnapshotModal({
 
   return (
     <Modal
+      closeOnBackdropClick={false}
       isOpen={isOpen}
       onClose={handleClose}
       title={modalTitle}
