@@ -266,7 +266,7 @@ async function main() {
               type: 'ASSET',
               label: 'Checking Account',
               amount: 3200,
-              category: 'Cash',
+              category: 'Savings',
             },
             {
               id: 'seed-nw-2',

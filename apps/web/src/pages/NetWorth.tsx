@@ -123,10 +123,6 @@ export function NetWorth() {
                   </h2>
                 </button>
 
-                <Tooltip content="Shows the 10 most recent snapshots, from oldest to newest.">
-                  <InfoIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                </Tooltip>
-
                 <ChevronDownIcon
                   className="h-5 w-5 cursor-pointer text-gray-500 dark:text-gray-400"
                   onClick={() => setIsChartOpen((previous) => !previous)}
