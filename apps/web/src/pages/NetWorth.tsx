@@ -121,10 +121,6 @@ export function NetWorth() {
           </Card>
         ) : null}
 
-        <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Snapshots
-        </h2>
-
         <NetWorthList error={error} loading={loading} snapshots={snapshots} />
 
         {!loading && !error && totalCount > 0 && (

@@ -3,7 +3,12 @@ import { Link } from 'react-router-dom';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
-import { ChevronRightIcon, TrendingChartIcon } from '../icons';
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ChevronRightIcon,
+  TrendingChartIcon,
+} from '../icons';
 import { Card, Skeleton } from '../ui';
 
 interface NetWorthListProps {
@@ -12,14 +17,34 @@ interface NetWorthListProps {
   snapshots: Array<NetWorthSnapshot>;
 }
 
+function ColumnHeaders() {
+  return (
+    <div className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 border-b border-gray-100 px-3 py-2 dark:border-gray-700">
+      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+        Snapshot
+      </span>
+      <span className="w-28 text-right text-xs font-medium text-gray-500 dark:text-gray-400">
+        Change
+      </span>
+      <span className="w-28 text-right text-xs font-medium text-gray-500 dark:text-gray-400">
+        Net Worth
+      </span>
+      <span className="w-20 text-right text-xs font-medium text-gray-500 dark:text-gray-400">
+        Date
+      </span>
+      <span className="w-4" />
+    </div>
+  );
+}
+
 function SkeletonRow() {
   return (
-    <li className="flex items-center justify-between gap-4 px-3 py-3">
+    <li className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-3 py-3">
       <Skeleton className="h-4 w-48" />
-      <div className="flex items-center gap-6">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-3 w-20" />
-      </div>
+      <Skeleton className="h-4 w-28" />
+      <Skeleton className="h-4 w-28" />
+      <Skeleton className="h-3 w-20" />
+      <div className="w-4" />
     </li>
   );
 }
@@ -49,10 +74,50 @@ function EmptyState({ onAdd }: { onAdd?: () => void }) {
   );
 }
 
+function DeltaBadge({ delta }: { delta: number | null }) {
+  if (delta === null) {
+    return (
+      <span className="w-28 text-right text-xs text-gray-300 dark:text-gray-600">
+        —
+      </span>
+    );
+  }
+
+  const isPositive = delta > 0;
+  const isZero = delta === 0;
+
+  if (isZero) {
+    return (
+      <span className="w-28 text-right text-xs text-gray-400 dark:text-gray-500">
+        No change
+      </span>
+    );
+  }
+
+  return (
+    <span
+      className={`flex w-28 items-center justify-end gap-1 text-xs font-medium ${
+        isPositive
+          ? 'text-green-600 dark:text-green-400'
+          : 'text-red-600 dark:text-red-400'
+      }`}
+    >
+      {isPositive ? (
+        <ArrowUpIcon className="size-3 shrink-0" />
+      ) : (
+        <ArrowDownIcon className="size-3 shrink-0" />
+      )}
+      {isPositive ? '+' : '-'}
+      {formatMoney(Math.abs(delta))} €
+    </span>
+  );
+}
+
 export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
   if (loading) {
     return (
       <Card>
+        <ColumnHeaders />
         <ul
           className="divide-y divide-gray-100 dark:divide-gray-700"
           data-testid="net-worth-list-skeleton"
@@ -77,38 +142,43 @@ export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
 
   return (
     <Card>
+      <ColumnHeaders />
       <ul className="divide-y divide-gray-100 dark:divide-gray-700">
         {snapshots.map((snapshot) => {
-          const isPositive = snapshot.netWorth >= 0;
+          const isPositiveNetWorth = snapshot.netWorth >= 0;
+          const delta =
+            snapshot.previousSnapshot != null
+              ? snapshot.netWorth - snapshot.previousSnapshot.netWorth
+              : null;
 
           return (
             <li key={snapshot.id}>
               <Link
-                className="flex items-center justify-between gap-4 px-3 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-3 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
                 to={`/net-worth/${snapshot.id}`}
               >
                 <span className="font-medium text-gray-800 dark:text-gray-100">
                   {snapshot.title}
                 </span>
 
-                <div className="flex shrink-0 items-center gap-6">
-                  <span
-                    className={`text-sm font-semibold ${
-                      isPositive
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    }`}
-                  >
-                    {isPositive ? '+' : '-'}
-                    {formatMoney(Math.abs(snapshot.netWorth))} €
-                  </span>
+                <DeltaBadge delta={delta} />
 
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    {formatDate(snapshot.snapshotDate)}
-                  </span>
+                <span
+                  className={`w-28 text-right text-sm font-semibold ${
+                    isPositiveNetWorth
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-red-600 dark:text-red-400'
+                  }`}
+                >
+                  {isPositiveNetWorth ? '+' : '-'}
+                  {formatMoney(Math.abs(snapshot.netWorth))} €
+                </span>
 
-                  <ChevronRightIcon className="size-4 text-gray-400 dark:text-gray-500" />
-                </div>
+                <span className="w-20 text-right text-xs text-gray-400 dark:text-gray-500">
+                  {formatDate(snapshot.snapshotDate)}
+                </span>
+
+                <ChevronRightIcon className="size-4 text-gray-400 dark:text-gray-500" />
               </Link>
             </li>
           );
