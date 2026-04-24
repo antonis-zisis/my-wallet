@@ -14,6 +14,7 @@ const mockSubscription: Subscription = {
   startDate: '2025-01-15',
   endDate: null,
   cancelledAt: null,
+  trialEndsAt: null,
   monthlyCost: 15.99,
   createdAt: '2025-01-15T00:00:00Z',
   updatedAt: '2025-01-15T00:00:00Z',
@@ -54,6 +55,18 @@ describe('EditSubscriptionModal', () => {
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'sub-1', name: 'Netflix HD' })
     );
+  });
+
+  it('pre-fills trial checkbox and date when subscription has a trial end date', () => {
+    const subscription = {
+      ...mockSubscription,
+      trialEndsAt: '2026-05-03T00:00:00.000Z',
+    };
+    render(
+      <EditSubscriptionModal {...defaultProps} subscription={subscription} />
+    );
+    expect(screen.getByLabelText('Trial period')).toBeChecked();
+    expect(screen.getByLabelText('Trial ends')).toBeInTheDocument();
   });
 
   it('calls onClose when Cancel is clicked', async () => {

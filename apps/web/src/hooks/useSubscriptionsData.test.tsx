@@ -34,6 +34,7 @@ const mockSubscription = (
   startDate: '2025-01-01T00:00:00.000Z',
   endDate: null,
   cancelledAt: null,
+  trialEndsAt: null,
   monthlyCost: 15.99,
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
@@ -161,6 +162,48 @@ describe('useSubscriptionsData', () => {
     // Netflix: 15.99/mo + YouTube Premium: 10/mo = 25.99/mo
     expect(result.current.totalMonthlyCost).toBeCloseTo(25.99);
     expect(result.current.totalYearlyCost).toBeCloseTo(25.99 * 12);
+  });
+
+  it('returns mostExpensive as the subscription with the highest monthlyCost', async () => {
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([mockActiveQuery, mockInactiveQueryEmpty]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    // Netflix: 15.99/mo > YouTube Premium: 10/mo
+    expect(result.current.mostExpensive?.name).toBe('Netflix');
+    expect(result.current.mostExpensive?.monthlyCost).toBeCloseTo(15.99);
+  });
+
+  it('excludes active trial subscriptions from totalMonthlyCost', async () => {
+    const trialQuery: MockLink.MockedResponse = {
+      request: {
+        query: GET_SUBSCRIPTIONS,
+        variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+      },
+      result: {
+        data: {
+          subscriptions: {
+            items: [
+              mockSubscription(),
+              mockSubscription({
+                id: '99',
+                name: 'Notion Trial',
+                monthlyCost: 20,
+                trialEndsAt: '2030-01-01T00:00:00.000Z',
+              }),
+            ],
+            totalCount: 2,
+          },
+        },
+      },
+    };
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([trialQuery, mockInactiveQueryEmpty]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    // Only Netflix (15.99) counted; Notion Trial excluded
+    expect(result.current.totalMonthlyCost).toBeCloseTo(15.99);
+    expect(result.current.mostExpensive?.name).toBe('Netflix');
   });
 
   it('returns zero costs when no active subscriptions', async () => {

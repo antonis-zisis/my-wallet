@@ -12,6 +12,7 @@ interface CreateSubscriptionModalProps {
     billingCycle: BillingCycle;
     startDate: string;
     endDate?: string;
+    trialEndsAt?: string;
   }) => void;
 }
 
@@ -25,6 +26,8 @@ export function CreateSubscriptionModal({
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('MONTHLY');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [isTrial, setIsTrial] = useState(false);
+  const [trialEndsAt, setTrialEndsAt] = useState('');
 
   const handleClose = () => {
     setName('');
@@ -32,11 +35,17 @@ export function CreateSubscriptionModal({
     setBillingCycle('MONTHLY');
     setStartDate('');
     setEndDate('');
+    setIsTrial(false);
+    setTrialEndsAt('');
     onClose();
   };
 
   const isValid =
-    name.trim().length > 0 && parseFloat(amount) > 0 && startDate.length > 0;
+    name.trim().length > 0 &&
+    parseFloat(amount) >= 0 &&
+    amount.length > 0 &&
+    startDate.length > 0 &&
+    (!isTrial || trialEndsAt.length > 0);
 
   const handleSubmit = () => {
     if (!isValid) {
@@ -49,6 +58,7 @@ export function CreateSubscriptionModal({
       billingCycle,
       startDate,
       endDate: endDate || undefined,
+      trialEndsAt: isTrial ? trialEndsAt : undefined,
     });
     handleClose();
   };
@@ -75,7 +85,7 @@ export function CreateSubscriptionModal({
           id="subscription-name"
           placeholder="e.g. Netflix"
           value={name}
-          onChange={(ev) => setName(ev.target.value)}
+          onChange={(event) => setName(event.target.value)}
           autoFocus
         />
 
@@ -87,7 +97,7 @@ export function CreateSubscriptionModal({
           min="0"
           step="0.01"
           value={amount}
-          onChange={(ev) => setAmount(ev.target.value)}
+          onChange={(event) => setAmount(event.target.value)}
         />
 
         <Select
@@ -98,7 +108,9 @@ export function CreateSubscriptionModal({
             { value: 'MONTHLY', label: 'Monthly' },
             { value: 'YEARLY', label: 'Yearly' },
           ]}
-          onChange={(ev) => setBillingCycle(ev.target.value as BillingCycle)}
+          onChange={(event) =>
+            setBillingCycle(event.target.value as BillingCycle)
+          }
         />
 
         <Input
@@ -106,8 +118,36 @@ export function CreateSubscriptionModal({
           id="subscription-start-date"
           type="date"
           value={startDate}
-          onChange={(ev) => setStartDate(ev.target.value)}
+          onChange={(event) => setStartDate(event.target.value)}
         />
+
+        <label className="flex cursor-pointer items-center gap-2">
+          <input
+            checked={isTrial}
+            className="h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600"
+            id="subscription-is-trial"
+            type="checkbox"
+            onChange={(event) => {
+              setIsTrial(event.target.checked);
+              if (!event.target.checked) {
+                setTrialEndsAt('');
+              }
+            }}
+          />
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Trial period
+          </span>
+        </label>
+
+        {isTrial && (
+          <Input
+            label="Trial ends"
+            id="subscription-trial-ends-at"
+            type="date"
+            value={trialEndsAt}
+            onChange={(event) => setTrialEndsAt(event.target.value)}
+          />
+        )}
       </div>
     </Modal>
   );

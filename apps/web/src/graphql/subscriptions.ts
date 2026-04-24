@@ -12,6 +12,7 @@ export const GET_SUBSCRIPTIONS = gql`
         startDate
         endDate
         cancelledAt
+        trialEndsAt
         monthlyCost
         createdAt
         updatedAt
@@ -32,6 +33,7 @@ export const CREATE_SUBSCRIPTION = gql`
       startDate
       endDate
       cancelledAt
+      trialEndsAt
       monthlyCost
       createdAt
       updatedAt
@@ -50,6 +52,7 @@ export const UPDATE_SUBSCRIPTION = gql`
       startDate
       endDate
       cancelledAt
+      trialEndsAt
       monthlyCost
       createdAt
       updatedAt
@@ -79,6 +82,7 @@ export const RESUME_SUBSCRIPTION = gql`
       startDate
       endDate
       cancelledAt
+      trialEndsAt
       monthlyCost
       createdAt
       updatedAt

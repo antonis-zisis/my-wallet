@@ -9,6 +9,7 @@ export interface Subscription {
   startDate: string;
   endDate: string | null;
   cancelledAt: string | null;
+  trialEndsAt: string | null;
   monthlyCost: number;
   createdAt: string;
   updatedAt: string;

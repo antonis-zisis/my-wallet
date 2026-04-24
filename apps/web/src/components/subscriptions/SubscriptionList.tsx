@@ -79,6 +79,24 @@ function formatCancellationCountdown(endDate: string): string {
   return `ends in ${daysLeft} days · ${formatDate(endDate)}`;
 }
 
+function formatTrialCountdown(trialEndsAt: string): string {
+  const daysLeft = getDaysUntil(trialEndsAt);
+
+  if (daysLeft < 0) {
+    return `trial ended ${formatDate(trialEndsAt)}`;
+  }
+
+  if (daysLeft === 0) {
+    return 'trial ends today';
+  }
+
+  if (daysLeft === 1) {
+    return 'trial ends tomorrow';
+  }
+
+  return `trial ends in ${daysLeft} days · ${formatDate(trialEndsAt)}`;
+}
+
 function SecondaryLine({ subscription }: { subscription: Subscription }) {
   if (subscription.cancelledAt && subscription.endDate) {
     return (
@@ -86,6 +104,18 @@ function SecondaryLine({ subscription }: { subscription: Subscription }) {
         {formatCancellationCountdown(subscription.endDate)}
       </p>
     );
+  }
+
+  if (subscription.trialEndsAt) {
+    const daysLeft = getDaysUntil(subscription.trialEndsAt);
+
+    if (daysLeft >= 0) {
+      return (
+        <p className="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
+          {formatTrialCountdown(subscription.trialEndsAt)}
+        </p>
+      );
+    }
   }
 
   if (!subscription.isActive) {
@@ -96,11 +126,21 @@ function SecondaryLine({ subscription }: { subscription: Subscription }) {
     subscription.startDate,
     subscription.billingCycle
   );
+  const daysUntil = getDaysUntil(renewalDate);
+  const relativeLabel =
+    daysUntil === 0
+      ? 'today'
+      : daysUntil === 1
+        ? 'tomorrow'
+        : daysUntil < 30
+          ? `in ${daysUntil}d`
+          : null;
 
   return (
     <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
       next renewal at{' '}
       <span className="font-semibold">{formatDate(renewalDate)}</span>
+      {relativeLabel && ` · ${relativeLabel}`}
     </p>
   );
 }
@@ -209,6 +249,13 @@ export function SubscriptionList({
                         ? 'Monthly'
                         : 'Yearly'}
                     </Badge>
+
+                    {subscription.trialEndsAt &&
+                      getDaysUntil(subscription.trialEndsAt) >= 0 && (
+                        <Badge variant="warning" size="sm">
+                          Trial
+                        </Badge>
+                      )}
 
                     {subscription.cancelledAt && (
                       <Badge variant="danger" size="sm">

@@ -8,6 +8,7 @@ export const subscriptionTypeDefs = `#graphql
     startDate: String!
     endDate: String
     cancelledAt: String
+    trialEndsAt: String
     monthlyCost: Float!
     createdAt: String!
     updatedAt: String!
@@ -24,6 +25,7 @@ export const subscriptionTypeDefs = `#graphql
     billingCycle: String!
     startDate: String!
     endDate: String
+    trialEndsAt: String
   }
 
   input UpdateSubscriptionInput {
@@ -33,6 +35,7 @@ export const subscriptionTypeDefs = `#graphql
     billingCycle: String!
     startDate: String!
     endDate: String
+    trialEndsAt: String
   }
 
   extend type Query {

@@ -59,6 +59,7 @@ export function Subscriptions() {
     isCreateOpen,
     isDeleting,
     isResuming,
+    mostExpensive,
     nextRenewal,
     onActivePaginate,
     onCancelConfirm,
@@ -75,6 +76,7 @@ export function Subscriptions() {
     onSelectForResume,
     onToggleInactive,
     onUpdate,
+    renewingThisMonthTotal,
     showInactive,
     subscriptionToCancel,
     subscriptionToDelete,
@@ -105,9 +107,10 @@ export function Subscriptions() {
 
         {(activeLoading || (!activeError && activeTotalCount > 0)) && (
           <SubscriptionCostSummary
-            activeCount={activeTotalCount}
             loading={activeLoading}
+            mostExpensive={mostExpensive}
             nextRenewal={nextRenewal}
+            renewingThisMonthTotal={renewingThisMonthTotal}
             totalMonthlyCost={totalMonthlyCost}
             totalYearlyCost={totalYearlyCost}
           />

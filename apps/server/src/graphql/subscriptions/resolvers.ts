@@ -8,6 +8,7 @@ export interface CreateSubscriptionInput {
   billingCycle: string;
   startDate: string;
   endDate?: string;
+  trialEndsAt?: string;
 }
 
 export interface UpdateSubscriptionInput {
@@ -17,6 +18,7 @@ export interface UpdateSubscriptionInput {
   billingCycle: string;
   startDate: string;
   endDate?: string;
+  trialEndsAt?: string;
 }
 
 type SubscriptionParent = {
@@ -127,6 +129,7 @@ export const subscriptionResolvers = {
           billingCycle: input.billingCycle,
           startDate: new Date(input.startDate),
           endDate: input.endDate ? new Date(input.endDate) : null,
+          trialEndsAt: input.trialEndsAt ? new Date(input.trialEndsAt) : null,
           userId,
         },
       });
@@ -154,6 +157,7 @@ export const subscriptionResolvers = {
           billingCycle: input.billingCycle,
           startDate: new Date(input.startDate),
           endDate: input.endDate ? new Date(input.endDate) : null,
+          trialEndsAt: input.trialEndsAt ? new Date(input.trialEndsAt) : null,
         },
       });
     },

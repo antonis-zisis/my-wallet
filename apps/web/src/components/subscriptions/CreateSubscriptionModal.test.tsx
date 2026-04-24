@@ -63,6 +63,42 @@ describe('CreateSubscriptionModal', () => {
     expect(screen.getByLabelText('Name')).toHaveValue('');
   });
 
+  describe('trial period', () => {
+    it('does not show the trial end date field by default', () => {
+      render(<CreateSubscriptionModal {...defaultProps} />);
+      expect(screen.queryByLabelText('Trial ends')).not.toBeInTheDocument();
+    });
+
+    it('shows the trial end date field when trial period is checked', async () => {
+      render(<CreateSubscriptionModal {...defaultProps} />);
+      await userEvent.click(screen.getByLabelText('Trial period'));
+      expect(screen.getByLabelText('Trial ends')).toBeInTheDocument();
+    });
+
+    it('disables Create when trial is checked but no trial end date is provided', async () => {
+      render(<CreateSubscriptionModal {...defaultProps} />);
+      await userEvent.type(screen.getByLabelText('Name'), 'Notion');
+      await userEvent.type(screen.getByLabelText('Amount'), '0');
+      await userEvent.type(screen.getByLabelText('Start Date'), '2026-04-01');
+      await userEvent.click(screen.getByLabelText('Trial period'));
+      expect(screen.getByRole('button', { name: 'Create' })).toBeDisabled();
+    });
+
+    it('submits trialEndsAt when trial period is set', async () => {
+      const onSubmit = vi.fn();
+      render(<CreateSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
+      await userEvent.type(screen.getByLabelText('Name'), 'Notion');
+      await userEvent.type(screen.getByLabelText('Amount'), '0');
+      await userEvent.type(screen.getByLabelText('Start Date'), '2026-04-01');
+      await userEvent.click(screen.getByLabelText('Trial period'));
+      await userEvent.type(screen.getByLabelText('Trial ends'), '2026-05-03');
+      await userEvent.click(screen.getByRole('button', { name: 'Create' }));
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ trialEndsAt: '2026-05-03' })
+      );
+    });
+  });
+
   it('calls onClose when Cancel is clicked', async () => {
     const onClose = vi.fn();
     render(<CreateSubscriptionModal {...defaultProps} onClose={onClose} />);

@@ -4,6 +4,16 @@ import { SubscriptionsSkeletonGrid } from './SubscriptionsSkeletonGrid';
 import { SubscriptionSummarySection } from './SubscriptionSummarySection';
 import { UpcomingRenewalsCard } from './UpcomingRenewalsCard';
 
+function isActiveTrial(subscription: Subscription): boolean {
+  if (!subscription.trialEndsAt) {
+    return false;
+  }
+  const value = /^\d+$/.test(subscription.trialEndsAt)
+    ? Number(subscription.trialEndsAt)
+    : subscription.trialEndsAt;
+  return new Date(value) > new Date();
+}
+
 export function SubscriptionsSection({
   currentIncome,
   loading,
@@ -26,13 +36,17 @@ export function SubscriptionsSection({
     return <SubscriptionsCTACard />;
   }
 
+  const paidSubscriptions = subscriptions.filter(
+    (subscription) => !isActiveTrial(subscription)
+  );
+
   return (
     <>
       <SubscriptionSummarySection
         currentIncome={currentIncome}
         subscriptions={subscriptions}
       />
-      <UpcomingRenewalsCard subscriptions={subscriptions} />
+      <UpcomingRenewalsCard subscriptions={paidSubscriptions} />
     </>
   );
 }

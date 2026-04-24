@@ -128,15 +128,28 @@ export function useSubscriptionsData() {
   const inactiveTotalCount = inactiveData?.subscriptions.totalCount ?? 0;
   const inactiveTotalPages = Math.ceil(inactiveTotalCount / PAGE_SIZE);
 
-  const totalMonthlyCost = activeItems.reduce(
-    (sum, subscription) => sum + subscription.monthlyCost,
-    0
-  );
+  const now = new Date();
+  const currentMonth = now.getMonth();
+
+  const parseDate = (value: string): Date => {
+    const coerced = /^\d+$/.test(value) ? Number(value) : value;
+    return new Date(coerced);
+  };
+
+  const isActiveTrial = (subscription: { trialEndsAt: string | null }) =>
+    !!subscription.trialEndsAt && parseDate(subscription.trialEndsAt) > now;
+
+  const totalMonthlyCost = activeItems
+    .filter((subscription) => !isActiveTrial(subscription))
+    .reduce((sum, subscription) => sum + subscription.monthlyCost, 0);
   const totalYearlyCost = totalMonthlyCost * 12;
 
   const nextRenewal =
     activeItems
-      .filter((subscription) => !subscription.cancelledAt)
+      .filter(
+        (subscription) =>
+          !subscription.cancelledAt && !isActiveTrial(subscription)
+      )
       .map((subscription) => ({
         amount: subscription.amount,
         date: getNextRenewalDate(
@@ -148,12 +161,43 @@ export function useSubscriptionsData() {
       .sort((left, right) => left.date.getTime() - right.date.getTime())[0] ??
     null;
 
+  const renewingThisMonthTotal = activeItems
+    .filter(
+      (subscription) =>
+        !subscription.cancelledAt && !isActiveTrial(subscription)
+    )
+    .reduce((total, subscription) => {
+      const startDate = parseDate(subscription.startDate);
+      const renewsThisMonth =
+        subscription.billingCycle === 'MONTHLY' ||
+        (subscription.billingCycle === 'YEARLY' &&
+          startDate.getMonth() === currentMonth);
+      return renewsThisMonth ? total + subscription.amount : total;
+    }, 0);
+
+  const mostExpensive = activeItems
+    .filter(
+      (subscription) =>
+        !subscription.cancelledAt && !isActiveTrial(subscription)
+    )
+    .reduce<{
+      monthlyCost: number;
+      name: string;
+    } | null>(
+      (best, subscription) =>
+        !best || subscription.monthlyCost > best.monthlyCost
+          ? { monthlyCost: subscription.monthlyCost, name: subscription.name }
+          : best,
+      null
+    );
+
   const handleCreate = async (input: {
     name: string;
     amount: number;
     billingCycle: BillingCycle;
     startDate: string;
     endDate?: string;
+    trialEndsAt?: string;
   }) => {
     try {
       await createSubscription({ variables: { input } });
@@ -173,6 +217,7 @@ export function useSubscriptionsData() {
     billingCycle: BillingCycle;
     startDate: string;
     endDate?: string;
+    trialEndsAt?: string;
   }) => {
     await updateSubscription({ variables: { input } });
     setSubscriptionToEdit(null);
@@ -240,7 +285,9 @@ export function useSubscriptionsData() {
     isCreateOpen,
     isDeleting,
     isResuming,
+    mostExpensive,
     nextRenewal,
+    renewingThisMonthTotal,
     onActivePaginate: setActivePage,
     onCancelConfirm: handleCancelConfirm,
     onCloseCreate: () => setIsCreateOpen(false),
