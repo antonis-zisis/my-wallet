@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -37,9 +38,16 @@ const healthMock = {
   result: { data: { health: 'OK' } },
 };
 
-const renderNavBar = async () => {
+const healthErrorMock = {
+  request: { query: HEALTH_QUERY },
+  error: new Error('Connection failed'),
+};
+
+const renderNavBar = async (
+  mocks: Array<MockLink.MockedResponse> = [healthMock]
+) => {
   render(
-    <MockedProvider mocks={[healthMock]}>
+    <MockedProvider mocks={mocks}>
       <ThemeProvider>
         <AuthProvider>
           <MemoryRouter>
@@ -89,9 +97,8 @@ describe('NavBar', () => {
     expect(link.closest('a')).toHaveAttribute('href', '/net-worth');
   });
 
-  it('contains theme toggle in the user dropdown', async () => {
+  it('shows theme toggle button in the toolbar', async () => {
     await renderNavBar();
-    fireEvent.click(screen.getByLabelText('User menu'));
     expect(screen.getByLabelText(/Switch to .+ mode/)).toBeInTheDocument();
   });
 
@@ -140,5 +147,46 @@ describe('NavBar', () => {
     fireEvent.click(screen.getByText('Profile'));
 
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
+  });
+
+  it('renders brand link', async () => {
+    await renderNavBar();
+    expect(screen.getByText('My Wallet').closest('a')).toHaveAttribute(
+      'href',
+      '/'
+    );
+  });
+
+  it('shows full name and email in dropdown header', async () => {
+    await renderNavBar();
+    fireEvent.click(screen.getByLabelText('User menu'));
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('test@example.com')).toBeInTheDocument();
+  });
+
+  it('shows only email in dropdown header when fullName is null', async () => {
+    vi.mocked(useUser).mockReturnValue({
+      user: { id: '1', email: 'test@example.com', fullName: null },
+      loading: false,
+      updateUser: vi.fn(),
+    });
+    await renderNavBar();
+    fireEvent.click(screen.getByLabelText('User menu'));
+    expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
+    expect(screen.getByText('test@example.com')).toBeInTheDocument();
+  });
+
+  it('shows "Server connected" tooltip on health dot', async () => {
+    await renderNavBar();
+    await waitFor(() => {
+      expect(screen.getByTitle('Server connected')).toBeInTheDocument();
+    });
+  });
+
+  it('shows "Server offline" tooltip on health dot when server errors', async () => {
+    await renderNavBar([healthErrorMock]);
+    await waitFor(() => {
+      expect(screen.getByTitle('Server offline')).toBeInTheDocument();
+    });
   });
 });
