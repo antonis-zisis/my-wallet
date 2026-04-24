@@ -236,15 +236,6 @@ export function NetWorthSnapshotModal({
     }
   };
 
-  const columnHeaders = (
-    <div className="mb-1 grid grid-cols-[144px_1fr_112px_32px] gap-2 px-2 text-xs font-medium text-gray-400 dark:text-gray-500">
-      <span>Category</span>
-      <span>Label</span>
-      <span>Amount</span>
-      <span />
-    </div>
-  );
-
   const renderEntryRow = (entry: EntryDraft) => {
     const categoryOptions = (
       entry.type === 'ASSET' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES
@@ -253,7 +244,7 @@ export function NetWorthSnapshotModal({
     return (
       <div
         key={entry.key}
-        className="grid grid-cols-[144px_1fr_112px_32px] items-center gap-2 rounded-lg bg-gray-50 p-2 dark:bg-gray-700/50"
+        className="grid grid-cols-[144px_1fr_112px_28px] items-center gap-2 border-b border-gray-100 py-1 last:border-0 dark:border-gray-700/50"
       >
         <Select
           id={`category-${entry.key}`}
@@ -262,6 +253,7 @@ export function NetWorthSnapshotModal({
           onChange={(event) =>
             updateEntry(entry.key, 'category', event.target.value)
           }
+          className="py-1! text-sm"
         />
 
         <Input
@@ -271,6 +263,7 @@ export function NetWorthSnapshotModal({
           onChange={(event) =>
             updateEntry(entry.key, 'label', event.target.value)
           }
+          className="py-1! text-sm"
         />
 
         <Input
@@ -283,19 +276,39 @@ export function NetWorthSnapshotModal({
           onChange={(event) =>
             updateEntry(entry.key, 'amount', event.target.value)
           }
+          className="py-1! text-sm"
         />
 
         <button
           onClick={() => removeEntry(entry.key)}
-          className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 dark:text-gray-500 dark:hover:text-red-400"
+          className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 dark:text-gray-500 dark:hover:text-red-400"
           aria-label="Remove entry"
           disabled={entries.length === 1}
         >
-          <XMarkIcon className="h-4 w-4" />
+          <XMarkIcon className="h-3.5 w-3.5" />
         </button>
       </div>
     );
   };
+
+  const renderSectionHeader = (
+    label: string,
+    type: NetWorthEntryType,
+    ref?: React.RefObject<HTMLDivElement | null>
+  ) => (
+    <div ref={ref} className="flex items-center gap-2 py-1.5">
+      <span className="text-xs font-semibold tracking-wide text-gray-400 uppercase dark:text-gray-500">
+        {label}
+      </span>
+      <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+      <button
+        className="cursor-pointer text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+        onClick={() => addEntry(type)}
+      >
+        + Add
+      </button>
+    </div>
+  );
 
   return (
     <Modal
@@ -320,14 +333,15 @@ export function NetWorthSnapshotModal({
         </>
       }
     >
-      <div className="space-y-4">
-        <div className="grid grid-cols-[1fr_160px] gap-3">
+      <div className="space-y-3">
+        <div className="grid grid-cols-[1fr_160px] gap-2">
           <Input
             label="Snapshot Title"
             id="snapshot-title"
             placeholder="e.g. February 2026"
             value={title}
             onChange={(event) => handleTitleChange(event.target.value)}
+            className="py-1! text-sm"
             autoFocus
           />
 
@@ -337,78 +351,47 @@ export function NetWorthSnapshotModal({
             type="date"
             value={snapshotDate}
             onChange={(event) => handleDateChange(event.target.value)}
+            className="py-1! text-sm"
           />
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-            Entries
-          </p>
-
           <div
             ref={entriesContainerRef}
-            className="max-h-120 space-y-4 overflow-y-auto pr-1"
+            className="max-h-96 overflow-y-auto pr-1"
           >
-            <div>
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                  Assets
-                </span>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => addEntry('ASSET')}
-                >
-                  + Add
-                </Button>
-              </div>
-              {columnHeaders}
-              <div className="space-y-2">
-                {assetEntries.length === 0 ? (
-                  <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
-                    No assets added yet.
-                  </p>
-                ) : (
-                  assetEntries.map(renderEntryRow)
-                )}
-              </div>
-            </div>
+            {renderSectionHeader('Assets', 'ASSET')}
+            {assetEntries.length === 0 ? (
+              <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
+                No assets added yet.
+              </p>
+            ) : (
+              assetEntries.map(renderEntryRow)
+            )}
 
-            <div ref={liabilitiesSectionRef}>
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                  Liabilities
-                </span>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => addEntry('LIABILITY')}
-                >
-                  + Add
-                </Button>
-              </div>
-              {columnHeaders}
-              <div className="space-y-2">
-                {liabilityEntries.length === 0 ? (
-                  <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
-                    No liabilities added yet.
-                  </p>
-                ) : (
-                  liabilityEntries.map(renderEntryRow)
-                )}
-              </div>
-            </div>
+            {renderSectionHeader(
+              'Liabilities',
+              'LIABILITY',
+              liabilitiesSectionRef
+            )}
+            {liabilityEntries.length === 0 ? (
+              <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
+                No liabilities added yet.
+              </p>
+            ) : (
+              liabilityEntries.map(renderEntryRow)
+            )}
           </div>
 
           {hasIncompleteEntries && hasSomeAmount && (
-            <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+            <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
               All entries need a label and an amount greater than zero.
             </p>
           )}
         </div>
 
         {hasSomeAmount && (
-          <div className="flex justify-between rounded-lg bg-gray-100 px-4 py-3 text-sm dark:bg-gray-700">
+          <div className="flex justify-between border-t border-gray-100 pt-2 text-xs dark:border-gray-700">
             <span className="text-green-600 dark:text-green-400">
               Assets: {formatMoney(totalAssets)} €
             </span>

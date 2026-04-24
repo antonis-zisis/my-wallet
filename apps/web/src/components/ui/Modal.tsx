@@ -51,7 +51,7 @@ export function Modal({
       />
 
       <div
-        className={`relative z-50 w-full rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800 ${size === 'lg' ? 'max-w-2xl' : 'max-w-md'}`}
+        className={`relative z-50 w-full rounded bg-white p-6 shadow-xl dark:bg-gray-800 ${size === 'lg' ? 'max-w-2xl' : 'max-w-md'}`}
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">

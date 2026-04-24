@@ -74,7 +74,7 @@ export function Dropdown({
 
       {isOpen && (
         <div
-          className={`absolute z-10 mt-1 w-52 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 ${align === 'left' ? 'left-0' : 'right-0'}`}
+          className={`absolute z-10 mt-1 w-52 rounded border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 ${align === 'left' ? 'left-0' : 'right-0'}`}
         >
           {items.map((item, index) => {
             if (item.type === 'custom') {
