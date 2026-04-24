@@ -69,6 +69,54 @@ describe('EditSubscriptionModal', () => {
     expect(screen.getByLabelText('Trial ends')).toBeInTheDocument();
   });
 
+  describe('duplicate detection', () => {
+    it('shows a warning when renamed to match another existing subscription', async () => {
+      render(
+        <EditSubscriptionModal
+          {...defaultProps}
+          existingNames={['Netflix', 'Spotify']}
+        />
+      );
+      await userEvent.clear(screen.getByLabelText('Name'));
+      await userEvent.type(screen.getByLabelText('Name'), 'Spotify');
+      expect(
+        screen.getByText('A subscription with this name already exists.')
+      ).toBeInTheDocument();
+    });
+
+    it('does not show a warning when keeping the same name as the current subscription', () => {
+      render(
+        <EditSubscriptionModal
+          {...defaultProps}
+          existingNames={['Netflix', 'Spotify']}
+        />
+      );
+      expect(
+        screen.queryByText('A subscription with this name already exists.')
+      ).not.toBeInTheDocument();
+    });
+
+    it('warning is case-insensitive', async () => {
+      render(
+        <EditSubscriptionModal {...defaultProps} existingNames={['Spotify']} />
+      );
+      await userEvent.clear(screen.getByLabelText('Name'));
+      await userEvent.type(screen.getByLabelText('Name'), 'spotify');
+      expect(
+        screen.getByText('A subscription with this name already exists.')
+      ).toBeInTheDocument();
+    });
+
+    it('does not show a warning when no existing names are provided', async () => {
+      render(<EditSubscriptionModal {...defaultProps} />);
+      await userEvent.clear(screen.getByLabelText('Name'));
+      await userEvent.type(screen.getByLabelText('Name'), 'Spotify');
+      expect(
+        screen.queryByText('A subscription with this name already exists.')
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('calls onClose when Cancel is clicked', async () => {
     const onClose = vi.fn();
     render(<EditSubscriptionModal {...defaultProps} onClose={onClose} />);

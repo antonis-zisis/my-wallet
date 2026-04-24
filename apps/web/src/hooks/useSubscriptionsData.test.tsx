@@ -1,7 +1,7 @@
 import { MockLink } from '@apollo/client/testing';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../contexts/ToastContext', () => ({
   useToast: vi.fn().mockReturnValue({
@@ -619,6 +619,36 @@ describe('useSubscriptionsData', () => {
     expect(result.current.subscriptionToResume).toBeNull();
   });
 
+  it('exposes allLoadedNames combining active and inactive subscription names', async () => {
+    const mockInactiveQueryWithItem: MockLink.MockedResponse = {
+      request: {
+        query: GET_SUBSCRIPTIONS,
+        variables: { active: false, page: 1, pageSize: PAGE_SIZE },
+      },
+      result: {
+        data: {
+          subscriptions: {
+            items: [
+              mockSubscription({ id: '3', name: 'Hulu', isActive: false }),
+            ],
+            totalCount: 1,
+          },
+        },
+      },
+    };
+
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([mockActiveQuery, mockInactiveQueryWithItem]),
+    });
+
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+
+    expect(result.current.allLoadedNames).toContain('Netflix');
+    expect(result.current.allLoadedNames).toContain('YouTube Premium');
+    expect(result.current.allLoadedNames).toContain('Hulu');
+    expect(result.current.allLoadedNames).toHaveLength(3);
+  });
+
   it('clears subscriptionToDelete after confirming deletion', async () => {
     const deleteMock: MockLink.MockedResponse = {
       request: { query: DELETE_SUBSCRIPTION, variables: { id: '1' } },
@@ -661,5 +691,179 @@ describe('useSubscriptionsData', () => {
     await act(() => result.current.onDeleteConfirm());
 
     expect(result.current.subscriptionToDelete).toBeNull();
+  });
+});
+
+// Use April 2026 (month index 3) as a fixed date for renewal math tests.
+// April 2026: 30 days, starts on Wednesday (day 3).
+describe('renewingThisMonthTotal', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-04-15'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const buildActiveQuery = (
+    items: Array<Subscription>
+  ): MockLink.MockedResponse => ({
+    request: {
+      query: GET_SUBSCRIPTIONS,
+      variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+    },
+    result: { data: { subscriptions: { items, totalCount: items.length } } },
+  });
+
+  it('counts a monthly subscription every month', async () => {
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([mockSubscription()]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBeCloseTo(15.99);
+  });
+
+  it('counts a yearly subscription only in its anniversary month', async () => {
+    // mockYearlySubscription has startDate March 2025 (month 2), not April (3)
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([mockYearlySubscription]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBe(0);
+  });
+
+  it('counts a yearly subscription in its anniversary month', async () => {
+    // Start month April (3) === current month April (3)
+    const aprilYearly = mockSubscription({
+      id: '5',
+      amount: 120,
+      billingCycle: 'YEARLY',
+      startDate: '2025-04-01T00:00:00.000Z',
+    });
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([aprilYearly]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBe(120);
+  });
+
+  it('counts a quarterly subscription when current month aligns with start month', async () => {
+    // Start month January (0): (3 - 0) % 3 = 0 → renews in April
+    const quarterly = mockSubscription({
+      id: '6',
+      amount: 30,
+      billingCycle: 'QUARTERLY',
+      startDate: '2025-01-10T00:00:00.000Z',
+    });
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([quarterly]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBe(30);
+  });
+
+  it('does not count a quarterly subscription when current month does not align', async () => {
+    // Start month February (1): (3 - 1) % 3 = 2 ≠ 0 → does not renew in April
+    const quarterly = mockSubscription({
+      id: '7',
+      amount: 30,
+      billingCycle: 'QUARTERLY',
+      startDate: '2025-02-10T00:00:00.000Z',
+    });
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([quarterly]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBe(0);
+  });
+
+  it('counts a bi-annual subscription when current month aligns with start month', async () => {
+    // Start month October (9): (3 - 9) % 6 = -6 % 6 = 0 → renews in April
+    const biAnnual = mockSubscription({
+      id: '8',
+      amount: 60,
+      billingCycle: 'BI_ANNUAL',
+      startDate: '2025-10-01T00:00:00.000Z',
+    });
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([biAnnual]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBe(60);
+  });
+
+  it('does not count a bi-annual subscription when current month does not align', async () => {
+    // Start month January (0): (3 - 0) % 6 = 3 ≠ 0 → does not renew in April
+    const biAnnual = mockSubscription({
+      id: '9',
+      amount: 60,
+      billingCycle: 'BI_ANNUAL',
+      startDate: '2025-01-01T00:00:00.000Z',
+    });
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([biAnnual]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBe(0);
+  });
+
+  it('counts all weekly renewals in the month for a weekly subscription', async () => {
+    // Start date is a Wednesday (2026-01-07). April 2026 starts Wednesday (day 3).
+    // Wednesdays in April: 1, 8, 15, 22, 29 = 5 renewals
+    const weekly = mockSubscription({
+      id: '10',
+      amount: 5,
+      billingCycle: 'WEEKLY',
+      startDate: '2026-01-07T00:00:00.000Z',
+    });
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([weekly]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBe(25);
+  });
+
+  it('counts 4 weekly renewals when the day of week appears only 4 times in the month', async () => {
+    // Start date is a Monday (2026-01-05). April 2026 starts Wednesday (day 3).
+    // Mondays in April: 6, 13, 20, 27 = 4 renewals
+    const weekly = mockSubscription({
+      id: '11',
+      amount: 5,
+      billingCycle: 'WEEKLY',
+      startDate: '2026-01-05T00:00:00.000Z',
+    });
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        buildActiveQuery([weekly]),
+        mockInactiveQueryEmpty,
+      ]),
+    });
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+    expect(result.current.renewingThisMonthTotal).toBe(20);
   });
 });

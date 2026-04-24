@@ -77,6 +77,42 @@ describe('subscriptionResolvers', () => {
 
       expect(result).toBe(10);
     });
+
+    it('returns amount * (52/12) for weekly subscriptions', () => {
+      const result = subscriptionResolvers.Subscription.monthlyCost({
+        amount: 10,
+        billingCycle: 'WEEKLY',
+        isActive: true,
+        cancelledAt: null,
+        endDate: null,
+      });
+
+      expect(result).toBeCloseTo((10 * 52) / 12);
+    });
+
+    it('returns amount / 3 for quarterly subscriptions', () => {
+      const result = subscriptionResolvers.Subscription.monthlyCost({
+        amount: 30,
+        billingCycle: 'QUARTERLY',
+        isActive: true,
+        cancelledAt: null,
+        endDate: null,
+      });
+
+      expect(result).toBe(10);
+    });
+
+    it('returns amount / 6 for bi-annual subscriptions', () => {
+      const result = subscriptionResolvers.Subscription.monthlyCost({
+        amount: 60,
+        billingCycle: 'BI_ANNUAL',
+        isActive: true,
+        cancelledAt: null,
+        endDate: null,
+      });
+
+      expect(result).toBe(10);
+    });
   });
 
   describe('Query.subscriptions', () => {

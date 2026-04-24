@@ -99,6 +99,71 @@ describe('CreateSubscriptionModal', () => {
     });
   });
 
+  describe('duplicate detection', () => {
+    it('shows a warning when the typed name matches an existing subscription', async () => {
+      render(
+        <CreateSubscriptionModal
+          {...defaultProps}
+          existingNames={['Netflix', 'Spotify']}
+        />
+      );
+      await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
+      expect(
+        screen.getByText('A subscription with this name already exists.')
+      ).toBeInTheDocument();
+    });
+
+    it('warning is case-insensitive', async () => {
+      render(
+        <CreateSubscriptionModal
+          {...defaultProps}
+          existingNames={['Netflix']}
+        />
+      );
+      await userEvent.type(screen.getByLabelText('Name'), 'netflix');
+      expect(
+        screen.getByText('A subscription with this name already exists.')
+      ).toBeInTheDocument();
+    });
+
+    it('does not show a warning when the name is unique', async () => {
+      render(
+        <CreateSubscriptionModal
+          {...defaultProps}
+          existingNames={['Spotify']}
+        />
+      );
+      await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
+      expect(
+        screen.queryByText('A subscription with this name already exists.')
+      ).not.toBeInTheDocument();
+    });
+
+    it('does not show a warning when no existing names are provided', async () => {
+      render(<CreateSubscriptionModal {...defaultProps} />);
+      await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
+      expect(
+        screen.queryByText('A subscription with this name already exists.')
+      ).not.toBeInTheDocument();
+    });
+
+    it('still allows submission when a duplicate name is entered', async () => {
+      const onSubmit = vi.fn();
+      render(
+        <CreateSubscriptionModal
+          {...defaultProps}
+          onSubmit={onSubmit}
+          existingNames={['Netflix']}
+        />
+      );
+      await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
+      await userEvent.type(screen.getByLabelText('Amount'), '15.99');
+      await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
+      await userEvent.click(screen.getByRole('button', { name: 'Create' }));
+      expect(onSubmit).toHaveBeenCalled();
+    });
+  });
+
   it('calls onClose when Cancel is clicked', async () => {
     const onClose = vi.fn();
     render(<CreateSubscriptionModal {...defaultProps} onClose={onClose} />);

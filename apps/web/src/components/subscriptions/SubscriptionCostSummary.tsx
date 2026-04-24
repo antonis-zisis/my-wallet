@@ -133,7 +133,7 @@ export function SubscriptionCostSummary({
               : '—'
           }
           secondary={renewingThisMonthTotal > 0 ? undefined : 'Nothing due'}
-          tooltip={`Total charged in ${monthName}. Monthly subscriptions renew every month; yearly subscriptions count only when their anniversary falls in this month.`}
+          tooltip={`Total charged in ${monthName}. Weekly subscriptions count all renewals in the month; monthly subscriptions always count; quarterly, bi-annual, and yearly subscriptions count only when their anniversary falls in this month.`}
         />
       </div>
     </div>

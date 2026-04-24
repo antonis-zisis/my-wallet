@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { BillingCycle, Subscription } from '../../types/subscription';
+import {
+  BILLING_CYCLE_OPTIONS,
+  BillingCycle,
+  Subscription,
+} from '../../types/subscription';
 import { Button, Input, Modal, Select } from '../ui';
 
 interface ResumeSubscriptionModalProps {
@@ -92,10 +96,7 @@ export function ResumeSubscriptionModal({
           label="Billing Cycle"
           id="resume-subscription-billing-cycle"
           value={billingCycle}
-          options={[
-            { value: 'MONTHLY', label: 'Monthly' },
-            { value: 'YEARLY', label: 'Yearly' },
-          ]}
+          options={BILLING_CYCLE_OPTIONS}
           onChange={(event) =>
             setBillingCycle(event.target.value as BillingCycle)
           }

@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
 
-import { BillingCycle, Subscription } from '../../types/subscription';
+import {
+  BILLING_CYCLE_OPTIONS,
+  BillingCycle,
+  Subscription,
+} from '../../types/subscription';
 import { Button, Input, Modal, Select } from '../ui';
 
 interface EditSubscriptionModalProps {
+  existingNames?: Array<string>;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (input: {
@@ -28,6 +33,7 @@ function formatDateForInput(dateString: string): string {
 }
 
 export function EditSubscriptionModal({
+  existingNames = [],
   isOpen,
   onClose,
   onSubmit,
@@ -57,6 +63,13 @@ export function EditSubscriptionModal({
       );
     }
   }, [subscription]);
+
+  const isDuplicate =
+    name.trim().length > 0 &&
+    name.trim().toLowerCase() !== subscription?.name.toLowerCase() &&
+    existingNames.some(
+      (existingName) => existingName.toLowerCase() === name.trim().toLowerCase()
+    );
 
   const isValid =
     name.trim().length > 0 &&
@@ -98,14 +111,21 @@ export function EditSubscriptionModal({
       }
     >
       <div className="space-y-4">
-        <Input
-          label="Name"
-          id="edit-subscription-name"
-          placeholder="e.g. Netflix"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          autoFocus
-        />
+        <div>
+          <Input
+            label="Name"
+            id="edit-subscription-name"
+            placeholder="e.g. Netflix"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            autoFocus
+          />
+          {isDuplicate && (
+            <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+              A subscription with this name already exists.
+            </p>
+          )}
+        </div>
 
         <Input
           label="Amount"
@@ -122,10 +142,7 @@ export function EditSubscriptionModal({
           label="Billing Cycle"
           id="edit-subscription-billing-cycle"
           value={billingCycle}
-          options={[
-            { value: 'MONTHLY', label: 'Monthly' },
-            { value: 'YEARLY', label: 'Yearly' },
-          ]}
+          options={BILLING_CYCLE_OPTIONS}
           onChange={(event) =>
             setBillingCycle(event.target.value as BillingCycle)
           }
