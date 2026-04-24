@@ -79,6 +79,23 @@ describe('Profile', () => {
     });
   });
 
+  describe('Change password button', () => {
+    it('is disabled when password fields are empty', () => {
+      render(<Profile />);
+      expect(
+        screen.getByRole('button', { name: 'Change password' })
+      ).toBeDisabled();
+    });
+
+    it('is enabled when new password is entered', async () => {
+      render(<Profile />);
+      await userEvent.type(screen.getByLabelText('New password'), 'secret123');
+      expect(
+        screen.getByRole('button', { name: 'Change password' })
+      ).toBeEnabled();
+    });
+  });
+
   it('submits profile update with trimmed full name', async () => {
     mockUpdateUser.mockResolvedValueOnce(undefined);
     render(<Profile />);

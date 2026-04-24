@@ -122,7 +122,11 @@ export function Profile() {
           />
 
           <div className="flex justify-end pt-1">
-            <Button isLoading={passwordSaving} type="submit">
+            <Button
+              disabled={!newPassword}
+              isLoading={passwordSaving}
+              type="submit"
+            >
               Change password
             </Button>
           </div>
