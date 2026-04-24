@@ -1,5 +1,7 @@
+import { LockClosedIcon, UserIcon } from '../components/icons';
 import { Button, Card, Input, PageLayout } from '../components/ui';
 import { useProfileData } from '../hooks/useProfileData';
+import { getInitials } from '../utils/getInitials';
 
 export function Profile() {
   const {
@@ -19,24 +21,49 @@ export function Profile() {
 
   return (
     <PageLayout className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-        Profile
-      </h1>
+      <div className="flex items-center gap-4">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-500 text-xl font-semibold text-white ring-4 ring-blue-100 dark:ring-blue-900/50">
+          {getInitials(fullName || email)}
+        </div>
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {fullName || email}
+          </h1>
+          {fullName && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">{email}</p>
+          )}
+        </div>
+      </div>
 
-      <Card>
-        <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Personal info
-        </h2>
+      <Card className="p-6">
+        <div className="mb-5 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30">
+            <span className="h-4 w-4 text-blue-600 dark:text-blue-400">
+              <UserIcon />
+            </span>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Personal info
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Update your name and contact details
+            </p>
+          </div>
+        </div>
 
         <form className="space-y-4" onSubmit={onProfileSubmit}>
-          <Input
-            className="bg-gray-50 dark:bg-gray-600"
-            id="email"
-            label="Email"
-            readOnly
-            type="email"
-            value={email}
-          />
+          <div>
+            <p className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Email
+            </p>
+            <div className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400">
+              {email}
+            </div>
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              Email address cannot be changed.
+            </p>
+          </div>
 
           <Input
             id="fullName"
@@ -46,20 +73,34 @@ export function Profile() {
             onChange={onFullNameChange}
           />
 
-          <Button
-            disabled={isNameUnchanged}
-            isLoading={profileSaving}
-            type="submit"
-          >
-            Save
-          </Button>
+          <div className="flex justify-end pt-1">
+            <Button
+              disabled={isNameUnchanged}
+              isLoading={profileSaving}
+              type="submit"
+            >
+              Save
+            </Button>
+          </div>
         </form>
       </Card>
 
-      <Card>
-        <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Change password
-        </h2>
+      <Card className="p-6">
+        <div className="mb-5 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
+            <span className="h-4 w-4 text-gray-600 dark:text-gray-400">
+              <LockClosedIcon />
+            </span>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Change password
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Choose a strong password for your account
+            </p>
+          </div>
+        </div>
 
         <form className="space-y-4" onSubmit={onPasswordSubmit}>
           <Input
@@ -80,9 +121,11 @@ export function Profile() {
             onChange={onConfirmPasswordChange}
           />
 
-          <Button isLoading={passwordSaving} type="submit">
-            Change password
-          </Button>
+          <div className="flex justify-end pt-1">
+            <Button isLoading={passwordSaving} type="submit">
+              Change password
+            </Button>
+          </div>
         </form>
       </Card>
     </PageLayout>

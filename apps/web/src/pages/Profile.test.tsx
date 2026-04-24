@@ -43,12 +43,11 @@ describe('Profile', () => {
     mockShowError.mockReset();
   });
 
-  it('renders email as read-only and fullName as editable', () => {
+  it('renders email as non-editable display and fullName as editable input', () => {
     render(<Profile />);
 
-    const emailInput = screen.getByLabelText('Email') as HTMLInputElement;
-    expect(emailInput.value).toBe('test@example.com');
-    expect(emailInput).toHaveAttribute('readOnly');
+    expect(screen.getAllByText('test@example.com').length).toBeGreaterThan(0);
+    expect(screen.queryByLabelText('Email')).not.toBeInTheDocument();
 
     const nameInput = screen.getByLabelText('Full name') as HTMLInputElement;
     expect(nameInput.value).toBe('John Doe');
