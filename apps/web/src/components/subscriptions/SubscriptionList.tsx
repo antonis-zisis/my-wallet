@@ -20,16 +20,21 @@ interface SubscriptionListProps {
 
 function SkeletonRow() {
   return (
-    <li className="flex items-center gap-3 px-1 py-3">
-      <Skeleton className="h-9 w-9 rounded-full" />
-      <div className="flex-1 space-y-2">
-        <Skeleton className="h-4 w-32" />
-        <Skeleton className="h-3 w-44" />
+    <li className="flex items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-4 w-14 rounded" />
+          </div>
+          <Skeleton className="mt-1.5 h-3 w-44" />
+        </div>
+        <div className="space-y-1.5 text-right">
+          <Skeleton className="ml-auto h-4 w-20" />
+          <Skeleton className="ml-auto h-3 w-16" />
+        </div>
       </div>
-      <div className="space-y-2 text-right">
-        <Skeleton className="ml-auto h-4 w-20" />
-        <Skeleton className="ml-auto h-3 w-16" />
-      </div>
+      <Skeleton className="h-7 w-7 shrink-0 rounded" />
     </li>
   );
 }
@@ -95,6 +100,28 @@ function formatTrialCountdown(trialEndsAt: string): string {
   }
 
   return `trial ends in ${daysLeft} days · ${formatDate(trialEndsAt)}`;
+}
+
+function TertiaryLine({ subscription }: { subscription: Subscription }) {
+  const parts: Array<string> = [];
+
+  if (subscription.paymentMethod) {
+    parts.push(`via ${subscription.paymentMethod}`);
+  }
+
+  if (subscription.notes) {
+    parts.push(subscription.notes);
+  }
+
+  if (parts.length === 0) {
+    return null;
+  }
+
+  return (
+    <p className="mt-0.5 truncate text-xs text-gray-400 italic dark:text-gray-500">
+      {parts.join(' · ')}
+    </p>
+  );
 }
 
 function SecondaryLine({ subscription }: { subscription: Subscription }) {
@@ -181,7 +208,7 @@ export function SubscriptionList({
           className="divide-y divide-gray-200 dark:divide-gray-700"
           data-testid="subscription-list-skeleton"
         >
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 10 }).map((_, index) => (
             <SkeletonRow key={index} />
           ))}
         </ul>
@@ -240,9 +267,20 @@ export function SubscriptionList({
               <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate font-medium text-gray-800 dark:text-gray-100">
-                      {subscription.name}
-                    </span>
+                    {subscription.url ? (
+                      <a
+                        className="truncate font-medium text-gray-800 hover:underline dark:text-gray-100"
+                        href={subscription.url}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        {subscription.name}
+                      </a>
+                    ) : (
+                      <span className="truncate font-medium text-gray-800 dark:text-gray-100">
+                        {subscription.name}
+                      </span>
+                    )}
 
                     <Badge variant="default" size="sm">
                       {subscription.billingCycle === 'MONTHLY'
@@ -265,6 +303,7 @@ export function SubscriptionList({
                   </div>
 
                   <SecondaryLine subscription={subscription} />
+                  <TertiaryLine subscription={subscription} />
                 </div>
 
                 <AmountCell subscription={subscription} />

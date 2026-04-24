@@ -230,6 +230,9 @@ export function useSubscriptionsData() {
     startDate: string;
     endDate?: string;
     trialEndsAt?: string;
+    notes?: string;
+    paymentMethod?: string;
+    url?: string;
   }) => {
     try {
       await createSubscription({ variables: { input } });
@@ -250,6 +253,9 @@ export function useSubscriptionsData() {
     startDate: string;
     endDate?: string;
     trialEndsAt?: string;
+    notes?: string;
+    paymentMethod?: string;
+    url?: string;
   }) => {
     await updateSubscription({ variables: { input } });
     setSubscriptionToEdit(null);

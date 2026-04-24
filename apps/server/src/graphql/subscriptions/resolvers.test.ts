@@ -239,6 +239,9 @@ describe('subscriptionResolvers', () => {
           startDate: new Date('2025-01-01'),
           endDate: null,
           trialEndsAt: null,
+          notes: null,
+          paymentMethod: null,
+          url: null,
           userId: USER_ID,
         },
       });
@@ -298,6 +301,38 @@ describe('subscriptionResolvers', () => {
     });
   });
 
+  describe('Mutation.createSubscription with optional fields', () => {
+    it('creates a subscription with notes, paymentMethod, and url', async () => {
+      vi.mocked(prisma.subscription.create).mockResolvedValue(
+        mockSubscription as never
+      );
+
+      await subscriptionResolvers.Mutation.createSubscription(
+        undefined as unknown,
+        {
+          input: {
+            name: 'Netflix',
+            amount: 15.99,
+            billingCycle: 'MONTHLY',
+            startDate: '2025-01-01',
+            notes: 'shared with sister',
+            paymentMethod: 'Revolut',
+            url: 'https://netflix.com/account',
+          },
+        },
+        CTX
+      );
+
+      expect(prisma.subscription.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          notes: 'shared with sister',
+          paymentMethod: 'Revolut',
+          url: 'https://netflix.com/account',
+        }),
+      });
+    });
+  });
+
   describe('Mutation.updateSubscription', () => {
     it('updates a subscription after authorization check', async () => {
       vi.mocked(prisma.subscription.findFirst).mockResolvedValue(
@@ -334,11 +369,49 @@ describe('subscriptionResolvers', () => {
           startDate: new Date('2025-01-01'),
           endDate: null,
           trialEndsAt: null,
+          notes: null,
+          paymentMethod: null,
+          url: null,
         },
       });
       expect(result).toEqual(
         expect.objectContaining({ name: 'Netflix Premium' })
       );
+    });
+
+    it('updates a subscription with notes, paymentMethod, and url', async () => {
+      vi.mocked(prisma.subscription.findFirst).mockResolvedValue(
+        mockSubscription as never
+      );
+      vi.mocked(prisma.subscription.update).mockResolvedValue(
+        mockSubscription as never
+      );
+
+      await subscriptionResolvers.Mutation.updateSubscription(
+        undefined as unknown,
+        {
+          input: {
+            id: 'sub-1',
+            name: 'Netflix',
+            amount: 15.99,
+            billingCycle: 'MONTHLY',
+            startDate: '2025-01-01',
+            notes: 'shared with sister',
+            paymentMethod: 'Revolut',
+            url: 'https://netflix.com/account',
+          },
+        },
+        CTX
+      );
+
+      expect(prisma.subscription.update).toHaveBeenCalledWith({
+        where: { id: 'sub-1' },
+        data: expect.objectContaining({
+          notes: 'shared with sister',
+          paymentMethod: 'Revolut',
+          url: 'https://netflix.com/account',
+        }),
+      });
     });
 
     it('throws NOT_FOUND error when subscription does not belong to user', async () => {

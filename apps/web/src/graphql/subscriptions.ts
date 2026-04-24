@@ -13,6 +13,9 @@ export const GET_SUBSCRIPTIONS = gql`
         endDate
         cancelledAt
         trialEndsAt
+        notes
+        paymentMethod
+        url
         monthlyCost
         createdAt
         updatedAt
@@ -34,6 +37,9 @@ export const CREATE_SUBSCRIPTION = gql`
       endDate
       cancelledAt
       trialEndsAt
+      notes
+      paymentMethod
+      url
       monthlyCost
       createdAt
       updatedAt
@@ -53,6 +59,9 @@ export const UPDATE_SUBSCRIPTION = gql`
       endDate
       cancelledAt
       trialEndsAt
+      notes
+      paymentMethod
+      url
       monthlyCost
       createdAt
       updatedAt

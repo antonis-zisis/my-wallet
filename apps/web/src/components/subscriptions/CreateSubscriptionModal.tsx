@@ -14,6 +14,9 @@ interface CreateSubscriptionModalProps {
     startDate: string;
     endDate?: string;
     trialEndsAt?: string;
+    notes?: string;
+    paymentMethod?: string;
+    url?: string;
   }) => void;
 }
 
@@ -30,6 +33,9 @@ export function CreateSubscriptionModal({
   const [endDate, setEndDate] = useState('');
   const [isTrial, setIsTrial] = useState(false);
   const [trialEndsAt, setTrialEndsAt] = useState('');
+  const [notes, setNotes] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [url, setUrl] = useState('');
 
   const handleClose = () => {
     setName('');
@@ -39,6 +45,9 @@ export function CreateSubscriptionModal({
     setEndDate('');
     setIsTrial(false);
     setTrialEndsAt('');
+    setNotes('');
+    setPaymentMethod('');
+    setUrl('');
     onClose();
   };
 
@@ -67,6 +76,9 @@ export function CreateSubscriptionModal({
       startDate,
       endDate: endDate || undefined,
       trialEndsAt: isTrial ? trialEndsAt : undefined,
+      notes: notes.trim() || undefined,
+      paymentMethod: paymentMethod.trim() || undefined,
+      url: url.trim() || undefined,
     });
     handleClose();
   };
@@ -160,6 +172,31 @@ export function CreateSubscriptionModal({
             onChange={(event) => setTrialEndsAt(event.target.value)}
           />
         )}
+
+        <Input
+          label="URL"
+          id="subscription-url"
+          type="url"
+          placeholder="https://..."
+          value={url}
+          onChange={(event) => setUrl(event.target.value)}
+        />
+
+        <Input
+          label="Payment method"
+          id="subscription-payment-method"
+          placeholder="e.g. Revolut, Visa *1234"
+          value={paymentMethod}
+          onChange={(event) => setPaymentMethod(event.target.value)}
+        />
+
+        <Input
+          label="Notes"
+          id="subscription-notes"
+          placeholder="e.g. shared with sister"
+          value={notes}
+          onChange={(event) => setNotes(event.target.value)}
+        />
       </div>
     </Modal>
   );

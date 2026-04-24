@@ -15,6 +15,9 @@ const mockSubscription: Subscription = {
   endDate: null,
   cancelledAt: null,
   trialEndsAt: null,
+  notes: null,
+  paymentMethod: null,
+  url: null,
   monthlyCost: 15.99,
   createdAt: '2025-01-15T00:00:00Z',
   updatedAt: '2025-01-15T00:00:00Z',
@@ -54,6 +57,42 @@ describe('EditSubscriptionModal', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'sub-1', name: 'Netflix HD' })
+    );
+  });
+
+  it('pre-fills url, paymentMethod, and notes from the subscription prop', () => {
+    const subscription = {
+      ...mockSubscription,
+      url: 'https://netflix.com/account',
+      paymentMethod: 'Revolut',
+      notes: 'shared with sister',
+    };
+    render(
+      <EditSubscriptionModal {...defaultProps} subscription={subscription} />
+    );
+    expect(screen.getByLabelText('URL')).toHaveValue(
+      'https://netflix.com/account'
+    );
+    expect(screen.getByLabelText('Payment method')).toHaveValue('Revolut');
+    expect(screen.getByLabelText('Notes')).toHaveValue('shared with sister');
+  });
+
+  it('submits updated url, paymentMethod, and notes', async () => {
+    const onSubmit = vi.fn();
+    render(<EditSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
+    await userEvent.type(
+      screen.getByLabelText('URL'),
+      'https://netflix.com/account'
+    );
+    await userEvent.type(screen.getByLabelText('Payment method'), 'Revolut');
+    await userEvent.type(screen.getByLabelText('Notes'), 'shared with sister');
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'https://netflix.com/account',
+        paymentMethod: 'Revolut',
+        notes: 'shared with sister',
+      })
     );
   });
 

@@ -63,6 +63,35 @@ describe('CreateSubscriptionModal', () => {
     expect(screen.getByLabelText('Name')).toHaveValue('');
   });
 
+  it('renders URL, Payment method, and Notes fields', () => {
+    render(<CreateSubscriptionModal {...defaultProps} />);
+    expect(screen.getByLabelText('URL')).toBeInTheDocument();
+    expect(screen.getByLabelText('Payment method')).toBeInTheDocument();
+    expect(screen.getByLabelText('Notes')).toBeInTheDocument();
+  });
+
+  it('submits notes, paymentMethod, and url when filled', async () => {
+    const onSubmit = vi.fn();
+    render(<CreateSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
+    await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
+    await userEvent.type(screen.getByLabelText('Amount'), '15.99');
+    await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
+    await userEvent.type(
+      screen.getByLabelText('URL'),
+      'https://netflix.com/account'
+    );
+    await userEvent.type(screen.getByLabelText('Payment method'), 'Revolut');
+    await userEvent.type(screen.getByLabelText('Notes'), 'shared with sister');
+    await userEvent.click(screen.getByRole('button', { name: 'Create' }));
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'https://netflix.com/account',
+        paymentMethod: 'Revolut',
+        notes: 'shared with sister',
+      })
+    );
+  });
+
   describe('trial period', () => {
     it('does not show the trial end date field by default', () => {
       render(<CreateSubscriptionModal {...defaultProps} />);

@@ -17,6 +17,9 @@ const makeSubscription = (
   endDate: null,
   cancelledAt: null,
   trialEndsAt: null,
+  notes: null,
+  paymentMethod: null,
+  url: null,
   monthlyCost: 9.99,
   createdAt: '2025-01-01T00:00:00Z',
   updatedAt: '2025-01-01T00:00:00Z',
@@ -58,6 +61,74 @@ describe('SubscriptionList', () => {
       />
     );
     expect(screen.getByText('No inactive subscriptions.')).toBeInTheDocument();
+  });
+
+  it('renders the subscription name as a link when url is set', () => {
+    const subscriptions = [
+      makeSubscription({ name: 'Netflix', url: 'https://netflix.com/account' }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    const link = screen.getByRole('link', { name: 'Netflix' });
+    expect(link).toHaveAttribute('href', 'https://netflix.com/account');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('renders the subscription name as plain text when url is not set', () => {
+    const subscriptions = [makeSubscription({ name: 'Netflix' })];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    expect(
+      screen.queryByRole('link', { name: 'Netflix' })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Netflix')).toBeInTheDocument();
+  });
+
+  it('shows paymentMethod and notes in the tertiary line', () => {
+    const subscriptions = [
+      makeSubscription({
+        name: 'Netflix',
+        paymentMethod: 'Revolut',
+        notes: 'shared with sister',
+      }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    expect(
+      screen.getByText('via Revolut · shared with sister')
+    ).toBeInTheDocument();
+  });
+
+  it('shows only notes when paymentMethod is not set', () => {
+    const subscriptions = [
+      makeSubscription({ name: 'Netflix', notes: 'shared with sister' }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    expect(screen.getByText('shared with sister')).toBeInTheDocument();
+  });
+
+  it('shows only paymentMethod when notes is not set', () => {
+    const subscriptions = [
+      makeSubscription({ name: 'Netflix', paymentMethod: 'Revolut' }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    expect(screen.getByText('via Revolut')).toBeInTheDocument();
+  });
+
+  it('shows no tertiary line when neither paymentMethod nor notes are set', () => {
+    const subscriptions = [makeSubscription({ name: 'Netflix' })];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+    expect(screen.queryByText(/^via /)).not.toBeInTheDocument();
   });
 
   it('renders subscription names and amounts', () => {

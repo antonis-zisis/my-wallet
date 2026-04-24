@@ -19,6 +19,9 @@ interface EditSubscriptionModalProps {
     startDate: string;
     endDate?: string;
     trialEndsAt?: string;
+    notes?: string;
+    paymentMethod?: string;
+    url?: string;
   }) => void;
   subscription: Subscription | null;
 }
@@ -46,6 +49,9 @@ export function EditSubscriptionModal({
   const [endDate, setEndDate] = useState('');
   const [isTrial, setIsTrial] = useState(false);
   const [trialEndsAt, setTrialEndsAt] = useState('');
+  const [notes, setNotes] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [url, setUrl] = useState('');
 
   useEffect(() => {
     if (subscription) {
@@ -61,6 +67,9 @@ export function EditSubscriptionModal({
       setTrialEndsAt(
         hasTrial ? formatDateForInput(subscription.trialEndsAt!) : ''
       );
+      setNotes(subscription.notes ?? '');
+      setPaymentMethod(subscription.paymentMethod ?? '');
+      setUrl(subscription.url ?? '');
     }
   }, [subscription]);
 
@@ -91,6 +100,9 @@ export function EditSubscriptionModal({
       startDate,
       endDate: endDate || undefined,
       trialEndsAt: isTrial ? trialEndsAt : undefined,
+      notes: notes.trim() || undefined,
+      paymentMethod: paymentMethod.trim() || undefined,
+      url: url.trim() || undefined,
     });
   };
 
@@ -183,6 +195,31 @@ export function EditSubscriptionModal({
             onChange={(event) => setTrialEndsAt(event.target.value)}
           />
         )}
+
+        <Input
+          label="URL"
+          id="edit-subscription-url"
+          type="url"
+          placeholder="https://..."
+          value={url}
+          onChange={(event) => setUrl(event.target.value)}
+        />
+
+        <Input
+          label="Payment method"
+          id="edit-subscription-payment-method"
+          placeholder="e.g. Revolut, Visa *1234"
+          value={paymentMethod}
+          onChange={(event) => setPaymentMethod(event.target.value)}
+        />
+
+        <Input
+          label="Notes"
+          id="edit-subscription-notes"
+          placeholder="e.g. shared with sister"
+          value={notes}
+          onChange={(event) => setNotes(event.target.value)}
+        />
       </div>
     </Modal>
   );

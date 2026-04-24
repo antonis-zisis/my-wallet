@@ -9,6 +9,9 @@ export interface CreateSubscriptionInput {
   startDate: string;
   endDate?: string;
   trialEndsAt?: string;
+  notes?: string;
+  paymentMethod?: string;
+  url?: string;
 }
 
 export interface UpdateSubscriptionInput {
@@ -19,6 +22,9 @@ export interface UpdateSubscriptionInput {
   startDate: string;
   endDate?: string;
   trialEndsAt?: string;
+  notes?: string;
+  paymentMethod?: string;
+  url?: string;
 }
 
 type SubscriptionParent = {
@@ -152,6 +158,9 @@ export const subscriptionResolvers = {
           startDate: new Date(input.startDate),
           endDate: input.endDate ? new Date(input.endDate) : null,
           trialEndsAt: input.trialEndsAt ? new Date(input.trialEndsAt) : null,
+          notes: input.notes ?? null,
+          paymentMethod: input.paymentMethod ?? null,
+          url: input.url ?? null,
           userId,
         },
       });
@@ -180,6 +189,9 @@ export const subscriptionResolvers = {
           startDate: new Date(input.startDate),
           endDate: input.endDate ? new Date(input.endDate) : null,
           trialEndsAt: input.trialEndsAt ? new Date(input.trialEndsAt) : null,
+          notes: input.notes ?? null,
+          paymentMethod: input.paymentMethod ?? null,
+          url: input.url ?? null,
         },
       });
     },

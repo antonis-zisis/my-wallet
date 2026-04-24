@@ -26,6 +26,9 @@ export interface Subscription {
   endDate: string | null;
   cancelledAt: string | null;
   trialEndsAt: string | null;
+  notes: string | null;
+  paymentMethod: string | null;
+  url: string | null;
   monthlyCost: number;
   createdAt: string;
   updatedAt: string;
