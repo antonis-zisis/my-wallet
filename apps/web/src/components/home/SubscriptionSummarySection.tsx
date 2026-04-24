@@ -8,11 +8,25 @@ interface SubscriptionSummarySectionProps {
   currentIncome: number;
 }
 
+function isActiveTrial(subscription: Subscription): boolean {
+  if (!subscription.trialEndsAt) {
+    return false;
+  }
+  const value = /^\d+$/.test(subscription.trialEndsAt)
+    ? Number(subscription.trialEndsAt)
+    : subscription.trialEndsAt;
+  return new Date(value) > new Date();
+}
+
 export function SubscriptionSummarySection({
   currentIncome,
   subscriptions,
 }: SubscriptionSummarySectionProps) {
-  const totalMonthlyCost = subscriptions.reduce(
+  const paidSubscriptions = subscriptions.filter(
+    (subscription) => !isActiveTrial(subscription)
+  );
+
+  const totalMonthlyCost = paidSubscriptions.reduce(
     (sum, subscription) => sum + subscription.monthlyCost,
     0
   );

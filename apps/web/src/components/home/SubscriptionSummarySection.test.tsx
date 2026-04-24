@@ -14,6 +14,7 @@ const makeSubscription = (
   startDate: '2025-01-01',
   endDate: null,
   cancelledAt: null,
+  trialEndsAt: null,
   createdAt: '2025-01-01T00:00:00Z',
   updatedAt: '2025-01-01T00:00:00Z',
   ...overrides,
@@ -72,6 +73,26 @@ describe('SubscriptionSummarySection', () => {
       />
     );
     expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  it('counts active trial subscriptions but excludes them from cost calculations', () => {
+    const subscriptions = [
+      makeSubscription({ name: 'Netflix', monthlyCost: 10 }),
+      makeSubscription({
+        name: 'Notion',
+        monthlyCost: 20,
+        trialEndsAt: '2030-01-01T00:00:00.000Z',
+      }),
+    ];
+    render(
+      <SubscriptionSummarySection
+        currentIncome={500}
+        subscriptions={subscriptions}
+      />
+    );
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText(/10,00 €/)).toBeInTheDocument();
+    expect(screen.queryByText(/30,00 €/)).not.toBeInTheDocument();
   });
 
   it('displays zero cost and zero count when there are no subscriptions', () => {

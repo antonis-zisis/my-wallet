@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
+import { cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type Subscription } from '../../types/subscription';
 import { SubscriptionList } from './SubscriptionList';
@@ -15,6 +16,7 @@ const makeSubscription = (
   startDate: '2025-01-01',
   endDate: null,
   cancelledAt: null,
+  trialEndsAt: null,
   monthlyCost: 9.99,
   createdAt: '2025-01-01T00:00:00Z',
   updatedAt: '2025-01-01T00:00:00Z',
@@ -189,7 +191,7 @@ describe('SubscriptionList', () => {
     expect(screen.queryByText('Cancelled')).not.toBeInTheDocument();
   });
 
-  it('shows "active until" text for cancelled subscriptions', () => {
+  it('shows an "ends in X days" countdown for cancelled subscriptions', () => {
     const subscriptions = [
       makeSubscription({
         name: 'Netflix',
@@ -200,7 +202,7 @@ describe('SubscriptionList', () => {
     render(
       <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
     );
-    expect(screen.getByText(/active until/)).toBeInTheDocument();
+    expect(screen.getByText(/ends in \d+ days/)).toBeInTheDocument();
   });
 
   it('shows Resume in the dropdown for cancelled active subscriptions', async () => {
@@ -250,6 +252,91 @@ describe('SubscriptionList', () => {
     expect(
       screen.queryByRole('button', { name: 'Resume' })
     ).not.toBeInTheDocument();
+  });
+
+  describe('trial period', () => {
+    it('shows a Trial badge for active trial subscriptions', () => {
+      const subscriptions = [
+        makeSubscription({
+          name: 'Notion',
+          trialEndsAt: '2030-01-01T00:00:00.000Z',
+        }),
+      ];
+      render(
+        <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+      );
+      expect(screen.getByText('Trial')).toBeInTheDocument();
+    });
+
+    it('does not show a Trial badge when the trial has expired', () => {
+      const subscriptions = [
+        makeSubscription({
+          name: 'Notion',
+          trialEndsAt: '2020-01-01T00:00:00.000Z',
+        }),
+      ];
+      render(
+        <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+      );
+      expect(screen.queryByText('Trial')).not.toBeInTheDocument();
+    });
+
+    it('shows a trial countdown in the secondary line', () => {
+      const subscriptions = [
+        makeSubscription({
+          name: 'Notion',
+          trialEndsAt: '2030-01-01T00:00:00.000Z',
+        }),
+      ];
+      render(
+        <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+      );
+      expect(screen.getByText(/trial ends in \d+ days/)).toBeInTheDocument();
+    });
+  });
+
+  describe('renewal relative label', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-04-24T00:00:00.000Z'));
+    });
+
+    afterEach(() => {
+      cleanup();
+      vi.useRealTimers();
+    });
+
+    it('shows "in Nd" when the next renewal is within 30 days', () => {
+      // startDate on the 28th → next monthly renewal is April 28 (4 days away)
+      const subscriptions = [
+        makeSubscription({
+          name: 'Netflix',
+          startDate: '2025-04-28T00:00:00.000Z',
+          billingCycle: 'MONTHLY',
+        }),
+      ];
+      render(
+        <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+      );
+      expect(screen.getByText(/next renewal at/)).toHaveTextContent('in 4d');
+    });
+
+    it('does not show a relative label when the next renewal is 30 or more days away', () => {
+      // Yearly subscription renewing on June 15 → 52 days from April 24
+      const subscriptions = [
+        makeSubscription({
+          name: 'Adobe',
+          startDate: '2025-06-15T00:00:00.000Z',
+          billingCycle: 'YEARLY',
+          amount: 120,
+          monthlyCost: 10,
+        }),
+      ];
+      render(
+        <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+      );
+      expect(screen.getByText(/next renewal at/)).not.toHaveTextContent('in ');
+    });
   });
 
   it('calls onResume when Resume is clicked', async () => {

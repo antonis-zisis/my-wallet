@@ -32,6 +32,7 @@ const mockSubscription = {
   startDate: '2025-01-01T00:00:00.000Z',
   endDate: null,
   cancelledAt: null,
+  trialEndsAt: null,
   monthlyCost: 15.99,
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
@@ -46,6 +47,7 @@ const mockYearlySubscription = {
   startDate: '2025-03-01T00:00:00.000Z',
   endDate: '2026-03-01T00:00:00.000Z',
   cancelledAt: null,
+  trialEndsAt: null,
   monthlyCost: 10,
   createdAt: '2025-03-01T00:00:00.000Z',
   updatedAt: '2025-03-01T00:00:00.000Z',
@@ -60,6 +62,7 @@ const mockInactiveSubscription = {
   startDate: '2024-06-01T00:00:00.000Z',
   endDate: null,
   cancelledAt: null,
+  trialEndsAt: null,
   monthlyCost: 9.99,
   createdAt: '2024-06-01T00:00:00.000Z',
   updatedAt: '2025-01-15T00:00:00.000Z',
@@ -149,20 +152,20 @@ describe('Subscriptions', () => {
 
   it('renders active subscriptions after loading', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-    expect(await screen.findByText('Netflix')).toBeInTheDocument();
+    await screen.findAllByText('Netflix');
     expect(screen.getByText('YouTube Premium')).toBeInTheDocument();
   });
 
   it('shows billing cycle badges', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-    await screen.findByText('Netflix');
+    await screen.findAllByText('Netflix');
     expect(screen.getByText('Monthly')).toBeInTheDocument();
     expect(screen.getByText('Yearly')).toBeInTheDocument();
   });
 
   it('shows total monthly and yearly cost cards', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-    await screen.findByText('Netflix');
+    await screen.findAllByText('Netflix');
     expect(screen.getByText('Monthly cost')).toBeInTheDocument();
     expect(screen.getByText('25,99 €')).toBeInTheDocument();
     expect(screen.getByText('Yearly cost')).toBeInTheDocument();
@@ -171,21 +174,21 @@ describe('Subscriptions', () => {
 
   it('shows next renewal date for active subscriptions', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-    await screen.findByText('Netflix');
+    await screen.findAllByText('Netflix');
     const renewalTexts = screen.getAllByText(/next renewal at/);
     expect(renewalTexts.length).toBeGreaterThan(0);
   });
 
   it('shows yearly cost equivalent for monthly subscriptions', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-    await screen.findByText('Netflix');
-    expect(screen.getByText('(191,88 €/yr)')).toBeInTheDocument();
+    await screen.findAllByText('Netflix');
+    expect(screen.getByText('191,88 € / yr')).toBeInTheDocument();
   });
 
   it('shows monthly cost equivalent for yearly subscriptions', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
     await screen.findByText('YouTube Premium');
-    expect(screen.getByText('(10,00 €/mo)')).toBeInTheDocument();
+    expect(screen.getByText('10,00 € / mo')).toBeInTheDocument();
   });
 
   it('shows empty state when no active subscriptions exist', async () => {
@@ -285,6 +288,7 @@ describe('Subscriptions', () => {
               startDate: '2026-01-15T00:00:00.000Z',
               endDate: null,
               cancelledAt: null,
+              trialEndsAt: null,
               monthlyCost: 8.99,
               createdAt: '2026-01-15T00:00:00.000Z',
               updatedAt: '2026-01-15T00:00:00.000Z',
@@ -338,7 +342,7 @@ describe('Subscriptions', () => {
   describe('cancel subscription modal', () => {
     it('opens cancel modal from dropdown menu', async () => {
       renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-      await screen.findByText('Netflix');
+      await screen.findAllByText('Netflix');
 
       const optionButtons = screen.getAllByRole('button', { name: 'Options' });
       await userEvent.click(optionButtons[0]);
@@ -354,7 +358,7 @@ describe('Subscriptions', () => {
 
     it('closes cancel modal when Keep is clicked', async () => {
       renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-      await screen.findByText('Netflix');
+      await screen.findAllByText('Netflix');
 
       const optionButtons = screen.getAllByRole('button', { name: 'Options' });
       await userEvent.click(optionButtons[0]);
@@ -415,7 +419,7 @@ describe('Subscriptions', () => {
         refetchActive,
         refetchInactive,
       ]);
-      await screen.findByText('Netflix');
+      await screen.findAllByText('Netflix');
 
       const optionButtons = screen.getAllByRole('button', { name: 'Options' });
       await userEvent.click(optionButtons[0]);
@@ -436,7 +440,7 @@ describe('Subscriptions', () => {
   describe('delete subscription modal', () => {
     it('opens delete modal from dropdown menu', async () => {
       renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-      await screen.findByText('Netflix');
+      await screen.findAllByText('Netflix');
 
       const optionButtons = screen.getAllByRole('button', { name: 'Options' });
       await userEvent.click(optionButtons[0]);
@@ -489,7 +493,7 @@ describe('Subscriptions', () => {
         refetchActive,
         refetchInactive,
       ]);
-      await screen.findByText('Netflix');
+      await screen.findAllByText('Netflix');
 
       const optionButtons = screen.getAllByRole('button', { name: 'Options' });
       await userEvent.click(optionButtons[0]);

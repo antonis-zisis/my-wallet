@@ -13,6 +13,7 @@ const mockSubscription = {
   isActive: true,
   startDate: new Date('2025-01-01T00:00:00Z'),
   endDate: null,
+  trialEndsAt: null,
   userId: USER_ID,
   createdAt: new Date('2025-01-01T00:00:00Z'),
   updatedAt: new Date('2025-01-01T00:00:00Z'),
@@ -201,10 +202,37 @@ describe('subscriptionResolvers', () => {
           billingCycle: 'MONTHLY',
           startDate: new Date('2025-01-01'),
           endDate: null,
+          trialEndsAt: null,
           userId: USER_ID,
         },
       });
       expect(result).toEqual(mockSubscription);
+    });
+
+    it('creates a subscription with a trial end date', async () => {
+      vi.mocked(prisma.subscription.create).mockResolvedValue(
+        mockSubscription as never
+      );
+
+      await subscriptionResolvers.Mutation.createSubscription(
+        undefined as unknown,
+        {
+          input: {
+            name: 'Notion',
+            amount: 0,
+            billingCycle: 'MONTHLY',
+            startDate: '2026-04-01',
+            trialEndsAt: '2026-05-03',
+          },
+        },
+        CTX
+      );
+
+      expect(prisma.subscription.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          trialEndsAt: new Date('2026-05-03'),
+        }),
+      });
     });
 
     it('creates a subscription with an end date', async () => {
@@ -269,6 +297,7 @@ describe('subscriptionResolvers', () => {
           billingCycle: 'MONTHLY',
           startDate: new Date('2025-01-01'),
           endDate: null,
+          trialEndsAt: null,
         },
       });
       expect(result).toEqual(
