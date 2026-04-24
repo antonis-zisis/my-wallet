@@ -15,6 +15,7 @@ import {
   Subscription,
   SubscriptionsData,
 } from '../types/subscription';
+import { getNextRenewalDate } from '../utils/getNextRenewalDate';
 
 export const PAGE_SIZE = 10;
 
@@ -133,6 +134,20 @@ export function useSubscriptionsData() {
   );
   const totalYearlyCost = totalMonthlyCost * 12;
 
+  const nextRenewal =
+    activeItems
+      .filter((subscription) => !subscription.cancelledAt)
+      .map((subscription) => ({
+        amount: subscription.amount,
+        date: getNextRenewalDate(
+          subscription.startDate,
+          subscription.billingCycle
+        ),
+        name: subscription.name,
+      }))
+      .sort((left, right) => left.date.getTime() - right.date.getTime())[0] ??
+    null;
+
   const handleCreate = async (input: {
     name: string;
     amount: number;
@@ -225,6 +240,7 @@ export function useSubscriptionsData() {
     isCreateOpen,
     isDeleting,
     isResuming,
+    nextRenewal,
     onActivePaginate: setActivePage,
     onCancelConfirm: handleCancelConfirm,
     onCloseCreate: () => setIsCreateOpen(false),

@@ -179,13 +179,13 @@ describe('Subscriptions', () => {
   it('shows yearly cost equivalent for monthly subscriptions', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
     await screen.findByText('Netflix');
-    expect(screen.getByText('(191,88 €/yr)')).toBeInTheDocument();
+    expect(screen.getByText('191,88 € / yr')).toBeInTheDocument();
   });
 
   it('shows monthly cost equivalent for yearly subscriptions', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
     await screen.findByText('YouTube Premium');
-    expect(screen.getByText('(10,00 €/mo)')).toBeInTheDocument();
+    expect(screen.getByText('10,00 € / mo')).toBeInTheDocument();
   });
 
   it('shows empty state when no active subscriptions exist', async () => {

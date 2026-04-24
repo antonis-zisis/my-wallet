@@ -189,7 +189,7 @@ describe('SubscriptionList', () => {
     expect(screen.queryByText('Cancelled')).not.toBeInTheDocument();
   });
 
-  it('shows "active until" text for cancelled subscriptions', () => {
+  it('shows an "ends in X days" countdown for cancelled subscriptions', () => {
     const subscriptions = [
       makeSubscription({
         name: 'Netflix',
@@ -200,7 +200,7 @@ describe('SubscriptionList', () => {
     render(
       <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
     );
-    expect(screen.getByText(/active until/)).toBeInTheDocument();
+    expect(screen.getByText(/ends in \d+ days/)).toBeInTheDocument();
   });
 
   it('shows Resume in the dropdown for cancelled active subscriptions', async () => {

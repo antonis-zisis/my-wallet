@@ -1,10 +1,12 @@
 import { Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoney } from '../../utils/formatMoney';
+import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { CreditCardIcon } from '../icons';
 import { Badge, Card, Dropdown, Skeleton } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
+import { SubscriptionAvatar } from './SubscriptionAvatar';
 
 interface SubscriptionListProps {
   subscriptions: Array<Subscription>;
@@ -20,12 +22,16 @@ interface SubscriptionListProps {
 
 function SkeletonRow() {
   return (
-    <li className="flex items-center justify-between px-1 py-3">
-      <div className="space-y-2">
+    <li className="flex items-center gap-3 px-1 py-3">
+      <Skeleton className="h-9 w-9 rounded-full" />
+      <div className="flex-1 space-y-2">
         <Skeleton className="h-4 w-32" />
         <Skeleton className="h-3 w-44" />
       </div>
-      <Skeleton className="h-4 w-20" />
+      <div className="space-y-2 text-right">
+        <Skeleton className="ml-auto h-4 w-20" />
+        <Skeleton className="ml-auto h-3 w-16" />
+      </div>
     </li>
   );
 }
@@ -53,6 +59,68 @@ function EmptyState({
           Add your first subscription
         </button>
       )}
+    </div>
+  );
+}
+
+function formatCancellationCountdown(endDate: string): string {
+  const daysLeft = getDaysUntil(endDate);
+
+  if (daysLeft < 0) {
+    return `ended ${formatDate(endDate)}`;
+  }
+
+  if (daysLeft === 0) {
+    return 'ends today';
+  }
+
+  if (daysLeft === 1) {
+    return 'ends tomorrow';
+  }
+
+  return `ends in ${daysLeft} days · ${formatDate(endDate)}`;
+}
+
+function SecondaryLine({ subscription }: { subscription: Subscription }) {
+  if (subscription.cancelledAt && subscription.endDate) {
+    return (
+      <p className="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
+        {formatCancellationCountdown(subscription.endDate)}
+      </p>
+    );
+  }
+
+  if (!subscription.isActive) {
+    return null;
+  }
+
+  const renewalDate = getNextRenewalDate(
+    subscription.startDate,
+    subscription.billingCycle
+  );
+
+  return (
+    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+      next renewal at{' '}
+      <span className="font-semibold">{formatDate(renewalDate)}</span>
+    </p>
+  );
+}
+
+function AmountCell({ subscription }: { subscription: Subscription }) {
+  const normalized =
+    subscription.billingCycle === 'MONTHLY'
+      ? `${formatMoney(subscription.amount * 12)} € / yr`
+      : `${formatMoney(subscription.monthlyCost)} € / mo`;
+
+  return (
+    <div className="text-right">
+      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+        {formatMoney(subscription.amount)} €
+      </p>
+      <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+        {normalized}
+      </p>
     </div>
   );
 }
@@ -129,22 +197,24 @@ export function SubscriptionList({
             variant: 'danger',
           });
 
+          const isInactiveRow =
+            !subscription.isActive || !!subscription.cancelledAt;
+
           return (
-            <li key={subscription.id} className="flex items-center">
-              <div className="flex min-w-0 flex-1 items-center justify-between px-1 py-3">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium text-gray-800 dark:text-gray-100">
+            <li key={subscription.id} className="flex items-center gap-3">
+              <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
+                <SubscriptionAvatar
+                  muted={isInactiveRow}
+                  name={subscription.name}
+                />
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate font-medium text-gray-800 dark:text-gray-100">
                       {subscription.name}
                     </span>
 
-                    <Badge
-                      variant={
-                        subscription.billingCycle === 'MONTHLY'
-                          ? 'success'
-                          : 'info'
-                      }
-                    >
+                    <Badge variant="default">
                       {subscription.billingCycle === 'MONTHLY'
                         ? 'Monthly'
                         : 'Yearly'}
@@ -155,45 +225,10 @@ export function SubscriptionList({
                     )}
                   </div>
 
-                  {subscription.isActive && (
-                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                      {subscription.cancelledAt ? (
-                        <>
-                          active until{' '}
-                          <span className="font-semibold">
-                            {formatDate(subscription.endDate!)}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          next renewal at{' '}
-                          <span className="font-semibold">
-                            {formatDate(
-                              getNextRenewalDate(
-                                subscription.startDate,
-                                subscription.billingCycle
-                              )
-                            )}
-                          </span>
-                        </>
-                      )}
-                    </p>
-                  )}
+                  <SecondaryLine subscription={subscription} />
                 </div>
 
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  {formatMoney(subscription.amount)} €
-                  {subscription.billingCycle === 'YEARLY' && (
-                    <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
-                      ({formatMoney(subscription.monthlyCost)} €/mo)
-                    </span>
-                  )}
-                  {subscription.billingCycle === 'MONTHLY' && (
-                    <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
-                      ({formatMoney(subscription.amount * 12)} €/yr)
-                    </span>
-                  )}
-                </span>
+                <AmountCell subscription={subscription} />
               </div>
 
               <Dropdown items={dropdownItems} />

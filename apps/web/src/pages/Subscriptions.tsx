@@ -1,4 +1,4 @@
-import { ChevronDownIcon, ChevronUpIcon } from '../components/icons';
+import { ChevronDownIcon } from '../components/icons';
 import { CancelSubscriptionModal } from '../components/subscriptions/CancelSubscriptionModal';
 import { CreateSubscriptionModal } from '../components/subscriptions/CreateSubscriptionModal';
 import { DeleteSubscriptionModal } from '../components/subscriptions/DeleteSubscriptionModal';
@@ -8,6 +8,38 @@ import { SubscriptionCostSummary } from '../components/subscriptions/Subscriptio
 import { SubscriptionList } from '../components/subscriptions/SubscriptionList';
 import { Button, PageLayout, Pagination } from '../components/ui';
 import { PAGE_SIZE, useSubscriptionsData } from '../hooks/useSubscriptionsData';
+import { getDaysUntil } from '../utils/getDaysUntil';
+
+const INACTIVE_SECTION_ID = 'inactive-subscriptions-section';
+
+function buildSubtitle(
+  activeTotalCount: number,
+  nextRenewalDate: Date | null
+): string {
+  if (activeTotalCount === 0) {
+    return 'Track recurring payments in one place.';
+  }
+
+  const subscriptionWord =
+    activeTotalCount === 1 ? 'subscription' : 'subscriptions';
+  const activeLabel = `${activeTotalCount} active ${subscriptionWord}`;
+
+  if (!nextRenewalDate) {
+    return activeLabel;
+  }
+
+  const daysUntil = getDaysUntil(nextRenewalDate);
+
+  if (daysUntil <= 0) {
+    return `${activeLabel} · next renewal today`;
+  }
+
+  if (daysUntil === 1) {
+    return `${activeLabel} · next renewal tomorrow`;
+  }
+
+  return `${activeLabel} · next renewal in ${daysUntil} days`;
+}
 
 export function Subscriptions() {
   const {
@@ -27,6 +59,7 @@ export function Subscriptions() {
     isCreateOpen,
     isDeleting,
     isResuming,
+    nextRenewal,
     onActivePaginate,
     onCancelConfirm,
     onCloseCreate,
@@ -51,16 +84,30 @@ export function Subscriptions() {
     totalYearlyCost,
   } = useSubscriptionsData();
 
+  const subtitle = activeLoading
+    ? 'Track recurring payments in one place.'
+    : buildSubtitle(activeTotalCount, nextRenewal?.date ?? null);
+
   return (
     <>
       <PageLayout>
-        <div className="mb-4 flex items-center justify-end">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              Subscriptions
+            </h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {subtitle}
+            </p>
+          </div>
           <Button onClick={onOpenCreate}>New Subscription</Button>
         </div>
 
         {(activeLoading || (!activeError && activeTotalCount > 0)) && (
           <SubscriptionCostSummary
+            activeCount={activeTotalCount}
             loading={activeLoading}
+            nextRenewal={nextRenewal}
             totalMonthlyCost={totalMonthlyCost}
             totalYearlyCost={totalYearlyCost}
           />
@@ -92,19 +139,24 @@ export function Subscriptions() {
         {!inactiveLoading && inactiveTotalCount > 0 && (
           <div className="mt-8">
             <button
+              aria-controls={INACTIVE_SECTION_ID}
+              aria-expanded={showInactive}
               className="mb-4 flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+              type="button"
               onClick={onToggleInactive}
             >
-              {showInactive ? (
-                <ChevronUpIcon className="h-4 w-4" />
-              ) : (
-                <ChevronDownIcon className="h-4 w-4" />
-              )}
+              <ChevronDownIcon
+                className={`h-4 w-4 transition-transform duration-200 ${showInactive ? 'rotate-180' : ''}`}
+              />
               Inactive Subscriptions ({inactiveTotalCount})
             </button>
 
-            {showInactive && (
-              <>
+            <div
+              id={INACTIVE_SECTION_ID}
+              aria-hidden={!showInactive}
+              className={`grid transition-all duration-300 ${showInactive ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+            >
+              <div className="overflow-hidden">
                 <SubscriptionList
                   error={inactiveError}
                   loading={inactiveLoading}
@@ -126,8 +178,8 @@ export function Subscriptions() {
                       onPageChange={onInactivePaginate}
                     />
                   )}
-              </>
-            )}
+              </div>
+            </div>
           </div>
         )}
       </PageLayout>
