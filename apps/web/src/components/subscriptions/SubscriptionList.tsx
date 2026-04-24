@@ -6,8 +6,6 @@ import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { CreditCardIcon } from '../icons';
 import { Badge, Card, Dropdown, Skeleton } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
-import { SubscriptionAvatar } from './SubscriptionAvatar';
-
 interface SubscriptionListProps {
   subscriptions: Array<Subscription>;
   loading: boolean;
@@ -197,31 +195,25 @@ export function SubscriptionList({
             variant: 'danger',
           });
 
-          const isInactiveRow =
-            !subscription.isActive || !!subscription.cancelledAt;
-
           return (
             <li key={subscription.id} className="flex items-center gap-3">
               <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
-                <SubscriptionAvatar
-                  muted={isInactiveRow}
-                  name={subscription.name}
-                />
-
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="truncate font-medium text-gray-800 dark:text-gray-100">
                       {subscription.name}
                     </span>
 
-                    <Badge variant="default">
+                    <Badge variant="default" size="sm">
                       {subscription.billingCycle === 'MONTHLY'
                         ? 'Monthly'
                         : 'Yearly'}
                     </Badge>
 
                     {subscription.cancelledAt && (
-                      <Badge variant="danger">Cancelled</Badge>
+                      <Badge variant="danger" size="sm">
+                        Cancelled
+                      </Badge>
                     )}
                   </div>
 
