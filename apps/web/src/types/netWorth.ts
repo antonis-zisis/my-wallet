@@ -38,6 +38,9 @@ export interface NetWorthSnapshotsData {
 export const ASSET_CATEGORIES = [
   'Savings',
   'Investments',
+  'Brokerage',
+  'Retirement',
+  'Crypto',
   'Real Estate',
   'Vehicle',
   'Other',

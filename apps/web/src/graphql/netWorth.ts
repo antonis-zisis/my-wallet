@@ -10,6 +10,9 @@ export const GET_NET_WORTH_SNAPSHOTS = gql`
         totalAssets
         totalLiabilities
         netWorth
+        previousSnapshot {
+          netWorth
+        }
         entries {
           id
           type

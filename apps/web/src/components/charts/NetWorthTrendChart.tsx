@@ -138,21 +138,15 @@ export function NetWorthTrendChart({
   const gridColor = theme === 'dark' ? '#374151' : '#e5e7eb';
 
   const chartData = useMemo(() => {
-    return [...snapshots]
-      .sort(
-        (first, second) =>
-          new Date(first.snapshotDate).getTime() -
-          new Date(second.snapshotDate).getTime()
-      )
-      .map((snapshot) => ({
-        snapshotDate: snapshot.snapshotDate,
-        id: snapshot.id,
-        name: abbreviateReportTitle(snapshot.title),
-        netWorth: snapshot.netWorth,
-        title: snapshot.title,
-        totalAssets: snapshot.totalAssets,
-        totalLiabilities: snapshot.totalLiabilities,
-      }));
+    return [...snapshots.slice(0, 10)].reverse().map((snapshot) => ({
+      snapshotDate: snapshot.snapshotDate,
+      id: snapshot.id,
+      name: abbreviateReportTitle(snapshot.title),
+      netWorth: snapshot.netWorth,
+      title: snapshot.title,
+      totalAssets: snapshot.totalAssets,
+      totalLiabilities: snapshot.totalLiabilities,
+    }));
   }, [snapshots]);
 
   if (chartData.length < 2) {

@@ -17,3 +17,4 @@ export { SunIcon } from './SunIcon';
 export { TrendingChartIcon } from './TrendingChartIcon';
 export { UserIcon } from './UserIcon';
 export { WalletIcon } from './WalletIcon';
+export { XMarkIcon } from './XMarkIcon';

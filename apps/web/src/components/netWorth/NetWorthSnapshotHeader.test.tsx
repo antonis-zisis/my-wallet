@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { NetWorthSnapshotHeader } from './NetWorthSnapshotHeader';
 
 const defaultProps = {
-  snapshotDate: '2026-01-15T00:00:00Z',
+  createdAt: '2026-01-15T00:00:00Z',
   isPositive: true,
   netWorth: 12000,
   onDelete: vi.fn(),
@@ -13,6 +13,7 @@ const defaultProps = {
   title: 'January 2026',
   totalAssets: 15000,
   totalLiabilities: 3000,
+  updatedAt: '2026-04-20T00:00:00Z',
 };
 
 describe('NetWorthSnapshotHeader', () => {
@@ -21,9 +22,10 @@ describe('NetWorthSnapshotHeader', () => {
     expect(screen.getByText('January 2026')).toBeInTheDocument();
   });
 
-  it('renders the formatted snapshotDate', () => {
+  it('renders the created and updated dates', () => {
     render(<NetWorthSnapshotHeader {...defaultProps} />);
-    expect(screen.getByText('Jan 15, 2026')).toBeInTheDocument();
+    expect(screen.getByText(/Created Jan 15, 2026/)).toBeInTheDocument();
+    expect(screen.getByText(/Updated Apr 20, 2026/)).toBeInTheDocument();
   });
 
   it('renders formatted totalAssets, totalLiabilities and netWorth', () => {
@@ -99,5 +101,39 @@ describe('NetWorthSnapshotHeader', () => {
       );
       expect(screen.getByText(/\+300,00 €/)).toBeInTheDocument();
     });
+
+    it('shows a positive liabilities delta in red (more debt is bad)', () => {
+      render(
+        <NetWorthSnapshotHeader {...defaultProps} deltaLiabilities={500} />
+      );
+      expect(screen.getByText(/\+500,00 €/)).toHaveClass('text-red-600');
+    });
+
+    it('shows a negative liabilities delta in green (less debt is good)', () => {
+      render(
+        <NetWorthSnapshotHeader {...defaultProps} deltaLiabilities={-500} />
+      );
+      expect(screen.getByText(/−500,00 €/)).toHaveClass('text-green-600');
+    });
+
+    it('appends a percentage change alongside the absolute delta', () => {
+      render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={2000} />);
+      // previousAssets = 15000 - 2000 = 13000; percentage = 2000/13000 * 100 ≈ 15.4%
+      expect(screen.getByText(/\+15\.4%/)).toBeInTheDocument();
+    });
+  });
+
+  it('renders the net worth value with a prominent text size', () => {
+    render(<NetWorthSnapshotHeader {...defaultProps} />);
+    const netWorthValue = screen.getByText(/12\.000,00 €/);
+    expect(netWorthValue).toHaveClass('text-2xl');
+  });
+
+  it('renders Net Worth as the first card', () => {
+    render(<NetWorthSnapshotHeader {...defaultProps} />);
+    const cards = screen.getAllByText(
+      /Net Worth|Total Assets|Total Liabilities/
+    );
+    expect(cards[0]).toHaveTextContent('Net Worth');
   });
 });

@@ -3,6 +3,7 @@ import { ReactNode, useEffect } from 'react';
 import { Button } from './Button';
 
 interface ModalProps {
+  closeOnBackdropClick?: boolean;
   isOpen: boolean;
   onClose: () => void;
   title: string;
@@ -13,6 +14,7 @@ interface ModalProps {
 
 export function Modal({
   children,
+  closeOnBackdropClick = true,
   footer,
   isOpen,
   onClose,
@@ -45,11 +47,11 @@ export function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
         className="fixed inset-0 bg-black/50 transition-opacity"
-        onClick={onClose}
+        onClick={closeOnBackdropClick ? onClose : undefined}
       />
 
       <div
-        className={`relative z-50 w-full rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800 ${size === 'lg' ? 'max-w-2xl' : 'max-w-md'}`}
+        className={`relative z-50 w-full rounded bg-white p-6 shadow-xl dark:bg-gray-800 ${size === 'lg' ? 'max-w-2xl' : 'max-w-md'}`}
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
