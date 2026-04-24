@@ -59,7 +59,7 @@ export function NetWorthSummaryCard({
   if (!snapshot) {
     return (
       <Card>
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+        <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
             No net worth snapshot yet
           </p>

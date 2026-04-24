@@ -23,7 +23,7 @@ function ToastItem({ id, message, variant }: ToastType) {
 
   return (
     <div
-      className={`flex items-start gap-3 rounded-lg border px-4 py-3 shadow-md ${variantStyles[variant]}`}
+      className={`flex items-start gap-3 rounded border px-4 py-3 shadow-md ${variantStyles[variant]}`}
       role="alert"
     >
       <svg

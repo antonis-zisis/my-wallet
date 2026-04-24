@@ -23,7 +23,7 @@ function SkeletonRow() {
 
 function EmptyState({ onCreateReport }: { onCreateReport?: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+    <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
       <DocumentTextIcon className="size-10 text-gray-300 dark:text-gray-600" />
 
       <p className="text-sm font-medium text-gray-500 dark:text-gray-400">

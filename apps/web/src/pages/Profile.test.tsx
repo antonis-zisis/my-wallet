@@ -43,12 +43,11 @@ describe('Profile', () => {
     mockShowError.mockReset();
   });
 
-  it('renders email as read-only and fullName as editable', () => {
+  it('renders email as non-editable display and fullName as editable input', () => {
     render(<Profile />);
 
-    const emailInput = screen.getByLabelText('Email') as HTMLInputElement;
-    expect(emailInput.value).toBe('test@example.com');
-    expect(emailInput).toHaveAttribute('readOnly');
+    expect(screen.getAllByText('test@example.com').length).toBeGreaterThan(0);
+    expect(screen.queryByLabelText('Email')).not.toBeInTheDocument();
 
     const nameInput = screen.getByLabelText('Full name') as HTMLInputElement;
     expect(nameInput.value).toBe('John Doe');
@@ -77,6 +76,23 @@ describe('Profile', () => {
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'Jane Doe');
       expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+    });
+  });
+
+  describe('Change password button', () => {
+    it('is disabled when password fields are empty', () => {
+      render(<Profile />);
+      expect(
+        screen.getByRole('button', { name: 'Change password' })
+      ).toBeDisabled();
+    });
+
+    it('is enabled when new password is entered', async () => {
+      render(<Profile />);
+      await userEvent.type(screen.getByLabelText('New password'), 'secret123');
+      expect(
+        screen.getByRole('button', { name: 'Change password' })
+      ).toBeEnabled();
     });
   });
 
