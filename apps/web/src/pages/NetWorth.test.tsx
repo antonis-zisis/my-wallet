@@ -306,7 +306,7 @@ describe('NetWorth', () => {
       const titleInput = screen.getByPlaceholderText('e.g. February 2026');
       await userEvent.clear(titleInput);
       await userEvent.type(titleInput, 'Test Snapshot');
-      fireEvent.change(screen.getByLabelText('Snapshot Date'), {
+      fireEvent.change(screen.getByLabelText('Date'), {
         target: { value: '2026-04-15' },
       });
       await userEvent.type(
