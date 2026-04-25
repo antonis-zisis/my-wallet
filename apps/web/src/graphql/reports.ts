@@ -6,7 +6,9 @@ export const GET_REPORTS = gql`
       items {
         id
         isLocked
+        netBalance
         title
+        transactionCount
         createdAt
         updatedAt
       }

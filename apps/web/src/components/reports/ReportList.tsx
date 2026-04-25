@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
+import { formatMoney } from '../../utils/formatMoney';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { ChevronRightIcon, DocumentTextIcon, LockClosedIcon } from '../icons';
 import { Card, Skeleton } from '../ui';
@@ -15,8 +16,11 @@ interface ReportListProps {
 function SkeletonRow() {
   return (
     <li className="flex items-center justify-between gap-4 px-3 py-3">
-      <Skeleton className="h-4 w-40" />
-      <Skeleton className="h-3 w-20" />
+      <div className="flex flex-col gap-1.5">
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-3 w-24" />
+      </div>
+      <Skeleton className="h-4 w-16" />
     </li>
   );
 }
@@ -78,30 +82,49 @@ export function ReportList({
   return (
     <Card>
       <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-        {reports.map((report) => (
-          <li key={report.id}>
-            <Link
-              className="flex items-center justify-between gap-4 px-3 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
-              to={`/reports/${report.id}`}
-            >
-              <span className="font-medium text-gray-800 dark:text-gray-100">
-                {report.title}
-              </span>
+        {reports.map((report) => {
+          const netBalance = report.netBalance ?? 0;
+          const transactionCount = report.transactionCount ?? 0;
 
-              <div className="flex shrink-0 items-center gap-3">
-                <LockClosedIcon
-                  className={`size-3.5 text-gray-400 dark:text-gray-500 ${report.isLocked ? '' : 'invisible'}`}
-                />
+          return (
+            <li key={report.id}>
+              <Link
+                className="flex items-center justify-between gap-4 px-3 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                to={`/reports/${report.id}`}
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-gray-800 dark:text-gray-100">
+                    {report.title}
+                  </p>
+                  <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                    {transactionCount}{' '}
+                    {transactionCount === 1 ? 'transaction' : 'transactions'} ·{' '}
+                    {formatRelativeTime(report.updatedAt)}
+                  </p>
+                </div>
 
-                <span className="w-24 text-right text-xs text-gray-400 dark:text-gray-500">
-                  {formatRelativeTime(report.updatedAt)}
-                </span>
+                <div className="flex shrink-0 items-center gap-3">
+                  <span
+                    className={`text-sm font-medium tabular-nums ${
+                      netBalance >= 0
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-500 dark:text-red-400'
+                    }`}
+                  >
+                    {netBalance >= 0 ? '+' : ''}
+                    {formatMoney(netBalance)}
+                  </span>
 
-                <ChevronRightIcon className="size-4 text-gray-400 dark:text-gray-500" />
-              </div>
-            </Link>
-          </li>
-        ))}
+                  <LockClosedIcon
+                    className={`size-3.5 text-gray-400 dark:text-gray-500 ${report.isLocked ? '' : 'invisible'}`}
+                  />
+
+                  <ChevronRightIcon className="size-4 text-gray-400 dark:text-gray-500" />
+                </div>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </Card>
   );

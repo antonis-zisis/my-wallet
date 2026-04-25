@@ -3,6 +3,8 @@ export const reportTypeDefs = `#graphql
     id: ID!
     title: String!
     isLocked: Boolean!
+    transactionCount: Int!
+    netBalance: Float!
     transactions: [Transaction!]!
     createdAt: String!
     updatedAt: String!
