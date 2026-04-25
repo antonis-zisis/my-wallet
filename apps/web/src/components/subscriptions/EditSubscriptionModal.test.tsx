@@ -60,7 +60,14 @@ describe('EditSubscriptionModal', () => {
     );
   });
 
-  it('pre-fills url, paymentMethod, and notes from the subscription prop', () => {
+  it('hides Additional details section when subscription has no optional fields', () => {
+    render(<EditSubscriptionModal {...defaultProps} />);
+    expect(
+      screen.getByLabelText('Website or billing URL').closest('[aria-hidden]')
+    ).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('pre-fills url, paymentMethod, and notes — expanding Additional details automatically', () => {
     const subscription = {
       ...mockSubscription,
       url: 'https://netflix.com/account',
@@ -70,7 +77,10 @@ describe('EditSubscriptionModal', () => {
     render(
       <EditSubscriptionModal {...defaultProps} subscription={subscription} />
     );
-    expect(screen.getByLabelText('URL')).toHaveValue(
+    expect(
+      screen.getByLabelText('Website or billing URL').closest('[aria-hidden]')
+    ).toHaveAttribute('aria-hidden', 'false');
+    expect(screen.getByLabelText('Website or billing URL')).toHaveValue(
       'https://netflix.com/account'
     );
     expect(screen.getByLabelText('Payment method')).toHaveValue('Revolut');
@@ -80,8 +90,11 @@ describe('EditSubscriptionModal', () => {
   it('submits updated url, paymentMethod, and notes', async () => {
     const onSubmit = vi.fn();
     render(<EditSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
+    await userEvent.click(
+      screen.getByRole('button', { name: /additional details/i })
+    );
     await userEvent.type(
-      screen.getByLabelText('URL'),
+      screen.getByLabelText('Website or billing URL'),
       'https://netflix.com/account'
     );
     await userEvent.type(screen.getByLabelText('Payment method'), 'Revolut');
@@ -104,7 +117,7 @@ describe('EditSubscriptionModal', () => {
     render(
       <EditSubscriptionModal {...defaultProps} subscription={subscription} />
     );
-    expect(screen.getByLabelText('Trial period')).toBeChecked();
+    expect(screen.getByLabelText('Currently on a free trial')).toBeChecked();
     expect(screen.getByLabelText('Trial ends')).toBeInTheDocument();
   });
 
@@ -153,6 +166,18 @@ describe('EditSubscriptionModal', () => {
       expect(
         screen.queryByText('A subscription with this name already exists.')
       ).not.toBeInTheDocument();
+    });
+
+    it('disables the Save button when a duplicate name is entered', async () => {
+      render(
+        <EditSubscriptionModal
+          {...defaultProps}
+          existingNames={['Netflix', 'Spotify']}
+        />
+      );
+      await userEvent.clear(screen.getByLabelText('Name'));
+      await userEvent.type(screen.getByLabelText('Name'), 'Spotify');
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
     });
   });
 

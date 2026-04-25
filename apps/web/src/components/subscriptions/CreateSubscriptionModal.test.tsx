@@ -18,7 +18,7 @@ describe('CreateSubscriptionModal', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('renders form fields when open', () => {
+  it('renders core form fields when open', () => {
     render(<CreateSubscriptionModal {...defaultProps} />);
     expect(screen.getByLabelText('Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Amount')).toBeInTheDocument();
@@ -58,14 +58,25 @@ describe('CreateSubscriptionModal', () => {
       amount: 15.99,
       billingCycle: 'MONTHLY',
       startDate: '2026-01-01',
-      endDate: undefined,
     });
     expect(screen.getByLabelText('Name')).toHaveValue('');
   });
 
-  it('renders URL, Payment method, and Notes fields', () => {
+  it('hides Additional details fields by default', () => {
     render(<CreateSubscriptionModal {...defaultProps} />);
-    expect(screen.getByLabelText('URL')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Website or billing URL').closest('[aria-hidden]')
+    ).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('reveals Additional details fields when the section is expanded', async () => {
+    render(<CreateSubscriptionModal {...defaultProps} />);
+    await userEvent.click(
+      screen.getByRole('button', { name: /additional details/i })
+    );
+    expect(
+      screen.getByLabelText('Website or billing URL').closest('[aria-hidden]')
+    ).toHaveAttribute('aria-hidden', 'false');
     expect(screen.getByLabelText('Payment method')).toBeInTheDocument();
     expect(screen.getByLabelText('Notes')).toBeInTheDocument();
   });
@@ -76,8 +87,11 @@ describe('CreateSubscriptionModal', () => {
     await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
     await userEvent.type(screen.getByLabelText('Amount'), '15.99');
     await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
+    await userEvent.click(
+      screen.getByRole('button', { name: /additional details/i })
+    );
     await userEvent.type(
-      screen.getByLabelText('URL'),
+      screen.getByLabelText('Website or billing URL'),
       'https://netflix.com/account'
     );
     await userEvent.type(screen.getByLabelText('Payment method'), 'Revolut');
@@ -95,12 +109,14 @@ describe('CreateSubscriptionModal', () => {
   describe('trial period', () => {
     it('does not show the trial end date field by default', () => {
       render(<CreateSubscriptionModal {...defaultProps} />);
-      expect(screen.queryByLabelText('Trial ends')).not.toBeInTheDocument();
+      expect(
+        screen.getByLabelText('Trial ends').closest('[aria-hidden]')
+      ).toHaveAttribute('aria-hidden', 'true');
     });
 
     it('shows the trial end date field when trial period is checked', async () => {
       render(<CreateSubscriptionModal {...defaultProps} />);
-      await userEvent.click(screen.getByLabelText('Trial period'));
+      await userEvent.click(screen.getByLabelText('Currently on a free trial'));
       expect(screen.getByLabelText('Trial ends')).toBeInTheDocument();
     });
 
@@ -109,7 +125,7 @@ describe('CreateSubscriptionModal', () => {
       await userEvent.type(screen.getByLabelText('Name'), 'Notion');
       await userEvent.type(screen.getByLabelText('Amount'), '0');
       await userEvent.type(screen.getByLabelText('Start Date'), '2026-04-01');
-      await userEvent.click(screen.getByLabelText('Trial period'));
+      await userEvent.click(screen.getByLabelText('Currently on a free trial'));
       expect(screen.getByRole('button', { name: 'Create' })).toBeDisabled();
     });
 
@@ -119,7 +135,7 @@ describe('CreateSubscriptionModal', () => {
       await userEvent.type(screen.getByLabelText('Name'), 'Notion');
       await userEvent.type(screen.getByLabelText('Amount'), '0');
       await userEvent.type(screen.getByLabelText('Start Date'), '2026-04-01');
-      await userEvent.click(screen.getByLabelText('Trial period'));
+      await userEvent.click(screen.getByLabelText('Currently on a free trial'));
       await userEvent.type(screen.getByLabelText('Trial ends'), '2026-05-03');
       await userEvent.click(screen.getByRole('button', { name: 'Create' }));
       expect(onSubmit).toHaveBeenCalledWith(
@@ -176,20 +192,17 @@ describe('CreateSubscriptionModal', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('still allows submission when a duplicate name is entered', async () => {
-      const onSubmit = vi.fn();
+    it('disables the Create button when a duplicate name is entered', async () => {
       render(
         <CreateSubscriptionModal
           {...defaultProps}
-          onSubmit={onSubmit}
           existingNames={['Netflix']}
         />
       );
       await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
       await userEvent.type(screen.getByLabelText('Amount'), '15.99');
       await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
-      await userEvent.click(screen.getByRole('button', { name: 'Create' }));
-      expect(onSubmit).toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: 'Create' })).toBeDisabled();
     });
   });
 
