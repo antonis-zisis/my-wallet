@@ -43,6 +43,8 @@ vi.mock('../../lib/prisma', () => ({
     },
     transaction: {
       findMany: vi.fn(),
+      count: vi.fn(),
+      aggregate: vi.fn(),
     },
   },
 }));
@@ -143,6 +145,77 @@ describe('reportResolvers', () => {
         orderBy: { date: 'desc' },
       });
       expect(result).toEqual(mockReportWithTransactions.transactions);
+    });
+  });
+
+  describe('Report.transactionCount', () => {
+    it('returns the length of pre-loaded transactions without querying the DB', async () => {
+      const result = await reportResolvers.Report.transactionCount(
+        mockReportWithTransactions
+      );
+
+      expect(prisma.transaction.count).not.toHaveBeenCalled();
+      expect(result).toBe(1);
+    });
+
+    it('queries the DB when parent has no pre-loaded transactions', async () => {
+      vi.mocked(prisma.transaction.count).mockResolvedValue(3);
+
+      const result = await reportResolvers.Report.transactionCount(mockReport);
+
+      expect(prisma.transaction.count).toHaveBeenCalledWith({
+        where: { reportId: mockReport.id },
+      });
+      expect(result).toBe(3);
+    });
+  });
+
+  describe('Report.netBalance', () => {
+    it('computes net balance from pre-loaded transactions without querying the DB', async () => {
+      const reportWithMixedTransactions = {
+        ...mockReport,
+        transactions: [
+          {
+            ...mockReportWithTransactions.transactions[0],
+            type: 'EXPENSE',
+            amount: 50,
+          },
+          {
+            ...mockReportWithTransactions.transactions[0],
+            id: 'tx-2',
+            type: 'INCOME',
+            amount: 200,
+          },
+        ],
+      };
+
+      const result = await reportResolvers.Report.netBalance(
+        reportWithMixedTransactions
+      );
+
+      expect(prisma.transaction.aggregate).not.toHaveBeenCalled();
+      expect(result).toBe(150);
+    });
+
+    it('queries the DB when parent has no pre-loaded transactions', async () => {
+      vi.mocked(prisma.transaction.aggregate)
+        .mockResolvedValueOnce({ _sum: { amount: 500 } } as never)
+        .mockResolvedValueOnce({ _sum: { amount: 300 } } as never);
+
+      const result = await reportResolvers.Report.netBalance(mockReport);
+
+      expect(prisma.transaction.aggregate).toHaveBeenCalledTimes(2);
+      expect(result).toBe(200);
+    });
+
+    it('handles null aggregate sums as zero', async () => {
+      vi.mocked(prisma.transaction.aggregate)
+        .mockResolvedValueOnce({ _sum: { amount: null } } as never)
+        .mockResolvedValueOnce({ _sum: { amount: null } } as never);
+
+      const result = await reportResolvers.Report.netBalance(mockReport);
+
+      expect(result).toBe(0);
     });
   });
 

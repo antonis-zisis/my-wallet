@@ -9,14 +9,18 @@ const mockReports: Array<Report> = [
   {
     id: '1',
     isLocked: false,
+    netBalance: 500,
     title: 'January Budget',
+    transactionCount: 3,
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
   {
     id: '2',
     isLocked: false,
+    netBalance: -100,
     title: 'February Budget',
+    transactionCount: 1,
     createdAt: '2024-02-01T00:00:00.000Z',
     updatedAt: '2024-02-01T00:00:00.000Z',
   },
@@ -76,6 +80,28 @@ describe('ReportList', () => {
 
   it('displays relative updated time', () => {
     renderReportList({ error: false, loading: false, reports: mockReports });
-    expect(screen.getAllByText('Jan 1, 2024').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Jan 1, 2024/).length).toBeGreaterThan(0);
+  });
+
+  it('displays plural transaction count', () => {
+    renderReportList({ error: false, loading: false, reports: mockReports });
+    expect(screen.getByText(/3 transactions/)).toBeInTheDocument();
+  });
+
+  it('displays singular transaction count', () => {
+    renderReportList({ error: false, loading: false, reports: mockReports });
+    expect(screen.getByText(/1 transaction\b/)).toBeInTheDocument();
+  });
+
+  it('displays positive net balance with a plus sign and green color', () => {
+    renderReportList({ error: false, loading: false, reports: mockReports });
+    const balanceElement = screen.getByText(/\+500/);
+    expect(balanceElement).toHaveClass('text-green-600');
+  });
+
+  it('displays negative net balance with red color', () => {
+    renderReportList({ error: false, loading: false, reports: mockReports });
+    const balanceElement = screen.getByText(/-100/);
+    expect(balanceElement).toHaveClass('text-red-500');
   });
 });
