@@ -6,13 +6,13 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className = '', error, id, label, ...props }, ref) => {
+  ({ className = '', error, id, label, required, ...props }, ref) => {
     return (
       <div>
         {label && (
           <label
             htmlFor={id}
-            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className={`mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300${required ? "after:ml-0.5 after:text-red-500 after:content-['*']" : ''}`}
           >
             {label}
           </label>
@@ -20,6 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={id}
+          required={required}
           className={`w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 ${
             error
               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'

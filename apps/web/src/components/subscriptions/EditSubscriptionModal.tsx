@@ -1,19 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { BillingCycle, Subscription } from '../../types/subscription';
-import { Button, Input, Modal, Select } from '../ui';
+import { Button, Modal } from '../ui';
+import { SubscriptionFormFields } from './SubscriptionFormFields';
+import { useSubscriptionForm } from './useSubscriptionForm';
 
 interface EditSubscriptionModalProps {
+  existingNames?: Array<string>;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (input: {
-    id: string;
-    name: string;
     amount: number;
     billingCycle: BillingCycle;
-    startDate: string;
     endDate?: string;
+    id: string;
+    name: string;
+    notes?: string;
+    paymentMethod?: string;
+    startDate: string;
     trialEndsAt?: string;
+    url?: string;
   }) => void;
   subscription: Subscription | null;
 }
@@ -28,42 +34,54 @@ function formatDateForInput(dateString: string): string {
 }
 
 export function EditSubscriptionModal({
+  existingNames = [],
   isOpen,
   onClose,
   onSubmit,
   subscription,
 }: EditSubscriptionModalProps) {
-  const [name, setName] = useState('');
-  const [amount, setAmount] = useState('');
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>('MONTHLY');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [isTrial, setIsTrial] = useState(false);
-  const [trialEndsAt, setTrialEndsAt] = useState('');
+  const { onChange, values } = useSubscriptionForm();
 
   useEffect(() => {
     if (subscription) {
-      setName(subscription.name);
-      setAmount(String(subscription.amount));
-      setBillingCycle(subscription.billingCycle);
-      setStartDate(formatDateForInput(subscription.startDate));
-      setEndDate(
-        subscription.endDate ? formatDateForInput(subscription.endDate) : ''
-      );
       const hasTrial = !!subscription.trialEndsAt;
-      setIsTrial(hasTrial);
-      setTrialEndsAt(
-        hasTrial ? formatDateForInput(subscription.trialEndsAt!) : ''
-      );
+      onChange({
+        amount: String(subscription.amount),
+        billingCycle: subscription.billingCycle,
+        isTrial: hasTrial,
+        name: subscription.name,
+        notes: subscription.notes ?? '',
+        paymentMethod: subscription.paymentMethod ?? '',
+        startDate: formatDateForInput(subscription.startDate),
+        trialEndsAt: hasTrial
+          ? formatDateForInput(subscription.trialEndsAt!)
+          : '',
+        url: subscription.url ?? '',
+      });
     }
-  }, [subscription]);
+  }, [subscription, onChange]);
+
+  const isDuplicate =
+    values.name.trim().length > 0 &&
+    values.name.trim().toLowerCase() !== subscription?.name.toLowerCase() &&
+    existingNames.some(
+      (existingName) =>
+        existingName.toLowerCase() === values.name.trim().toLowerCase()
+    );
 
   const isValid =
-    name.trim().length > 0 &&
-    parseFloat(amount) >= 0 &&
-    amount.length > 0 &&
-    startDate.length > 0 &&
-    (!isTrial || trialEndsAt.length > 0);
+    !isDuplicate &&
+    values.name.trim().length > 0 &&
+    parseFloat(values.amount) >= 0 &&
+    values.amount.length > 0 &&
+    values.startDate.length > 0 &&
+    (!values.isTrial || values.trialEndsAt.length > 0);
+
+  const defaultExpandAdditional = !!(
+    subscription?.url ||
+    subscription?.paymentMethod ||
+    subscription?.notes
+  );
 
   const handleSubmit = () => {
     if (!isValid || !subscription) {
@@ -71,13 +89,15 @@ export function EditSubscriptionModal({
     }
 
     onSubmit({
+      amount: parseFloat(values.amount),
+      billingCycle: values.billingCycle,
       id: subscription.id,
-      name: name.trim(),
-      amount: parseFloat(amount),
-      billingCycle,
-      startDate,
-      endDate: endDate || undefined,
-      trialEndsAt: isTrial ? trialEndsAt : undefined,
+      name: values.name.trim(),
+      notes: values.notes.trim() || undefined,
+      paymentMethod: values.paymentMethod.trim() || undefined,
+      startDate: values.startDate,
+      trialEndsAt: values.isTrial ? values.trialEndsAt : undefined,
+      url: values.url.trim() || undefined,
     });
   };
 
@@ -91,82 +111,18 @@ export function EditSubscriptionModal({
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
+          <Button disabled={!isValid} onClick={handleSubmit}>
             Save
           </Button>
         </>
       }
     >
-      <div className="space-y-4">
-        <Input
-          label="Name"
-          id="edit-subscription-name"
-          placeholder="e.g. Netflix"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          autoFocus
-        />
-
-        <Input
-          label="Amount"
-          id="edit-subscription-amount"
-          type="number"
-          placeholder="9.99"
-          min="0"
-          step="0.01"
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-        />
-
-        <Select
-          label="Billing Cycle"
-          id="edit-subscription-billing-cycle"
-          value={billingCycle}
-          options={[
-            { value: 'MONTHLY', label: 'Monthly' },
-            { value: 'YEARLY', label: 'Yearly' },
-          ]}
-          onChange={(event) =>
-            setBillingCycle(event.target.value as BillingCycle)
-          }
-        />
-
-        <Input
-          label="Start Date"
-          id="edit-subscription-start-date"
-          type="date"
-          value={startDate}
-          onChange={(event) => setStartDate(event.target.value)}
-        />
-
-        <label className="flex cursor-pointer items-center gap-2">
-          <input
-            checked={isTrial}
-            className="h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600"
-            id="edit-subscription-is-trial"
-            type="checkbox"
-            onChange={(event) => {
-              setIsTrial(event.target.checked);
-              if (!event.target.checked) {
-                setTrialEndsAt('');
-              }
-            }}
-          />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Trial period
-          </span>
-        </label>
-
-        {isTrial && (
-          <Input
-            label="Trial ends"
-            id="edit-subscription-trial-ends-at"
-            type="date"
-            value={trialEndsAt}
-            onChange={(event) => setTrialEndsAt(event.target.value)}
-          />
-        )}
-      </div>
+      <SubscriptionFormFields
+        defaultExpandAdditional={defaultExpandAdditional}
+        isDuplicate={isDuplicate}
+        onChange={onChange}
+        values={values}
+      />
     </Modal>
   );
 }

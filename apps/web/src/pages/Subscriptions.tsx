@@ -49,6 +49,7 @@ export function Subscriptions() {
     activePage,
     activeTotalCount,
     activeTotalPages,
+    allLoadedNames,
     inactiveError,
     inactiveItems,
     inactiveLoading,
@@ -188,12 +189,14 @@ export function Subscriptions() {
       </PageLayout>
 
       <CreateSubscriptionModal
+        existingNames={allLoadedNames}
         isOpen={isCreateOpen}
         onClose={onCloseCreate}
         onSubmit={onCreate}
       />
 
       <EditSubscriptionModal
+        existingNames={allLoadedNames}
         isOpen={!!subscriptionToEdit}
         subscription={subscriptionToEdit}
         onClose={() => onSelectForEdit(null)}

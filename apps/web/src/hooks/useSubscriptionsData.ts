@@ -168,11 +168,43 @@ export function useSubscriptionsData() {
     )
     .reduce((total, subscription) => {
       const startDate = parseDate(subscription.startDate);
-      const renewsThisMonth =
-        subscription.billingCycle === 'MONTHLY' ||
-        (subscription.billingCycle === 'YEARLY' &&
-          startDate.getMonth() === currentMonth);
-      return renewsThisMonth ? total + subscription.amount : total;
+      const startMonth = startDate.getMonth();
+
+      switch (subscription.billingCycle) {
+        case 'WEEKLY': {
+          const daysInMonth = new Date(
+            now.getFullYear(),
+            currentMonth + 1,
+            0
+          ).getDate();
+          const firstDayOfMonth = new Date(
+            now.getFullYear(),
+            currentMonth,
+            1
+          ).getDay();
+          const dayOfWeek = startDate.getDay();
+          const weeklyCount =
+            Math.floor(daysInMonth / 7) +
+            ((dayOfWeek - firstDayOfMonth + 7) % 7 < daysInMonth % 7 ? 1 : 0);
+          return total + subscription.amount * weeklyCount;
+        }
+        case 'MONTHLY':
+          return total + subscription.amount;
+        case 'QUARTERLY':
+          return (currentMonth - startMonth) % 3 === 0
+            ? total + subscription.amount
+            : total;
+        case 'BI_ANNUAL':
+          return (currentMonth - startMonth) % 6 === 0
+            ? total + subscription.amount
+            : total;
+        case 'YEARLY':
+          return startMonth === currentMonth
+            ? total + subscription.amount
+            : total;
+        default:
+          return total;
+      }
     }, 0);
 
   const mostExpensive = activeItems
@@ -198,6 +230,9 @@ export function useSubscriptionsData() {
     startDate: string;
     endDate?: string;
     trialEndsAt?: string;
+    notes?: string;
+    paymentMethod?: string;
+    url?: string;
   }) => {
     try {
       await createSubscription({ variables: { input } });
@@ -218,6 +253,9 @@ export function useSubscriptionsData() {
     startDate: string;
     endDate?: string;
     trialEndsAt?: string;
+    notes?: string;
+    paymentMethod?: string;
+    url?: string;
   }) => {
     await updateSubscription({ variables: { input } });
     setSubscriptionToEdit(null);
@@ -268,10 +306,16 @@ export function useSubscriptionsData() {
     setSubscriptionToDelete(null);
   };
 
+  const allLoadedNames = [
+    ...activeItems.map((subscription) => subscription.name),
+    ...inactiveItems.map((subscription) => subscription.name),
+  ];
+
   return {
     activeError: !!activeError,
     activeItems,
     activeLoading,
+    allLoadedNames,
     activePage,
     activeTotalCount,
     activeTotalPages,

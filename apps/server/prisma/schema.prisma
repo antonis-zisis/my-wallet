@@ -86,8 +86,11 @@ model Subscription {
   startDate    DateTime  @map("start_date")
   endDate      DateTime? @map("end_date")
   cancelledAt  DateTime? @map("cancelled_at")
-  trialEndsAt  DateTime? @map("trial_ends_at")
-  userId       String    @map("user_id")
+  trialEndsAt    DateTime? @map("trial_ends_at")
+  notes          String?
+  paymentMethod  String?   @map("payment_method")
+  url            String?
+  userId         String    @map("user_id")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 

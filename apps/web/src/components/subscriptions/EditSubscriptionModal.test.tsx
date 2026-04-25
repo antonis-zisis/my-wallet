@@ -15,6 +15,9 @@ const mockSubscription: Subscription = {
   endDate: null,
   cancelledAt: null,
   trialEndsAt: null,
+  notes: null,
+  paymentMethod: null,
+  url: null,
   monthlyCost: 15.99,
   createdAt: '2025-01-15T00:00:00Z',
   updatedAt: '2025-01-15T00:00:00Z',
@@ -57,6 +60,55 @@ describe('EditSubscriptionModal', () => {
     );
   });
 
+  it('hides Additional details section when subscription has no optional fields', () => {
+    render(<EditSubscriptionModal {...defaultProps} />);
+    expect(
+      screen.getByLabelText('Website or billing URL').closest('[aria-hidden]')
+    ).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('pre-fills url, paymentMethod, and notes — expanding Additional details automatically', () => {
+    const subscription = {
+      ...mockSubscription,
+      url: 'https://netflix.com/account',
+      paymentMethod: 'Revolut',
+      notes: 'shared with sister',
+    };
+    render(
+      <EditSubscriptionModal {...defaultProps} subscription={subscription} />
+    );
+    expect(
+      screen.getByLabelText('Website or billing URL').closest('[aria-hidden]')
+    ).toHaveAttribute('aria-hidden', 'false');
+    expect(screen.getByLabelText('Website or billing URL')).toHaveValue(
+      'https://netflix.com/account'
+    );
+    expect(screen.getByLabelText('Payment method')).toHaveValue('Revolut');
+    expect(screen.getByLabelText('Notes')).toHaveValue('shared with sister');
+  });
+
+  it('submits updated url, paymentMethod, and notes', async () => {
+    const onSubmit = vi.fn();
+    render(<EditSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
+    await userEvent.click(
+      screen.getByRole('button', { name: /additional details/i })
+    );
+    await userEvent.type(
+      screen.getByLabelText('Website or billing URL'),
+      'https://netflix.com/account'
+    );
+    await userEvent.type(screen.getByLabelText('Payment method'), 'Revolut');
+    await userEvent.type(screen.getByLabelText('Notes'), 'shared with sister');
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'https://netflix.com/account',
+        paymentMethod: 'Revolut',
+        notes: 'shared with sister',
+      })
+    );
+  });
+
   it('pre-fills trial checkbox and date when subscription has a trial end date', () => {
     const subscription = {
       ...mockSubscription,
@@ -65,8 +117,68 @@ describe('EditSubscriptionModal', () => {
     render(
       <EditSubscriptionModal {...defaultProps} subscription={subscription} />
     );
-    expect(screen.getByLabelText('Trial period')).toBeChecked();
+    expect(screen.getByLabelText('Currently on a free trial')).toBeChecked();
     expect(screen.getByLabelText('Trial ends')).toBeInTheDocument();
+  });
+
+  describe('duplicate detection', () => {
+    it('shows a warning when renamed to match another existing subscription', async () => {
+      render(
+        <EditSubscriptionModal
+          {...defaultProps}
+          existingNames={['Netflix', 'Spotify']}
+        />
+      );
+      await userEvent.clear(screen.getByLabelText('Name'));
+      await userEvent.type(screen.getByLabelText('Name'), 'Spotify');
+      expect(
+        screen.getByText('A subscription with this name already exists.')
+      ).toBeInTheDocument();
+    });
+
+    it('does not show a warning when keeping the same name as the current subscription', () => {
+      render(
+        <EditSubscriptionModal
+          {...defaultProps}
+          existingNames={['Netflix', 'Spotify']}
+        />
+      );
+      expect(
+        screen.queryByText('A subscription with this name already exists.')
+      ).not.toBeInTheDocument();
+    });
+
+    it('warning is case-insensitive', async () => {
+      render(
+        <EditSubscriptionModal {...defaultProps} existingNames={['Spotify']} />
+      );
+      await userEvent.clear(screen.getByLabelText('Name'));
+      await userEvent.type(screen.getByLabelText('Name'), 'spotify');
+      expect(
+        screen.getByText('A subscription with this name already exists.')
+      ).toBeInTheDocument();
+    });
+
+    it('does not show a warning when no existing names are provided', async () => {
+      render(<EditSubscriptionModal {...defaultProps} />);
+      await userEvent.clear(screen.getByLabelText('Name'));
+      await userEvent.type(screen.getByLabelText('Name'), 'Spotify');
+      expect(
+        screen.queryByText('A subscription with this name already exists.')
+      ).not.toBeInTheDocument();
+    });
+
+    it('disables the Save button when a duplicate name is entered', async () => {
+      render(
+        <EditSubscriptionModal
+          {...defaultProps}
+          existingNames={['Netflix', 'Spotify']}
+        />
+      );
+      await userEvent.clear(screen.getByLabelText('Name'));
+      await userEvent.type(screen.getByLabelText('Name'), 'Spotify');
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
   });
 
   it('calls onClose when Cancel is clicked', async () => {

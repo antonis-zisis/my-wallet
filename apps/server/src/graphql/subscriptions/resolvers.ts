@@ -9,6 +9,9 @@ export interface CreateSubscriptionInput {
   startDate: string;
   endDate?: string;
   trialEndsAt?: string;
+  notes?: string;
+  paymentMethod?: string;
+  url?: string;
 }
 
 export interface UpdateSubscriptionInput {
@@ -19,6 +22,9 @@ export interface UpdateSubscriptionInput {
   startDate: string;
   endDate?: string;
   trialEndsAt?: string;
+  notes?: string;
+  paymentMethod?: string;
+  url?: string;
 }
 
 type SubscriptionParent = {
@@ -34,11 +40,24 @@ function getNextRenewalDate(startDate: Date, billingCycle: string): Date {
 
   today.setHours(0, 0, 0, 0);
 
-  const increment = billingCycle === 'YEARLY' ? 12 : 1;
   const next = new Date(startDate);
 
-  while (next <= today) {
-    next.setMonth(next.getMonth() + increment);
+  if (billingCycle === 'WEEKLY') {
+    while (next <= today) {
+      next.setDate(next.getDate() + 7);
+    }
+  } else {
+    const increment =
+      billingCycle === 'YEARLY'
+        ? 12
+        : billingCycle === 'BI_ANNUAL'
+          ? 6
+          : billingCycle === 'QUARTERLY'
+            ? 3
+            : 1;
+    while (next <= today) {
+      next.setMonth(next.getMonth() + increment);
+    }
   }
 
   return next;
@@ -47,9 +66,18 @@ function getNextRenewalDate(startDate: Date, billingCycle: string): Date {
 export const subscriptionResolvers = {
   Subscription: {
     monthlyCost: (parent: SubscriptionParent) => {
-      return parent.billingCycle === 'YEARLY'
-        ? parent.amount / 12
-        : parent.amount;
+      switch (parent.billingCycle) {
+        case 'WEEKLY':
+          return parent.amount * (52 / 12);
+        case 'QUARTERLY':
+          return parent.amount / 3;
+        case 'BI_ANNUAL':
+          return parent.amount / 6;
+        case 'YEARLY':
+          return parent.amount / 12;
+        default:
+          return parent.amount;
+      }
     },
     isActive: (parent: SubscriptionParent) => {
       if (parent.cancelledAt) {
@@ -130,6 +158,9 @@ export const subscriptionResolvers = {
           startDate: new Date(input.startDate),
           endDate: input.endDate ? new Date(input.endDate) : null,
           trialEndsAt: input.trialEndsAt ? new Date(input.trialEndsAt) : null,
+          notes: input.notes ?? null,
+          paymentMethod: input.paymentMethod ?? null,
+          url: input.url ?? null,
           userId,
         },
       });
@@ -158,6 +189,9 @@ export const subscriptionResolvers = {
           startDate: new Date(input.startDate),
           endDate: input.endDate ? new Date(input.endDate) : null,
           trialEndsAt: input.trialEndsAt ? new Date(input.trialEndsAt) : null,
+          notes: input.notes ?? null,
+          paymentMethod: input.paymentMethod ?? null,
+          url: input.url ?? null,
         },
       });
     },
