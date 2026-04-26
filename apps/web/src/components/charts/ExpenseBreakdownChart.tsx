@@ -8,27 +8,17 @@ import {
   Tooltip,
 } from 'recharts';
 
+import { useTheme } from '../../contexts/ThemeContext';
 import { EXPENSE_CATEGORIES, type Transaction } from '../../types/transaction';
 import { formatMoney } from '../../utils/formatMoney';
+import {
+  EXPENSE_CATEGORY_COLORS,
+  FALLBACK_CATEGORY_COLOR,
+} from './categoryColors';
 
 interface ExpenseBreakdownChartProps {
   transactions: Array<Transaction>;
 }
-
-const CATEGORY_COLORS: Record<string, string> = {
-  Rent: '#1d4ed8',
-  Utilities: '#3b82f6',
-  Insurance: '#60a5fa',
-  Loan: '#1e3a8a',
-  Groceries: '#f97316',
-  'Dining Out': '#fb923c',
-  Transport: '#0891b2',
-  Health: '#14b8a6',
-  Entertainment: '#a855f7',
-  Shopping: '#ec4899',
-  Investment: '#10b981',
-  Other: '#9ca3af',
-};
 
 const RADIAN = Math.PI / 180;
 
@@ -38,115 +28,121 @@ interface ChartDataItem {
   fill: string;
 }
 
-const renderShape = ({
-  cx,
-  cy,
-  endAngle,
-  fill,
-  innerRadius,
-  isActive,
-  midAngle,
-  outerRadius,
-  payload,
-  percent,
-  startAngle,
-  value,
-}: PieSectorShapeProps) => {
-  if (!isActive) {
+function makeRenderShape(labelColor: string) {
+  return function renderShape({
+    cx,
+    cy,
+    endAngle,
+    fill,
+    innerRadius,
+    isActive,
+    midAngle,
+    outerRadius,
+    payload,
+    percent,
+    startAngle,
+    value,
+  }: PieSectorShapeProps) {
+    if (!isActive) {
+      return (
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+        />
+      );
+    }
+
+    const sin = Math.sin(-RADIAN * (midAngle ?? 0));
+    const cos = Math.cos(-RADIAN * (midAngle ?? 0));
+    const sx = (cx ?? 0) + ((outerRadius ?? 0) + 10) * cos;
+    const sy = (cy ?? 0) + ((outerRadius ?? 0) + 10) * sin;
+    const mx = (cx ?? 0) + ((outerRadius ?? 0) + 30) * cos;
+    const my = (cy ?? 0) + ((outerRadius ?? 0) + 30) * sin;
+    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+    const ey = my;
+    const textAnchor = cos >= 0 ? 'start' : 'end';
+    const item = payload as unknown as ChartDataItem;
+
     return (
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
+      <g>
+        <text
+          x={cx}
+          y={cy}
+          dy={8}
+          textAnchor="middle"
+          fill={fill}
+          fontSize={13}
+          fontWeight={500}
+        >
+          {item.name}
+        </text>
+
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+        />
+
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          innerRadius={(outerRadius ?? 0) + 6}
+          outerRadius={(outerRadius ?? 0) + 10}
+          fill={fill}
+        />
+
+        <path
+          d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
+          stroke={fill}
+          fill="none"
+        />
+
+        <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+
+        <text
+          x={ex + (cos >= 0 ? 1 : -1) * 12}
+          y={ey}
+          textAnchor={textAnchor}
+          fill={labelColor}
+          fontSize={13}
+          fontWeight={600}
+        >
+          {`${formatMoney(value ?? 0)} €`}
+        </text>
+
+        <text
+          x={ex + (cos >= 0 ? 1 : -1) * 12}
+          y={ey}
+          dy={18}
+          textAnchor={textAnchor}
+          fill="#6b7280"
+          fontSize={12}
+        >
+          {`(${((percent ?? 0) * 100).toFixed(1)}%)`}
+        </text>
+      </g>
     );
-  }
-
-  const sin = Math.sin(-RADIAN * (midAngle ?? 0));
-  const cos = Math.cos(-RADIAN * (midAngle ?? 0));
-  const sx = (cx ?? 0) + ((outerRadius ?? 0) + 10) * cos;
-  const sy = (cy ?? 0) + ((outerRadius ?? 0) + 10) * sin;
-  const mx = (cx ?? 0) + ((outerRadius ?? 0) + 30) * cos;
-  const my = (cy ?? 0) + ((outerRadius ?? 0) + 30) * sin;
-  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-  const ey = my;
-  const textAnchor = cos >= 0 ? 'start' : 'end';
-  const item = payload as unknown as ChartDataItem;
-
-  return (
-    <g>
-      <text
-        x={cx}
-        y={cy}
-        dy={8}
-        textAnchor="middle"
-        fill={fill}
-        fontSize={13}
-        fontWeight={500}
-      >
-        {item.name}
-      </text>
-
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-
-      <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        innerRadius={(outerRadius ?? 0) + 6}
-        outerRadius={(outerRadius ?? 0) + 10}
-        fill={fill}
-      />
-
-      <path
-        d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
-        stroke={fill}
-        fill="none"
-      />
-
-      <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-
-      <text
-        x={ex + (cos >= 0 ? 1 : -1) * 12}
-        y={ey}
-        textAnchor={textAnchor}
-        fill="#6b7280"
-        fontSize={13}
-        fontWeight={600}
-      >
-        {`${formatMoney(value ?? 0)} €`}
-      </text>
-
-      <text
-        x={ex + (cos >= 0 ? 1 : -1) * 12}
-        y={ey}
-        dy={18}
-        textAnchor={textAnchor}
-        fill="#9ca3af"
-        fontSize={12}
-      >
-        {`(${((percent ?? 0) * 100).toFixed(1)}%)`}
-      </text>
-    </g>
-  );
-};
+  };
+}
 
 export function ExpenseBreakdownChart({
   transactions,
 }: ExpenseBreakdownChartProps) {
+  const { resolvedTheme } = useTheme();
+  const labelColor = resolvedTheme === 'dark' ? '#9ca3af' : '#4b5563';
+  const renderShape = useMemo(() => makeRenderShape(labelColor), [labelColor]);
+
   const chartData = useMemo(() => {
     const expensesByCategory = new Map<string, number>();
 
@@ -164,7 +160,7 @@ export function ExpenseBreakdownChart({
       .map(([name, value]) => ({
         name,
         value,
-        fill: CATEGORY_COLORS[name] ?? '#9ca3af',
+        fill: EXPENSE_CATEGORY_COLORS[name] ?? FALLBACK_CATEGORY_COLOR,
       }))
       .sort(
         (aa, bb) =>
