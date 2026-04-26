@@ -56,7 +56,7 @@ function EmptyState({
 
       {onAdd && (
         <button
-          className="cursor-pointer text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+          className="text-brand-600 dark:text-brand-400 cursor-pointer text-sm font-semibold hover:underline"
           onClick={onAdd}
         >
           Add your first subscription
