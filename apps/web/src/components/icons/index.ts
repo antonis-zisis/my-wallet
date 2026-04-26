@@ -12,6 +12,7 @@ export { InfoIcon } from './InfoIcon';
 export { LockClosedIcon } from './LockClosedIcon';
 export { LockOpenIcon } from './LockOpenIcon';
 export { LogOutIcon } from './LogOutIcon';
+export { MonitorIcon } from './MonitorIcon';
 export { MoonIcon } from './MoonIcon';
 export { SunIcon } from './SunIcon';
 export { TrendingChartIcon } from './TrendingChartIcon';
