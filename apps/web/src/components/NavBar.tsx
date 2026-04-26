@@ -3,12 +3,12 @@ import { useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { HEALTH_QUERY } from '../graphql/health';
 import { getInitials } from '../utils/getInitials';
-import { LogOutIcon, MoonIcon, SunIcon, UserIcon, WalletIcon } from './icons';
+import { LogOutIcon, UserIcon, WalletIcon } from './icons';
+import { ThemeToggle } from './ThemeToggle';
 import { Dropdown } from './ui';
 
 const navLinks = [
@@ -28,7 +28,6 @@ const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
 export function NavBar() {
   const { signOut } = useAuth();
   const { loading, user } = useUser();
-  const { theme, toggleTheme } = useTheme();
   const { showError } = useToast();
   const navigate = useNavigate();
   const { error: healthError, loading: healthLoading } = useQuery<{
@@ -81,15 +80,7 @@ export function NavBar() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-            >
-              <span className="h-4 w-4">
-                {theme === 'light' ? <MoonIcon /> : <SunIcon />}
-              </span>
-            </button>
+            <ThemeToggle />
 
             {loading ? (
               <div className="h-9 w-9 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600" />
