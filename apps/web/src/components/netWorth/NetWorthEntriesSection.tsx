@@ -109,7 +109,7 @@ export function NetWorthEntriesSection({
           </span>
           <button
             onClick={() => setIsCollapsed((previous) => !previous)}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            className="text-text-tertiary hover:text-text-secondary flex h-6 w-6 cursor-pointer items-center justify-center rounded"
             aria-label={isCollapsed ? 'Expand' : 'Collapse'}
             aria-expanded={!isCollapsed}
           >
@@ -141,7 +141,7 @@ export function NetWorthEntriesSection({
           >
             {Object.entries(byCategory).map(([category, categoryEntries]) => (
               <div key={category}>
-                <div className="bg-gray-50 px-4 py-2 text-xs font-medium tracking-wider text-gray-500 uppercase dark:bg-gray-700/50 dark:text-gray-400">
+                <div className="bg-bg-app text-text-secondary px-4 py-2 text-xs font-medium tracking-wider uppercase dark:bg-gray-700/50">
                   {category}
                 </div>
 
@@ -162,7 +162,7 @@ export function NetWorthEntriesSection({
                           : ''
                       }`}
                     >
-                      <span className="min-w-0 truncate text-sm text-gray-700 dark:text-gray-200">
+                      <span className="text-text-primary min-w-0 truncate text-sm">
                         {entry.label}
                       </span>
 

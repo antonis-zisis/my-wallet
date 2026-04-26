@@ -36,7 +36,7 @@ export function IncomeExpensesSection({
         ) : (
           <div className="flex items-center justify-between">
             <Skeleton className="h-7 w-40" />
-            <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
+            <ChevronDownIcon className="text-border ml-auto h-5 w-5" />
           </div>
         )}
       </Card>
@@ -46,7 +46,7 @@ export function IncomeExpensesSection({
   if (reports.length === 0) {
     return (
       <Card className="mt-4">
-        <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+        <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
           <p className="text-text-secondary text-sm font-medium">
             No reports yet
           </p>
@@ -81,10 +81,10 @@ export function IncomeExpensesSection({
                   key={option}
                   type="button"
                   onClick={() => setLimit(option)}
-                  className={`cursor-pointer border-l border-gray-200 px-2.5 py-1 text-xs font-medium transition-colors first:border-l-0 dark:border-gray-700 ${
+                  className={`border-border cursor-pointer border-l px-2.5 py-1 text-xs font-medium transition-colors first:border-l-0 ${
                     limit === option
                       ? 'bg-brand-600 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                      : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
                   }`}
                 >
                   {option}
@@ -101,7 +101,7 @@ export function IncomeExpensesSection({
             className="cursor-pointer"
           >
             <ChevronDownIcon
-              className={`h-5 w-5 text-gray-500 transition-transform duration-300 dark:text-gray-400 ${isOpen ? 'rotate-180' : ''}`}
+              className={`text-text-secondary h-5 w-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
             />
           </button>
         </div>

@@ -27,8 +27,8 @@ function SkeletonRow() {
 
 function EmptyState({ onCreateReport }: { onCreateReport?: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
-      <DocumentTextIcon className="size-10 text-gray-300 dark:text-gray-600" />
+    <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
+      <DocumentTextIcon className="text-border-strong size-10" />
 
       <p className="text-text-secondary text-sm font-medium">No reports yet</p>
 

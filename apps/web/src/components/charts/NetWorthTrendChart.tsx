@@ -59,7 +59,7 @@ function NetWorthChartTooltip({ active, payload }: NetWorthTooltipProps) {
   const sign = netWorth < 0 ? '-' : '';
 
   return (
-    <div className="rounded bg-white px-3 py-2 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+    <div className="bg-bg-surface ring-border rounded px-3 py-2 shadow-lg ring-1">
       <p className="text-text-primary text-xs font-semibold">{title}</p>
 
       <p className="text-text-secondary text-xs">{formatDate(snapshotDate)}</p>
@@ -96,19 +96,19 @@ function BreakdownChartTooltip({ active, payload }: BreakdownTooltipProps) {
     payload[0].payload;
 
   return (
-    <div className="rounded bg-white px-3 py-2 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+    <div className="bg-bg-surface ring-border rounded px-3 py-2 shadow-lg ring-1">
       <p className="text-text-primary text-xs font-semibold">{title}</p>
 
       <p className="text-text-secondary text-xs">{formatDate(snapshotDate)}</p>
 
       <div className="mt-1 space-y-0.5">
-        <p className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300">
+        <p className="text-text-secondary flex items-center gap-1.5 text-xs">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
           Assets:{' '}
           <span className="font-semibold">{formatMoney(totalAssets)} €</span>
         </p>
 
-        <p className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300">
+        <p className="text-text-secondary flex items-center gap-1.5 text-xs">
           <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
           Liabilities:{' '}
           <span className="font-semibold">
@@ -188,7 +188,7 @@ export function NetWorthTrendChart({
 
           <Legend
             content={() => (
-              <div className="flex justify-center gap-4 pt-1 text-xs text-gray-600 dark:text-gray-400">
+              <div className="text-text-secondary flex justify-center gap-4 pt-1 text-xs">
                 <span className="flex items-center gap-1.5">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   Assets
@@ -257,7 +257,7 @@ export function NetWorthTrendChart({
 
         <Legend
           content={() => (
-            <div className="flex justify-center gap-4 pt-1 text-xs text-gray-600 dark:text-gray-400">
+            <div className="text-text-secondary flex justify-center gap-4 pt-1 text-xs">
               <span className="flex items-center gap-1.5">
                 <span
                   className="inline-block h-2.5 w-2.5 rounded-full"

@@ -50,7 +50,7 @@ export function NetWorthSummaryCard({
       <Card>
         <div className="flex items-center justify-between">
           <Skeleton className="h-7 w-30" />
-          <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
+          <ChevronDownIcon className="text-border ml-auto h-5 w-5" />
         </div>
       </Card>
     );
@@ -59,7 +59,7 @@ export function NetWorthSummaryCard({
   if (!snapshot) {
     return (
       <Card>
-        <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+        <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
           <p className="text-text-secondary text-sm font-medium">
             No net worth snapshot yet
           </p>
@@ -107,7 +107,7 @@ export function NetWorthSummaryCard({
         <h2 className="text-text-primary text-lg font-semibold">Net Worth</h2>
 
         <ChevronDownIcon
-          className={`ml-auto h-5 w-5 text-gray-500 transition-transform duration-300 dark:text-gray-400 ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-text-secondary ml-auto h-5 w-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 

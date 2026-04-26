@@ -26,7 +26,7 @@ export function Profile() {
           {getInitials(fullName || email)}
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <h1 className="text-text-primary text-xl font-semibold">
             {fullName || email}
           </h1>
           {fullName && <p className="text-text-secondary text-sm">{email}</p>}
@@ -34,14 +34,14 @@ export function Profile() {
       </div>
 
       <Card className="p-6">
-        <div className="mb-5 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+        <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">
           <div className="bg-brand-50 dark:bg-brand-800/30 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
             <span className="text-brand-600 dark:text-brand-400 h-4 w-4">
               <UserIcon />
             </span>
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-text-primary text-sm font-semibold">
               Personal info
             </h2>
             <p className="text-text-secondary text-xs">
@@ -52,10 +52,10 @@ export function Profile() {
 
         <form className="space-y-4" onSubmit={onProfileSubmit}>
           <div>
-            <p className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <p className="text-text-secondary mb-1 text-sm font-medium">
               Email
             </p>
-            <div className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400">
+            <div className="border-border bg-bg-muted text-text-secondary rounded border px-3 py-2 text-sm">
               {email}
             </div>
             <p className="text-text-tertiary mt-1 text-xs">
@@ -84,14 +84,14 @@ export function Profile() {
       </Card>
 
       <Card className="p-6">
-        <div className="mb-5 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+        <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">
           <div className="bg-bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-            <span className="h-4 w-4 text-gray-600 dark:text-gray-400">
+            <span className="text-text-secondary h-4 w-4">
               <LockClosedIcon />
             </span>
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-text-primary text-sm font-semibold">
               Change password
             </h2>
             <p className="text-text-secondary text-xs">

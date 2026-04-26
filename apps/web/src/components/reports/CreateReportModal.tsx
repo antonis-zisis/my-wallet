@@ -81,12 +81,12 @@ export function CreateReportModal({
         <div className="mb-1 flex items-center justify-between">
           <label
             htmlFor="report-title"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-text-secondary block text-sm font-medium"
           >
             Report Title
           </label>
 
-          <span className="text-xs text-gray-400">
+          <span className="text-text-tertiary text-xs">
             {title.length}/{MAX_TITLE_LENGTH}
           </span>
         </div>
@@ -101,7 +101,7 @@ export function CreateReportModal({
           autoFocus
         />
 
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="text-text-tertiary mt-1 text-xs">
           Between {MIN_TITLE_LENGTH}–{MAX_TITLE_LENGTH} characters
         </p>
       </div>

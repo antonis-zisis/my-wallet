@@ -9,7 +9,7 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+  default: 'bg-bg-muted text-text-secondary',
   success: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
   danger: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
   info: 'bg-brand-100 text-brand-700 dark:bg-brand-800 dark:text-brand-300',

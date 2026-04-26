@@ -96,7 +96,7 @@ export function Subscriptions() {
       <PageLayout>
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            <h1 className="text-text-primary text-2xl font-semibold">
               Subscriptions
             </h1>
             <p className="text-text-secondary mt-1 text-sm">{subtitle}</p>
@@ -143,7 +143,7 @@ export function Subscriptions() {
             <button
               aria-controls={INACTIVE_SECTION_ID}
               aria-expanded={showInactive}
-              className="mb-4 flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-text-secondary hover:text-text-primary mb-4 flex cursor-pointer items-center gap-2 text-sm font-medium"
               type="button"
               onClick={onToggleInactive}
             >

@@ -77,7 +77,7 @@ export function UpcomingRenewalsCard({
       {loading ? (
         <div className="flex w-full items-center gap-2">
           <Skeleton className="h-7 w-44" />
-          <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
+          <ChevronDownIcon className="text-border ml-auto h-5 w-5" />
         </div>
       ) : (
         <button
@@ -97,7 +97,7 @@ export function UpcomingRenewalsCard({
           </span>
 
           <ChevronDownIcon
-            className={`ml-auto h-5 w-5 text-gray-500 transition-transform duration-300 dark:text-gray-400 ${isOpen ? 'rotate-180' : ''}`}
+            className={`text-text-secondary ml-auto h-5 w-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
           />
         </button>
       )}
@@ -158,7 +158,7 @@ export function UpcomingRenewalsCard({
                       </div>
                     </div>
 
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                    <p className="text-text-primary text-sm font-semibold">
                       {formatMoney(subscription.amount)} €
                     </p>
                   </div>

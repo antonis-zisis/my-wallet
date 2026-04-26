@@ -47,8 +47,8 @@ function EmptyState({
   onAdd?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
-      <CreditCardIcon className="size-10 text-gray-300 dark:text-gray-600" />
+    <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
+      <CreditCardIcon className="text-border-strong size-10" />
 
       <p className="text-text-secondary text-sm font-medium">{message}</p>
 
@@ -116,7 +116,7 @@ function TertiaryLine({ subscription }: { subscription: Subscription }) {
   }
 
   return (
-    <p className="mt-0.5 truncate text-xs text-gray-400 italic dark:text-gray-500">
+    <p className="text-text-tertiary mt-0.5 truncate text-xs italic">
       {parts.join(' · ')}
     </p>
   );
@@ -178,7 +178,7 @@ function AmountCell({ subscription }: { subscription: Subscription }) {
 
   return (
     <div className="text-right">
-      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+      <p className="text-text-primary text-sm font-semibold">
         {formatMoney(subscription.amount)} €
       </p>
       <p className="text-text-tertiary mt-0.5 text-xs">{normalized}</p>
@@ -265,7 +265,7 @@ export function SubscriptionList({
                   <div className="flex items-center gap-2">
                     {subscription.url ? (
                       <a
-                        className="truncate font-medium text-gray-800 hover:underline dark:text-gray-100"
+                        className="text-text-primary truncate font-medium hover:underline"
                         href={subscription.url}
                         rel="noopener noreferrer"
                         target="_blank"

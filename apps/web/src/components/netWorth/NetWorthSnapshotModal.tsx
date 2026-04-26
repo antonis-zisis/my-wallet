@@ -244,7 +244,7 @@ export function NetWorthSnapshotModal({
     return (
       <div
         key={entry.key}
-        className="grid grid-cols-[144px_1fr_112px_28px] items-center gap-2 border-b border-gray-100 py-1 last:border-0 dark:border-gray-700/50"
+        className="border-border grid grid-cols-[144px_1fr_112px_28px] items-center gap-2 border-b py-1 last:border-0 dark:border-gray-700/50"
       >
         <Select
           id={`category-${entry.key}`}
@@ -281,7 +281,7 @@ export function NetWorthSnapshotModal({
 
         <button
           onClick={() => removeEntry(entry.key)}
-          className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 dark:text-gray-500 dark:hover:text-red-400"
+          className="text-text-tertiary flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:text-red-400"
           aria-label="Remove entry"
           disabled={entries.length === 1}
         >
@@ -297,7 +297,7 @@ export function NetWorthSnapshotModal({
     ref?: React.RefObject<HTMLDivElement | null>
   ) => (
     <div ref={ref} className="flex items-center gap-2 py-1.5">
-      <span className="text-xs font-semibold tracking-wide text-gray-400 uppercase dark:text-gray-500">
+      <span className="text-text-tertiary text-xs font-semibold tracking-wide uppercase">
         {label}
       </span>
       <div className="border-border flex-1 border-t" />
@@ -391,7 +391,7 @@ export function NetWorthSnapshotModal({
         </div>
 
         {hasSomeAmount && (
-          <div className="flex justify-between border-t border-gray-100 pt-2 text-xs dark:border-gray-700">
+          <div className="border-border flex justify-between border-t pt-2 text-xs">
             <span className="text-green-600 dark:text-green-400">
               Assets: {formatMoney(totalAssets)} €
             </span>
