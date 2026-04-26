@@ -1,3 +1,51 @@
 @import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* brand — indigo */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+
+  /* surfaces & text — light defaults (cool gray) */
+  --color-bg-app: #f9fafb;
+  --color-bg-surface: #ffffff;
+  --color-bg-muted: #f3f4f6;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
+  --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;
+
+  /* semantic accents */
+  --color-income: #10b981;
+  --color-expense: #ef4444;
+  --color-warning: #f59e0b;
+}
+
+/* Suppress all transitions for one frame when the theme class is toggled */
+.disabling-transitions * {
+  transition: none !important;
+}
+
+.dark {
+  --color-bg-app: #111827;
+  --color-bg-surface: #1f2937;
+  --color-bg-muted: #374151;
+  --color-text-primary: #f3f4f6;
+  --color-text-secondary: #9ca3af;
+  --color-text-tertiary: #6b7280;
+  --color-border: #374151;
+  --color-border-strong: #4b5563;
+
+  --color-income: #34d399;
+  --color-expense: #f87171;
+  --color-warning: #fbbf24;
+}

@@ -41,8 +41,8 @@ export function Login() {
 
       <Card className="w-full max-w-md p-8">
         <div className="mb-6 flex flex-col items-center gap-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-            <WalletIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          <div className="bg-brand-100 dark:bg-brand-800 flex h-12 w-12 items-center justify-center rounded-full">
+            <WalletIcon className="text-brand-600 dark:text-brand-400 h-6 w-6" />
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">

@@ -111,7 +111,7 @@ export function TransactionTable({
                         trigger={
                           <button className="cursor-pointer rounded p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700">
                             <FilterIcon
-                              className={`h-3.5 w-3.5 ${selectedTypeFilter !== 'All' ? 'text-blue-500' : 'text-gray-400'}`}
+                              className={`h-3.5 w-3.5 ${selectedTypeFilter !== 'All' ? 'text-brand-500' : 'text-gray-400'}`}
                             />
                           </button>
                         }
@@ -130,7 +130,7 @@ export function TransactionTable({
                         trigger={
                           <button className="cursor-pointer rounded p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700">
                             <FilterIcon
-                              className={`h-3.5 w-3.5 ${selectedCategoryFilter !== 'All' ? 'text-blue-500' : 'text-gray-400'}`}
+                              className={`h-3.5 w-3.5 ${selectedCategoryFilter !== 'All' ? 'text-brand-500' : 'text-gray-400'}`}
                             />
                           </button>
                         }

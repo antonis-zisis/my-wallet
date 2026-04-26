@@ -70,7 +70,7 @@ export function NetWorthSnapshotHeader({
   updatedAt,
 }: NetWorthSnapshotHeaderProps) {
   const netWorthColorClass = isPositive
-    ? 'text-blue-600 dark:text-blue-400'
+    ? 'text-brand-600 dark:text-brand-400'
     : 'text-orange-600 dark:text-orange-400';
 
   return (
