@@ -302,7 +302,7 @@ export function NetWorthSnapshotModal({
       </span>
       <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
       <button
-        className="cursor-pointer text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+        className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 cursor-pointer text-xs"
         onClick={() => addEntry(type)}
       >
         + Add

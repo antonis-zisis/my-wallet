@@ -78,7 +78,7 @@ export function NetWorth() {
                       onClick={() => setChartView('netWorth')}
                       className={`cursor-pointer px-3 py-1.5 font-medium transition-colors ${
                         chartView === 'netWorth'
-                          ? 'bg-blue-500 text-white'
+                          ? 'bg-brand-500 text-white'
                           : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
                       }`}
                     >
@@ -90,7 +90,7 @@ export function NetWorth() {
                       onClick={() => setChartView('breakdown')}
                       className={`cursor-pointer border-l border-gray-200 px-3 py-1.5 font-medium transition-colors dark:border-gray-700 ${
                         chartView === 'breakdown'
-                          ? 'bg-blue-500 text-white'
+                          ? 'bg-brand-500 text-white'
                           : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
                       }`}
                     >
