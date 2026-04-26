@@ -60,15 +60,11 @@ function NetWorthChartTooltip({ active, payload }: NetWorthTooltipProps) {
 
   return (
     <div className="rounded bg-white px-3 py-2 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
-      <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">
-        {title}
-      </p>
+      <p className="text-text-primary text-xs font-semibold">{title}</p>
 
-      <p className="text-xs text-gray-500 dark:text-gray-400">
-        {formatDate(snapshotDate)}
-      </p>
+      <p className="text-text-secondary text-xs">{formatDate(snapshotDate)}</p>
 
-      <p className="mt-1 text-xs font-semibold text-gray-800 dark:text-gray-100">
+      <p className="text-text-primary mt-1 text-xs font-semibold">
         {sign}
         {formatMoney(Math.abs(netWorth))} €
       </p>
@@ -101,13 +97,9 @@ function BreakdownChartTooltip({ active, payload }: BreakdownTooltipProps) {
 
   return (
     <div className="rounded bg-white px-3 py-2 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
-      <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">
-        {title}
-      </p>
+      <p className="text-text-primary text-xs font-semibold">{title}</p>
 
-      <p className="text-xs text-gray-500 dark:text-gray-400">
-        {formatDate(snapshotDate)}
-      </p>
+      <p className="text-text-secondary text-xs">{formatDate(snapshotDate)}</p>
 
       <div className="mt-1 space-y-0.5">
         <p className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300">
@@ -133,9 +125,9 @@ export function NetWorthTrendChart({
   view,
 }: NetWorthTrendChartProps) {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const tickColor = theme === 'dark' ? '#d1d5db' : '#374151';
-  const gridColor = theme === 'dark' ? '#374151' : '#e5e7eb';
+  const { resolvedTheme } = useTheme();
+  const tickColor = resolvedTheme === 'dark' ? '#d1d5db' : '#374151';
+  const gridColor = resolvedTheme === 'dark' ? '#374151' : '#e5e7eb';
 
   const chartData = useMemo(() => {
     return [...snapshots.slice(0, 10)].reverse().map((snapshot) => ({

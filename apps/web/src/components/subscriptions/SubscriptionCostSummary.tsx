@@ -41,21 +41,21 @@ function Tile({ label, loading, primary, secondary, tooltip }: TileProps) {
         </>
       ) : (
         <>
-          <p className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-text-secondary flex items-center gap-1 text-sm">
             <span>{label}</span>
             {tooltip && (
               <Tooltip content={tooltip}>
-                <InfoIcon className="h-3.5 w-3.5 shrink-0 cursor-pointer text-gray-400 dark:text-gray-500" />
+                <InfoIcon className="text-text-tertiary h-3.5 w-3.5 shrink-0 cursor-pointer" />
               </Tooltip>
             )}
           </p>
 
-          <p className="mt-1 text-xl font-semibold text-gray-800 dark:text-gray-100">
+          <p className="text-text-primary mt-1 text-xl font-semibold">
             {primary}
           </p>
 
           {secondary && (
-            <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-text-secondary mt-0.5 truncate text-xs">
               {secondary}
             </p>
           )}

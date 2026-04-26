@@ -437,10 +437,10 @@ describe('Home', () => {
 
       // the 6 button should now be active (blue) and 12 inactive
       expect(screen.getByRole('button', { name: '6' })).toHaveClass(
-        'bg-blue-600'
+        'bg-brand-600'
       );
       expect(screen.getByRole('button', { name: '12' })).not.toHaveClass(
-        'bg-blue-600'
+        'bg-brand-600'
       );
     });
   });

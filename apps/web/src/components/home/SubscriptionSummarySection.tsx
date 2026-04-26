@@ -41,38 +41,36 @@ export function SubscriptionSummarySection({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
       <Card>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Active Subscriptions
-        </p>
+        <p className="text-text-secondary text-sm">Active Subscriptions</p>
 
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+        <p className="text-text-primary text-2xl font-bold">
           {subscriptions.length}
         </p>
       </Card>
 
       <Card>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Cost</p>
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+        <p className="text-text-secondary text-sm">Monthly Cost</p>
+        <p className="text-text-primary text-2xl font-bold">
           {formatMoney(totalMonthlyCost)} €
         </p>
       </Card>
 
       <Card>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Yearly Cost</p>
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+        <p className="text-text-secondary text-sm">Yearly Cost</p>
+        <p className="text-text-primary text-2xl font-bold">
           {formatMoney(totalYearlyCost)} €
         </p>
       </Card>
 
       <Card>
-        <p className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-text-secondary flex items-center gap-1 text-sm">
           % of Income
           <Tooltip content="Based on the income of your latest report.">
-            <InfoIcon className="h-3.5 w-3.5 cursor-pointer text-gray-400 dark:text-gray-500" />
+            <InfoIcon className="text-text-tertiary h-3.5 w-3.5 cursor-pointer" />
           </Tooltip>
         </p>
 
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+        <p className="text-text-primary text-2xl font-bold">
           {percentOfIncome}
         </p>
       </Card>
