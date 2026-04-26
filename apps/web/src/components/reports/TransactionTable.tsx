@@ -69,7 +69,7 @@ export function TransactionTable({
   ) {
     return (
       <Card className="mt-4">
-        <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+        <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
           <p className="text-text-secondary text-sm font-medium">
             No transactions yet
           </p>
@@ -98,7 +98,7 @@ export function TransactionTable({
 
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 text-left text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
+              <tr className="border-border text-text-secondary border-b text-left text-sm font-medium">
                 <th className="pr-4 pb-3">Date</th>
                 <th className="pr-4 pb-3">
                   <div className="flex items-center gap-1.5">
@@ -111,7 +111,7 @@ export function TransactionTable({
                         trigger={
                           <button className="hover:bg-bg-muted cursor-pointer rounded p-0.5">
                             <FilterIcon
-                              className={`h-3.5 w-3.5 ${selectedTypeFilter !== 'All' ? 'text-brand-500' : 'text-gray-400'}`}
+                              className={`h-3.5 w-3.5 ${selectedTypeFilter !== 'All' ? 'text-brand-500' : 'text-text-tertiary'}`}
                             />
                           </button>
                         }
@@ -130,7 +130,7 @@ export function TransactionTable({
                         trigger={
                           <button className="hover:bg-bg-muted cursor-pointer rounded p-0.5">
                             <FilterIcon
-                              className={`h-3.5 w-3.5 ${selectedCategoryFilter !== 'All' ? 'text-brand-500' : 'text-gray-400'}`}
+                              className={`h-3.5 w-3.5 ${selectedCategoryFilter !== 'All' ? 'text-brand-500' : 'text-text-tertiary'}`}
                             />
                           </button>
                         }
@@ -149,12 +149,10 @@ export function TransactionTable({
                 <tr
                   key={transaction.id}
                   className={`border-border border-b ${
-                    index % 2 === 0
-                      ? 'bg-gray-50 dark:bg-gray-900'
-                      : 'bg-bg-surface'
+                    index % 2 === 0 ? 'bg-bg-app' : 'bg-bg-surface'
                   }`}
                 >
-                  <td className="py-3 pr-4 pl-1 text-sm text-gray-600 dark:text-gray-300">
+                  <td className="text-text-secondary py-3 pr-4 pl-1 text-sm">
                     {formatDate(transaction.date)}
                   </td>
 
@@ -172,7 +170,7 @@ export function TransactionTable({
                     <Badge variant="default">{transaction.category}</Badge>
                   </td>
 
-                  <td className="py-3 pr-4 text-sm text-gray-800 dark:text-gray-200">
+                  <td className="text-text-primary py-3 pr-4 text-sm">
                     {transaction.description}
                   </td>
 

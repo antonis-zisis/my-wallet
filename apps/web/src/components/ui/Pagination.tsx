@@ -10,7 +10,7 @@ interface PaginationProps {
 }
 
 const iconButtonClass =
-  'rounded cursor-pointer p-1.5 text-gray-600 transition-colors hover:bg-bg-muted disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300';
+  'rounded cursor-pointer p-1.5 text-text-secondary transition-colors hover:bg-bg-muted disabled:cursor-not-allowed disabled:opacity-50';
 
 export function Pagination({
   itemCount,

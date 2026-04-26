@@ -31,7 +31,7 @@ export function DeleteSubscriptionModal({
         </>
       }
     >
-      <p className="text-gray-600 dark:text-gray-300">
+      <p className="text-text-secondary">
         Are you sure you want to delete{' '}
         <span className="font-semibold">{subscriptionName}</span>? This
         subscription will be permanently deleted.

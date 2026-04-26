@@ -74,7 +74,7 @@ export function ResumeSubscriptionModal({
         </>
       }
     >
-      <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
+      <p className="text-text-secondary mb-4 text-sm">
         Enter a new start date for{' '}
         <span className="font-semibold">{subscription?.name}</span>. You can
         also update the amount and billing cycle.

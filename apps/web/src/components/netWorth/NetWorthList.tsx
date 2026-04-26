@@ -19,7 +19,7 @@ interface NetWorthListProps {
 
 function ColumnHeaders() {
   return (
-    <div className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 border-b border-gray-100 px-3 py-2 dark:border-gray-700">
+    <div className="border-border grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 border-b px-3 py-2">
       <span className="text-text-secondary text-xs font-medium">Snapshot</span>
       <span className="text-text-secondary w-28 text-right text-xs font-medium">
         Change
@@ -42,15 +42,15 @@ function SkeletonRow() {
       <Skeleton className="h-4 w-28" />
       <Skeleton className="h-4 w-28" />
       <Skeleton className="h-3 w-20" />
-      <ChevronRightIcon className="size-4 text-gray-200 dark:text-gray-700" />
+      <ChevronRightIcon className="text-border size-4" />
     </li>
   );
 }
 
 function EmptyState({ onAdd }: { onAdd?: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
-      <TrendingChartIcon className="size-10 text-gray-300 dark:text-gray-600" />
+    <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
+      <TrendingChartIcon className="text-border-strong size-10" />
 
       <p className="text-text-secondary text-sm font-medium">
         No snapshots yet
@@ -75,9 +75,7 @@ function EmptyState({ onAdd }: { onAdd?: () => void }) {
 function DeltaBadge({ delta }: { delta: number | null }) {
   if (delta === null) {
     return (
-      <span className="w-28 text-right text-xs text-gray-300 dark:text-gray-600">
-        —
-      </span>
+      <span className="text-border-strong w-28 text-right text-xs">—</span>
     );
   }
 

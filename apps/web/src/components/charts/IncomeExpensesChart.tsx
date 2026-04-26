@@ -37,13 +37,13 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
   const expenses = payload.find((entry) => entry.name === 'expenses');
 
   return (
-    <div className="rounded bg-white px-4 py-3 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+    <div className="bg-bg-surface ring-border rounded px-4 py-3 shadow-lg ring-1">
       <p className="text-text-secondary mb-2 text-xs font-semibold">{label}</p>
 
       <div className="space-y-1.5">
         {income && (
           <div className="flex items-center justify-between gap-6">
-            <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+            <span className="text-text-secondary flex items-center gap-1.5 text-xs">
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
               Income
             </span>
@@ -55,7 +55,7 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
 
         {expenses && (
           <div className="flex items-center justify-between gap-6">
-            <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+            <span className="text-text-secondary flex items-center gap-1.5 text-xs">
               <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
               Expenses
             </span>
@@ -130,7 +130,7 @@ export function IncomeExpensesChart({
 
         <Legend
           content={() => (
-            <div className="flex justify-center gap-4 pt-1 text-xs text-gray-600 dark:text-gray-400">
+            <div className="text-text-secondary flex justify-center gap-4 pt-1 text-xs">
               <span className="flex items-center gap-1.5">
                 <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
                 Income

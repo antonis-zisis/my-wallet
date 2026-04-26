@@ -5,7 +5,7 @@ import { Card } from '../ui';
 export function SubscriptionsCTACard() {
   return (
     <Card>
-      <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
+      <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
         <p className="text-text-secondary text-sm font-medium">
           No subscriptions tracked yet
         </p>

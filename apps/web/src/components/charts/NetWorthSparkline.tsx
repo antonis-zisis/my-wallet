@@ -26,7 +26,7 @@ function SparklineTooltip({ active, payload }: SparklineTooltipProps) {
   const sign = netWorth < 0 ? '-' : '';
 
   return (
-    <div className="rounded bg-white px-3 py-2 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+    <div className="bg-bg-surface ring-border rounded px-3 py-2 shadow-lg ring-1">
       <p className="text-text-secondary text-xs font-medium">{title}</p>
 
       <p className="text-text-primary text-xs font-semibold">
