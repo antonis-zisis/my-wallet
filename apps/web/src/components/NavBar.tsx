@@ -53,7 +53,7 @@ export function NavBar() {
       : 'Server connected';
 
   return (
-    <nav className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+    <nav className="border-border bg-bg-surface border-b">
       <div className="mx-auto max-w-5xl px-4">
         <div className="flex h-14 items-stretch justify-between">
           <div className="flex items-stretch">
@@ -65,7 +65,7 @@ export function NavBar() {
               <span className="text-sm font-semibold">My Wallet</span>
             </Link>
 
-            <div className="my-3 w-px bg-gray-200 dark:bg-gray-700" />
+            <div className="bg-border my-3 w-px" />
 
             {navLinks.map((link) => (
               <NavLink
@@ -91,13 +91,13 @@ export function NavBar() {
                     {
                       type: 'custom',
                       content: (
-                        <div className="border-b border-gray-100 px-4 py-3 dark:border-gray-700">
+                        <div className="border-border border-b px-4 py-3">
                           {user.fullName && (
                             <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                               {user.fullName}
                             </p>
                           )}
-                          <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-text-secondary truncate text-xs">
                             {user.email}
                           </p>
                         </div>

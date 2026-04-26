@@ -81,16 +81,14 @@ export function ReportHeader({
       ) : (
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-              {title}
-            </h1>
+            <h1 className="text-text-primary text-2xl font-bold">{title}</h1>
 
             {isLocked && (
-              <LockClosedIcon className="size-4 text-gray-400 dark:text-gray-500" />
+              <LockClosedIcon className="text-text-tertiary size-4" />
             )}
           </div>
 
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          <p className="text-text-tertiary mt-1 text-xs">
             Created {formatDate(createdAt)} · Updated {formatDate(updatedAt)}
           </p>
         </div>

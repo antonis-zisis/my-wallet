@@ -99,9 +99,7 @@ export function Subscriptions() {
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
               Subscriptions
             </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {subtitle}
-            </p>
+            <p className="text-text-secondary mt-1 text-sm">{subtitle}</p>
           </div>
           <Button onClick={onOpenCreate}>New Subscription</Button>
         </div>

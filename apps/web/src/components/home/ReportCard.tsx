@@ -25,7 +25,7 @@ export function ReportCard({ label, report }: ReportCardProps) {
     <Link to={`/reports/${report.id}`} className="block">
       <Card className="hover:border-brand-300 dark:hover:border-brand-700 transition-colors">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+          <span className="text-text-primary text-xs font-semibold">
             {report.title}
           </span>
 

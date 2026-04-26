@@ -27,11 +27,9 @@ function SparklineTooltip({ active, payload }: SparklineTooltipProps) {
 
   return (
     <div className="rounded bg-white px-3 py-2 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
-      <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-        {title}
-      </p>
+      <p className="text-text-secondary text-xs font-medium">{title}</p>
 
-      <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+      <p className="text-text-primary text-xs font-semibold">
         {sign}
         {formatMoney(Math.abs(netWorth))} €
       </p>

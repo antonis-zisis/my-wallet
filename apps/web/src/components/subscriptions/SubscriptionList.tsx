@@ -50,9 +50,7 @@ function EmptyState({
     <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
       <CreditCardIcon className="size-10 text-gray-300 dark:text-gray-600" />
 
-      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-        {message}
-      </p>
+      <p className="text-text-secondary text-sm font-medium">{message}</p>
 
       {onAdd && (
         <button
@@ -164,7 +162,7 @@ function SecondaryLine({ subscription }: { subscription: Subscription }) {
           : null;
 
   return (
-    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+    <p className="text-text-secondary mt-0.5 text-xs">
       next renewal at{' '}
       <span className="font-semibold">{formatDate(renewalDate)}</span>
       {relativeLabel && ` · ${relativeLabel}`}
@@ -183,9 +181,7 @@ function AmountCell({ subscription }: { subscription: Subscription }) {
       <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
         {formatMoney(subscription.amount)} €
       </p>
-      <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-        {normalized}
-      </p>
+      <p className="text-text-tertiary mt-0.5 text-xs">{normalized}</p>
     </div>
   );
 }
@@ -205,7 +201,7 @@ export function SubscriptionList({
     return (
       <Card>
         <ul
-          className="divide-y divide-gray-200 dark:divide-gray-700"
+          className="divide-border divide-y"
           data-testid="subscription-list-skeleton"
         >
           {Array.from({ length: 10 }).map((_, index) => (
@@ -228,7 +224,7 @@ export function SubscriptionList({
 
   return (
     <Card>
-      <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+      <ul className="divide-border divide-y">
         {subscriptions.map((subscription) => {
           const dropdownItems: Array<DropdownItem> = [];
 
@@ -277,7 +273,7 @@ export function SubscriptionList({
                         {subscription.name}
                       </a>
                     ) : (
-                      <span className="truncate font-medium text-gray-800 dark:text-gray-100">
+                      <span className="text-text-primary truncate font-medium">
                         {subscription.name}
                       </span>
                     )}

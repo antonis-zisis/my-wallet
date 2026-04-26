@@ -24,7 +24,7 @@ export function ThemeToggle() {
   return (
     <button
       aria-label={NEXT_THEME_LABEL[theme]}
-      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+      className="text-text-secondary hover:bg-bg-muted hover:text-text-primary flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-colors"
       onClick={() => setTheme(nextTheme)}
     >
       <span className="h-4 w-4">

@@ -20,16 +20,14 @@ interface NetWorthListProps {
 function ColumnHeaders() {
   return (
     <div className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 border-b border-gray-100 px-3 py-2 dark:border-gray-700">
-      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-        Snapshot
-      </span>
-      <span className="w-28 text-right text-xs font-medium text-gray-500 dark:text-gray-400">
+      <span className="text-text-secondary text-xs font-medium">Snapshot</span>
+      <span className="text-text-secondary w-28 text-right text-xs font-medium">
         Change
       </span>
-      <span className="w-28 text-right text-xs font-medium text-gray-500 dark:text-gray-400">
+      <span className="text-text-secondary w-28 text-right text-xs font-medium">
         Net Worth
       </span>
-      <span className="w-20 text-right text-xs font-medium text-gray-500 dark:text-gray-400">
+      <span className="text-text-secondary w-20 text-right text-xs font-medium">
         Date
       </span>
       <span className="w-4" />
@@ -54,11 +52,11 @@ function EmptyState({ onAdd }: { onAdd?: () => void }) {
     <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
       <TrendingChartIcon className="size-10 text-gray-300 dark:text-gray-600" />
 
-      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+      <p className="text-text-secondary text-sm font-medium">
         No snapshots yet
       </p>
 
-      <p className="text-xs text-gray-400 dark:text-gray-500">
+      <p className="text-text-tertiary text-xs">
         Create your first snapshot to start tracking your net worth.
       </p>
 
@@ -88,7 +86,7 @@ function DeltaBadge({ delta }: { delta: number | null }) {
 
   if (isZero) {
     return (
-      <span className="w-28 text-right text-xs text-gray-400 dark:text-gray-500">
+      <span className="text-text-tertiary w-28 text-right text-xs">
         No change
       </span>
     );
@@ -119,7 +117,7 @@ export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
       <Card>
         <ColumnHeaders />
         <ul
-          className="divide-y divide-gray-100 dark:divide-gray-700"
+          className="divide-border divide-y"
           data-testid="net-worth-list-skeleton"
         >
           {Array.from({ length: 10 }).map((_, index) => (
@@ -143,7 +141,7 @@ export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
   return (
     <Card>
       <ColumnHeaders />
-      <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+      <ul className="divide-border divide-y">
         {snapshots.map((snapshot) => {
           const isPositiveNetWorth = snapshot.netWorth >= 0;
           const delta =
@@ -157,7 +155,7 @@ export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
                 className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-3 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
                 to={`/net-worth/${snapshot.id}`}
               >
-                <span className="font-medium text-gray-800 dark:text-gray-100">
+                <span className="text-text-primary font-medium">
                   {snapshot.title}
                 </span>
 
@@ -174,11 +172,11 @@ export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
                   {formatMoney(Math.abs(snapshot.netWorth))} €
                 </span>
 
-                <span className="w-20 text-right text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-text-tertiary w-20 text-right text-xs">
                   {formatDate(snapshot.snapshotDate)}
                 </span>
 
-                <ChevronRightIcon className="size-4 text-gray-400 dark:text-gray-500" />
+                <ChevronRightIcon className="text-text-tertiary size-4" />
               </Link>
             </li>
           );

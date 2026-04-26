@@ -29,9 +29,7 @@ export function Profile() {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
             {fullName || email}
           </h1>
-          {fullName && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">{email}</p>
-          )}
+          {fullName && <p className="text-text-secondary text-sm">{email}</p>}
         </div>
       </div>
 
@@ -46,7 +44,7 @@ export function Profile() {
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
               Personal info
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-text-secondary text-xs">
               Update your name and contact details
             </p>
           </div>
@@ -60,7 +58,7 @@ export function Profile() {
             <div className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400">
               {email}
             </div>
-            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+            <p className="text-text-tertiary mt-1 text-xs">
               Email address cannot be changed.
             </p>
           </div>
@@ -87,7 +85,7 @@ export function Profile() {
 
       <Card className="p-6">
         <div className="mb-5 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
+          <div className="bg-bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
             <span className="h-4 w-4 text-gray-600 dark:text-gray-400">
               <LockClosedIcon />
             </span>
@@ -96,7 +94,7 @@ export function Profile() {
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
               Change password
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-text-secondary text-xs">
               Choose a strong password for your account
             </p>
           </div>

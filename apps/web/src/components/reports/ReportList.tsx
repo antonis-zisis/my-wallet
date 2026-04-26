@@ -30,11 +30,9 @@ function EmptyState({ onCreateReport }: { onCreateReport?: () => void }) {
     <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
       <DocumentTextIcon className="size-10 text-gray-300 dark:text-gray-600" />
 
-      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-        No reports yet
-      </p>
+      <p className="text-text-secondary text-sm font-medium">No reports yet</p>
 
-      <p className="text-xs text-gray-400 dark:text-gray-500">
+      <p className="text-text-tertiary text-xs">
         Create your first report to start tracking income and expenses.
       </p>
 
@@ -60,7 +58,7 @@ export function ReportList({
     return (
       <Card>
         <ul
-          className="divide-y divide-gray-100 dark:divide-gray-700"
+          className="divide-border divide-y"
           data-testid="report-list-skeleton"
         >
           {Array.from({ length: 10 }).map((_, index) => (
@@ -81,7 +79,7 @@ export function ReportList({
 
   return (
     <Card>
-      <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+      <ul className="divide-border divide-y">
         {reports.map((report) => {
           const netBalance = report.netBalance ?? 0;
           const transactionCount = report.transactionCount ?? 0;
@@ -93,10 +91,10 @@ export function ReportList({
                 to={`/reports/${report.id}`}
               >
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-gray-800 dark:text-gray-100">
+                  <p className="text-text-primary font-medium">
                     {report.title}
                   </p>
-                  <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                  <p className="text-text-tertiary mt-0.5 text-xs">
                     {transactionCount}{' '}
                     {transactionCount === 1 ? 'transaction' : 'transactions'} ·{' '}
                     {formatRelativeTime(report.updatedAt)}
@@ -116,10 +114,10 @@ export function ReportList({
                   </span>
 
                   <LockClosedIcon
-                    className={`size-3.5 text-gray-400 dark:text-gray-500 ${report.isLocked ? '' : 'invisible'}`}
+                    className={`text-text-tertiary size-3.5 ${report.isLocked ? '' : 'invisible'}`}
                   />
 
-                  <ChevronRightIcon className="size-4 text-gray-400 dark:text-gray-500" />
+                  <ChevronRightIcon className="text-text-tertiary size-4" />
                 </div>
               </Link>
             </li>
