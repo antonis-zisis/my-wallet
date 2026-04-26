@@ -78,7 +78,7 @@ export function NetWorthEntriesSection({
           </span>
         </div>
 
-        <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">
+        <p className="text-text-tertiary py-6 text-center text-sm">
           No {title.toLowerCase()} recorded
         </p>
       </Card>
@@ -137,7 +137,7 @@ export function NetWorthEntriesSection({
           )}
 
           <div
-            className={`overflow-hidden rounded border border-gray-200 dark:border-gray-700 ${categoryCount >= 1 ? '' : 'mt-4'}`}
+            className={`border-border overflow-hidden rounded border ${categoryCount >= 1 ? '' : 'mt-4'}`}
           >
             {Object.entries(byCategory).map(([category, categoryEntries]) => (
               <div key={category}>
@@ -158,7 +158,7 @@ export function NetWorthEntriesSection({
                       key={entry.id}
                       className={`grid grid-cols-[1fr_152px_136px] items-center px-4 py-2 ${
                         index < categoryEntries.length - 1
-                          ? 'border-b border-gray-100 dark:border-gray-700'
+                          ? 'border-border border-b'
                           : ''
                       }`}
                     >
@@ -166,10 +166,10 @@ export function NetWorthEntriesSection({
                         {entry.label}
                       </span>
 
-                      <span className="text-right text-sm font-medium text-gray-800 dark:text-gray-100">
+                      <span className="text-text-primary text-right text-sm font-medium">
                         {formatMoney(entry.amount)} €
                         {percentOfTotal != null && (
-                          <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">
+                          <span className="text-text-tertiary ml-1.5 font-normal">
                             ({percentOfTotal}%)
                           </span>
                         )}

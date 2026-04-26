@@ -23,10 +23,8 @@ interface DropdownProps {
 }
 
 const actionStyles = {
-  default:
-    'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
-  danger:
-    'text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700',
+  default: 'text-gray-700 hover:bg-bg-muted dark:text-gray-300',
+  danger: 'text-red-600 hover:bg-bg-muted dark:text-red-400',
 };
 
 export function Dropdown({
@@ -74,7 +72,7 @@ export function Dropdown({
 
       {isOpen && (
         <div
-          className={`absolute z-10 mt-1 w-52 rounded border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 ${align === 'left' ? 'left-0' : 'right-0'}`}
+          className={`border-border bg-bg-surface absolute z-10 mt-1 w-52 rounded border py-1 shadow-lg ${align === 'left' ? 'left-0' : 'right-0'}`}
         >
           {items.map((item, index) => {
             if (item.type === 'custom') {

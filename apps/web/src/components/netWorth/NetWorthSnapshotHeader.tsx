@@ -77,11 +77,9 @@ export function NetWorthSnapshotHeader({
     <>
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-            {title}
-          </h1>
+          <h1 className="text-text-primary text-2xl font-bold">{title}</h1>
 
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          <p className="text-text-tertiary mt-1 text-xs">
             Created {formatDate(createdAt)} · Updated {formatDate(updatedAt)}
           </p>
         </div>
@@ -97,7 +95,7 @@ export function NetWorthSnapshotHeader({
 
       <div className="grid grid-cols-3 gap-4">
         <Card>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Net Worth</p>
+          <p className="text-text-secondary text-sm">Net Worth</p>
 
           <p className={`text-2xl font-bold ${netWorthColorClass}`}>
             {isPositive ? '' : '-'}
@@ -110,9 +108,7 @@ export function NetWorthSnapshotHeader({
         </Card>
 
         <Card>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Total Assets
-          </p>
+          <p className="text-text-secondary text-sm">Total Assets</p>
 
           <p className="text-2xl font-bold text-green-600 dark:text-green-400">
             {formatMoney(totalAssets)} €
@@ -124,9 +120,7 @@ export function NetWorthSnapshotHeader({
         </Card>
 
         <Card>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Total Liabilities
-          </p>
+          <p className="text-text-secondary text-sm">Total Liabilities</p>
 
           <p className="text-2xl font-bold text-red-600 dark:text-red-400">
             {formatMoney(totalLiabilities)} €

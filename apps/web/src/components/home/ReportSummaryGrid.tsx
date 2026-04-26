@@ -34,11 +34,9 @@ export function ReportSummaryGrid({
         <SkeletonCard />
       ) : (
         <Card>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Total Reports
-          </p>
+          <p className="text-text-secondary text-sm">Total Reports</p>
 
-          <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+          <p className="text-text-primary text-2xl font-bold">
             {totalCount ?? '-'}
           </p>
         </Card>
@@ -50,11 +48,9 @@ export function ReportSummaryGrid({
         <ReportCard label="Current" report={currentReport} />
       ) : (
         <Card>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Current
-          </p>
+          <p className="text-text-secondary text-sm font-medium">Current</p>
 
-          <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
+          <p className="text-text-tertiary mt-2 text-sm">
             Add a report to view summary
           </p>
         </Card>
@@ -66,11 +62,9 @@ export function ReportSummaryGrid({
         <ReportCard label="Previous" report={previousReport} />
       ) : (
         <Card>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Previous
-          </p>
+          <p className="text-text-secondary text-sm font-medium">Previous</p>
 
-          <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
+          <p className="text-text-tertiary mt-2 text-sm">
             Add a report to view summary
           </p>
         </Card>

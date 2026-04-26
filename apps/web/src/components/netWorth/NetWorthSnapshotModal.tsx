@@ -300,7 +300,7 @@ export function NetWorthSnapshotModal({
       <span className="text-xs font-semibold tracking-wide text-gray-400 uppercase dark:text-gray-500">
         {label}
       </span>
-      <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+      <div className="border-border flex-1 border-t" />
       <button
         className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 cursor-pointer text-xs"
         onClick={() => addEntry(type)}
@@ -362,7 +362,7 @@ export function NetWorthSnapshotModal({
           >
             {renderSectionHeader('Assets', 'ASSET')}
             {assetEntries.length === 0 ? (
-              <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
+              <p className="text-text-tertiary py-1 text-xs">
                 No assets added yet.
               </p>
             ) : (
@@ -375,7 +375,7 @@ export function NetWorthSnapshotModal({
               liabilitiesSectionRef
             )}
             {liabilityEntries.length === 0 ? (
-              <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
+              <p className="text-text-tertiary py-1 text-xs">
                 No liabilities added yet.
               </p>
             ) : (

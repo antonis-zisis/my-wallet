@@ -38,9 +38,7 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
 
   return (
     <div className="rounded bg-white px-4 py-3 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
-      <p className="mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
-        {label}
-      </p>
+      <p className="text-text-secondary mb-2 text-xs font-semibold">{label}</p>
 
       <div className="space-y-1.5">
         {income && (
@@ -49,7 +47,7 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
               Income
             </span>
-            <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+            <span className="text-text-primary text-xs font-semibold">
               {formatMoney(income.value)} €
             </span>
           </div>
@@ -61,7 +59,7 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
               <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
               Expenses
             </span>
-            <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+            <span className="text-text-primary text-xs font-semibold">
               {formatMoney(expenses.value)} €
             </span>
           </div>

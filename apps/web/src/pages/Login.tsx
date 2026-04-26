@@ -34,7 +34,7 @@ export function Login() {
   const isFormEmpty = !email.trim() || !password;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
+    <div className="bg-bg-app flex min-h-screen items-center justify-center">
       <div className="fixed top-4 right-4">
         <ThemeToggle />
       </div>
@@ -45,13 +45,9 @@ export function Login() {
             <WalletIcon className="text-brand-600 dark:text-brand-400 h-6 w-6" />
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            My Wallet
-          </h1>
+          <h1 className="text-text-primary text-2xl font-bold">My Wallet</h1>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Sign in to your account
-          </p>
+          <p className="text-text-secondary text-sm">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
