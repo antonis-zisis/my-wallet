@@ -244,7 +244,7 @@ export function NetWorthSnapshotModal({
     return (
       <div
         key={entry.key}
-        className="grid grid-cols-[144px_1fr_112px_28px] items-center gap-2 border-b border-gray-100 py-1 last:border-0 dark:border-gray-700/50"
+        className="border-border grid grid-cols-[144px_1fr_112px_28px] items-center gap-2 border-b py-1 last:border-0 dark:border-gray-700/50"
       >
         <Select
           id={`category-${entry.key}`}
@@ -281,7 +281,7 @@ export function NetWorthSnapshotModal({
 
         <button
           onClick={() => removeEntry(entry.key)}
-          className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 dark:text-gray-500 dark:hover:text-red-400"
+          className="text-text-tertiary flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:text-red-400"
           aria-label="Remove entry"
           disabled={entries.length === 1}
         >
@@ -297,12 +297,12 @@ export function NetWorthSnapshotModal({
     ref?: React.RefObject<HTMLDivElement | null>
   ) => (
     <div ref={ref} className="flex items-center gap-2 py-1.5">
-      <span className="text-xs font-semibold tracking-wide text-gray-400 uppercase dark:text-gray-500">
+      <span className="text-text-tertiary text-xs font-semibold tracking-wide uppercase">
         {label}
       </span>
-      <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+      <div className="border-border flex-1 border-t" />
       <button
-        className="cursor-pointer text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+        className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 cursor-pointer text-xs"
         onClick={() => addEntry(type)}
       >
         + Add
@@ -362,7 +362,7 @@ export function NetWorthSnapshotModal({
           >
             {renderSectionHeader('Assets', 'ASSET')}
             {assetEntries.length === 0 ? (
-              <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
+              <p className="text-text-tertiary py-1 text-xs">
                 No assets added yet.
               </p>
             ) : (
@@ -375,7 +375,7 @@ export function NetWorthSnapshotModal({
               liabilitiesSectionRef
             )}
             {liabilityEntries.length === 0 ? (
-              <p className="py-1 text-xs text-gray-400 dark:text-gray-500">
+              <p className="text-text-tertiary py-1 text-xs">
                 No liabilities added yet.
               </p>
             ) : (
@@ -391,7 +391,7 @@ export function NetWorthSnapshotModal({
         </div>
 
         {hasSomeAmount && (
-          <div className="flex justify-between border-t border-gray-100 pt-2 text-xs dark:border-gray-700">
+          <div className="border-border flex justify-between border-t pt-2 text-xs">
             <span className="text-green-600 dark:text-green-400">
               Assets: {formatMoney(totalAssets)} €
             </span>

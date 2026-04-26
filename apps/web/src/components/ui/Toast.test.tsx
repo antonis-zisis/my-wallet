@@ -76,7 +76,7 @@ describe('ToastContainer', () => {
   it('applies info variant styles', () => {
     renderWithTriggers();
     fireEvent.click(screen.getByText('Show info'));
-    expect(screen.getByRole('alert')).toHaveClass('bg-blue-50');
+    expect(screen.getByRole('alert')).toHaveClass('bg-brand-50');
   });
 
   it('has aria-live region for accessibility', () => {

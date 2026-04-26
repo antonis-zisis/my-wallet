@@ -50,7 +50,7 @@ export function NetWorthSummaryCard({
       <Card>
         <div className="flex items-center justify-between">
           <Skeleton className="h-7 w-30" />
-          <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
+          <ChevronDownIcon className="text-border ml-auto h-5 w-5" />
         </div>
       </Card>
     );
@@ -59,18 +59,18 @@ export function NetWorthSummaryCard({
   if (!snapshot) {
     return (
       <Card>
-        <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
+          <p className="text-text-secondary text-sm font-medium">
             No net worth snapshot yet
           </p>
 
-          <p className="text-xs text-gray-400 dark:text-gray-500">
+          <p className="text-text-tertiary text-xs">
             Track your assets and liabilities to see your net worth.
           </p>
 
           <Link
             to="/net-worth"
-            className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+            className="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:underline"
           >
             Add a snapshot
           </Link>
@@ -104,12 +104,10 @@ export function NetWorthSummaryCard({
         className="flex w-full cursor-pointer items-center gap-3"
         onClick={() => setIsOpen((prev) => !prev)}
       >
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Net Worth
-        </h2>
+        <h2 className="text-text-primary text-lg font-semibold">Net Worth</h2>
 
         <ChevronDownIcon
-          className={`ml-auto h-5 w-5 text-gray-500 transition-transform duration-300 dark:text-gray-400 ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-text-secondary ml-auto h-5 w-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -121,12 +119,12 @@ export function NetWorthSummaryCard({
             <div className="flex items-baseline justify-between gap-2">
               <Link
                 to={`/net-worth/${snapshot.id}`}
-                className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                className="text-brand-600 dark:text-brand-400 text-sm font-medium hover:underline"
               >
                 {snapshot.title}
               </Link>
 
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-text-secondary text-xs">
                 {formatDate(snapshot.snapshotDate)}
               </span>
             </div>
@@ -167,7 +165,7 @@ export function NetWorthSummaryCard({
               className={`text-xs ${
                 isStale
                   ? 'text-orange-600 dark:text-orange-400'
-                  : 'text-gray-500 dark:text-gray-400'
+                  : 'text-text-secondary'
               }`}
             >
               {isStale

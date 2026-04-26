@@ -6,7 +6,7 @@ import { ToastContainer } from './components/ui/Toast';
 
 export function App() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="bg-bg-app min-h-screen">
       <NavBar />
 
       <ErrorBoundary>

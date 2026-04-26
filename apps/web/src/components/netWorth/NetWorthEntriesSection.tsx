@@ -78,7 +78,7 @@ export function NetWorthEntriesSection({
           </span>
         </div>
 
-        <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">
+        <p className="text-text-tertiary py-6 text-center text-sm">
           No {title.toLowerCase()} recorded
         </p>
       </Card>
@@ -109,7 +109,7 @@ export function NetWorthEntriesSection({
           </span>
           <button
             onClick={() => setIsCollapsed((previous) => !previous)}
-            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            className="text-text-tertiary hover:text-text-secondary flex h-6 w-6 cursor-pointer items-center justify-center rounded"
             aria-label={isCollapsed ? 'Expand' : 'Collapse'}
             aria-expanded={!isCollapsed}
           >
@@ -137,11 +137,11 @@ export function NetWorthEntriesSection({
           )}
 
           <div
-            className={`overflow-hidden rounded border border-gray-200 dark:border-gray-700 ${categoryCount >= 1 ? '' : 'mt-4'}`}
+            className={`border-border overflow-hidden rounded border ${categoryCount >= 1 ? '' : 'mt-4'}`}
           >
             {Object.entries(byCategory).map(([category, categoryEntries]) => (
               <div key={category}>
-                <div className="bg-gray-50 px-4 py-2 text-xs font-medium tracking-wider text-gray-500 uppercase dark:bg-gray-700/50 dark:text-gray-400">
+                <div className="bg-bg-app text-text-secondary px-4 py-2 text-xs font-medium tracking-wider uppercase dark:bg-gray-700/50">
                   {category}
                 </div>
 
@@ -158,18 +158,18 @@ export function NetWorthEntriesSection({
                       key={entry.id}
                       className={`grid grid-cols-[1fr_152px_136px] items-center px-4 py-2 ${
                         index < categoryEntries.length - 1
-                          ? 'border-b border-gray-100 dark:border-gray-700'
+                          ? 'border-border border-b'
                           : ''
                       }`}
                     >
-                      <span className="min-w-0 truncate text-sm text-gray-700 dark:text-gray-200">
+                      <span className="text-text-primary min-w-0 truncate text-sm">
                         {entry.label}
                       </span>
 
-                      <span className="text-right text-sm font-medium text-gray-800 dark:text-gray-100">
+                      <span className="text-text-primary text-right text-sm font-medium">
                         {formatMoney(entry.amount)} €
                         {percentOfTotal != null && (
-                          <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">
+                          <span className="text-text-tertiary ml-1.5 font-normal">
                             ({percentOfTotal}%)
                           </span>
                         )}

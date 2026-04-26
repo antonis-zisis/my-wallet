@@ -37,19 +37,17 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
   const expenses = payload.find((entry) => entry.name === 'expenses');
 
   return (
-    <div className="rounded bg-white px-4 py-3 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
-      <p className="mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
-        {label}
-      </p>
+    <div className="bg-bg-surface ring-border rounded px-4 py-3 shadow-lg ring-1">
+      <p className="text-text-secondary mb-2 text-xs font-semibold">{label}</p>
 
       <div className="space-y-1.5">
         {income && (
           <div className="flex items-center justify-between gap-6">
-            <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+            <span className="text-text-secondary flex items-center gap-1.5 text-xs">
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
               Income
             </span>
-            <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+            <span className="text-text-primary text-xs font-semibold">
               {formatMoney(income.value)} €
             </span>
           </div>
@@ -57,11 +55,11 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
 
         {expenses && (
           <div className="flex items-center justify-between gap-6">
-            <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+            <span className="text-text-secondary flex items-center gap-1.5 text-xs">
               <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
               Expenses
             </span>
-            <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+            <span className="text-text-primary text-xs font-semibold">
               {formatMoney(expenses.value)} €
             </span>
           </div>
@@ -81,9 +79,9 @@ export function IncomeExpensesChart({
   reports,
 }: IncomeExpensesChartProps) {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const tickColor = theme === 'dark' ? '#d1d5db' : '#374151';
-  const gridColor = theme === 'dark' ? '#374151' : '#e5e7eb';
+  const { resolvedTheme } = useTheme();
+  const tickColor = resolvedTheme === 'dark' ? '#d1d5db' : '#374151';
+  const gridColor = resolvedTheme === 'dark' ? '#374151' : '#e5e7eb';
 
   const chartData = useMemo(() => {
     return [...reports]
@@ -132,7 +130,7 @@ export function IncomeExpensesChart({
 
         <Legend
           content={() => (
-            <div className="flex justify-center gap-4 pt-1 text-xs text-gray-600 dark:text-gray-400">
+            <div className="text-text-secondary flex justify-center gap-4 pt-1 text-xs">
               <span className="flex items-center gap-1.5">
                 <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
                 Income

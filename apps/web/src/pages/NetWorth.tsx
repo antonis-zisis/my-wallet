@@ -53,7 +53,7 @@ export function NetWorth() {
             ) : (
               <div className="flex items-center gap-3">
                 <Skeleton className="h-7 w-48" />
-                <ChevronDownIcon className="ml-auto h-5 w-5 text-gray-200 dark:text-gray-700" />
+                <ChevronDownIcon className="text-border ml-auto h-5 w-5" />
               </div>
             )}
           </Card>
@@ -62,24 +62,24 @@ export function NetWorth() {
             {isChartOpen ? (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  <h2 className="text-text-primary text-lg font-semibold">
                     Net Worth Over Time
                   </h2>
 
                   <Tooltip content="Shows the 10 most recent snapshots, from oldest to newest.">
-                    <InfoIcon className="h-4 w-4 cursor-pointer text-gray-400 dark:text-gray-500" />
+                    <InfoIcon className="text-text-tertiary h-4 w-4 cursor-pointer" />
                   </Tooltip>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex overflow-hidden rounded border border-gray-200 text-xs dark:border-gray-700">
+                  <div className="border-border flex overflow-hidden rounded border text-xs">
                     <button
                       type="button"
                       onClick={() => setChartView('netWorth')}
                       className={`cursor-pointer px-3 py-1.5 font-medium transition-colors ${
                         chartView === 'netWorth'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                          ? 'bg-brand-500 text-white'
+                          : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
                       }`}
                     >
                       Net Worth
@@ -88,10 +88,10 @@ export function NetWorth() {
                     <button
                       type="button"
                       onClick={() => setChartView('breakdown')}
-                      className={`cursor-pointer border-l border-gray-200 px-3 py-1.5 font-medium transition-colors dark:border-gray-700 ${
+                      className={`border-border cursor-pointer border-l px-3 py-1.5 font-medium transition-colors ${
                         chartView === 'breakdown'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                          ? 'bg-brand-500 text-white'
+                          : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
                       }`}
                     >
                       Assets & Liabilities
@@ -105,7 +105,7 @@ export function NetWorth() {
                     onClick={() => setIsChartOpen((previous) => !previous)}
                     className="cursor-pointer"
                   >
-                    <ChevronDownIcon className="h-5 w-5 rotate-180 text-gray-500 transition-transform duration-300 dark:text-gray-400" />
+                    <ChevronDownIcon className="text-text-secondary h-5 w-5 rotate-180 transition-transform duration-300" />
                   </button>
                 </div>
               </div>
@@ -118,13 +118,13 @@ export function NetWorth() {
                   className="flex flex-1 items-center gap-1.5"
                   onClick={() => setIsChartOpen((previous) => !previous)}
                 >
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  <h2 className="text-text-primary text-lg font-semibold">
                     Net Worth Over Time
                   </h2>
                 </button>
 
                 <ChevronDownIcon
-                  className="h-5 w-5 cursor-pointer text-gray-500 dark:text-gray-400"
+                  className="text-text-secondary h-5 w-5 cursor-pointer"
                   onClick={() => setIsChartOpen((previous) => !previous)}
                 />
               </div>

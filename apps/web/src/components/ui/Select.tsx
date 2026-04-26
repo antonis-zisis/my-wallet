@@ -28,8 +28,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             htmlFor={id}
             className={
               required
-                ? "mb-1 block text-sm font-medium text-gray-700 after:ml-0.5 after:text-red-500 after:content-['*'] dark:text-gray-300"
-                : 'mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300'
+                ? "text-text-secondary mb-1 block text-sm font-medium after:ml-0.5 after:text-red-500 after:content-['*']"
+                : 'text-text-secondary mb-1 block text-sm font-medium'
             }
           >
             {label}
@@ -40,7 +40,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={id}
           required={required}
-          className={`w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 ${
+          className={`focus:border-brand-500 focus:ring-brand-500 border-border-strong text-text-primary bg-bg-surface dark:bg-bg-muted w-full rounded border px-3 py-2 focus:ring-1 focus:outline-none ${
             error
               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
               : ''

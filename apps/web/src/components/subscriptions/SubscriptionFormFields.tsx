@@ -77,7 +77,7 @@ export function SubscriptionFormFields({
         <label className="flex cursor-pointer items-center gap-2">
           <input
             checked={values.isTrial}
-            className="h-4 w-4 rounded border-gray-300 accent-blue-600"
+            className="accent-brand-600 border-border-strong h-4 w-4 rounded"
             id="subscription-is-trial"
             type="checkbox"
             onChange={(event) => {
@@ -88,7 +88,7 @@ export function SubscriptionFormFields({
               });
             }}
           />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span className="text-text-secondary text-sm font-medium">
             Currently on a free trial
           </span>
         </label>
@@ -115,7 +115,7 @@ export function SubscriptionFormFields({
 
       <div>
         <button
-          className="flex cursor-pointer items-center gap-1 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+          className="text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 flex cursor-pointer items-center gap-1 text-sm"
           type="button"
           onClick={() => setIsAdditionalExpanded((previous) => !previous)}
         >
