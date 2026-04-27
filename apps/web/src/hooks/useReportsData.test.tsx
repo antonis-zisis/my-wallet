@@ -19,6 +19,8 @@ const mockReport = (id: string, title: string) => ({
   id,
   isLocked: false,
   title,
+  netBalance: 0,
+  transactionCount: 0,
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',
 });

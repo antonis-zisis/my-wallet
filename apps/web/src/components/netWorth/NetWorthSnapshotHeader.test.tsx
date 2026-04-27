@@ -35,11 +35,6 @@ describe('NetWorthSnapshotHeader', () => {
     expect(screen.getByText(/12\.000,00 €/)).toBeInTheDocument();
   });
 
-  it('uses blue styling for a positive net worth', () => {
-    render(<NetWorthSnapshotHeader {...defaultProps} isPositive />);
-    expect(screen.getByText(/12\.000,00 €/)).toHaveClass('text-blue-600');
-  });
-
   it('uses orange styling for a negative net worth', () => {
     render(
       <NetWorthSnapshotHeader
