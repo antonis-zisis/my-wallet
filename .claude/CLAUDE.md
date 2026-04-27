@@ -89,6 +89,10 @@ All domains are merged in `apps/server/src/graphql/index.ts`.
 
 - **Never commit** unless the user explicitly asks for it.
 
+### Design
+
+- **Border radius:** 4px (`rounded` in Tailwind).
+
 ### Testing
 
 - Focus on user behavior, not implementation details.

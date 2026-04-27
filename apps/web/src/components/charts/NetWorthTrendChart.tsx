@@ -133,9 +133,9 @@ export function NetWorthTrendChart({
   view,
 }: NetWorthTrendChartProps) {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const tickColor = theme === 'dark' ? '#d1d5db' : '#374151';
-  const gridColor = theme === 'dark' ? '#374151' : '#e5e7eb';
+  const { resolvedTheme } = useTheme();
+  const tickColor = resolvedTheme === 'dark' ? '#d1d5db' : '#374151';
+  const gridColor = resolvedTheme === 'dark' ? '#374151' : '#e5e7eb';
 
   const chartData = useMemo(() => {
     return [...snapshots.slice(0, 10)].reverse().map((snapshot) => ({
