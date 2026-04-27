@@ -89,6 +89,12 @@ All domains are merged in `apps/server/src/graphql/index.ts`.
 
 - **Never commit** unless the user explicitly asks for it.
 
+### Testing
+
+- Focus on user behavior, not implementation details.
+- Never assert on CSS classes, especially for colours.
+- Prioritize readable, maintainable tests over comprehensive coverage.
+
 ## Conventions
 
 - **Commits:** Conventional Commits — `type(scope): description`, enforced by commitlint + husky
