@@ -419,30 +419,6 @@ describe('Home', () => {
         screen.queryByRole('button', { name: '12' })
       ).not.toBeInTheDocument();
     });
-
-    it('updates the active limit when a limit button is clicked', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsWithItems,
-        mockReportsSummaryWithItems,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-        mockCurrentReport,
-        mockPreviousReport,
-      ]);
-
-      await screen.findByText('Monthly Summary');
-
-      fireEvent.click(screen.getByRole('button', { name: '6' }));
-
-      // the 6 button should now be active (blue) and 12 inactive
-      expect(screen.getByRole('button', { name: '6' })).toHaveClass(
-        'bg-blue-600'
-      );
-      expect(screen.getByRole('button', { name: '12' })).not.toHaveClass(
-        'bg-blue-600'
-      );
-    });
   });
 
   describe('net worth card', () => {

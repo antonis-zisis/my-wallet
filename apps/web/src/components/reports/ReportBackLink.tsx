@@ -7,7 +7,7 @@ export function ReportBackLink() {
     <div className="mb-6">
       <Link
         to="/reports"
-        className="inline-flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+        className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 inline-flex items-center gap-1 text-sm"
       >
         <ChevronLeftIcon className="h-4 w-4" />
         Back to Reports

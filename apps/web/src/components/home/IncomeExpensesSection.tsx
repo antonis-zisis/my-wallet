@@ -57,7 +57,7 @@ export function IncomeExpensesSection({
 
           <Link
             to="/reports"
-            className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+            className="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:underline"
           >
             Add a report
           </Link>
@@ -83,7 +83,7 @@ export function IncomeExpensesSection({
                   onClick={() => setLimit(option)}
                   className={`cursor-pointer border-l border-gray-200 px-2.5 py-1 text-xs font-medium transition-colors first:border-l-0 dark:border-gray-700 ${
                     limit === option
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-brand-600 text-white'
                       : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
                   }`}
                 >

@@ -22,7 +22,7 @@ export function Profile() {
   return (
     <PageLayout className="space-y-6">
       <div className="flex items-center gap-4">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-500 text-xl font-semibold text-white ring-4 ring-blue-100 dark:ring-blue-900/50">
+        <div className="bg-brand-500 ring-brand-100 dark:ring-brand-800/50 flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-xl font-semibold text-white ring-4">
           {getInitials(fullName || email)}
         </div>
         <div>
@@ -37,8 +37,8 @@ export function Profile() {
 
       <Card className="p-6">
         <div className="mb-5 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30">
-            <span className="h-4 w-4 text-blue-600 dark:text-blue-400">
+          <div className="bg-brand-50 dark:bg-brand-800/30 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+            <span className="text-brand-600 dark:text-brand-400 h-4 w-4">
               <UserIcon />
             </span>
           </div>

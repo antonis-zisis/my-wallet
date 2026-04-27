@@ -16,7 +16,7 @@ export function SubscriptionsCTACard() {
 
         <Link
           to="/subscriptions"
-          className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+          className="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:underline"
         >
           Add a subscription
         </Link>

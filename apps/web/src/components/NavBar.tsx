@@ -21,7 +21,7 @@ const navLinks = [
 const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
   `flex items-center px-3 text-sm font-medium transition-colors border-b-2 ${
     isActive
-      ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+      ? 'border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400'
       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-200'
   }`;
 
@@ -62,7 +62,7 @@ export function NavBar() {
               to="/"
               className="mr-4 flex items-center gap-2 text-gray-900 dark:text-white"
             >
-              <WalletIcon className="h-5 w-5 text-blue-600" />
+              <WalletIcon className="text-brand-600 h-5 w-5" />
               <span className="text-sm font-semibold">My Wallet</span>
             </Link>
 
@@ -128,7 +128,7 @@ export function NavBar() {
                     <div className="relative">
                       <button
                         aria-label="User menu"
-                        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-blue-500 text-xs font-medium tracking-wider text-white ring-2 ring-white transition-colors hover:bg-blue-600 dark:ring-gray-800"
+                        className="bg-brand-500 hover:bg-brand-600 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-medium tracking-wider text-white ring-2 ring-white transition-colors dark:ring-gray-800"
                       >
                         {getInitials(user.fullName ?? user.email)}
                       </button>

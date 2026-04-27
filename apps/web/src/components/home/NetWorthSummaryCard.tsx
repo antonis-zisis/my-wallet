@@ -70,7 +70,7 @@ export function NetWorthSummaryCard({
 
           <Link
             to="/net-worth"
-            className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+            className="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:underline"
           >
             Add a snapshot
           </Link>
@@ -121,7 +121,7 @@ export function NetWorthSummaryCard({
             <div className="flex items-baseline justify-between gap-2">
               <Link
                 to={`/net-worth/${snapshot.id}`}
-                className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                className="text-brand-600 dark:text-brand-400 text-sm font-medium hover:underline"
               >
                 {snapshot.title}
               </Link>

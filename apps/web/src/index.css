@@ -6,6 +6,9 @@
   /* brand — indigo */
   --color-brand-50: #eef2ff;
   --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
   --color-brand-500: #6366f1;
   --color-brand-600: #4f46e5;
   --color-brand-700: #4338ca;
@@ -37,7 +40,6 @@
   --color-border: #374151;
   --color-border-strong: #4b5563;
 
-  /* lifted one Tailwind step for AA contrast on #1F2937 */
   --color-income: #34d399;
   --color-expense: #f87171;
   --color-warning: #fbbf24;
