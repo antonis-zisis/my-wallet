@@ -47,11 +47,11 @@ export function IncomeExpensesSection({
     return (
       <Card className="mt-4">
         <div className="flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed border-gray-200 py-10 text-center dark:border-gray-700">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <p className="text-text-secondary text-sm font-medium">
             No reports yet
           </p>
 
-          <p className="text-xs text-gray-400 dark:text-gray-500">
+          <p className="text-text-tertiary text-xs">
             Add a report to see your income and expenses over time.
           </p>
 
@@ -69,13 +69,13 @@ export function IncomeExpensesSection({
   return (
     <Card className="mt-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <h2 className="text-text-primary text-lg font-semibold">
           Monthly Summary
         </h2>
 
         <div className="flex items-center gap-2">
           {isOpen && (
-            <div className="flex overflow-hidden rounded border border-gray-200 dark:border-gray-700">
+            <div className="border-border flex overflow-hidden rounded border">
               {LIMIT_OPTIONS.map((option) => (
                 <button
                   key={option}

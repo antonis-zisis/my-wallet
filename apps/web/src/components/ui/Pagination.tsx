@@ -10,7 +10,7 @@ interface PaginationProps {
 }
 
 const iconButtonClass =
-  'rounded cursor-pointer p-1.5 text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700';
+  'rounded cursor-pointer p-1.5 text-gray-600 transition-colors hover:bg-bg-muted disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300';
 
 export function Pagination({
   itemCount,
@@ -34,7 +34,7 @@ export function Pagination({
         <ChevronLeftIcon className="size-4" />
       </button>
 
-      <span className="text-xs text-gray-500 dark:text-gray-400">
+      <span className="text-text-secondary text-xs">
         Showing {startItem} - {endItem} of {totalCount}
       </span>
 
