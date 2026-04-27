@@ -22,7 +22,7 @@ const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
   `flex items-center px-3 text-sm font-medium transition-colors border-b-2 ${
     isActive
       ? 'border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400'
-      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-200'
+      : 'border-transparent text-text-secondary hover:border-border-strong hover:text-text-primary'
   }`;
 
 export function NavBar() {
@@ -59,7 +59,7 @@ export function NavBar() {
           <div className="flex items-stretch">
             <Link
               to="/"
-              className="mr-4 flex items-center gap-2 text-gray-900 dark:text-white"
+              className="text-text-primary mr-4 flex items-center gap-2"
             >
               <WalletIcon className="text-brand-600 h-5 w-5" />
               <span className="text-sm font-semibold">My Wallet</span>
@@ -93,7 +93,7 @@ export function NavBar() {
                       content: (
                         <div className="border-border border-b px-4 py-3">
                           {user.fullName && (
-                            <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                            <p className="text-text-primary truncate text-sm font-medium">
                               {user.fullName}
                             </p>
                           )}
@@ -119,12 +119,12 @@ export function NavBar() {
                     <div className="relative">
                       <button
                         aria-label="User menu"
-                        className="bg-brand-500 hover:bg-brand-600 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-medium tracking-wider text-white ring-2 ring-white transition-colors dark:ring-gray-800"
+                        className="bg-brand-500 hover:bg-brand-600 dark:ring-bg-surface flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-medium tracking-wider text-white ring-2 ring-white transition-colors"
                       >
                         {getInitials(user.fullName ?? user.email)}
                       </button>
                       <span
-                        className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-gray-800 ${healthDotClass}`}
+                        className={`dark:border-bg-surface absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${healthDotClass}`}
                         title={healthTitle}
                       />
                     </div>

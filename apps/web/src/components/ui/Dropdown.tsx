@@ -23,7 +23,7 @@ interface DropdownProps {
 }
 
 const actionStyles = {
-  default: 'text-gray-700 hover:bg-bg-muted dark:text-gray-300',
+  default: 'text-text-secondary hover:bg-bg-muted',
   danger: 'text-red-600 hover:bg-bg-muted dark:text-red-400',
 };
 

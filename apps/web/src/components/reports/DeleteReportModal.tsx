@@ -31,7 +31,7 @@ export function DeleteReportModal({
         </>
       }
     >
-      <p className="text-gray-600 dark:text-gray-300">
+      <p className="text-text-secondary">
         Are you sure you want to delete{' '}
         <span className="font-semibold">{reportTitle}</span>? All transactions
         in this report will be permanently deleted.
