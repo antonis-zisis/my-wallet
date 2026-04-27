@@ -1,11 +1,16 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { ThemeProvider } from '../../contexts/ThemeContext';
 import { type Transaction } from '../../types/transaction';
 import {
   BudgetBreakdownChart,
   CATEGORY_TO_BUCKET,
 } from './BudgetBreakdownChart';
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <ThemeProvider>{children}</ThemeProvider>
+);
 
 const makeTransaction = (
   overrides: Partial<Transaction> & Pick<Transaction, 'category' | 'amount'>
@@ -22,7 +27,9 @@ const makeTransaction = (
 
 describe('BudgetBreakdownChart', () => {
   it('renders nothing when there are no expenses', () => {
-    const { container } = render(<BudgetBreakdownChart transactions={[]} />);
+    const { container } = render(<BudgetBreakdownChart transactions={[]} />, {
+      wrapper,
+    });
     expect(container.innerHTML).toBe('');
   });
 
@@ -35,7 +42,8 @@ describe('BudgetBreakdownChart', () => {
       }),
     ];
     const { container } = render(
-      <BudgetBreakdownChart transactions={incomeOnly} />
+      <BudgetBreakdownChart transactions={incomeOnly} />,
+      { wrapper }
     );
     expect(container.innerHTML).toBe('');
   });
@@ -48,7 +56,8 @@ describe('BudgetBreakdownChart', () => {
     ];
 
     const { container } = render(
-      <BudgetBreakdownChart transactions={expenses} />
+      <BudgetBreakdownChart transactions={expenses} />,
+      { wrapper }
     );
     expect(container.querySelector('.recharts-wrapper')).toBeInTheDocument();
   });

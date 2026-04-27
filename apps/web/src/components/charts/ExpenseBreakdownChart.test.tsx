@@ -1,8 +1,13 @@
 import { render } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { ThemeProvider } from '../../contexts/ThemeContext';
 import { type Transaction } from '../../types/transaction';
 import { ExpenseBreakdownChart } from './ExpenseBreakdownChart';
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <ThemeProvider>{children}</ThemeProvider>
+);
 
 // PieChart with responsive prop uses ResizeObserver to get container dimensions
 // before rendering SVG children. Mock it to immediately report a fixed size.
@@ -43,7 +48,9 @@ const makeTransaction = (
 
 describe('ExpenseBreakdownChart', () => {
   it('renders nothing when there are no transactions', () => {
-    const { container } = render(<ExpenseBreakdownChart transactions={[]} />);
+    const { container } = render(<ExpenseBreakdownChart transactions={[]} />, {
+      wrapper,
+    });
     expect(container.innerHTML).toBe('');
   });
 
@@ -52,7 +59,8 @@ describe('ExpenseBreakdownChart', () => {
       makeTransaction({ type: 'INCOME', category: 'Salary', amount: 3000 }),
     ];
     const { container } = render(
-      <ExpenseBreakdownChart transactions={incomeOnly} />
+      <ExpenseBreakdownChart transactions={incomeOnly} />,
+      { wrapper }
     );
     expect(container.innerHTML).toBe('');
   });
@@ -63,7 +71,8 @@ describe('ExpenseBreakdownChart', () => {
       makeTransaction({ category: 'Food', amount: 300 }),
     ];
     const { container } = render(
-      <ExpenseBreakdownChart transactions={expenses} />
+      <ExpenseBreakdownChart transactions={expenses} />,
+      { wrapper }
     );
     expect(container.querySelector('.recharts-wrapper')).toBeInTheDocument();
   });
@@ -75,7 +84,8 @@ describe('ExpenseBreakdownChart', () => {
       makeTransaction({ category: 'Housing', amount: 500 }),
     ];
     const { getAllByText } = render(
-      <ExpenseBreakdownChart transactions={expenses} />
+      <ExpenseBreakdownChart transactions={expenses} />,
+      { wrapper }
     );
     expect(getAllByText('Food')).toHaveLength(1);
     expect(getAllByText('Housing')).toHaveLength(1);
