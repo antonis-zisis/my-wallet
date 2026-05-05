@@ -1,3 +1,4 @@
+export { AppLogoIcon } from './AppLogoIcon';
 export { ArrowDownIcon } from './ArrowDownIcon';
 export { ArrowUpIcon } from './ArrowUpIcon';
 export { ChevronDownIcon } from './ChevronDownIcon';

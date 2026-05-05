@@ -59,7 +59,7 @@ export function ReportHeader({
   };
 
   return (
-    <div className="mb-4 flex items-start justify-between">
+    <div className="mb-4 flex items-center justify-between">
       {isEditingTitle ? (
         <div className="flex items-center gap-2">
           <Input
@@ -100,6 +100,7 @@ export function ReportHeader({
         )}
 
         <Dropdown
+          className="flex"
           items={[
             ...(!isLocked
               ? [

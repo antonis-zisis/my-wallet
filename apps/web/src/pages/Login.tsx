@@ -1,7 +1,7 @@
 import { type SyntheticEvent, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { CircleAlertIcon, WalletIcon } from '../components/icons';
+import { AppLogoIcon, CircleAlertIcon } from '../components/icons';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { Button, Card, Input } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
@@ -41,9 +41,7 @@ export function Login() {
 
       <Card className="w-full max-w-md p-8">
         <div className="mb-6 flex flex-col items-center gap-2">
-          <div className="bg-brand-100 dark:bg-brand-800 flex h-12 w-12 items-center justify-center rounded-full">
-            <WalletIcon className="text-brand-600 dark:text-brand-400 h-6 w-6" />
-          </div>
+          <AppLogoIcon className="text-brand-500 h-16 w-16" />
 
           <h1 className="text-text-primary text-2xl font-bold">My Wallet</h1>
 

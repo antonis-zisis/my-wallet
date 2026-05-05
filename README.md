@@ -92,7 +92,7 @@ pnpm --filter my-wallet-server db:seed
 
 This creates a placeholder user, two reports with transactions, five subscriptions, and a net worth snapshot. The seed is idempotent — safe to run multiple times.
 
-> **Note:** Seed data is tied to a placeholder user in the database, not your Supabase auth account. To see it in the app, update `PLACEHOLDER_USER_ID` in `apps/server/prisma/seed.ts` with your actual Supabase user ID.
+> **Note:** Seed data is tied to a placeholder user in the database, not your Supabase auth account. To see it in the app, set `SEED_USER_ID` in `apps/server/.env` to your actual Supabase user ID before running the seed.
 
 ### Development
 
@@ -176,7 +176,7 @@ Environment files (`.env`) are encrypted using GPG for secure storage in the rep
 ### Required variables
 
 - **Server** (`apps/server/.env`): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `PG_*` database connection variables
-- **Web** (`apps/web/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+- **Web** (`apps/web/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`, `VITE_GRAPHQL_URL`
 
 ### Encrypt before committing (repo maintainer only)
 

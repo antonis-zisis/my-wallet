@@ -40,7 +40,7 @@ pnpm run env:encrypt      # Encrypt before committing
 
 **Monorepo:** `apps/web` and `apps/server`, managed by pnpm workspaces.
 
-**Web** (React 19 + Vite 7 + Tailwind CSS 4):
+**Web** (React 19 + Vite 8 + Tailwind CSS 4):
 
 - Entry: `main.tsx` → `ThemeProvider` → `AuthProvider` → `ApolloProvider` → `UserProvider` → `RouterProvider`
 - Routing: React Router 7, `createBrowserRouter` in `router.tsx`. Root layout in `App.tsx` (NavBar + `<Outlet />`). Protected routes via `ProtectedRoute`
