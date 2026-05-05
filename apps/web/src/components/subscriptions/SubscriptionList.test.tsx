@@ -263,11 +263,14 @@ describe('SubscriptionList', () => {
   });
 
   it('shows an "ends in X days" countdown for cancelled subscriptions', () => {
+    const futureEndDate = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000
+    ).toISOString();
     const subscriptions = [
       makeSubscription({
         name: 'Netflix',
         cancelledAt: '2026-04-01T00:00:00Z',
-        endDate: '2026-04-30T00:00:00Z',
+        endDate: futureEndDate,
       }),
     ];
     render(
