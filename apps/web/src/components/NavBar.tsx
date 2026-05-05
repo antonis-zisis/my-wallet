@@ -7,7 +7,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { HEALTH_QUERY } from '../graphql/health';
 import { getInitials } from '../utils/getInitials';
-import { LogOutIcon, UserIcon, WalletIcon } from './icons';
+import { AppLogoIcon, LogOutIcon, UserIcon } from './icons';
 import { ThemeToggle } from './ThemeToggle';
 import { Dropdown } from './ui';
 
@@ -61,7 +61,7 @@ export function NavBar() {
               to="/"
               className="text-text-primary mr-4 flex items-center gap-2"
             >
-              <WalletIcon className="text-brand-600 h-5 w-5" />
+              <AppLogoIcon className="text-brand-500 h-6 w-6" />
               <span className="text-sm font-semibold">My Wallet</span>
             </Link>
 
