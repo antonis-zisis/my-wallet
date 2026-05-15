@@ -1,10 +1,9 @@
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { BillingCycle, Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
-import { formatMoney } from '../../utils/formatMoney';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { ChevronDownIcon, InfoIcon } from '../icons';
-import { Card, Skeleton, Tooltip } from '../ui';
+import { Card, MoneyAmount, Skeleton, Tooltip } from '../ui';
 
 interface UpcomingRenewalsCardProps {
   loading?: boolean;
@@ -159,7 +158,7 @@ export function UpcomingRenewalsCard({
                     </div>
 
                     <p className="text-text-primary text-sm font-semibold">
-                      {formatMoney(subscription.amount)} €
+                      <MoneyAmount amount={subscription.amount} />
                     </p>
                   </div>
                 );

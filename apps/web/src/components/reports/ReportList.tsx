@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
-import { formatMoney } from '../../utils/formatMoney';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { ChevronRightIcon, DocumentTextIcon, LockClosedIcon } from '../icons';
-import { Card, Skeleton } from '../ui';
+import { Card, MoneyAmount, Skeleton } from '../ui';
 
 interface ReportListProps {
   error: boolean;
@@ -102,16 +101,16 @@ export function ReportList({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-3">
-                  <span
+                  <MoneyAmount
+                    amount={netBalance}
+                    currency=""
+                    sign={netBalance >= 0 ? '+' : ''}
                     className={`text-sm font-medium tabular-nums ${
                       netBalance >= 0
                         ? 'text-green-600 dark:text-green-400'
                         : 'text-red-500 dark:text-red-400'
                     }`}
-                  >
-                    {netBalance >= 0 ? '+' : ''}
-                    {formatMoney(netBalance)}
-                  </span>
+                  />
 
                   <LockClosedIcon
                     className={`text-text-tertiary size-3.5 ${report.isLocked ? '' : 'invisible'}`}

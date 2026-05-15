@@ -2,14 +2,13 @@ import { Link } from 'react-router-dom';
 
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
-import { formatMoney } from '../../utils/formatMoney';
 import {
   ArrowDownIcon,
   ArrowUpIcon,
   ChevronRightIcon,
   TrendingChartIcon,
 } from '../icons';
-import { Card, Skeleton } from '../ui';
+import { Card, MoneyAmount, Skeleton } from '../ui';
 
 interface NetWorthListProps {
   error: boolean;
@@ -103,8 +102,7 @@ function DeltaBadge({ delta }: { delta: number | null }) {
       ) : (
         <ArrowDownIcon className="size-3 shrink-0" />
       )}
-      {isPositive ? '+' : '-'}
-      {formatMoney(Math.abs(delta))} €
+      <MoneyAmount amount={Math.abs(delta)} sign={isPositive ? '+' : '-'} />
     </span>
   );
 }
@@ -159,16 +157,15 @@ export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
 
                 <DeltaBadge delta={delta} />
 
-                <span
+                <MoneyAmount
+                  amount={Math.abs(snapshot.netWorth)}
+                  sign={isPositiveNetWorth ? '+' : '-'}
                   className={`w-28 text-right text-sm font-semibold ${
                     isPositiveNetWorth
                       ? 'text-green-600 dark:text-green-400'
                       : 'text-red-600 dark:text-red-400'
                   }`}
-                >
-                  {isPositiveNetWorth ? '+' : '-'}
-                  {formatMoney(Math.abs(snapshot.netWorth))} €
-                </span>
+                />
 
                 <span className="text-text-tertiary w-20 text-right text-xs">
                   {formatDate(snapshot.snapshotDate)}

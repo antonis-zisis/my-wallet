@@ -1,8 +1,7 @@
 import { Transaction } from '../../types/transaction';
 import { formatDate } from '../../utils/formatDate';
-import { formatMoney } from '../../utils/formatMoney';
 import { FilterIcon } from '../icons';
-import { Badge, Button, Card, Dropdown } from '../ui';
+import { Badge, Button, Card, Dropdown, MoneyAmount } from '../ui';
 
 interface TransactionTableProps {
   isLocked?: boolean;
@@ -16,11 +15,6 @@ interface TransactionTableProps {
   onEdit?: (transaction: Transaction) => void;
   onSelectCategoryFilter?: (category: string) => void;
   onSelectTypeFilter?: (type: 'All' | 'Income' | 'Expense') => void;
-}
-
-function formatAmount(transaction: Transaction) {
-  const sign = transaction.type === 'INCOME' ? '+' : '-';
-  return `${sign}${formatMoney(transaction.amount)} €`;
 }
 
 export function TransactionTable({
@@ -181,7 +175,10 @@ export function TransactionTable({
                         : 'text-red-600 dark:text-red-400'
                     }`}
                   >
-                    {formatAmount(transaction)}
+                    <MoneyAmount
+                      amount={transaction.amount}
+                      sign={transaction.type === 'INCOME' ? '+' : '-'}
+                    />
                   </td>
 
                   <td className="py-3 pl-2">

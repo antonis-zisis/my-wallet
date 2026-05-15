@@ -1,10 +1,11 @@
+import { usePrivacy } from '../../contexts/PrivacyContext';
 import { Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
-import { formatMoney } from '../../utils/formatMoney';
+import { formatMoneyOrMask } from '../../utils/formatMoney';
 import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { CreditCardIcon } from '../icons';
-import { Badge, Card, Dropdown, Skeleton } from '../ui';
+import { Badge, Card, Dropdown, MoneyAmount, Skeleton } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
 interface SubscriptionListProps {
   subscriptions: Array<Subscription>;
@@ -171,15 +172,16 @@ function SecondaryLine({ subscription }: { subscription: Subscription }) {
 }
 
 function AmountCell({ subscription }: { subscription: Subscription }) {
+  const { isAmountsHidden } = usePrivacy();
   const normalized =
     subscription.billingCycle === 'MONTHLY'
-      ? `${formatMoney(subscription.amount * 12)} € / yr`
-      : `${formatMoney(subscription.monthlyCost)} € / mo`;
+      ? `${formatMoneyOrMask(subscription.amount * 12, isAmountsHidden)} € / yr`
+      : `${formatMoneyOrMask(subscription.monthlyCost, isAmountsHidden)} € / mo`;
 
   return (
     <div className="text-right">
       <p className="text-text-primary text-sm font-semibold">
-        {formatMoney(subscription.amount)} €
+        <MoneyAmount amount={subscription.amount} />
       </p>
       <p className="text-text-tertiary mt-0.5 text-xs">{normalized}</p>
     </div>

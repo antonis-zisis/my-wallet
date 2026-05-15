@@ -1,7 +1,7 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 import { NetWorthSnapshot } from '../../types/netWorth';
-import { formatMoney } from '../../utils/formatMoney';
+import { MoneyAmount } from '../ui';
 
 interface NetWorthSparklineProps {
   isPositive: boolean;
@@ -30,8 +30,7 @@ function SparklineTooltip({ active, payload }: SparklineTooltipProps) {
       <p className="text-text-secondary text-xs font-medium">{title}</p>
 
       <p className="text-text-primary text-xs font-semibold">
-        {sign}
-        {formatMoney(Math.abs(netWorth))} €
+        <MoneyAmount amount={Math.abs(netWorth)} sign={sign} />
       </p>
     </div>
   );

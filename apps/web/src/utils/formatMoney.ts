@@ -4,3 +4,7 @@ export function formatMoney(amount: number): string {
     maximumFractionDigits: 2,
   });
 }
+
+export function formatMoneyOrMask(amount: number, isHidden: boolean): string {
+  return isHidden ? '***' : formatMoney(amount);
+}

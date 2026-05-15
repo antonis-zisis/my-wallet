@@ -5,9 +5,8 @@ import {
   LIABILITY_CATEGORIES,
   NetWorthEntryType,
 } from '../../types/netWorth';
-import { formatMoney } from '../../utils/formatMoney';
 import { XMarkIcon } from '../icons';
-import { Button, Input, Modal, Select } from '../ui';
+import { Button, Input, Modal, MoneyAmount, Select } from '../ui';
 
 interface EntryDraft {
   key: number;
@@ -393,11 +392,11 @@ export function NetWorthSnapshotModal({
         {hasSomeAmount && (
           <div className="border-border flex justify-between border-t pt-2 text-xs">
             <span className="text-green-600 dark:text-green-400">
-              Assets: {formatMoney(totalAssets)} €
+              Assets: <MoneyAmount amount={totalAssets} />
             </span>
 
             <span className="text-red-600 dark:text-red-400">
-              Liabilities: {formatMoney(totalLiabilities)} €
+              Liabilities: <MoneyAmount amount={totalLiabilities} />
             </span>
 
             <span
@@ -407,8 +406,11 @@ export function NetWorthSnapshotModal({
                   : 'text-red-700 dark:text-red-300'
               }`}
             >
-              Net Worth: {netWorth >= 0 ? '' : '-'}
-              {formatMoney(Math.abs(netWorth))} €
+              Net Worth:{' '}
+              <MoneyAmount
+                amount={Math.abs(netWorth)}
+                sign={netWorth >= 0 ? '' : '-'}
+              />
             </span>
           </div>
         )}

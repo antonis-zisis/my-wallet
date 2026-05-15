@@ -13,11 +13,12 @@ import {
   YAxis,
 } from 'recharts';
 
+import { usePrivacy } from '../../contexts/PrivacyContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { abbreviateReportTitle } from '../../utils/abbreviateReportTitle';
 import { formatDate } from '../../utils/formatDate';
-import { formatMoney } from '../../utils/formatMoney';
+import { formatMoneyOrMask } from '../../utils/formatMoney';
 
 type TrendSnapshot = Pick<
   NetWorthSnapshot,
@@ -51,6 +52,8 @@ interface NetWorthTooltipProps {
 }
 
 function NetWorthChartTooltip({ active, payload }: NetWorthTooltipProps) {
+  const { isAmountsHidden } = usePrivacy();
+
   if (!active || !payload?.length) {
     return null;
   }
@@ -66,7 +69,7 @@ function NetWorthChartTooltip({ active, payload }: NetWorthTooltipProps) {
 
       <p className="text-text-primary mt-1 text-xs font-semibold">
         {sign}
-        {formatMoney(Math.abs(netWorth))} €
+        {formatMoneyOrMask(Math.abs(netWorth), isAmountsHidden)} €
       </p>
     </div>
   );
@@ -88,6 +91,8 @@ interface BreakdownTooltipProps {
 }
 
 function BreakdownChartTooltip({ active, payload }: BreakdownTooltipProps) {
+  const { isAmountsHidden } = usePrivacy();
+
   if (!active || !payload?.length) {
     return null;
   }
@@ -105,14 +110,16 @@ function BreakdownChartTooltip({ active, payload }: BreakdownTooltipProps) {
         <p className="text-text-secondary flex items-center gap-1.5 text-xs">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
           Assets:{' '}
-          <span className="font-semibold">{formatMoney(totalAssets)} €</span>
+          <span className="font-semibold">
+            {formatMoneyOrMask(totalAssets, isAmountsHidden)} €
+          </span>
         </p>
 
         <p className="text-text-secondary flex items-center gap-1.5 text-xs">
           <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
           Liabilities:{' '}
           <span className="font-semibold">
-            {formatMoney(totalLiabilities)} €
+            {formatMoneyOrMask(totalLiabilities, isAmountsHidden)} €
           </span>
         </p>
       </div>
@@ -126,6 +133,7 @@ export function NetWorthTrendChart({
 }: NetWorthTrendChartProps) {
   const navigate = useNavigate();
   const { resolvedTheme } = useTheme();
+  const { isAmountsHidden } = usePrivacy();
   const tickColor = resolvedTheme === 'dark' ? '#d1d5db' : '#374151';
   const gridColor = resolvedTheme === 'dark' ? '#374151' : '#e5e7eb';
 
@@ -179,7 +187,9 @@ export function NetWorthTrendChart({
           />
 
           <YAxis
-            tickFormatter={(value: number) => `${formatMoney(value)}€`}
+            tickFormatter={(value: number) =>
+              `${formatMoneyOrMask(value, isAmountsHidden)}€`
+            }
             tick={{ fontSize: 12, fill: commonAxisProps.tickColor }}
             width={80}
           />
@@ -248,7 +258,9 @@ export function NetWorthTrendChart({
         />
 
         <YAxis
-          tickFormatter={(value: number) => `${formatMoney(value)}€`}
+          tickFormatter={(value: number) =>
+            `${formatMoneyOrMask(value, isAmountsHidden)}€`
+          }
           tick={{ fontSize: 12, fill: commonAxisProps.tickColor }}
           width={80}
         />

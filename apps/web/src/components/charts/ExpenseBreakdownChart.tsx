@@ -8,9 +8,10 @@ import {
   Tooltip,
 } from 'recharts';
 
+import { usePrivacy } from '../../contexts/PrivacyContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { EXPENSE_CATEGORIES, type Transaction } from '../../types/transaction';
-import { formatMoney } from '../../utils/formatMoney';
+import { formatMoneyOrMask } from '../../utils/formatMoney';
 import {
   EXPENSE_CATEGORY_COLORS,
   FALLBACK_CATEGORY_COLOR,
@@ -28,7 +29,7 @@ interface ChartDataItem {
   fill: string;
 }
 
-function makeRenderShape(labelColor: string) {
+function makeRenderShape(isAmountsHidden: boolean, labelColor: string) {
   return function renderShape({
     cx,
     cy,
@@ -118,7 +119,7 @@ function makeRenderShape(labelColor: string) {
           fontSize={13}
           fontWeight={600}
         >
-          {`${formatMoney(value ?? 0)} €`}
+          {`${formatMoneyOrMask(value ?? 0, isAmountsHidden)} €`}
         </text>
 
         <text
@@ -140,8 +141,12 @@ export function ExpenseBreakdownChart({
   transactions,
 }: ExpenseBreakdownChartProps) {
   const { resolvedTheme } = useTheme();
+  const { isAmountsHidden } = usePrivacy();
   const labelColor = resolvedTheme === 'dark' ? '#9ca3af' : '#4b5563';
-  const renderShape = useMemo(() => makeRenderShape(labelColor), [labelColor]);
+  const renderShape = useMemo(
+    () => makeRenderShape(isAmountsHidden, labelColor),
+    [isAmountsHidden, labelColor]
+  );
 
   const chartData = useMemo(() => {
     const expensesByCategory = new Map<string, number>();

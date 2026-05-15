@@ -8,6 +8,7 @@ import { useUser } from '../contexts/UserContext';
 import { HEALTH_QUERY } from '../graphql/health';
 import { getInitials } from '../utils/getInitials';
 import { AppLogoIcon, LogOutIcon, UserIcon } from './icons';
+import { PrivacyToggle } from './PrivacyToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { Dropdown } from './ui';
 
@@ -80,6 +81,7 @@ export function NavBar() {
           </div>
 
           <div className="flex items-center gap-2">
+            <PrivacyToggle />
             <ThemeToggle />
 
             {loading ? (

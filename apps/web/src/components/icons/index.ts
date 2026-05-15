@@ -8,6 +8,8 @@ export { ChevronUpIcon } from './ChevronUpIcon';
 export { CircleAlertIcon } from './CircleAlertIcon';
 export { CreditCardIcon } from './CreditCardIcon';
 export { DocumentTextIcon } from './DocumentTextIcon';
+export { EyeIcon } from './EyeIcon';
+export { EyeOffIcon } from './EyeOffIcon';
 export { FilterIcon } from './FilterIcon';
 export { InfoIcon } from './InfoIcon';
 export { LockClosedIcon } from './LockClosedIcon';

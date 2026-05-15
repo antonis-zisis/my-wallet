@@ -4,7 +4,7 @@ import {
   type NetWorthEntry,
   type NetWorthEntryType,
 } from '../../types/netWorth';
-import { formatMoney } from '../../utils/formatMoney';
+import { MoneyAmount } from '../ui';
 import {
   ASSET_CATEGORY_COLORS,
   FALLBACK_CATEGORY_COLOR,
@@ -68,9 +68,10 @@ export function NetWorthCategoryBreakdownChart({
               style={{ backgroundColor: item.fill }}
             />
             <span className="text-text-secondary text-xs">{item.name}</span>
-            <span className="text-text-primary text-xs font-medium">
-              {formatMoney(item.value)} €
-            </span>
+            <MoneyAmount
+              amount={item.value}
+              className="text-text-primary text-xs font-medium"
+            />
             <span className="text-text-tertiary text-xs">
               ({item.percentage.toFixed(1)}%)
             </span>
