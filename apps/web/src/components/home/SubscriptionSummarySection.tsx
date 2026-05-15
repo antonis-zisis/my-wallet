@@ -1,7 +1,6 @@
 import { Subscription } from '../../types/subscription';
-import { formatMoney } from '../../utils/formatMoney';
 import { InfoIcon } from '../icons';
-import { Card, Tooltip } from '../ui';
+import { Card, MoneyAmount, Tooltip } from '../ui';
 
 interface SubscriptionSummarySectionProps {
   subscriptions: Array<Subscription>;
@@ -51,14 +50,14 @@ export function SubscriptionSummarySection({
       <Card>
         <p className="text-text-secondary text-sm">Monthly Cost</p>
         <p className="text-text-primary text-2xl font-bold">
-          {formatMoney(totalMonthlyCost)} €
+          <MoneyAmount amount={totalMonthlyCost} />
         </p>
       </Card>
 
       <Card>
         <p className="text-text-secondary text-sm">Yearly Cost</p>
         <p className="text-text-primary text-2xl font-bold">
-          {formatMoney(totalYearlyCost)} €
+          <MoneyAmount amount={totalYearlyCost} />
         </p>
       </Card>
 

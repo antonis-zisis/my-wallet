@@ -1,6 +1,5 @@
 import { formatDate } from '../../utils/formatDate';
-import { formatMoney } from '../../utils/formatMoney';
-import { Card, Dropdown } from '../ui';
+import { Card, Dropdown, MoneyAmount } from '../ui';
 
 interface NetWorthSnapshotHeaderProps {
   createdAt: string;
@@ -42,8 +41,7 @@ function DeltaLabel({
 
   return (
     <p className={`mt-1 text-xs font-medium ${colorClass}`}>
-      {sign}
-      {formatMoney(Math.abs(delta))} €
+      <MoneyAmount amount={Math.abs(delta)} sign={sign} />
       {percentage != null && (
         <span className="ml-1 opacity-70">
           ({sign}
@@ -98,8 +96,10 @@ export function NetWorthSnapshotHeader({
           <p className="text-text-secondary text-sm">Net Worth</p>
 
           <p className={`text-2xl font-bold ${netWorthColorClass}`}>
-            {isPositive ? '' : '-'}
-            {formatMoney(Math.abs(netWorth))} €
+            <MoneyAmount
+              amount={Math.abs(netWorth)}
+              sign={isPositive ? '' : '-'}
+            />
           </p>
 
           {deltaNetWorth != null && deltaNetWorth !== 0 && (
@@ -111,7 +111,7 @@ export function NetWorthSnapshotHeader({
           <p className="text-text-secondary text-sm">Total Assets</p>
 
           <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-            {formatMoney(totalAssets)} €
+            <MoneyAmount amount={totalAssets} />
           </p>
 
           {deltaAssets != null && deltaAssets !== 0 && (
@@ -123,7 +123,7 @@ export function NetWorthSnapshotHeader({
           <p className="text-text-secondary text-sm">Total Liabilities</p>
 
           <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-            {formatMoney(totalLiabilities)} €
+            <MoneyAmount amount={totalLiabilities} />
           </p>
 
           {deltaLiabilities != null && deltaLiabilities !== 0 && (

@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
-import { formatMoney } from '../../utils/formatMoney';
 import { ArrowDownIcon, ArrowUpIcon } from '../icons';
-import { Badge, Card } from '../ui';
+import { Badge, Card, MoneyAmount } from '../ui';
 
 interface ReportCardProps {
   label: string;
@@ -35,12 +34,12 @@ export function ReportCard({ label, report }: ReportCardProps) {
         <div className="mt-2 flex items-center gap-3">
           <p className="flex items-center gap-1 text-sm font-semibold text-green-600 dark:text-green-400">
             <ArrowUpIcon className="size-4" />
-            {formatMoney(totalIncome)} &euro;
+            <MoneyAmount amount={totalIncome} />
           </p>
 
           <p className="flex items-center gap-1 text-sm font-semibold text-red-600 dark:text-red-400">
             <ArrowDownIcon className="size-4" />
-            {formatMoney(totalExpenses)} &euro;
+            <MoneyAmount amount={totalExpenses} />
           </p>
         </div>
       </Card>

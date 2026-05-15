@@ -3,10 +3,9 @@ import { Link } from 'react-router-dom';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
-import { formatMoney } from '../../utils/formatMoney';
 import { NetWorthSparkline } from '../charts';
 import { ArrowDownIcon, ArrowUpIcon, ChevronDownIcon } from '../icons';
-import { Card, Skeleton } from '../ui';
+import { Card, MoneyAmount, Skeleton } from '../ui';
 
 const STALE_DAYS = 45;
 
@@ -131,8 +130,7 @@ export function NetWorthSummaryCard({
 
             <div>
               <p className={`text-3xl font-bold ${netWorthColor}`}>
-                {sign}
-                {formatMoney(Math.abs(snapshot.netWorth))} €
+                <MoneyAmount amount={Math.abs(snapshot.netWorth)} sign={sign} />
               </p>
 
               {delta !== null && previousSnapshot && (
@@ -146,9 +144,11 @@ export function NetWorthSummaryCard({
                   )}
 
                   <span>
-                    {deltaIsPositive ? '+' : '-'}
-                    {formatMoney(Math.abs(delta))} € since{' '}
-                    {previousSnapshot.title}
+                    <MoneyAmount
+                      amount={Math.abs(delta)}
+                      sign={deltaIsPositive ? '+' : '-'}
+                    />{' '}
+                    since {previousSnapshot.title}
                   </span>
                 </p>
               )}

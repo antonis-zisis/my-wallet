@@ -1,9 +1,8 @@
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { type EntryDelta, type NetWorthEntry } from '../../types/netWorth';
-import { formatMoney } from '../../utils/formatMoney';
 import { NetWorthCategoryBreakdownChart } from '../charts/NetWorthCategoryBreakdownChart';
 import { ChevronDownIcon } from '../icons';
-import { Badge, Card, Divider } from '../ui';
+import { Badge, Card, Divider, MoneyAmount } from '../ui';
 
 interface NetWorthEntriesSectionProps {
   colorClass: string;
@@ -46,8 +45,7 @@ function EntryDeltaLabel({
 
   return (
     <span className={`text-xs font-medium ${colorClass}`}>
-      {sign}
-      {formatMoney(Math.abs(entryDelta.delta))} €
+      <MoneyAmount amount={Math.abs(entryDelta.delta)} sign={sign} />
       {percentage != null && (
         <span className="ml-1 opacity-70">
           ({sign}
@@ -73,9 +71,10 @@ export function NetWorthEntriesSection({
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h2 className={`text-lg font-semibold ${colorClass}`}>{title}</h2>
-          <span className={`font-semibold ${colorClass}`}>
-            {formatMoney(total)} €
-          </span>
+          <MoneyAmount
+            amount={total}
+            className={`font-semibold ${colorClass}`}
+          />
         </div>
 
         <p className="text-text-tertiary py-6 text-center text-sm">
@@ -104,9 +103,10 @@ export function NetWorthEntriesSection({
       <div className="flex items-center justify-between">
         <h2 className={`text-lg font-semibold ${colorClass}`}>{title}</h2>
         <div className="flex items-center gap-3">
-          <span className={`font-semibold ${colorClass}`}>
-            {formatMoney(total)} €
-          </span>
+          <MoneyAmount
+            amount={total}
+            className={`font-semibold ${colorClass}`}
+          />
           <button
             onClick={() => setIsCollapsed((previous) => !previous)}
             className="text-text-tertiary hover:text-text-secondary flex h-6 w-6 cursor-pointer items-center justify-center rounded"
@@ -167,7 +167,7 @@ export function NetWorthEntriesSection({
                       </span>
 
                       <span className="text-text-primary text-right text-sm font-medium">
-                        {formatMoney(entry.amount)} €
+                        <MoneyAmount amount={entry.amount} />
                         {percentOfTotal != null && (
                           <span className="text-text-tertiary ml-1.5 font-normal">
                             ({percentOfTotal}%)

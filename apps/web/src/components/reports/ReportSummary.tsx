@@ -1,6 +1,5 @@
 import { Transaction } from '../../types/transaction';
-import { formatMoney } from '../../utils/formatMoney';
-import { Card } from '../ui';
+import { Card, MoneyAmount } from '../ui';
 
 interface ReportSummaryProps {
   transactions: Array<Transaction>;
@@ -24,7 +23,7 @@ export function ReportSummary({ transactions }: ReportSummaryProps) {
         <p className="text-text-secondary text-sm">Total Income</p>
 
         <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-          {formatMoney(totalIncome)} &euro;
+          <MoneyAmount amount={totalIncome} />
         </p>
       </Card>
 
@@ -32,7 +31,7 @@ export function ReportSummary({ transactions }: ReportSummaryProps) {
         <p className="text-text-secondary text-sm">Total Expenses</p>
 
         <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-          {formatMoney(totalExpenses)} &euro;
+          <MoneyAmount amount={totalExpenses} />
         </p>
       </Card>
 
@@ -42,8 +41,10 @@ export function ReportSummary({ transactions }: ReportSummaryProps) {
         <p
           className={`text-2xl font-bold ${isPositiveBalance ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
         >
-          {isPositiveBalance ? '+' : ''}
-          {formatMoney(netBalance)} &euro;
+          <MoneyAmount
+            amount={netBalance}
+            sign={isPositiveBalance ? '+' : ''}
+          />
         </p>
       </Card>
     </div>
