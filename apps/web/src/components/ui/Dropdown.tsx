@@ -72,7 +72,7 @@ export function Dropdown({
 
       {isOpen && (
         <div
-          className={`border-border bg-bg-surface absolute z-10 mt-1 w-52 rounded border py-1 shadow-lg ${align === 'left' ? 'left-0' : 'right-0'}`}
+          className={`border-border bg-bg-surface absolute top-full z-10 mt-1 w-52 rounded border py-1 shadow-lg ${align === 'left' ? 'left-0' : 'right-0'}`}
         >
           {items.map((item, index) => {
             if (item.type === 'custom') {
