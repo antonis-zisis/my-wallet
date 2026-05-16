@@ -100,7 +100,7 @@ export function ReportHeader({
         )}
 
         <Dropdown
-          className="flex"
+          className="relative flex"
           items={[
             ...(!isLocked
               ? [
