@@ -56,6 +56,14 @@ export function TransactionTable({
     })),
   ];
 
+  const netTotal = transactions.reduce(
+    (sum, transaction) =>
+      transaction.type === 'INCOME'
+        ? sum + transaction.amount
+        : sum - transaction.amount,
+    0
+  );
+
   if (
     transactions.length === 0 &&
     selectedTypeFilter === 'All' &&
@@ -85,9 +93,27 @@ export function TransactionTable({
         </p>
       ) : (
         <>
-          <div className="text-text-secondary mb-3 text-sm">
-            {transactions.length}{' '}
-            {transactions.length === 1 ? 'transaction' : 'transactions'}
+          <div className="text-text-secondary mb-3 flex justify-between text-sm">
+            <span>
+              {transactions.length}{' '}
+              {transactions.length === 1 ? 'transaction' : 'transactions'}
+            </span>
+
+            {(selectedTypeFilter !== 'All' ||
+              selectedCategoryFilter !== 'All') && (
+              <span
+                className={`font-medium ${
+                  netTotal >= 0
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-red-600 dark:text-red-400'
+                }`}
+              >
+                <MoneyAmount
+                  amount={Math.abs(netTotal)}
+                  sign={netTotal >= 0 ? '+' : '-'}
+                />
+              </span>
+            )}
           </div>
 
           <table className="w-full">
