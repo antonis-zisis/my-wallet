@@ -145,7 +145,10 @@ pnpm typecheck
 - **Transaction Management**: Add income and expense transactions with categories within a report
 - **Subscriptions**: Track recurring payments (Netflix, Spotify, etc.) with monthly/yearly billing cycles, next renewal date calculation, cost equivalents (yearly for monthly, monthly for yearly), cancel or delete subscriptions, and view total monthly cost
 - **Net Worth**: Track your financial position by creating snapshots of assets and liabilities, with automatic net worth calculation and paginated snapshot history
-- **Charts**: Income & expenses grouped bar chart on the Home dashboard (last 12 reports); expense breakdown pie chart on the Report page
+- **Home Dashboard**: Overview of recent reports, income vs. expenses, active subscriptions, and net worth trend
+- **Charts**: Income/expenses bar chart and net worth sparkline on Home; expense breakdown pie chart and budget breakdown chart on the Report page; net worth trend chart on the Net Worth page; category breakdown chart on the Net Worth Snapshot page
+- **Privacy Mode**: Toggle to hide all money amounts across the app, persisted across sessions
+- **Theme**: Dark and light mode toggle, persisted across sessions
 - **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
 
 ## Project Structure
