@@ -6,10 +6,33 @@
         "hooks": [
           {
             "type": "command",
+            "command": "file=$(cat | jq -r '.tool_input.file_path // empty' 2>/dev/null); echo \"$file\" | grep -qE '\\.(ts|tsx)$' && pnpm --prefix /home/antonis/source/my-wallet exec prettier --write \"$file\" 2>/dev/null || true"
+          },
+          {
+            "type": "command",
             "command": "file=$(cat | jq -r '.tool_input.file_path // empty' 2>/dev/null); echo \"$file\" | grep -qE '\\.(ts|tsx)$' && pnpm --prefix /home/antonis/source/my-wallet lint 2>&1 | tail -40 || true"
           }
         ]
       }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Edit(/apps/**)"
+    ],
+    "deny": [
+      "Bash(rm *)",
+      "Bash(rm -rf *)",
+      "Bash(rmdir *)",
+      "Read(**/.env)",
+      "Read(**/.env.gpg)"
     ]
   }
 }

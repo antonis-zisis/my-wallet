@@ -16,6 +16,7 @@ pnpm dev:server           # Server only (http://localhost:4000)
 pnpm build                # Build all apps
 pnpm test                 # Run all tests
 pnpm lint                 # Lint all apps
+pnpm typecheck            # Type-check all apps
 pnpm format               # Format with Prettier
 
 # Run tests for a single app
@@ -24,12 +25,19 @@ pnpm --filter my-wallet-server test
 
 # Run a single test file
 pnpm --filter my-wallet-web exec vitest run src/pages/Home.test.tsx
-pnpm --filter my-wallet-server exec vitest run src/index.test.ts
+pnpm --filter my-wallet-server exec vitest run src/graphql/reports/resolvers.test.ts
 
 # Prisma (run from apps/server)
-pnpm --filter my-wallet-server db:generate    # Generate Prisma client
-pnpm --filter my-wallet-server db:migrate     # Run migrations
-pnpm --filter my-wallet-server db:studio      # Open Prisma Studio
+pnpm --filter my-wallet-server db:generate         # Generate Prisma client
+pnpm --filter my-wallet-server db:migrate          # Run migrations (dev)
+pnpm --filter my-wallet-server db:migrate:deploy   # Run migrations (production)
+pnpm --filter my-wallet-server db:push             # Push schema without migration
+pnpm --filter my-wallet-server db:seed             # Seed the database
+pnpm --filter my-wallet-server db:studio           # Open Prisma Studio
+
+# Database bootstrapping (from repo root)
+pnpm db:bootstrap         # Bootstrap local database
+pnpm db:bootstrap:docker  # Bootstrap database via Docker
 
 # Environment files (GPG-encrypted in repo)
 pnpm run env:decrypt      # Decrypt .env files
@@ -42,12 +50,17 @@ pnpm run env:encrypt      # Encrypt before committing
 
 **Web** (React 19 + Vite 8 + Tailwind CSS 4):
 
-- Entry: `main.tsx` → `ThemeProvider` → `AuthProvider` → `ApolloProvider` → `UserProvider` → `RouterProvider`
+- Entry: `main.tsx` → `ThemeProvider` → `PrivacyProvider` → `ToastProvider` → `AuthProvider` → `ApolloProvider` → `UserProvider` → `RouterProvider`
 - Routing: React Router 7, `createBrowserRouter` in `router.tsx`. Root layout in `App.tsx` (NavBar + `<Outlet />`). Protected routes via `ProtectedRoute`
 - GraphQL: Apollo Client 4 in `lib/apollo.ts`. Queries/mutations per domain in `graphql/`. Uses relative `/graphql` URI — Vite proxies to server in dev
 - Auth: `contexts/AuthContext.tsx` (`useAuth`) backed by Supabase Auth. User record in `contexts/UserContext.tsx` (`useUser`), lazily created via upsert on first `me` query
-- UI primitives: `components/ui/` (Badge, Button, Card, Dropdown, Input, Modal, Select)
-- Charts: Recharts in `components/charts/` — `ExpenseBreakdownChart` (PieChart) and `IncomeExpensesChart` (BarChart)
+- Privacy: `contexts/PrivacyContext.tsx` (`usePrivacy`) — toggles visibility of money amounts, persisted to localStorage
+- Toasts: `contexts/ToastContext.tsx` (`useToast`) — global toast notification system (`showSuccess`, `showError`, `showInfo`)
+- UI primitives: `components/ui/` (Badge, Button, Card, Divider, Dropdown, Input, Modal, MoneyAmount, PageLayout, Pagination, Select, Skeleton, Spinner, Toast, Tooltip)
+- Feature components: `components/home/`, `components/netWorth/`, `components/reports/`, `components/subscriptions/` — domain-specific composed components
+- Charts: Recharts in `components/charts/` — `BudgetBreakdownChart`, `ExpenseBreakdownChart`, `IncomeExpensesChart`, `NetWorthCategoryBreakdownChart`, `NetWorthSparkline`, `NetWorthTrendChart`
+- Types: `types/` — shared TypeScript interfaces per domain (`report.ts`, `subscription.ts`, `netWorth.ts`, `transaction.ts`)
+- Utils: `utils/` — pure helpers: `formatMoney`, `formatDate`, `formatRelativeTime`, `abbreviateReportTitle`, `getInitials`, `getNextRenewalDate`, `getDaysUntil`
 
 **Server** (Express 5 + Apollo Server 5):
 
@@ -72,6 +85,9 @@ Each domain lives in mirrored directories on both sides:
 | **subscriptions** | `apps/server/src/graphql/subscriptions/` | `graphql/subscriptions.ts` | `useSubscriptionsData`                        | `Subscriptions`                    |
 | **netWorth**      | `apps/server/src/graphql/netWorth/`      | `graphql/netWorth.ts`      | `useNetWorthData` / `useNetWorthSnapshotData` | `NetWorth`, `NetWorthSnapshotPage` |
 | **user**          | `apps/server/src/graphql/user/`          | `graphql/user.ts`          | `useProfileData`                              | `Profile`                          |
+
+`Home` page (`hooks/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, and subscriptions — it has no dedicated server domain.  
+`NotFound` is a standalone 404 page with no data dependencies.
 
 **Server domain structure** (each domain has three files):
 
