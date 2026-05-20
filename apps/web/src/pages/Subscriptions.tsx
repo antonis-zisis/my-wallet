@@ -6,11 +6,18 @@ import { EditSubscriptionModal } from '../components/subscriptions/EditSubscript
 import { ResumeSubscriptionModal } from '../components/subscriptions/ResumeSubscriptionModal';
 import { SubscriptionCostSummary } from '../components/subscriptions/SubscriptionCostSummary';
 import { SubscriptionList } from '../components/subscriptions/SubscriptionList';
-import { Button, PageLayout, Pagination } from '../components/ui';
+import { Button, PageLayout, Pagination, Select } from '../components/ui';
 import { PAGE_SIZE, useSubscriptionsData } from '../hooks/useSubscriptionsData';
+import { SubscriptionSortField } from '../types/subscription';
 import { getDaysUntil } from '../utils/getDaysUntil';
 
 const INACTIVE_SECTION_ID = 'inactive-subscriptions-section';
+
+const SORT_OPTIONS: Array<{ value: SubscriptionSortField; label: string }> = [
+  { value: 'NAME', label: 'Name (A–Z)' },
+  { value: 'MONTHLY_COST', label: 'Cost (High–Low)' },
+  { value: 'NEXT_RENEWAL', label: 'Next renewal' },
+];
 
 function buildSubtitle(
   activeTotalCount: number,
@@ -47,6 +54,7 @@ export function Subscriptions() {
     activeItems,
     activeLoading,
     activePage,
+    activeSortBy,
     activeTotalCount,
     activeTotalPages,
     allLoadedNames,
@@ -63,6 +71,7 @@ export function Subscriptions() {
     mostExpensive,
     nextRenewal,
     onActivePaginate,
+    onActiveSortChange,
     onCancelConfirm,
     onCloseCreate,
     onCreate,
@@ -113,6 +122,19 @@ export function Subscriptions() {
             totalMonthlyCost={totalMonthlyCost}
             totalYearlyCost={totalYearlyCost}
           />
+        )}
+
+        {!activeError && (
+          <div className="mb-3 flex items-center justify-end">
+            <Select
+              className="w-40 py-1 text-sm"
+              options={SORT_OPTIONS}
+              value={activeSortBy}
+              onChange={(event) =>
+                onActiveSortChange(event.target.value as SubscriptionSortField)
+              }
+            />
+          </div>
         )}
 
         <SubscriptionList
