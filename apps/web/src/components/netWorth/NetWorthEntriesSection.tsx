@@ -139,55 +139,63 @@ export function NetWorthEntriesSection({
           <div
             className={`border-border overflow-hidden rounded border ${categoryCount >= 1 ? '' : 'mt-4'}`}
           >
-            {Object.entries(byCategory).map(([category, categoryEntries]) => (
-              <div key={category}>
-                <div className="bg-bg-app text-text-secondary px-4 py-2 text-xs font-medium tracking-wider uppercase dark:bg-gray-700/50">
-                  {category}
-                </div>
+            {Object.entries(byCategory)
+              .sort(([categoryA], [categoryB]) =>
+                categoryA.localeCompare(categoryB)
+              )
+              .map(([category, categoryEntries]) => (
+                <div key={category}>
+                  <div className="bg-bg-app text-text-secondary px-4 py-2 text-xs font-medium tracking-wider uppercase dark:bg-gray-700/50">
+                    {category}
+                  </div>
 
-                {categoryEntries.map((entry, index) => {
-                  const deltaKey = `${entry.category}:${entry.label}`;
-                  const entryDelta = entryDeltas?.[deltaKey];
-                  const percentOfTotal =
-                    total > 0
-                      ? ((entry.amount / total) * 100).toFixed(1)
-                      : null;
+                  {[...categoryEntries]
+                    .sort((entryA, entryB) =>
+                      entryA.label.localeCompare(entryB.label)
+                    )
+                    .map((entry, index) => {
+                      const deltaKey = `${entry.category}:${entry.label}`;
+                      const entryDelta = entryDeltas?.[deltaKey];
+                      const percentOfTotal =
+                        total > 0
+                          ? ((entry.amount / total) * 100).toFixed(1)
+                          : null;
 
-                  return (
-                    <div
-                      key={entry.id}
-                      className={`grid grid-cols-[1fr_152px_136px] items-center px-4 py-2 ${
-                        index < categoryEntries.length - 1
-                          ? 'border-border border-b'
-                          : ''
-                      }`}
-                    >
-                      <span className="text-text-primary min-w-0 truncate text-sm">
-                        {entry.label}
-                      </span>
-
-                      <span className="text-text-primary text-right text-sm font-medium">
-                        <MoneyAmount amount={entry.amount} />
-                        {percentOfTotal != null && (
-                          <span className="text-text-tertiary ml-1.5 font-normal">
-                            ({percentOfTotal}%)
+                      return (
+                        <div
+                          key={entry.id}
+                          className={`grid grid-cols-[1fr_152px_136px] items-center px-4 py-2 ${
+                            index < categoryEntries.length - 1
+                              ? 'border-border border-b'
+                              : ''
+                          }`}
+                        >
+                          <span className="text-text-primary min-w-0 truncate text-sm">
+                            {entry.label}
                           </span>
-                        )}
-                      </span>
 
-                      <div className="flex justify-end">
-                        {entryDelta && (
-                          <EntryDeltaLabel
-                            currentAmount={entry.amount}
-                            entryDelta={entryDelta}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+                          <span className="text-text-primary text-right text-sm font-medium">
+                            <MoneyAmount amount={entry.amount} />
+                            {percentOfTotal != null && (
+                              <span className="text-text-tertiary ml-1.5 font-normal">
+                                ({percentOfTotal}%)
+                              </span>
+                            )}
+                          </span>
+
+                          <div className="flex justify-end">
+                            {entryDelta && (
+                              <EntryDeltaLabel
+                                currentAmount={entry.amount}
+                                entryDelta={entryDelta}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              ))}
           </div>
         </div>
       </div>
