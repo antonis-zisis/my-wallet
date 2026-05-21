@@ -69,6 +69,7 @@ model NetWorthEntry {
   label      String
   amount     Float
   category   String
+  notes      String?
   snapshotId String           @map("snapshot_id")
   snapshot   NetWorthSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
   createdAt  DateTime         @default(now()) @map("created_at")

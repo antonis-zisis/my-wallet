@@ -172,6 +172,11 @@ export function NetWorthEntriesSection({
                         >
                           <span className="text-text-primary min-w-0 truncate text-sm">
                             {entry.label}
+                            {entry.notes && (
+                              <span className="text-text-tertiary ml-1.5">
+                                — {entry.notes}
+                              </span>
+                            )}
                           </span>
 
                           <span className="text-text-primary text-right text-sm font-medium">
