@@ -16,7 +16,7 @@ const INACTIVE_SECTION_ID = 'inactive-subscriptions-section';
 const SORT_OPTIONS: Array<{ value: SubscriptionSortField; label: string }> = [
   { value: 'NAME', label: 'Name (A–Z)' },
   { value: 'MONTHLY_COST', label: 'Cost (High–Low)' },
-  { value: 'NEXT_RENEWAL', label: 'Next renewal' },
+  { value: 'NEXT_RENEWAL', label: 'Next Renewal' },
 ];
 
 function buildSubtitle(
