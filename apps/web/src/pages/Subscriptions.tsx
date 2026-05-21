@@ -125,7 +125,7 @@ export function Subscriptions() {
         )}
 
         {!activeError && (
-          <div className="mb-3 flex items-center justify-end">
+          <div className="mb-2 flex items-center justify-end">
             <Select
               className="w-40 py-1 text-sm"
               options={SORT_OPTIONS}
