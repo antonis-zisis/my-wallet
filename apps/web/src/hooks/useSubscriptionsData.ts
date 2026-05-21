@@ -17,6 +17,7 @@ import {
   SubscriptionSortField,
 } from '../types/subscription';
 import { getNextRenewalDate } from '../utils/getNextRenewalDate';
+import { useLocalStorage } from './useLocalStorage';
 
 export const PAGE_SIZE = 10;
 
@@ -30,7 +31,10 @@ export function useSubscriptionsData() {
   const { showError, showSuccess } = useToast();
   const [activePage, setActivePage] = useState(1);
   const [activeSortBy, setActiveSortBy] =
-    useState<SubscriptionSortField>('NAME');
+    useLocalStorage<SubscriptionSortField>(
+      'subscriptions.activeSortBy',
+      'NAME'
+    );
   const [inactivePage, setInactivePage] = useState(1);
   const [showInactive, setShowInactive] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
