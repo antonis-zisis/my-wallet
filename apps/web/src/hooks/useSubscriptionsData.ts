@@ -14,14 +14,27 @@ import {
   BillingCycle,
   Subscription,
   SubscriptionsData,
+  SubscriptionSortField,
 } from '../types/subscription';
 import { getNextRenewalDate } from '../utils/getNextRenewalDate';
+import { useLocalStorage } from './useLocalStorage';
 
 export const PAGE_SIZE = 10;
+
+const SORT_ORDER_BY_FIELD: Record<SubscriptionSortField, 'ASC' | 'DESC'> = {
+  MONTHLY_COST: 'DESC',
+  NAME: 'ASC',
+  NEXT_RENEWAL: 'ASC',
+};
 
 export function useSubscriptionsData() {
   const { showError, showSuccess } = useToast();
   const [activePage, setActivePage] = useState(1);
+  const [activeSortBy, setActiveSortBy] =
+    useLocalStorage<SubscriptionSortField>(
+      'subscriptions.activeSortBy',
+      'NAME'
+    );
   const [inactivePage, setInactivePage] = useState(1);
   const [showInactive, setShowInactive] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -34,41 +47,55 @@ export function useSubscriptionsData() {
   const [subscriptionToDelete, setSubscriptionToDelete] =
     useState<Subscription | null>(null);
 
+  const activeSortOrder = SORT_ORDER_BY_FIELD[activeSortBy];
+
+  const activeVariables = {
+    active: true,
+    page: activePage,
+    pageSize: PAGE_SIZE,
+    sortBy: activeSortBy,
+    sortOrder: activeSortOrder,
+  };
+
+  const inactiveVariables = {
+    active: false,
+    page: inactivePage,
+    pageSize: PAGE_SIZE,
+  };
+
   const {
     data: activeData,
     error: activeError,
-    loading: activeLoading,
+    loading: activeFetching,
+    previousData: activePreviousData,
   } = useQuery<SubscriptionsData>(GET_SUBSCRIPTIONS, {
-    variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
+    variables: activeVariables,
   });
+
+  const resolvedActiveData = activeData ?? activePreviousData;
+  const activeLoading = activeFetching && !resolvedActiveData;
 
   const {
     data: inactiveData,
     error: inactiveError,
     loading: inactiveLoading,
   } = useQuery<SubscriptionsData>(GET_SUBSCRIPTIONS, {
-    variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
+    variables: inactiveVariables,
   });
 
   const [createSubscription] = useMutation(CREATE_SUBSCRIPTION, {
     refetchQueries: [
       {
         query: GET_SUBSCRIPTIONS,
-        variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+        variables: { ...activeVariables, page: 1 },
       },
     ],
   });
 
   const [updateSubscription] = useMutation(UPDATE_SUBSCRIPTION, {
     refetchQueries: [
-      {
-        query: GET_SUBSCRIPTIONS,
-        variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
-      },
-      {
-        query: GET_SUBSCRIPTIONS,
-        variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
-      },
+      { query: GET_SUBSCRIPTIONS, variables: activeVariables },
+      { query: GET_SUBSCRIPTIONS, variables: inactiveVariables },
     ],
   });
 
@@ -76,14 +103,8 @@ export function useSubscriptionsData() {
     CANCEL_SUBSCRIPTION,
     {
       refetchQueries: [
-        {
-          query: GET_SUBSCRIPTIONS,
-          variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
-        },
-        {
-          query: GET_SUBSCRIPTIONS,
-          variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
-        },
+        { query: GET_SUBSCRIPTIONS, variables: activeVariables },
+        { query: GET_SUBSCRIPTIONS, variables: inactiveVariables },
       ],
     }
   );
@@ -92,14 +113,8 @@ export function useSubscriptionsData() {
     RESUME_SUBSCRIPTION,
     {
       refetchQueries: [
-        {
-          query: GET_SUBSCRIPTIONS,
-          variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
-        },
-        {
-          query: GET_SUBSCRIPTIONS,
-          variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
-        },
+        { query: GET_SUBSCRIPTIONS, variables: activeVariables },
+        { query: GET_SUBSCRIPTIONS, variables: inactiveVariables },
       ],
     }
   );
@@ -108,20 +123,14 @@ export function useSubscriptionsData() {
     DELETE_SUBSCRIPTION,
     {
       refetchQueries: [
-        {
-          query: GET_SUBSCRIPTIONS,
-          variables: { active: true, page: activePage, pageSize: PAGE_SIZE },
-        },
-        {
-          query: GET_SUBSCRIPTIONS,
-          variables: { active: false, page: inactivePage, pageSize: PAGE_SIZE },
-        },
+        { query: GET_SUBSCRIPTIONS, variables: activeVariables },
+        { query: GET_SUBSCRIPTIONS, variables: inactiveVariables },
       ],
     }
   );
 
-  const activeItems = activeData?.subscriptions.items ?? [];
-  const activeTotalCount = activeData?.subscriptions.totalCount ?? 0;
+  const activeItems = resolvedActiveData?.subscriptions.items ?? [];
+  const activeTotalCount = resolvedActiveData?.subscriptions.totalCount ?? 0;
   const activeTotalPages = Math.ceil(activeTotalCount / PAGE_SIZE);
 
   const inactiveItems = inactiveData?.subscriptions.items ?? [];
@@ -332,7 +341,12 @@ export function useSubscriptionsData() {
     mostExpensive,
     nextRenewal,
     renewingThisMonthTotal,
+    activeSortBy,
     onActivePaginate: setActivePage,
+    onActiveSortChange: (sortField: SubscriptionSortField) => {
+      setActiveSortBy(sortField);
+      setActivePage(1);
+    },
     onCancelConfirm: handleCancelConfirm,
     onCloseCreate: () => setIsCreateOpen(false),
     onCreate: handleCreate,

@@ -22,6 +22,17 @@ export const subscriptionTypeDefs = `#graphql
     totalCount: Int!
   }
 
+  enum SubscriptionSortField {
+    NAME
+    MONTHLY_COST
+    NEXT_RENEWAL
+  }
+
+  enum SortOrder {
+    ASC
+    DESC
+  }
+
   input CreateSubscriptionInput {
     name: String!
     amount: Float!
@@ -48,7 +59,7 @@ export const subscriptionTypeDefs = `#graphql
   }
 
   extend type Query {
-    subscriptions(page: Int, pageSize: Int, active: Boolean): SubscriptionsResult!
+    subscriptions(page: Int, pageSize: Int, active: Boolean, sortBy: SubscriptionSortField, sortOrder: SortOrder): SubscriptionsResult!
   }
 
   input ResumeSubscriptionInput {

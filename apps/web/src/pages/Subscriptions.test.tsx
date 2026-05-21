@@ -80,7 +80,13 @@ const mockInactiveSubscription = {
 const mockActiveQuery: MockLink.MockedResponse = {
   request: {
     query: GET_SUBSCRIPTIONS,
-    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+    variables: {
+      active: true,
+      page: 1,
+      pageSize: PAGE_SIZE,
+      sortBy: 'NAME',
+      sortOrder: 'ASC',
+    },
   },
   result: {
     data: {
@@ -110,7 +116,13 @@ const mockInactiveQuery: MockLink.MockedResponse = {
 const mockActiveQueryEmpty: MockLink.MockedResponse = {
   request: {
     query: GET_SUBSCRIPTIONS,
-    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+    variables: {
+      active: true,
+      page: 1,
+      pageSize: PAGE_SIZE,
+      sortBy: 'NAME',
+      sortOrder: 'ASC',
+    },
   },
   result: {
     data: {
@@ -134,7 +146,13 @@ const mockInactiveQueryEmpty: MockLink.MockedResponse = {
 const mockActiveQueryError: MockLink.MockedResponse = {
   request: {
     query: GET_SUBSCRIPTIONS,
-    variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+    variables: {
+      active: true,
+      page: 1,
+      pageSize: PAGE_SIZE,
+      sortBy: 'NAME',
+      sortOrder: 'ASC',
+    },
   },
   result: {
     errors: [new GraphQLError('Failed to load subscriptions')],
@@ -311,7 +329,13 @@ describe('Subscriptions', () => {
       const refetchMock: MockLink.MockedResponse = {
         request: {
           query: GET_SUBSCRIPTIONS,
-          variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+          variables: {
+            active: true,
+            page: 1,
+            pageSize: PAGE_SIZE,
+            sortBy: 'NAME',
+            sortOrder: 'ASC',
+          },
         },
         result: {
           data: {
@@ -401,7 +425,13 @@ describe('Subscriptions', () => {
       const refetchActive: MockLink.MockedResponse = {
         request: {
           query: GET_SUBSCRIPTIONS,
-          variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+          variables: {
+            active: true,
+            page: 1,
+            pageSize: PAGE_SIZE,
+            sortBy: 'NAME',
+            sortOrder: 'ASC',
+          },
         },
         result: {
           data: {
@@ -475,7 +505,13 @@ describe('Subscriptions', () => {
       const refetchActive: MockLink.MockedResponse = {
         request: {
           query: GET_SUBSCRIPTIONS,
-          variables: { active: true, page: 1, pageSize: PAGE_SIZE },
+          variables: {
+            active: true,
+            page: 1,
+            pageSize: PAGE_SIZE,
+            sortBy: 'NAME',
+            sortOrder: 'ASC',
+          },
         },
         result: {
           data: {

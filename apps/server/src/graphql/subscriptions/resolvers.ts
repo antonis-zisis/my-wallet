@@ -35,6 +35,24 @@ type SubscriptionParent = {
   endDate: Date | null;
 };
 
+function computeMonthlyCost(subscription: {
+  amount: number;
+  billingCycle: string;
+}): number {
+  switch (subscription.billingCycle) {
+    case 'WEEKLY':
+      return subscription.amount * (52 / 12);
+    case 'QUARTERLY':
+      return subscription.amount / 3;
+    case 'BI_ANNUAL':
+      return subscription.amount / 6;
+    case 'YEARLY':
+      return subscription.amount / 12;
+    default:
+      return subscription.amount;
+  }
+}
+
 function getNextRenewalDate(startDate: Date, billingCycle: string): Date {
   const today = new Date();
 
@@ -65,20 +83,7 @@ function getNextRenewalDate(startDate: Date, billingCycle: string): Date {
 
 export const subscriptionResolvers = {
   Subscription: {
-    monthlyCost: (parent: SubscriptionParent) => {
-      switch (parent.billingCycle) {
-        case 'WEEKLY':
-          return parent.amount * (52 / 12);
-        case 'QUARTERLY':
-          return parent.amount / 3;
-        case 'BI_ANNUAL':
-          return parent.amount / 6;
-        case 'YEARLY':
-          return parent.amount / 12;
-        default:
-          return parent.amount;
-      }
-    },
+    monthlyCost: (parent: SubscriptionParent) => computeMonthlyCost(parent),
     isActive: (parent: SubscriptionParent) => {
       if (parent.cancelledAt) {
         return parent.endDate ? parent.endDate > new Date() : false;
@@ -94,11 +99,20 @@ export const subscriptionResolvers = {
         active,
         page = 1,
         pageSize = 10,
-      }: { active?: boolean; page?: number; pageSize?: number },
+        sortBy = 'NAME',
+        sortOrder = 'ASC',
+      }: {
+        active?: boolean;
+        page?: number;
+        pageSize?: number;
+        sortBy?: 'NAME' | 'MONTHLY_COST' | 'NEXT_RENEWAL';
+        sortOrder?: 'ASC' | 'DESC';
+      },
       { userId }: { userId: string }
     ) => {
       const now = new Date();
       const skip = (page - 1) * pageSize;
+      const order = sortOrder === 'ASC' ? 'asc' : 'desc';
 
       const buildWhere = () => {
         if (active === true) {
@@ -131,13 +145,27 @@ export const subscriptionResolvers = {
 
       const where = buildWhere();
 
+      if (sortBy === 'MONTHLY_COST') {
+        const [allItems, totalCount] = await Promise.all([
+          prisma.subscription.findMany({ where }),
+          prisma.subscription.count({ where }),
+        ]);
+
+        allItems.sort((left, right) => {
+          const diff = computeMonthlyCost(left) - computeMonthlyCost(right);
+          return sortOrder === 'ASC' ? diff : -diff;
+        });
+
+        return { items: allItems.slice(skip, skip + pageSize), totalCount };
+      }
+
+      const orderBy =
+        sortBy === 'NEXT_RENEWAL'
+          ? { startDate: order as 'asc' | 'desc' }
+          : { name: order as 'asc' | 'desc' };
+
       const [items, totalCount] = await Promise.all([
-        prisma.subscription.findMany({
-          where,
-          orderBy: { name: 'asc' },
-          skip,
-          take: pageSize,
-        }),
+        prisma.subscription.findMany({ where, orderBy, skip, take: pageSize }),
         prisma.subscription.count({ where }),
       ]);
 

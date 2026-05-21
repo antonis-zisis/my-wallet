@@ -1,3 +1,5 @@
+export type SubscriptionSortField = 'NAME' | 'MONTHLY_COST' | 'NEXT_RENEWAL';
+
 export type BillingCycle =
   | 'WEEKLY'
   | 'MONTHLY'
