@@ -67,6 +67,7 @@ export function NetWorthSnapshotPage() {
     category: entry.category,
     label: entry.label,
     amount: entry.amount,
+    notes: entry.notes ?? undefined,
   }));
 
   return (

@@ -14,6 +14,7 @@ interface EntryDraft {
   category: string;
   label: string;
   amount: string;
+  notes: string;
 }
 
 export interface EntryInput {
@@ -21,6 +22,7 @@ export interface EntryInput {
   category: string;
   label: string;
   amount: number;
+  notes?: string;
 }
 
 export interface SnapshotFormValues {
@@ -66,6 +68,7 @@ function makeEntry(type: NetWorthEntryType = 'ASSET'): EntryDraft {
     category: categories[0],
     label: '',
     amount: '',
+    notes: '',
   };
 }
 
@@ -76,6 +79,7 @@ function toDraft(entry: EntryInput): EntryDraft {
     category: entry.category,
     label: entry.label,
     amount: String(entry.amount),
+    notes: entry.notes ?? '',
   };
 }
 
@@ -226,6 +230,7 @@ export function NetWorthSnapshotModal({
           label: entry.label.trim(),
           amount: parseFloat(entry.amount),
           category: entry.category,
+          notes: entry.notes.trim() || undefined,
         })),
       });
     } catch {
@@ -243,7 +248,7 @@ export function NetWorthSnapshotModal({
     return (
       <div
         key={entry.key}
-        className="border-border grid grid-cols-[144px_1fr_112px_28px] items-center gap-2 border-b py-1 last:border-0 dark:border-gray-700/50"
+        className="border-border grid grid-cols-[144px_1fr_160px_112px_28px] items-center gap-2 border-b py-1 last:border-0 dark:border-gray-700/50"
       >
         <Select
           id={`category-${entry.key}`}
@@ -261,6 +266,16 @@ export function NetWorthSnapshotModal({
           value={entry.label}
           onChange={(event) =>
             updateEntry(entry.key, 'label', event.target.value)
+          }
+          className="py-1! text-sm"
+        />
+
+        <Input
+          id={`notes-${entry.key}`}
+          placeholder="e.g. 52 shares"
+          value={entry.notes}
+          onChange={(event) =>
+            updateEntry(entry.key, 'notes', event.target.value)
           }
           className="py-1! text-sm"
         />

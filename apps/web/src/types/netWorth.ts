@@ -6,6 +6,7 @@ export interface NetWorthEntry {
   label: string;
   amount: number;
   category: string;
+  notes: string | null;
   createdAt: string;
   updatedAt: string;
 }

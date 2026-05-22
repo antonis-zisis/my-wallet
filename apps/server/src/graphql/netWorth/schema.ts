@@ -5,6 +5,7 @@ export const netWorthTypeDefs = `#graphql
     label: String!
     amount: Float!
     category: String!
+    notes: String
     createdAt: String!
     updatedAt: String!
   }
@@ -32,6 +33,7 @@ export const netWorthTypeDefs = `#graphql
     label: String!
     amount: Float!
     category: String!
+    notes: String
   }
 
   input CreateNetWorthSnapshotInput {

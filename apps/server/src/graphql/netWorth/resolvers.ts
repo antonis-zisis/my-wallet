@@ -8,6 +8,7 @@ interface NetWorthEntryInput {
   label: string;
   amount: number;
   category: string;
+  notes?: string;
 }
 
 export interface CreateNetWorthSnapshotInput {
@@ -147,6 +148,7 @@ export const netWorthResolvers = {
               label: entry.label,
               amount: entry.amount,
               category: entry.category,
+              notes: entry.notes ?? null,
             })),
           },
         },
@@ -180,6 +182,7 @@ export const netWorthResolvers = {
               label: entry.label,
               amount: entry.amount,
               category: entry.category,
+              notes: entry.notes ?? null,
             })),
           },
         },

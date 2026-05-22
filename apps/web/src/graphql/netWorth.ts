@@ -59,6 +59,7 @@ export const GET_NET_WORTH_SNAPSHOT = gql`
         label
         amount
         category
+        notes
       }
       previousSnapshot {
         totalAssets
@@ -69,6 +70,7 @@ export const GET_NET_WORTH_SNAPSHOT = gql`
           label
           amount
           category
+          notes
         }
       }
       createdAt
@@ -109,6 +111,7 @@ export const UPDATE_NET_WORTH_SNAPSHOT = gql`
         label
         amount
         category
+        notes
       }
       createdAt
       updatedAt
