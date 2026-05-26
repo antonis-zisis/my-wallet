@@ -1,5 +1,20 @@
 # Review the current branch against main, focusing on this project's specific conventions and patterns
 
+## Setup
+
+Get the diff and any available context:
+
+```bash
+git diff main...HEAD
+git log main..HEAD --oneline
+```
+
+If a PR is open, also fetch its description for intent:
+
+```bash
+gh pr view --json title,body,number
+```
+
 ## What to check
 
 ### Naming conventions
@@ -14,6 +29,12 @@
 - Imports must be sorted (enforced by `eslint-plugin-simple-import-sort`)
 - No `console.log`, `console.warn`, `console.error` left in
 - No commented-out code blocks
+
+### TypeScript quality
+
+- No `any` types — use proper types or `unknown` with narrowing
+- No type assertions (`as SomeType`) that paper over missing types
+- All exported functions and hooks have explicit return type annotations
 
 ### GraphQL / Server patterns
 
@@ -34,8 +55,14 @@
 
 - New pages use `PageLayout` as the root wrapper
 - Data fetching is in a `use<Domain>Data` hook, not inline in the page component
+- Hooks return a flat object; handlers are named `on<Action>` (e.g. `onCreateReport`, `onOpenModal`)
 - Modals accept `isOpen`, `onClose`, and an `onSubmit`/`on<Action>` callback — they don't own their open state
 - Toast feedback via `useToast()` on mutation success and failure
+- Money amounts are rendered via the `MoneyAmount` component — never formatted inline (required for privacy mode)
+
+### GraphQL operations (web)
+
+- Field selections are alphabetically sorted within each selection set
 
 ### Prisma / DB
 

@@ -2,6 +2,12 @@
 
 Follow the exact patterns already established in the codebase. Work through each layer in order:
 
+## 0. Create a branch
+
+```bash
+git checkout -b feat/<short-description>
+```
+
 ## 1. Prisma schema (if the feature requires a DB change)
 
 Edit `apps/server/prisma/schema.prisma`. Then run:
@@ -10,6 +16,12 @@ Edit `apps/server/prisma/schema.prisma`. Then run:
 pnpm --filter my-wallet-server db:migrate
 pnpm --filter my-wallet-server db:generate
 ```
+
+Name the migration in snake_case describing the change:
+
+- `add_<field>_to_<model>` — new field
+- `add_<model>` — new model
+- `remove_<field>_from_<model>` — removed field
 
 ## 2. Server — GraphQL schema
 
@@ -85,10 +97,43 @@ Write tests for:
 - Key components (modals, lists) using `MockedProvider` from `../../test/apollo-test-utils`
 - The page itself for loading / error / populated states
 
+## 10. Run tests
+
+```bash
+pnpm --filter my-wallet-server test   # for server changes
+pnpm --filter my-wallet-web test      # for web changes
+pnpm test                             # for both
+```
+
+## 11. Typecheck
+
+```bash
+pnpm typecheck
+```
+
+## 12. Lint
+
+```bash
+pnpm lint
+```
+
+## 13. UI verification (web changes only)
+
+Start the dev server and exercise the feature in a browser:
+
+```bash
+pnpm dev:web
+```
+
+Test the golden path and edge cases. Check for regressions in nearby features.
+
+## 14. Summarise
+
+Describe what was added and why. When the user asks to commit, use Conventional Commits: `feat(<scope>): description`. Do not commit or open a PR unless explicitly asked.
+
 ## Conventions to enforce throughout
 
 - **No abbreviations**: `transaction` not `tx`, `subscription` not `sub`, `event` not `e`, `error` not `err`
 - **Sorted destructure keys**: `{ alpha, beta, gamma }` — alphabetical order always
 - **Sorted imports**: `eslint-plugin-simple-import-sort` enforces this — don't fight it
 - **Identifiers ≥ 2 characters** except `_` for ignored params (ESLint `id-length` rule)
-- **Conventional Commits** for the final commit: `feat(<scope>): description`
