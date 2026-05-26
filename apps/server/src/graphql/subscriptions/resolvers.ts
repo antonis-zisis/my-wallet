@@ -2,6 +2,22 @@ import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
 
+function validateUrl(url: string): void {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new GraphQLError('Invalid URL format', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new GraphQLError('URL must use http or https scheme', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  }
+}
+
 export interface CreateSubscriptionInput {
   name: string;
   amount: number;
@@ -178,6 +194,10 @@ export const subscriptionResolvers = {
       { input }: { input: CreateSubscriptionInput },
       { userId }: { userId: string }
     ) => {
+      if (input.url) {
+        validateUrl(input.url);
+      }
+
       return prisma.subscription.create({
         data: {
           name: input.name,
@@ -206,6 +226,10 @@ export const subscriptionResolvers = {
         throw new GraphQLError('Subscription not found', {
           extensions: { code: 'NOT_FOUND' },
         });
+      }
+
+      if (input.url) {
+        validateUrl(input.url);
       }
 
       return prisma.subscription.update({
