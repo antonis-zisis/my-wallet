@@ -4,18 +4,10 @@ import { formatDate } from '../../utils/formatDate';
 import { formatMoneyOrMask } from '../../utils/formatMoney';
 import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
+import { isSafeUrl } from '../../utils/isSafeUrl';
 import { CreditCardIcon } from '../icons';
 import { Badge, Card, Dropdown, MoneyAmount, Skeleton } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
-
-function isSafeUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
 interface SubscriptionListProps {
   subscriptions: Array<Subscription>;
   loading: boolean;
