@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
+import { validateMaxLength } from '../../lib/validate';
 
 export interface UpdateUserInput {
   fullName?: string;
@@ -40,9 +41,14 @@ export const userResolvers = {
         });
       }
 
+      const fullName = input.fullName?.trim();
+      if (fullName) {
+        validateMaxLength(fullName, 'Full name', 255);
+      }
+
       return prisma.user.update({
         where: { supabaseId: context.userId },
-        data: { fullName: input.fullName },
+        data: { fullName: fullName ?? null },
       });
     },
   },

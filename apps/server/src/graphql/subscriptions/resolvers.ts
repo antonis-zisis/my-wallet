@@ -1,22 +1,15 @@
 import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
-
-function validateUrl(url: string): void {
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    throw new GraphQLError('Invalid URL format', {
-      extensions: { code: 'BAD_USER_INPUT' },
-    });
-  }
-  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-    throw new GraphQLError('URL must use http or https scheme', {
-      extensions: { code: 'BAD_USER_INPUT' },
-    });
-  }
-}
+import {
+  BILLING_CYCLES,
+  clampPage,
+  validateAmount,
+  validateDate,
+  validateEnum,
+  validateMaxLength,
+  validateUrl,
+} from '../../lib/validate';
 
 export interface CreateSubscriptionInput {
   name: string;
@@ -127,7 +120,8 @@ export const subscriptionResolvers = {
       { userId }: { userId: string }
     ) => {
       const now = new Date();
-      const skip = (page - 1) * pageSize;
+      const { clampedPage, clampedPageSize } = clampPage(page, pageSize);
+      const skip = (clampedPage - 1) * clampedPageSize;
       const order = sortOrder === 'ASC' ? 'asc' : 'desc';
 
       const buildWhere = () => {
@@ -172,7 +166,10 @@ export const subscriptionResolvers = {
           return sortOrder === 'ASC' ? diff : -diff;
         });
 
-        return { items: allItems.slice(skip, skip + pageSize), totalCount };
+        return {
+          items: allItems.slice(skip, skip + clampedPageSize),
+          totalCount,
+        };
       }
 
       const orderBy =
@@ -181,7 +178,12 @@ export const subscriptionResolvers = {
           : { name: order as 'asc' | 'desc' };
 
       const [items, totalCount] = await Promise.all([
-        prisma.subscription.findMany({ where, orderBy, skip, take: pageSize }),
+        prisma.subscription.findMany({
+          where,
+          orderBy,
+          skip,
+          take: clampedPageSize,
+        }),
         prisma.subscription.count({ where }),
       ]);
 
@@ -194,6 +196,20 @@ export const subscriptionResolvers = {
       { input }: { input: CreateSubscriptionInput },
       { userId }: { userId: string }
     ) => {
+      validateMaxLength(input.name, 'Name', 255);
+      validateAmount(input.amount);
+      validateEnum(input.billingCycle, BILLING_CYCLES, 'Billing cycle');
+      const startDate = validateDate(input.startDate);
+      const endDate = input.endDate ? validateDate(input.endDate) : null;
+      const trialEndsAt = input.trialEndsAt
+        ? validateDate(input.trialEndsAt)
+        : null;
+      if (input.notes) {
+        validateMaxLength(input.notes, 'Notes', 1000);
+      }
+      if (input.paymentMethod) {
+        validateMaxLength(input.paymentMethod, 'Payment method', 255);
+      }
       if (input.url) {
         validateUrl(input.url);
       }
@@ -203,9 +219,9 @@ export const subscriptionResolvers = {
           name: input.name,
           amount: input.amount,
           billingCycle: input.billingCycle,
-          startDate: new Date(input.startDate),
-          endDate: input.endDate ? new Date(input.endDate) : null,
-          trialEndsAt: input.trialEndsAt ? new Date(input.trialEndsAt) : null,
+          startDate,
+          endDate,
+          trialEndsAt,
           notes: input.notes ?? null,
           paymentMethod: input.paymentMethod ?? null,
           url: input.url ?? null,
@@ -228,6 +244,20 @@ export const subscriptionResolvers = {
         });
       }
 
+      validateMaxLength(input.name, 'Name', 255);
+      validateAmount(input.amount);
+      validateEnum(input.billingCycle, BILLING_CYCLES, 'Billing cycle');
+      const startDate = validateDate(input.startDate);
+      const endDate = input.endDate ? validateDate(input.endDate) : null;
+      const trialEndsAt = input.trialEndsAt
+        ? validateDate(input.trialEndsAt)
+        : null;
+      if (input.notes) {
+        validateMaxLength(input.notes, 'Notes', 1000);
+      }
+      if (input.paymentMethod) {
+        validateMaxLength(input.paymentMethod, 'Payment method', 255);
+      }
       if (input.url) {
         validateUrl(input.url);
       }
@@ -238,9 +268,9 @@ export const subscriptionResolvers = {
           name: input.name,
           amount: input.amount,
           billingCycle: input.billingCycle,
-          startDate: new Date(input.startDate),
-          endDate: input.endDate ? new Date(input.endDate) : null,
-          trialEndsAt: input.trialEndsAt ? new Date(input.trialEndsAt) : null,
+          startDate,
+          endDate,
+          trialEndsAt,
           notes: input.notes ?? null,
           paymentMethod: input.paymentMethod ?? null,
           url: input.url ?? null,
@@ -295,13 +325,23 @@ export const subscriptionResolvers = {
         });
       }
 
+      if (input.amount !== undefined) {
+        validateAmount(input.amount);
+      }
+      if (input.billingCycle) {
+        validateEnum(input.billingCycle, BILLING_CYCLES, 'Billing cycle');
+      }
+      const resumeStartDate = input.startDate
+        ? validateDate(input.startDate)
+        : undefined;
+
       return prisma.subscription.update({
         where: { id: input.id },
         data: {
           isActive: true,
           cancelledAt: null,
           endDate: null,
-          ...(input.startDate && { startDate: new Date(input.startDate) }),
+          ...(resumeStartDate && { startDate: resumeStartDate }),
           ...(input.amount !== undefined && { amount: input.amount }),
           ...(input.billingCycle && { billingCycle: input.billingCycle }),
         },

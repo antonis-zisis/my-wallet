@@ -5,6 +5,7 @@ import { expressMiddleware } from '@as-integrations/express5';
 import cors from 'cors';
 import express, { type Express } from 'express';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 import { resolvers, typeDefs } from './graphql/index';
 import { createDepthLimitRule } from './lib/depthLimitRule';
@@ -57,6 +58,7 @@ async function startServer() {
     'http://localhost:3000',
   ];
 
+  app.use(helmet());
   app.use(cors({ origin: allowedOrigins }));
   app.use(express.json());
 
