@@ -8,7 +8,14 @@ const httpLink = new HttpLink({
   fetch: async (uri, options) => {
     const response = await fetch(uri, options);
     if (response.status === 401) {
-      supabase.auth.signOut();
+      try {
+        const body = await response.clone().json();
+        if (typeof body?.error === 'string') {
+          await supabase.auth.signOut();
+        }
+      } catch {
+        // Non-JSON 401 (e.g. from a proxy) — do not sign out
+      }
     }
     return response;
   },

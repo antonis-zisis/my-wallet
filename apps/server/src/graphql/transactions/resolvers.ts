@@ -1,6 +1,13 @@
 import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
+import {
+  TRANSACTION_TYPES,
+  validateAmount,
+  validateDate,
+  validateEnum,
+  validateMaxLength,
+} from '../../lib/validate';
 
 export interface CreateTransactionInput {
   reportId: string;
@@ -64,6 +71,12 @@ export const transactionResolvers = {
         });
       }
 
+      validateEnum(input.type, TRANSACTION_TYPES, 'Type');
+      validateAmount(input.amount);
+      validateMaxLength(input.description, 'Description', 1000);
+      validateMaxLength(input.category, 'Category', 100);
+      const date = validateDate(input.date);
+
       const transaction = await prisma.transaction.create({
         data: {
           reportId: input.reportId,
@@ -71,7 +84,7 @@ export const transactionResolvers = {
           amount: input.amount,
           description: input.description,
           category: input.category,
-          date: new Date(input.date),
+          date,
         },
       });
 
@@ -104,6 +117,12 @@ export const transactionResolvers = {
         });
       }
 
+      validateEnum(input.type, TRANSACTION_TYPES, 'Type');
+      validateAmount(input.amount);
+      validateMaxLength(input.description, 'Description', 1000);
+      validateMaxLength(input.category, 'Category', 100);
+      const date = validateDate(input.date);
+
       const transaction = await prisma.transaction.update({
         where: { id: input.id },
         data: {
@@ -111,7 +130,7 @@ export const transactionResolvers = {
           amount: input.amount,
           description: input.description,
           category: input.category,
-          date: new Date(input.date),
+          date,
         },
       });
 

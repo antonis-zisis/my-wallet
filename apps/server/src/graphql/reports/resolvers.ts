@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql';
 
 import { Transaction } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
+import { clampPage, validateMaxLength } from '../../lib/validate';
 
 export interface CreateReportInput {
   title: string;
@@ -68,13 +69,14 @@ export const reportResolvers = {
       { page = 1, pageSize = 10 }: { page?: number; pageSize?: number },
       { userId }: { userId: string }
     ) => {
-      const skip = (page - 1) * pageSize;
+      const { clampedPage, clampedPageSize } = clampPage(page, pageSize);
+      const skip = (clampedPage - 1) * clampedPageSize;
       const [items, totalCount] = await Promise.all([
         prisma.report.findMany({
           where: { userId },
           orderBy: { createdAt: 'desc' },
           skip,
-          take: pageSize,
+          take: clampedPageSize,
         }),
         prisma.report.count({ where: { userId } }),
       ]);
@@ -98,6 +100,7 @@ export const reportResolvers = {
       { input }: { input: CreateReportInput },
       { userId }: { userId: string }
     ) => {
+      validateMaxLength(input.title, 'Title', 255);
       return prisma.report.create({ data: { title: input.title, userId } });
     },
     updateReport: async (
@@ -121,6 +124,7 @@ export const reportResolvers = {
         });
       }
 
+      validateMaxLength(input.title, 'Title', 255);
       return prisma.report.update({
         where: { id: input.id },
         data: { title: input.title },

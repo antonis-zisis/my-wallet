@@ -187,6 +187,13 @@ Environment files (`.env`) are encrypted using GPG for secure storage in the rep
 pnpm run env:encrypt
 ```
 
+## Security Tooling (optional, for audits)
+
+The security-auditor agent uses:
+
+- semgrep: `brew install semgrep` or `pipx install semgrep`
+- gitleaks: `brew install gitleaks`
+
 ## Deployment
 
 Deployment is handled via GitHub Actions (`.github/workflows/deploy.yml`), triggered on GitHub release:

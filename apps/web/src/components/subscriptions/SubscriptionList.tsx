@@ -4,6 +4,7 @@ import { formatDate } from '../../utils/formatDate';
 import { formatMoneyOrMask } from '../../utils/formatMoney';
 import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
+import { isSafeUrl } from '../../utils/isSafeUrl';
 import { CreditCardIcon } from '../icons';
 import { Badge, Card, Dropdown, MoneyAmount, Skeleton } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
@@ -265,7 +266,7 @@ export function SubscriptionList({
               <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    {subscription.url ? (
+                    {subscription.url && isSafeUrl(subscription.url) ? (
                       <a
                         className="text-text-primary truncate font-medium hover:underline"
                         href={subscription.url}
