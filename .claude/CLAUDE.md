@@ -86,7 +86,7 @@ Each domain lives in mirrored directories on both sides:
 | **netWorth**      | `apps/server/src/graphql/netWorth/`      | `graphql/netWorth.ts`      | `useNetWorthData` / `useNetWorthSnapshotData` | `NetWorth`, `NetWorthSnapshotPage` |
 | **user**          | `apps/server/src/graphql/user/`          | `graphql/user.ts`          | `useProfileData`                              | `Profile`                          |
 
-`Home` page (`hooks/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, and subscriptions — it has no dedicated server domain.  
+`Home` page (`hooks/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, and subscriptions — it has no dedicated server domain.
 `NotFound` is a standalone 404 page with no data dependencies.
 
 **Server domain structure** (each domain has three files):
