@@ -101,20 +101,6 @@ All domains are merged in `apps/server/src/graphql/index.ts`.
 
 **Subscription cancellation model:** `cancelledAt` marks when cancelled, `endDate` is the last active date (set to next renewal on cancellation). `isActive` is a computed field — it checks `cancelledAt` + `endDate` rather than the stored `isActive` column when a subscription has been cancelled.
 
-## Rules
-
-- **Never commit** unless the user explicitly asks for it.
-
-### Design
-
-- **Border radius:** 4px (`rounded` in Tailwind).
-
-### Testing
-
-- Focus on user behavior, not implementation details.
-- Never assert on CSS classes, especially for colours.
-- Prioritize readable, maintainable tests over comprehensive coverage.
-
 ## Conventions
 
 - **Commits:** Conventional Commits — `type(scope): description`, enforced by commitlint + husky
