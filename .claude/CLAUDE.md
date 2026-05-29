@@ -100,25 +100,3 @@ All domains are merged in `apps/server/src/graphql/index.ts`.
 **Web data hook pattern:** hooks own all query/mutation logic and return a flat object of state + `on<Action>` handlers. Pages are thin — they just destructure the hook and render.
 
 **Subscription cancellation model:** `cancelledAt` marks when cancelled, `endDate` is the last active date (set to next renewal on cancellation). `isActive` is a computed field — it checks `cancelledAt` + `endDate` rather than the stored `isActive` column when a subscription has been cancelled.
-
-## Rules
-
-- **Never commit** unless the user explicitly asks for it.
-
-### Design
-
-- **Border radius:** 4px (`rounded` in Tailwind).
-
-### Testing
-
-- Focus on user behavior, not implementation details.
-- Never assert on CSS classes, especially for colours.
-- Prioritize readable, maintainable tests over comprehensive coverage.
-
-## Conventions
-
-- **Commits:** Conventional Commits — `type(scope): description`, enforced by commitlint + husky
-- **ESLint:** `id-length` requires identifiers ≥ 2 characters (exception: `_`). Unused vars prefixed with `_` are allowed. `eslint-plugin-simple-import-sort` enforces sorted imports and exports. `eslint-plugin-sort-destructure-keys` enforces alphabetically sorted destructure keys
-- **Lint-staged:** ESLint + Prettier on `*.{ts,tsx,js,jsx}`, Prettier on `*.{json,md,css,html}`
-- **Prettier:** `prettier-plugin-tailwindcss` for class sorting
-- **Naming:** Use full descriptive variable names — never abbreviate. e.g. `transaction` not `tx`, `subscription` not `sub`, `event` not `e`
