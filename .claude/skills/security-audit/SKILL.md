@@ -1,6 +1,6 @@
 ---
 name: security-audit
-description: Deep security audit of the project. Slow and thorough — runs scanners across the whole repo and triages findings. Use before releases, after large refactors, or when establishing a baseline. Not for routine post-edit review (use /review for that).
+description: Deep security audit of the project. Slow and thorough — runs scanners across the whole repo and triages findings. Use before releases, after large refactors, or when establishing a baseline. Not for routine post-edit review (use /security-review for that).
 disable-model-invocation: true
 allowed-tools: Task
 ---
