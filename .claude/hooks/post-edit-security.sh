@@ -15,7 +15,7 @@
 
 set -uo pipefail
 
-PROJECT_ROOT="/home/antonis/source/my-wallet"
+PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(git -C "$(dirname "$0")" rev-parse --show-toplevel)}"
 
 file=$(jq -r '.tool_input.file_path // empty' 2>/dev/null)
 [[ -n "$file" ]] || exit 0

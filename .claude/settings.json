@@ -23,7 +23,7 @@
       "Bash(git diff:*)",
       "Bash(cat:*)",
       "Bash(ls:*)",
-      "Edit(/apps/**)"
+      "Edit(apps/**)"
     ],
     "deny": [
       "Bash(rm *)",
