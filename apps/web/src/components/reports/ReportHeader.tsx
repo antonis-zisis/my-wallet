@@ -11,6 +11,7 @@ interface ReportHeaderProps {
   updatedAt: string;
   onAddTransaction: () => void;
   onDeleteReport: () => void;
+  onExportCsv: () => void;
   onLockReport: () => void;
   onSaveTitle: (title: string) => void;
   onUnlockReport: () => void;
@@ -21,6 +22,7 @@ export function ReportHeader({
   isLocked,
   onAddTransaction,
   onDeleteReport,
+  onExportCsv,
   onLockReport,
   onSaveTitle,
   onUnlockReport,
@@ -113,6 +115,10 @@ export function ReportHeader({
             {
               label: isLocked ? 'Unlock Report' : 'Lock Report',
               onClick: isLocked ? onUnlockReport : onLockReport,
+            },
+            {
+              label: 'Export CSV',
+              onClick: onExportCsv,
             },
             ...(!isLocked
               ? [

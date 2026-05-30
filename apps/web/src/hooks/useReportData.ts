@@ -22,6 +22,7 @@ import {
   INCOME_CATEGORIES,
   Transaction,
 } from '../types/transaction';
+import { exportReportToCsv } from '../utils/exportReportToCsv';
 
 interface ReportData {
   report: ReportType & { transactions: Array<Transaction> };
@@ -161,6 +162,12 @@ export function useReportData() {
     navigate('/reports');
   };
 
+  const onExportCsv = () => {
+    if (report) {
+      exportReportToCsv(report.title, transactions);
+    }
+  };
+
   return {
     deletingTransaction,
     editingTransaction,
@@ -182,6 +189,7 @@ export function useReportData() {
     onConfirmDeleteReport,
     onConfirmDeleteTransaction,
     onCreateTransaction,
+    onExportCsv,
     onLockReport: () => lockReport({ variables: { id } }),
     onOpenAddTransactionModal: () => setIsAddTransactionModalOpen(true),
     onOpenDeleteReportModal: () => setIsDeleteReportModalOpen(true),

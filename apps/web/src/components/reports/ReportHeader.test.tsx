@@ -11,6 +11,7 @@ const defaultProps = {
   updatedAt: '2024-03-15T00:00:00.000Z',
   onAddTransaction: vi.fn(),
   onDeleteReport: vi.fn(),
+  onExportCsv: vi.fn(),
   onLockReport: vi.fn(),
   onSaveTitle: vi.fn(),
   onUnlockReport: vi.fn(),
@@ -101,5 +102,21 @@ describe('ReportHeader', () => {
     await userEvent.click(screen.getByLabelText('Options'));
     await userEvent.click(screen.getByText('Delete Report'));
     expect(onDeleteReport).toHaveBeenCalled();
+  });
+
+  it('calls onExportCsv via dropdown menu', async () => {
+    const onExportCsv = vi.fn();
+    render(<ReportHeader {...defaultProps} onExportCsv={onExportCsv} />);
+
+    await userEvent.click(screen.getByLabelText('Options'));
+    await userEvent.click(screen.getByText('Export CSV'));
+    expect(onExportCsv).toHaveBeenCalled();
+  });
+
+  it('shows Export CSV in the dropdown when report is locked', async () => {
+    render(<ReportHeader {...defaultProps} isLocked={true} />);
+
+    await userEvent.click(screen.getByLabelText('Options'));
+    expect(screen.getByText('Export CSV')).toBeInTheDocument();
   });
 });

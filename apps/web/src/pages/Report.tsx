@@ -34,6 +34,7 @@ export function Report() {
     onConfirmDeleteReport,
     onConfirmDeleteTransaction,
     onCreateTransaction,
+    onExportCsv,
     onLockReport,
     onOpenAddTransactionModal,
     onOpenDeleteReportModal,
@@ -82,6 +83,7 @@ export function Report() {
           updatedAt={report.updatedAt}
           onAddTransaction={onOpenAddTransactionModal}
           onDeleteReport={onOpenDeleteReportModal}
+          onExportCsv={onExportCsv}
           onLockReport={onLockReport}
           onSaveTitle={onSaveTitle}
           onUnlockReport={onUnlockReport}
