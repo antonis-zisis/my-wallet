@@ -14,4 +14,4 @@ Scope:
 
 Before delegating, briefly tell the user the audit is starting and that it will take several minutes — scanners need to run across the codebase and findings need to be triaged. This sets expectations so they don't think the session is stuck.
 
-Return the agent's report as-is. The auditor's output format (Summary / Findings / Dismissed / Verified clear) is designed to be read directly — do not re-summarise or filter. If you need to add anything, add only a one-line pointer at the end suggesting next steps (e.g. "Run /review after applying fixes, or re-run /audit before release.").
+Return the agent's report as-is. The auditor's output format (Summary / Findings / Dismissed / Verified clear) is designed to be read directly — do not re-summarise or filter. If you need to add anything, add only a one-line pointer at the end suggesting next steps (e.g. "Run /security-review after applying fixes, or re-run /security-audit before release.").
