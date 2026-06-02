@@ -13,12 +13,12 @@ export function ReportCard({ label, report }: ReportCardProps) {
   const transactions = report.transactions ?? [];
 
   const totalIncome = transactions
-    .filter((tx) => tx.type === 'INCOME')
-    .reduce((sum, tx) => sum + tx.amount, 0);
+    .filter((transaction) => transaction.type === 'INCOME')
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
 
   const totalExpenses = transactions
-    .filter((tx) => tx.type === 'EXPENSE')
-    .reduce((sum, tx) => sum + tx.amount, 0);
+    .filter((transaction) => transaction.type === 'EXPENSE')
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
 
   return (
     <Link to={`/reports/${report.id}`} className="block">

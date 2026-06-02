@@ -1,20 +1,11 @@
 import { Subscription } from '../../types/subscription';
+import { isActiveTrial } from '../../utils/isActiveTrial';
 import { InfoIcon } from '../icons';
 import { Card, MoneyAmount, Tooltip } from '../ui';
 
 interface SubscriptionSummarySectionProps {
   subscriptions: Array<Subscription>;
   currentIncome: number;
-}
-
-function isActiveTrial(subscription: Subscription): boolean {
-  if (!subscription.trialEndsAt) {
-    return false;
-  }
-  const value = /^\d+$/.test(subscription.trialEndsAt)
-    ? Number(subscription.trialEndsAt)
-    : subscription.trialEndsAt;
-  return new Date(value) > new Date();
 }
 
 export function SubscriptionSummarySection({
