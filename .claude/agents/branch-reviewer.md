@@ -20,7 +20,9 @@ Optimise for signal. A noisy reviewer gets disabled.
 Read these once at the start, then check the changed code against them:
 
 - `.claude/CLAUDE.md` — architecture, GraphQL domains, web data hook pattern
-- `.claude/rules/rules.md` — workflow, naming (no abbreviations), border radius, testing philosophy
+- `.claude/rules/rules.md` — workflow, naming (no abbreviations), border radius
+- `.claude/rules/architecture.md` — file responsibility, hook composition, server domain layout, LOC thresholds
+- `.claude/rules/testing.md` — fixtures, mocking, depth per layer, forbidden patterns
 - `.claude/rules/security.md` — auth/ownership, input validation, DB access, GraphQL errors, secrets
 
 ESLint already enforces sorted imports/exports/destructure keys and the identifier-length floor. Don't flag those.
@@ -84,6 +86,13 @@ For the changed code only, check against the rules files (loaded above) and the 
 - GraphQL field selections are alphabetically sorted within each selection set
 - User-controlled values in `href` / `src` go through `isSafeUrl`
 
+#### Architecture (file shape)
+
+- No file in `apps/**` over 250 LOC without a justification in the PR. Hooks > 200, components > 200, server `resolvers.ts` > 300 — flag at MED.
+- No module-level mutable state (`let foo = 0`, mutating a top-level array). HIGH.
+- Helpers > 10 LOC living inside a `.tsx` or `resolvers.ts` file when they have branchy logic or reuse — extract to `lib/`. MED.
+- File name matches its primary export.
+
 #### Testing depth
 
 - New resolvers: happy path, not-found branch, any permission/lock checks
@@ -91,6 +100,9 @@ For the changed code only, check against the rules files (loaded above) and the 
 - Prisma mocked via `vi.mock` (server) or `MockedProvider` (web) — no real DB or network
 - No skipped tests (`it.skip`, `describe.skip`, `xit`)
 - Tests assert on user-visible behaviour, not implementation details — no CSS class assertions
+- Fixtures used via `apps/<app>/src/test/fixtures/<domain>.ts` factories; no inline `const mockFoo = { ... }` when a factory exists. MED.
+- No `vi.mock(...).mockReturnValue(...)` at module scope for context hooks like `useToast` — shared mocks leak state between tests. MED.
+- Test file length under 2× the source file. Over that is a signal of implementation-detail testing or god-source. LOW unless egregious.
 
 #### Prisma / DB
 

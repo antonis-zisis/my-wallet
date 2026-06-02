@@ -17,9 +17,3 @@ Rules are phrased as **trigger → action**: when the trigger applies, do the ac
 
 - **Setting a border radius → use the `rounded` token (4px).** Don't introduce other radius scales (`rounded-md`, `rounded-lg`, `rounded-[6px]`). The project deliberately uses a single corner radius.
 - **Need a fully circular element (avatar, pill, icon button, spinner) → use `rounded-full`.** This is the only allowed exception to the 4px rule.
-
-## Testing
-
-- **Writing a test → assert on user-visible behaviour, not implementation details.** Test what the user sees and does, not internal state or call counts.
-- **About to assert on a CSS class → don't**, especially colour classes. They're styling, not behaviour, and break on every restyle.
-- **Choosing how much to test → prefer a few readable, maintainable tests over exhaustive coverage.** A clear test that documents intent beats a brittle one chasing 100%.
