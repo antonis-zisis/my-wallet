@@ -7,6 +7,7 @@ export function useLocalStorage<T>(
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = localStorage.getItem(key);
+
       return item !== null ? (JSON.parse(item) as T) : initialValue;
     } catch {
       return initialValue;
@@ -26,6 +27,7 @@ export function useLocalStorage<T>(
         } catch {
           // localStorage unavailable (e.g. private browsing quota exceeded)
         }
+
         return next;
       });
     },

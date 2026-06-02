@@ -30,6 +30,7 @@ function getSystemTheme(): 'light' | 'dark' {
       return 'light';
     }
   }
+
   return 'light';
 }
 
@@ -44,6 +45,7 @@ function getStoredTheme(): Theme | null {
       return null;
     }
   }
+
   return null;
 }
 
@@ -104,6 +106,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       };
 
       mediaQuery.addEventListener('change', handleChange);
+
       return () => mediaQuery.removeEventListener('change', handleChange);
     } catch (error) {
       console.error('Failed to set up theme change listener: ', error);
@@ -127,5 +130,6 @@ export function useTheme() {
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
+
   return context;
 }

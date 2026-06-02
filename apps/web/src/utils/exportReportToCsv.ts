@@ -4,6 +4,7 @@ function escapeCsvField(value: string): string {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
     return `"${value.replace(/"/g, '""')}"`;
   }
+
   return value;
 }
 
@@ -16,6 +17,7 @@ export function buildCsvContent(transactions: Array<Transaction>): string {
     escapeCsvField(transaction.description),
     transaction.amount.toFixed(2),
   ]);
+
   return [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
 }
 

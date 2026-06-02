@@ -163,6 +163,7 @@ export const subscriptionResolvers = {
 
         allItems.sort((left, right) => {
           const diff = computeMonthlyCost(left) - computeMonthlyCost(right);
+
           return sortOrder === 'ASC' ? diff : -diff;
         });
 
@@ -207,9 +208,11 @@ export const subscriptionResolvers = {
       if (input.notes) {
         validateMaxLength(input.notes, 'Notes', 1000);
       }
+
       if (input.paymentMethod) {
         validateMaxLength(input.paymentMethod, 'Payment method', 255);
       }
+
       if (input.url) {
         validateUrl(input.url);
       }
@@ -255,9 +258,11 @@ export const subscriptionResolvers = {
       if (input.notes) {
         validateMaxLength(input.notes, 'Notes', 1000);
       }
+
       if (input.paymentMethod) {
         validateMaxLength(input.paymentMethod, 'Payment method', 255);
       }
+
       if (input.url) {
         validateUrl(input.url);
       }
@@ -328,9 +333,11 @@ export const subscriptionResolvers = {
       if (input.amount !== undefined) {
         validateAmount(input.amount);
       }
+
       if (input.billingCycle) {
         validateEnum(input.billingCycle, BILLING_CYCLES, 'Billing cycle');
       }
+
       const resumeStartDate = input.startDate
         ? validateDate(input.startDate)
         : undefined;

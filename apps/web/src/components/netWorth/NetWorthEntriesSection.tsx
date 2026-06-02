@@ -89,7 +89,9 @@ export function NetWorthEntriesSection({
       if (!accumulator[entry.category]) {
         accumulator[entry.category] = [];
       }
+
       accumulator[entry.category].push(entry);
+
       return accumulator;
     },
     {}

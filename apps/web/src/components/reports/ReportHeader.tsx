@@ -46,8 +46,10 @@ export function ReportHeader({
     const trimmed = editTitle.trim();
     if (!trimmed || trimmed === title) {
       handleCancelEditing();
+
       return;
     }
+
     onSaveTitle(trimmed);
     setIsEditingTitle(false);
   };

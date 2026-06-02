@@ -27,6 +27,7 @@ export function validateDate(dateString: string): Date {
       extensions: { code: 'BAD_USER_INPUT' },
     });
   }
+
   return date;
 }
 
@@ -53,6 +54,7 @@ export function validateEnum<T extends string>(
       extensions: { code: 'BAD_USER_INPUT' },
     });
   }
+
   return value as T;
 }
 
@@ -65,6 +67,7 @@ export function validateUrl(url: string): void {
       extensions: { code: 'BAD_USER_INPUT' },
     });
   }
+
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
     throw new GraphQLError('URL must use http or https scheme', {
       extensions: { code: 'BAD_USER_INPUT' },

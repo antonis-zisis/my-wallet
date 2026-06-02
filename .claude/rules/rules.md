@@ -12,6 +12,8 @@ Rules are phrased as **trigger → action**: when the trigger applies, do the ac
 
 - **Naming an identifier → spell it out in full; never abbreviate.** `transaction` not `tx`, `subscription` not `sub`, `event` not `e`, `error` not `err`, `reference` not `ref`, `parameter` not `param`, `index` not `idx`. A name should read as a plain-English description of what it holds. ESLint enforces a 2-character floor, but it can't catch a short-but-real abbreviation like `tx` — that's on you.
 - **Writing a commit message → use Conventional Commits: `type(scope): description`.** Valid types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`. Enforced by commitlint + husky.
+- **Function signature contains an inline object type → extract it to a named `type` above the function.** A signature like `foo(input: { a: string; b: number }): R` is harder to read than `type FooInput = { ... }; function foo(input: FooInput): R`. Especially extract when the inline shape wraps across multiple lines. Trivia on one line under ~30 characters (e.g. `{ children: ReactNode }`) is exempt. When naming the extracted type, don't shadow domain types — if a function takes a subset of `Subscription`, the local type should describe the function's role (`IsActiveTrialInput`, `Trialable`), not reuse the domain name.
+- **Code formatting → blank line after a control-flow block (`if`, `else`, `for`, `while`, `switch`, `try`) and before any `return` that has statements above it in the same block.** Enforced automatically by ESLint's `padding-line-between-statements` and auto-fixed by `pnpm lint --fix`. Makes block boundaries and the function's "result" visually obvious.
 
 ## Design
 

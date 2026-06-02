@@ -46,6 +46,7 @@ async function startServer() {
           extensions: { code: 'INTERNAL_SERVER_ERROR' },
         };
       }
+
       return formattedError;
     },
   });

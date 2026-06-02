@@ -101,6 +101,7 @@ export function useNetWorthSnapshotData() {
     if (!snapshot) {
       return;
     }
+
     await deleteSnapshot({ variables: { id: snapshot.id } });
     navigate('/net-worth');
   };

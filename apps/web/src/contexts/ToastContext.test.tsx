@@ -5,6 +5,7 @@ import { ToastProvider, useToast } from './ToastContext';
 
 function TestConsumer() {
   const { dismiss, showError, showInfo, showSuccess, toasts } = useToast();
+
   return (
     <div>
       <button onClick={() => showSuccess('Saved!')}>Show success</button>

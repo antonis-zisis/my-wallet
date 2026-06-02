@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './AuthContext';
 
 function TestConsumer() {
   const { loading, session, signIn, signOut } = useAuth();
+
   return (
     <div>
       <span data-testid="loading">{String(loading)}</span>

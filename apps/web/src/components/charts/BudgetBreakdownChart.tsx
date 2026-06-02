@@ -69,6 +69,7 @@ function makeRenderShape(isAmountsHidden: boolean, labelColor: string) {
         />
       );
     }
+
     const sin = Math.sin(-RADIAN * (midAngle ?? 0));
     const cos = Math.cos(-RADIAN * (midAngle ?? 0));
     const sx = (cx ?? 0) + ((outerRadius ?? 0) + 10) * cos;

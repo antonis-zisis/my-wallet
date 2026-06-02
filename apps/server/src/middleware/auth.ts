@@ -26,6 +26,7 @@ export async function authMiddleware(
 
   if (!authHeader?.startsWith('Bearer ')) {
     res.status(401).json({ error: 'Missing or invalid authorization header' });
+
     return;
   }
 
@@ -37,6 +38,7 @@ export async function authMiddleware(
 
     if (error || !data.user) {
       res.status(401).json({ error: 'Invalid or expired token' });
+
       return;
     }
 

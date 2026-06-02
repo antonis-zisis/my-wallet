@@ -142,6 +142,7 @@ export function useSubscriptionsData() {
 
   const parseDate = (value: string): Date => {
     const coerced = /^\d+$/.test(value) ? Number(value) : value;
+
     return new Date(coerced);
   };
 
@@ -195,8 +196,10 @@ export function useSubscriptionsData() {
           const weeklyCount =
             Math.floor(daysInMonth / 7) +
             ((dayOfWeek - firstDayOfMonth + 7) % 7 < daysInMonth % 7 ? 1 : 0);
+
           return total + subscription.amount * weeklyCount;
         }
+
         case 'MONTHLY':
           return total + subscription.amount;
         case 'QUARTERLY':

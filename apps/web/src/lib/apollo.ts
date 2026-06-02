@@ -17,6 +17,7 @@ const httpLink = new HttpLink({
         // Non-JSON 401 (e.g. from a proxy) — do not sign out
       }
     }
+
     return response;
   },
 });

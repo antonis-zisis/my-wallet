@@ -86,7 +86,7 @@ Each domain lives in mirrored directories on both sides:
 | **netWorth**      | `apps/server/src/graphql/netWorth/`      | `graphql/netWorth.ts`      | `useNetWorthData` / `useNetWorthSnapshotData` | `NetWorth`, `NetWorthSnapshotPage` |
 | **user**          | `apps/server/src/graphql/user/`          | `graphql/user.ts`          | `useProfileData`                              | `Profile`                          |
 
-`Home` page (`hooks/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, and subscriptions — it has no dedicated server domain.
+`Home` page (`hooks/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, and subscriptions — it has no dedicated server domain.  
 `NotFound` is a standalone 404 page with no data dependencies.
 
 **Server domain structure** (each domain has three files):
@@ -100,3 +100,34 @@ All domains are merged in `apps/server/src/graphql/index.ts`.
 **Web data hook pattern:** hooks own all query/mutation logic and return a flat object of state + `on<Action>` handlers. Pages are thin — they just destructure the hook and render.
 
 **Subscription cancellation model:** `cancelledAt` marks when cancelled, `endDate` is the last active date (set to next renewal on cancellation). `isActive` is a computed field — it checks `cancelledAt` + `endDate` rather than the stored `isActive` column when a subscription has been cancelled.
+
+## Rules
+
+- **Never commit** unless the user explicitly asks for it.
+
+### Design
+
+- **Border radius:** 4px (`rounded` in Tailwind).
+
+### Code organisation
+
+- **Extract standalone functions to their own files.** Never define a helper, utility, or configuration function inline inside a component, resolver, or entry-point file. Place it in the appropriate location:
+  - `apps/server/src/lib/` — infrastructure / config helpers (DB client, auth, server middleware, validation rules)
+  - `apps/server/src/utils/` — pure business-logic utilities (formatters, calculators, date helpers)
+  - `apps/web/src/utils/` — pure utilities (formatters, date helpers, calculators)
+  - `apps/web/src/hooks/` — shared hooks not tied to a single component
+  - Rule of thumb: if it can be unit-tested without rendering anything or touching a DB, it belongs in `utils/`; if it needs infrastructure, it belongs in `lib/`.
+
+### Testing
+
+- Focus on user behavior, not implementation details.
+- Never assert on CSS classes, especially for colours.
+- Prioritize readable, maintainable tests over comprehensive coverage.
+
+## Conventions
+
+- **Commits:** Conventional Commits — `type(scope): description`, enforced by commitlint + husky
+- **ESLint:** `id-length` requires identifiers ≥ 2 characters (exception: `_`). Unused vars prefixed with `_` are allowed. `eslint-plugin-simple-import-sort` enforces sorted imports and exports. `eslint-plugin-sort-destructure-keys` enforces alphabetically sorted destructure keys
+- **Lint-staged:** ESLint + Prettier on `*.{ts,tsx,js,jsx}`, Prettier on `*.{json,md,css,html}`
+- **Prettier:** `prettier-plugin-tailwindcss` for class sorting
+- **Naming:** Use full descriptive variable names — never abbreviate. e.g. `transaction` not `tx`, `subscription` not `sub`, `event` not `e`

@@ -43,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
     });
+
     return { error };
   };
 
@@ -52,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updatePassword = async (newPassword: string) => {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
+
     return { error };
   };
 
@@ -69,5 +71,6 @@ export function useAuth() {
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+
   return context;
 }
