@@ -55,7 +55,6 @@ describe('UpcomingRenewalsCard', () => {
     });
 
     it('sorts subscriptions by next renewal date ascending', () => {
-      // With today = 2026-04-06, MONTHLY subscriptions renew on day of startDate.
       const subscriptions = [
         makeSubscription({
           id: 'a',
