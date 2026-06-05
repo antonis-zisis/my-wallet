@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { formatDate } from '../../utils/formatDate';
+import { daysSince, formatStaleness } from '../../utils/formatStaleness';
 import { NetWorthSparkline } from '../charts';
 import { ArrowDownIcon, ArrowUpIcon, ChevronDownIcon } from '../icons';
 import { Card, MoneyAmount, Skeleton } from '../ui';
-import { daysSince, formatStaleness } from './lib/formatStaleness';
 
 const STALE_DAYS = 45;
 

@@ -3,13 +3,13 @@ import { Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
 import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
-import { ChevronDownIcon, InfoIcon } from '../icons';
-import { Card, MoneyAmount, Skeleton, Tooltip } from '../ui';
 import {
   billingCycleLabel,
   formatUrgencyLabel,
   getUrgencyColor,
-} from './lib/renewalDisplay';
+} from '../../utils/renewalDisplay';
+import { ChevronDownIcon, InfoIcon } from '../icons';
+import { Card, MoneyAmount, Skeleton, Tooltip } from '../ui';
 
 interface UpcomingRenewalsCardProps {
   loading?: boolean;

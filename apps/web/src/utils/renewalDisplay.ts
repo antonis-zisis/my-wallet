@@ -1,4 +1,4 @@
-import { BillingCycle } from '../../../types/subscription';
+import { BillingCycle } from '../types/subscription';
 
 export function formatUrgencyLabel(days: number): string {
   if (days === 0) {

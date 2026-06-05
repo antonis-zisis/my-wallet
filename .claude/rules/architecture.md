@@ -45,8 +45,7 @@ Sibling rules: [rules.md](./rules.md) for naming/workflow/design, [security.md](
 - **Component file exceeds 200 LOC → split into subcomponents** in the same domain folder. Each subcomponent gets its own file unless it's a 3-line presentational piece that's only rendered by its parent.
 
 - **Helper function inside a `.tsx` file → fine only if it's < 5 LOC and not exported.** Anything bigger or reused moves to:
-  - `apps/web/src/utils/<name>.ts` if it's app-wide.
-  - `apps/web/src/components/<domain>/lib/<name>.ts` if it's specific to that component family.
+  - `apps/web/src/utils/<name>.ts` — always, even when the helper only has one caller today.
 
 - **Inline `useState` count > 4 in one component → reconsider.** Either lift to a hook, or use a single `useReducer` for the workflow state, or split the component.
 
