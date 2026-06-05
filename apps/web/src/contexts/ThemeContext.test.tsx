@@ -6,6 +6,7 @@ import { ThemeProvider, useTheme } from './ThemeContext';
 
 function TestConsumer() {
   const { resolvedTheme, setTheme, theme } = useTheme();
+
   return (
     <div>
       <span data-testid="theme">{theme}</span>

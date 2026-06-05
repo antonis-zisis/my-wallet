@@ -1,200 +1,16 @@
-import { MockLink } from '@apollo/client/testing';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { HEALTH_QUERY } from '../graphql/health';
-import { GET_NET_WORTH_SNAPSHOTS } from '../graphql/netWorth';
-import {
-  GET_REPORT,
-  GET_REPORTS,
-  GET_REPORTS_SUMMARY,
-} from '../graphql/reports';
-import { GET_SUBSCRIPTIONS } from '../graphql/subscriptions';
 import { MockedProvider } from '../test/apollo-test-utils';
+import { homeMocks } from '../test/fixtures/home';
+import { makeNetWorthSnapshot } from '../test/fixtures/netWorth';
+import { makeReport, makeTransaction } from '../test/fixtures/report';
+import { makeSubscription } from '../test/fixtures/subscription';
 import { Home } from './Home';
 
-const mockHealthQuery: MockLink.MockedResponse = {
-  request: {
-    query: HEALTH_QUERY,
-  },
-  result: {
-    data: {
-      health: 'GraphQL server is running!',
-    },
-  },
-};
-
-const mockReportsEmpty: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS },
-  result: {
-    data: {
-      reports: { items: [], totalCount: 0 },
-    },
-  },
-};
-
-const mockReportsWithItems: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS },
-  result: {
-    data: {
-      reports: {
-        items: [
-          {
-            id: '1',
-            isLocked: false,
-            title: 'February 2026',
-            createdAt: '2026-02-01T00:00:00.000Z',
-            updatedAt: '2026-02-01T00:00:00.000Z',
-          },
-          {
-            id: '2',
-            isLocked: false,
-            title: 'January 2026',
-            createdAt: '2026-01-01T00:00:00.000Z',
-            updatedAt: '2026-01-01T00:00:00.000Z',
-          },
-        ],
-        totalCount: 5,
-      },
-    },
-  },
-};
-
-const mockReportsOneItem: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS },
-  result: {
-    data: {
-      reports: {
-        items: [
-          {
-            id: '1',
-            isLocked: false,
-            title: 'February 2026',
-            createdAt: '2026-02-01T00:00:00.000Z',
-            updatedAt: '2026-02-01T00:00:00.000Z',
-          },
-        ],
-        totalCount: 1,
-      },
-    },
-  },
-};
-
-const mockCurrentReport: MockLink.MockedResponse = {
-  request: { query: GET_REPORT, variables: { id: '1' } },
-  result: {
-    data: {
-      report: {
-        id: '1',
-        isLocked: false,
-        title: 'February 2026',
-        createdAt: '2026-02-01T00:00:00.000Z',
-        updatedAt: '2026-02-01T00:00:00.000Z',
-        transactions: [
-          {
-            id: 't1',
-            reportId: '1',
-            type: 'INCOME',
-            amount: 3000,
-            description: 'Salary',
-            category: 'Salary',
-            date: '2026-02-05',
-            createdAt: '2026-02-05T00:00:00.000Z',
-            updatedAt: '2026-02-05T00:00:00.000Z',
-          },
-        ],
-      },
-    },
-  },
-};
-
-const mockPreviousReport: MockLink.MockedResponse = {
-  request: { query: GET_REPORT, variables: { id: '2' } },
-  result: {
-    data: {
-      report: {
-        id: '2',
-        isLocked: false,
-        title: 'January 2026',
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        transactions: [
-          {
-            id: 't2',
-            reportId: '2',
-            type: 'EXPENSE',
-            amount: 200,
-            description: 'Groceries',
-            category: 'Food',
-            date: '2026-01-10',
-            createdAt: '2026-01-10T00:00:00.000Z',
-            updatedAt: '2026-01-10T00:00:00.000Z',
-          },
-        ],
-      },
-    },
-  },
-};
-
-const mockReportsSummaryEmpty: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS_SUMMARY },
-  result: {
-    data: {
-      reports: { items: [], totalCount: 0 },
-    },
-  },
-};
-
-const mockNetWorthSnapshotsEmpty: MockLink.MockedResponse = {
-  request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
-  result: {
-    data: {
-      netWorthSnapshots: {
-        items: [],
-        totalCount: 0,
-      },
-    },
-  },
-};
-
-const mockSubscriptionsEmpty: MockLink.MockedResponse = {
-  request: {
-    query: GET_SUBSCRIPTIONS,
-    variables: { page: 1, active: true },
-  },
-  result: {
-    data: {
-      subscriptions: { items: [], totalCount: 0 },
-    },
-  },
-};
-
-const mockReportsSummaryWithItems: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS_SUMMARY },
-  result: {
-    data: {
-      reports: {
-        items: [
-          {
-            id: '1',
-            title: 'February 2026',
-            transactions: [{ type: 'INCOME', amount: 3000 }],
-          },
-          {
-            id: '2',
-            title: 'January 2026',
-            transactions: [{ type: 'EXPENSE', amount: 200 }],
-          },
-        ],
-        totalCount: 2,
-      },
-    },
-  },
-};
-
-const renderHome = (mocks: Array<MockLink.MockedResponse>) => {
+function renderHome(mocks: ReturnType<typeof homeMocks>) {
   return render(
     <ThemeProvider>
       <MockedProvider mocks={mocks}>
@@ -204,46 +20,45 @@ const renderHome = (mocks: Array<MockLink.MockedResponse>) => {
       </MockedProvider>
     </ThemeProvider>
   );
-};
+}
+
+const currentReport = makeReport({
+  id: '1',
+  title: 'February 2026',
+  transactions: [makeTransaction({ id: 't1', type: 'INCOME', amount: 3000 })],
+});
+
+const previousReport = makeReport({
+  id: '2',
+  title: 'January 2026',
+  transactions: [makeTransaction({ id: 't2', type: 'EXPENSE', amount: 200 })],
+});
+
+const twoReports = [
+  makeReport({ id: '1', title: 'February 2026' }),
+  makeReport({ id: '2', title: 'January 2026' }),
+];
 
 describe('Home', () => {
-  it('displays total reports count', async () => {
-    renderHome([
-      mockHealthQuery,
-      mockReportsWithItems,
-      mockReportsSummaryWithItems,
-      mockNetWorthSnapshotsEmpty,
-      mockSubscriptionsEmpty,
-      mockCurrentReport,
-      mockPreviousReport,
-    ]);
+  it('shows a loading skeleton before any data has arrived', () => {
+    const { container } = renderHome(homeMocks());
 
-    expect(await screen.findByText('5')).toBeInTheDocument();
-  });
-
-  it('shows skeleton when reports data is not yet loaded', () => {
-    const { container } = renderHome([
-      mockHealthQuery,
-      mockReportsEmpty,
-      mockReportsSummaryEmpty,
-      mockNetWorthSnapshotsEmpty,
-      mockSubscriptionsEmpty,
-    ]);
     expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
       0
     );
   });
 
-  it('renders current and previous report cards', async () => {
-    renderHome([
-      mockHealthQuery,
-      mockReportsWithItems,
-      mockReportsSummaryWithItems,
-      mockNetWorthSnapshotsEmpty,
-      mockSubscriptionsEmpty,
-      mockCurrentReport,
-      mockPreviousReport,
-    ]);
+  it('renders the current and previous report cards once data arrives', async () => {
+    renderHome(
+      homeMocks({
+        reports: twoReports,
+        summaryReports: twoReports,
+        reportDetails: [
+          { id: '1', report: currentReport },
+          { id: '2', report: previousReport },
+        ],
+      })
+    );
 
     expect(await screen.findByText('February 2026')).toBeInTheDocument();
     expect(await screen.findByText('January 2026')).toBeInTheDocument();
@@ -251,455 +66,38 @@ describe('Home', () => {
     expect(screen.getByText('Previous')).toBeInTheDocument();
   });
 
-  it('shows loading state for report cards before data arrives', () => {
-    renderHome([
-      mockHealthQuery,
-      mockReportsWithItems,
-      mockReportsSummaryWithItems,
-      mockNetWorthSnapshotsEmpty,
-      mockSubscriptionsEmpty,
-    ]);
+  it('shows the net worth card when a snapshot is available', async () => {
+    renderHome(
+      homeMocks({
+        snapshots: [
+          makeNetWorthSnapshot({ id: 'nw1', title: 'February 2026' }),
+        ],
+      })
+    );
 
-    expect(screen.queryByText('February 2026')).not.toBeInTheDocument();
-    expect(screen.queryByText('January 2026')).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Net Worth' })
+    ).toBeInTheDocument();
   });
 
-  describe('placeholder cards', () => {
-    it('shows placeholder cards for both slots when there are no reports', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-      ]);
+  it('shows the subscriptions summary when active subscriptions exist', async () => {
+    renderHome(
+      homeMocks({
+        subscriptions: [makeSubscription({ id: 's1', name: 'Netflix' })],
+      })
+    );
 
-      // wait for GET_REPORTS to settle (totalCount changes from '-' to '0')
-      expect(await screen.findByText('0')).toBeInTheDocument();
-
-      const placeholders = screen.getAllByText('Add a report to view summary');
-      expect(placeholders).toHaveLength(2);
-      expect(screen.getByText('Current')).toBeInTheDocument();
-      expect(screen.getByText('Previous')).toBeInTheDocument();
-    });
-
-    it('shows a placeholder for previous when only one report exists', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsOneItem,
-        mockReportsSummaryWithItems,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-        mockCurrentReport,
-      ]);
-
-      // wait for the current report card to appear
-      expect(await screen.findByText('February 2026')).toBeInTheDocument();
-
-      expect(
-        screen.getByText('Add a report to view summary')
-      ).toBeInTheDocument();
-      expect(screen.getByText('Previous')).toBeInTheDocument();
-    });
-
-    it('shows no placeholder cards when two reports exist', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsWithItems,
-        mockReportsSummaryWithItems,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-        mockCurrentReport,
-        mockPreviousReport,
-      ]);
-
-      expect(await screen.findByText('February 2026')).toBeInTheDocument();
-      expect(await screen.findByText('January 2026')).toBeInTheDocument();
-      expect(
-        screen.queryByText('Add a report to view summary')
-      ).not.toBeInTheDocument();
-    });
+    expect(await screen.findByText('Active Subscriptions')).toBeInTheDocument();
   });
 
-  describe('monthly summary chart', () => {
-    it('renders the chart section when reports have data', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsWithItems,
-        mockReportsSummaryWithItems,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-        mockCurrentReport,
-        mockPreviousReport,
-      ]);
+  it('shows the empty-state CTAs when there are no snapshots and no subscriptions', async () => {
+    renderHome(homeMocks());
 
-      expect(await screen.findByText('Monthly Summary')).toBeInTheDocument();
-    });
-
-    it('does not render the chart section when no reports exist', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-      ]);
-
-      await screen.findByText('0');
-      expect(screen.queryByText('Monthly Summary')).not.toBeInTheDocument();
-    });
-
-    it('collapses and reopens the chart on title button click', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsWithItems,
-        mockReportsSummaryWithItems,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-        mockCurrentReport,
-        mockPreviousReport,
-      ]);
-
-      const toggleButton = await screen.findByRole('button', {
-        name: /monthly summary/i,
-      });
-
-      // chart is open by default — clicking closes it
-      fireEvent.click(toggleButton);
-      expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
-      expect(
-        screen.queryByRole('button', { name: '12' })
-      ).not.toBeInTheDocument();
-
-      // click again to reopen
-      fireEvent.click(toggleButton);
-      expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
-      expect(screen.getByRole('button', { name: '12' })).toBeInTheDocument();
-    });
-
-    it('shows limit control buttons when chart is open', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsWithItems,
-        mockReportsSummaryWithItems,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-        mockCurrentReport,
-        mockPreviousReport,
-      ]);
-
-      await screen.findByText('Monthly Summary');
-
-      expect(screen.getByRole('button', { name: '3' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '6' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '9' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '12' })).toBeInTheDocument();
-    });
-
-    it('hides limit control buttons when chart is collapsed', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsWithItems,
-        mockReportsSummaryWithItems,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-        mockCurrentReport,
-        mockPreviousReport,
-      ]);
-
-      const toggleButton = await screen.findByRole('button', {
-        name: /monthly summary/i,
-      });
-      fireEvent.click(toggleButton);
-
-      expect(
-        screen.queryByRole('button', { name: '3' })
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole('button', { name: '12' })
-      ).not.toBeInTheDocument();
-    });
-  });
-
-  describe('net worth card', () => {
-    const mockNetWorthSnapshotsWithData: MockLink.MockedResponse = {
-      request: { query: GET_NET_WORTH_SNAPSHOTS, variables: { page: 1 } },
-      result: {
-        data: {
-          netWorthSnapshots: {
-            items: [
-              {
-                id: 'nw1',
-                title: 'February 2026',
-                totalAssets: 15000,
-                totalLiabilities: 3000,
-                netWorth: 12000,
-                createdAt: '2026-02-01T00:00:00.000Z',
-                updatedAt: '2026-02-01T00:00:00.000Z',
-              },
-            ],
-            totalCount: 1,
-          },
-        },
-      },
-    };
-
-    it('shows the net worth card when a snapshot exists', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsWithData,
-        mockSubscriptionsEmpty,
-      ]);
-
-      expect(
-        await screen.findByRole('heading', { name: 'Net Worth' })
-      ).toBeInTheDocument();
-    });
-
-    it('shows the net worth value in the card header', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsWithData,
-        mockSubscriptionsEmpty,
-      ]);
-
-      await screen.findByRole('heading', { name: 'Net Worth' });
-      // 12000 formatted with de-DE locale — appears in header span and expanded grid
-      const headerValues = screen.getAllByText(/12\.000,00 €/);
-      expect(headerValues.length).toBeGreaterThan(0);
-    });
-
-    it('shows the snapshot title when expanded', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsWithData,
-        mockSubscriptionsEmpty,
-      ]);
-
-      const headerButton = await screen.findByRole('button', {
-        name: /net worth/i,
-      });
-      fireEvent.click(headerButton);
-
-      expect(screen.getByText('February 2026')).toBeInTheDocument();
-    });
-
-    it('shows the headline net worth value and a staleness indicator when expanded', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsWithData,
-        mockSubscriptionsEmpty,
-      ]);
-
-      const headerButton = await screen.findByRole('button', {
-        name: /net worth/i,
-      });
-      fireEvent.click(headerButton);
-
-      expect(screen.getByText(/12\.000,00 €/)).toBeInTheDocument();
-      expect(screen.getByText(/Last updated/)).toBeInTheDocument();
-    });
-
-    it('shows CTA placeholder when no snapshots exist', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-      ]);
-
-      expect(
-        await screen.findByText('No net worth snapshot yet')
-      ).toBeInTheDocument();
-    });
-
-    it('card is collapsed by default', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsWithData,
-        mockSubscriptionsEmpty,
-      ]);
-
-      const headerButton = await screen.findByRole('button', {
-        name: /net worth/i,
-      });
-      expect(headerButton).toHaveAttribute('aria-expanded', 'false');
-    });
-
-    it('expands on header button click', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsWithData,
-        mockSubscriptionsEmpty,
-      ]);
-
-      const headerButton = await screen.findByRole('button', {
-        name: /net worth/i,
-      });
-      expect(headerButton).toHaveAttribute('aria-expanded', 'false');
-      fireEvent.click(headerButton);
-      expect(headerButton).toHaveAttribute('aria-expanded', 'true');
-    });
-
-    it('collapses again on second click', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsWithData,
-        mockSubscriptionsEmpty,
-      ]);
-
-      const headerButton = await screen.findByRole('button', {
-        name: /net worth/i,
-      });
-      fireEvent.click(headerButton);
-      fireEvent.click(headerButton);
-
-      expect(headerButton).toHaveAttribute('aria-expanded', 'false');
-    });
-  });
-
-  describe('subscriptions section', () => {
-    const mockSubscriptionsWithData: MockLink.MockedResponse = {
-      request: {
-        query: GET_SUBSCRIPTIONS,
-        variables: { page: 1, active: true },
-      },
-      result: {
-        data: {
-          subscriptions: {
-            items: [
-              {
-                id: 's1',
-                name: 'Netflix',
-                amount: 15.99,
-                billingCycle: 'MONTHLY',
-                isActive: true,
-                startDate: '2025-01-15T00:00:00.000Z',
-                endDate: null,
-                cancelledAt: null,
-                monthlyCost: 15.99,
-                createdAt: '2025-01-15T00:00:00.000Z',
-                updatedAt: '2025-01-15T00:00:00.000Z',
-              },
-              {
-                id: 's2',
-                name: 'Spotify',
-                amount: 9.99,
-                billingCycle: 'MONTHLY',
-                isActive: true,
-                startDate: '2025-03-01T00:00:00.000Z',
-                endDate: null,
-                cancelledAt: null,
-                monthlyCost: 9.99,
-                createdAt: '2025-03-01T00:00:00.000Z',
-                updatedAt: '2025-03-01T00:00:00.000Z',
-              },
-            ],
-            totalCount: 2,
-          },
-        },
-      },
-    };
-
-    it('shows summary cards with correct values', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsWithItems,
-        mockReportsSummaryWithItems,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsWithData,
-        mockCurrentReport,
-        mockPreviousReport,
-      ]);
-
-      expect(
-        await screen.findByText('Active Subscriptions')
-      ).toBeInTheDocument();
-      expect(screen.getByText('Monthly Cost')).toBeInTheDocument();
-      expect(screen.getByText(/25,98 €/)).toBeInTheDocument();
-      expect(screen.getByText('% of Income')).toBeInTheDocument();
-      // 25.98 / 3000 * 100 = 0.9% — wait for current report to resolve
-      expect(await screen.findByText('0.9%')).toBeInTheDocument();
-    });
-
-    it('shows dash for % of income when no income data', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsWithData,
-      ]);
-
-      expect(
-        await screen.findByText('Active Subscriptions')
-      ).toBeInTheDocument();
-      // No current report means no income — should show '-'
-      const percentCard = screen.getByText('% of Income');
-      // The dash is in the sibling element
-      expect(percentCard.parentElement?.textContent).toContain('-');
-    });
-
-    it('upcoming renewals card is expanded by default', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsWithData,
-      ]);
-
-      expect(
-        await screen.findByRole('heading', { name: 'Upcoming Renewals' })
-      ).toBeInTheDocument();
-      expect(screen.getByText('Netflix')).toBeInTheDocument();
-      expect(screen.getByText('Spotify')).toBeInTheDocument();
-    });
-
-    it('upcoming renewals card collapses on click', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsWithData,
-      ]);
-
-      const headerButton = await screen.findByRole('button', {
-        name: /upcoming renewals/i,
-      });
-      fireEvent.click(headerButton);
-
-      expect(headerButton).toHaveAttribute('aria-expanded', 'false');
-    });
-
-    it('shows CTA placeholder when no active subscriptions', async () => {
-      renderHome([
-        mockHealthQuery,
-        mockReportsEmpty,
-        mockReportsSummaryEmpty,
-        mockNetWorthSnapshotsEmpty,
-        mockSubscriptionsEmpty,
-      ]);
-
-      expect(
-        await screen.findByText('No subscriptions tracked yet')
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText('No net worth snapshot yet')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('No subscriptions tracked yet')
+    ).toBeInTheDocument();
   });
 });

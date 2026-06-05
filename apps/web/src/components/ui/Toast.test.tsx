@@ -6,6 +6,7 @@ import { ToastContainer } from './Toast';
 
 function ToastTrigger() {
   const { showError, showInfo, showSuccess } = useToast();
+
   return (
     <>
       <button onClick={() => showSuccess('Saved!')}>Show success</button>

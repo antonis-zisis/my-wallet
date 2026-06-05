@@ -56,5 +56,6 @@ export function useUser() {
   if (context === undefined) {
     throw new Error('useUser must be used within a UserProvider');
   }
+
   return context;
 }

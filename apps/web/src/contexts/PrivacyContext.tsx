@@ -18,6 +18,7 @@ function getStoredVisibility(): boolean {
       return false;
     }
   }
+
   return false;
 }
 
@@ -34,6 +35,7 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Failed to save privacy preference: ', error);
       }
+
       return next;
     });
   };

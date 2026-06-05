@@ -8,6 +8,7 @@ function Bomb({ shouldThrow }: { shouldThrow: boolean }) {
   if (shouldThrow) {
     throw new Error('Test error');
   }
+
   return <div>Content</div>;
 }
 
@@ -62,6 +63,7 @@ describe('ErrorBoundary', () => {
       if (shouldThrow) {
         throw new Error('Test error');
       }
+
       return <div>Content</div>;
     }
 

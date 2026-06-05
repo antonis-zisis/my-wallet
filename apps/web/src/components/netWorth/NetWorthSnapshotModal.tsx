@@ -47,11 +47,13 @@ function todayAsDateInput(): string {
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
+
   return `${year}-${month}-${day}`;
 }
 
 function dateToTitle(dateString: string): string {
   const [year, month] = dateString.split('-').map(Number);
+
   return new Date(year, month - 1, 1).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
@@ -62,6 +64,7 @@ let nextKey = 0;
 
 function makeEntry(type: NetWorthEntryType = 'ASSET'): EntryDraft {
   const categories = type === 'ASSET' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES;
+
   return {
     key: nextKey++,
     type,
@@ -89,6 +92,7 @@ function buildInitialEntries(
   if (initialEntries && initialEntries.length > 0) {
     return initialEntries.map(toDraft);
   }
+
   return [makeEntry('ASSET')];
 }
 
@@ -121,6 +125,7 @@ export function NetWorthSnapshotModal({
     if (!isOpen) {
       return;
     }
+
     const date = initialSnapshotDate ?? todayAsDateInput();
     const autoTitle = dateToTitle(date);
     const resolvedTitle = initialTitle || autoTitle;
@@ -148,6 +153,7 @@ export function NetWorthSnapshotModal({
         container.scrollTop = 0;
       }
     }
+
     prevEntriesLengthRef.current = entries.length;
   }, [entries.length]);
 
@@ -183,6 +189,7 @@ export function NetWorthSnapshotModal({
         if (entry.key !== key) {
           return entry;
         }
+
         return { ...entry, [field]: value };
       })
     );

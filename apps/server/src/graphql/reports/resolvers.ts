@@ -24,6 +24,7 @@ export const reportResolvers = {
       if (parent.transactions !== undefined) {
         return parent.transactions.length;
       }
+
       return prisma.transaction.count({ where: { reportId: parent.id } });
     },
     netBalance: async (parent: {
@@ -37,6 +38,7 @@ export const reportResolvers = {
             : balance - transaction.amount;
         }, 0);
       }
+
       const [incomeResult, expenseResult] = await Promise.all([
         prisma.transaction.aggregate({
           where: { reportId: parent.id, type: 'INCOME' },
@@ -47,6 +49,7 @@ export const reportResolvers = {
           _sum: { amount: true },
         }),
       ]);
+
       return (incomeResult._sum.amount ?? 0) - (expenseResult._sum.amount ?? 0);
     },
     transactions: async (parent: {
@@ -101,6 +104,7 @@ export const reportResolvers = {
       { userId }: { userId: string }
     ) => {
       validateMaxLength(input.title, 'Title', 255);
+
       return prisma.report.create({ data: { title: input.title, userId } });
     },
     updateReport: async (
@@ -125,6 +129,7 @@ export const reportResolvers = {
       }
 
       validateMaxLength(input.title, 'Title', 255);
+
       return prisma.report.update({
         where: { id: input.id },
         data: { title: input.title },

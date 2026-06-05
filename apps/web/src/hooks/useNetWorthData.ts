@@ -106,8 +106,10 @@ export function useNetWorthData() {
   const handleModalSubmit = async (input: SnapshotFormValues) => {
     if (modalState.kind === 'edit') {
       await handleUpdate(modalState.snapshot.id, input);
+
       return;
     }
+
     await handleCreate(input);
   };
 
@@ -115,6 +117,7 @@ export function useNetWorthData() {
     if (!snapshotToDelete) {
       return;
     }
+
     await deleteSnapshot({ variables: { id: snapshotToDelete.id } });
     setSnapshotToDelete(null);
   };

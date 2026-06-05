@@ -138,6 +138,7 @@ export const transactionResolvers = {
         where: { id: existing.reportId },
         data: { updatedAt: new Date() },
       });
+
       return transaction;
     },
     deleteTransaction: async (

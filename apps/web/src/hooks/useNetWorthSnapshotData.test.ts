@@ -71,6 +71,7 @@ const mockNegativeQuery: MockLink.MockedResponse = {
 
 function createRouterWrapper(mocks: Array<MockLink.MockedResponse>) {
   const apolloWrapper = createWrapper(mocks);
+
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return createElement(
       apolloWrapper,

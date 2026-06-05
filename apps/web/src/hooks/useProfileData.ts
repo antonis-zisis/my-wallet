@@ -45,11 +45,13 @@ export function useProfileData() {
 
     if (newPassword !== confirmPassword) {
       showError('Passwords do not match.');
+
       return;
     }
 
     if (newPassword.length < MIN_PASSWORD_LENGTH) {
       showError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+
       return;
     }
 

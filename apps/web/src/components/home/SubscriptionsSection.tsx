@@ -1,18 +1,9 @@
 import { Subscription } from '../../types/subscription';
+import { isActiveTrial } from '../../utils/isActiveTrial';
 import { SubscriptionsCTACard } from './SubscriptionsCTACard';
 import { SubscriptionsSkeletonGrid } from './SubscriptionsSkeletonGrid';
 import { SubscriptionSummarySection } from './SubscriptionSummarySection';
 import { UpcomingRenewalsCard } from './UpcomingRenewalsCard';
-
-function isActiveTrial(subscription: Subscription): boolean {
-  if (!subscription.trialEndsAt) {
-    return false;
-  }
-  const value = /^\d+$/.test(subscription.trialEndsAt)
-    ? Number(subscription.trialEndsAt)
-    : subscription.trialEndsAt;
-  return new Date(value) > new Date();
-}
 
 export function SubscriptionsSection({
   currentIncome,

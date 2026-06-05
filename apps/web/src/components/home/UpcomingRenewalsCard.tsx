@@ -1,51 +1,19 @@
 import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { BillingCycle, Subscription } from '../../types/subscription';
+import { Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
+import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
+import {
+  billingCycleLabel,
+  formatUrgencyLabel,
+  getUrgencyColor,
+} from '../../utils/renewalDisplay';
 import { ChevronDownIcon, InfoIcon } from '../icons';
 import { Card, MoneyAmount, Skeleton, Tooltip } from '../ui';
 
 interface UpcomingRenewalsCardProps {
   loading?: boolean;
   subscriptions: Array<Subscription>;
-}
-
-function getDaysUntil(date: Date): number {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(date);
-  target.setHours(0, 0, 0, 0);
-  return Math.round(
-    (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-  );
-}
-
-function formatUrgencyLabel(days: number): string {
-  if (days === 0) {
-    return 'Today';
-  }
-
-  if (days === 1) {
-    return 'Tomorrow';
-  }
-
-  return `in ${days}d`;
-}
-
-function getUrgencyColor(days: number): string {
-  if (days <= 3) {
-    return 'text-red-600 dark:text-red-400';
-  }
-
-  if (days <= 7) {
-    return 'text-amber-600 dark:text-amber-400';
-  }
-
-  return 'text-text-tertiary';
-}
-
-function billingCycleLabel(billingCycle: BillingCycle): string {
-  return billingCycle === 'MONTHLY' ? 'Monthly' : 'Yearly';
 }
 
 export function UpcomingRenewalsCard({
@@ -126,6 +94,7 @@ export function UpcomingRenewalsCard({
             ) : (
               sorted.map(({ renewalDate, subscription }) => {
                 const daysUntil = getDaysUntil(renewalDate);
+
                 return (
                   <div
                     key={subscription.id}
