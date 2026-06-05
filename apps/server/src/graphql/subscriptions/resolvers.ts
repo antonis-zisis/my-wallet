@@ -10,6 +10,8 @@ import {
   validateMaxLength,
   validateUrl,
 } from '../../lib/validate';
+import { computeMonthlyCost } from './lib/computeMonthlyCost';
+import { getNextRenewalDate } from './lib/getNextRenewalDate';
 
 export interface CreateSubscriptionInput {
   name: string;
@@ -36,6 +38,13 @@ export interface UpdateSubscriptionInput {
   url?: string;
 }
 
+export interface ResumeSubscriptionInput {
+  id: string;
+  startDate?: string;
+  amount?: number;
+  billingCycle?: string;
+}
+
 type SubscriptionParent = {
   amount: number;
   billingCycle: string;
@@ -43,52 +52,6 @@ type SubscriptionParent = {
   cancelledAt: Date | null;
   endDate: Date | null;
 };
-
-function computeMonthlyCost(subscription: {
-  amount: number;
-  billingCycle: string;
-}): number {
-  switch (subscription.billingCycle) {
-    case 'WEEKLY':
-      return subscription.amount * (52 / 12);
-    case 'QUARTERLY':
-      return subscription.amount / 3;
-    case 'BI_ANNUAL':
-      return subscription.amount / 6;
-    case 'YEARLY':
-      return subscription.amount / 12;
-    default:
-      return subscription.amount;
-  }
-}
-
-function getNextRenewalDate(startDate: Date, billingCycle: string): Date {
-  const today = new Date();
-
-  today.setHours(0, 0, 0, 0);
-
-  const next = new Date(startDate);
-
-  if (billingCycle === 'WEEKLY') {
-    while (next <= today) {
-      next.setDate(next.getDate() + 7);
-    }
-  } else {
-    const increment =
-      billingCycle === 'YEARLY'
-        ? 12
-        : billingCycle === 'BI_ANNUAL'
-          ? 6
-          : billingCycle === 'QUARTERLY'
-            ? 3
-            : 1;
-    while (next <= today) {
-      next.setMonth(next.getMonth() + increment);
-    }
-  }
-
-  return next;
-}
 
 export const subscriptionResolvers = {
   Subscription: {
@@ -308,16 +271,7 @@ export const subscriptionResolvers = {
     },
     resumeSubscription: async (
       _parent: unknown,
-      {
-        input,
-      }: {
-        input: {
-          id: string;
-          startDate?: string;
-          amount?: number;
-          billingCycle?: string;
-        };
-      },
+      { input }: { input: ResumeSubscriptionInput },
       { userId }: { userId: string }
     ) => {
       const existing = await prisma.subscription.findFirst({

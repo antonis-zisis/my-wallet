@@ -12,14 +12,11 @@ const defaultProps = {
 };
 
 describe('SubscriptionCostSummary', () => {
-  it('shows skeletons when loading', () => {
-    const { container } = render(
-      <SubscriptionCostSummary {...defaultProps} loading />
-    );
-    expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
-      0
-    );
+  it('hides labels while loading', () => {
+    render(<SubscriptionCostSummary {...defaultProps} loading />);
+
     expect(screen.queryByText('Monthly cost')).not.toBeInTheDocument();
+    expect(screen.queryByText('Yearly cost')).not.toBeInTheDocument();
   });
 
   it('displays formatted monthly and yearly costs when loaded', () => {

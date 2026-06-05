@@ -2,6 +2,10 @@ import { usePrivacy } from '../../contexts/PrivacyContext';
 import { Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
 import { formatMoneyOrMask } from '../../utils/formatMoney';
+import {
+  formatCancellationCountdown,
+  formatTrialCountdown,
+} from '../../utils/formatSubscriptionCountdown';
 import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { isSafeUrl } from '../../utils/isSafeUrl';
@@ -64,42 +68,6 @@ function EmptyState({
       )}
     </div>
   );
-}
-
-function formatCancellationCountdown(endDate: string): string {
-  const daysLeft = getDaysUntil(endDate);
-
-  if (daysLeft < 0) {
-    return `ended ${formatDate(endDate)}`;
-  }
-
-  if (daysLeft === 0) {
-    return 'ends today';
-  }
-
-  if (daysLeft === 1) {
-    return 'ends tomorrow';
-  }
-
-  return `ends in ${daysLeft} days · ${formatDate(endDate)}`;
-}
-
-function formatTrialCountdown(trialEndsAt: string): string {
-  const daysLeft = getDaysUntil(trialEndsAt);
-
-  if (daysLeft < 0) {
-    return `trial ended ${formatDate(trialEndsAt)}`;
-  }
-
-  if (daysLeft === 0) {
-    return 'trial ends today';
-  }
-
-  if (daysLeft === 1) {
-    return 'trial ends tomorrow';
-  }
-
-  return `trial ends in ${daysLeft} days · ${formatDate(trialEndsAt)}`;
 }
 
 function TertiaryLine({ subscription }: { subscription: Subscription }) {

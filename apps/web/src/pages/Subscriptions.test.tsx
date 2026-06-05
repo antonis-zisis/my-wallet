@@ -3,14 +3,14 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const showSuccess = vi.fn();
+const showError = vi.fn();
+const showInfo = vi.fn();
 
 vi.mock('../contexts/ToastContext', () => ({
-  useToast: vi.fn().mockReturnValue({
-    showSuccess: vi.fn(),
-    showError: vi.fn(),
-    showInfo: vi.fn(),
-  }),
+  useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
 import {
@@ -21,61 +21,39 @@ import {
 } from '../graphql/subscriptions';
 import { PAGE_SIZE } from '../hooks/useSubscriptionsData';
 import { MockedProvider } from '../test/apollo-test-utils';
+import { makeSubscription } from '../test/fixtures/subscription';
 import { Subscriptions } from './Subscriptions';
 
-const mockSubscription = {
-  id: '1',
-  name: 'Netflix',
-  amount: 15.99,
-  billingCycle: 'MONTHLY',
-  isActive: true,
-  startDate: '2025-01-01T00:00:00.000Z',
-  endDate: null,
-  cancelledAt: null,
-  trialEndsAt: null,
-  notes: null,
-  url: null,
-  paymentMethod: null,
-  monthlyCost: 15.99,
-  createdAt: '2025-01-01T00:00:00.000Z',
-  updatedAt: '2025-01-01T00:00:00.000Z',
-};
+beforeEach(() => {
+  showSuccess.mockReset();
+  showError.mockReset();
+  showInfo.mockReset();
+});
 
-const mockYearlySubscription = {
+const mockSubscription = makeSubscription({ id: '1' });
+
+const mockYearlySubscription = makeSubscription({
   id: '2',
   name: 'YouTube Premium',
   amount: 120,
   billingCycle: 'YEARLY',
-  isActive: true,
   startDate: '2025-03-01T00:00:00.000Z',
   endDate: '2026-03-01T00:00:00.000Z',
-  cancelledAt: null,
-  trialEndsAt: null,
-  notes: null,
-  url: null,
-  paymentMethod: null,
   monthlyCost: 10,
   createdAt: '2025-03-01T00:00:00.000Z',
   updatedAt: '2025-03-01T00:00:00.000Z',
-};
+});
 
-const mockInactiveSubscription = {
+const mockInactiveSubscription = makeSubscription({
   id: '3',
   name: 'Spotify',
   amount: 9.99,
-  billingCycle: 'MONTHLY',
   isActive: false,
   startDate: '2024-06-01T00:00:00.000Z',
-  endDate: null,
-  cancelledAt: null,
-  trialEndsAt: null,
-  notes: null,
-  url: null,
-  paymentMethod: null,
   monthlyCost: 9.99,
   createdAt: '2024-06-01T00:00:00.000Z',
   updatedAt: '2025-01-15T00:00:00.000Z',
-};
+});
 
 const mockActiveQuery: MockLink.MockedResponse = {
   request: {

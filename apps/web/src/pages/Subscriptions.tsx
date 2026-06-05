@@ -9,7 +9,7 @@ import { SubscriptionList } from '../components/subscriptions/SubscriptionList';
 import { Button, PageLayout, Pagination, Select } from '../components/ui';
 import { PAGE_SIZE, useSubscriptionsData } from '../hooks/useSubscriptionsData';
 import { SubscriptionSortField } from '../types/subscription';
-import { getDaysUntil } from '../utils/getDaysUntil';
+import { buildSubscriptionsSubtitle } from '../utils/buildSubscriptionsSubtitle';
 
 const INACTIVE_SECTION_ID = 'inactive-subscriptions-section';
 
@@ -18,35 +18,6 @@ const SORT_OPTIONS: Array<{ value: SubscriptionSortField; label: string }> = [
   { value: 'MONTHLY_COST', label: 'Cost (High–Low)' },
   { value: 'NEXT_RENEWAL', label: 'Next Renewal' },
 ];
-
-function buildSubtitle(
-  activeTotalCount: number,
-  nextRenewalDate: Date | null
-): string {
-  if (activeTotalCount === 0) {
-    return 'Track recurring payments in one place.';
-  }
-
-  const subscriptionWord =
-    activeTotalCount === 1 ? 'subscription' : 'subscriptions';
-  const activeLabel = `${activeTotalCount} active ${subscriptionWord}`;
-
-  if (!nextRenewalDate) {
-    return activeLabel;
-  }
-
-  const daysUntil = getDaysUntil(nextRenewalDate);
-
-  if (daysUntil <= 0) {
-    return `${activeLabel} · next renewal today`;
-  }
-
-  if (daysUntil === 1) {
-    return `${activeLabel} · next renewal tomorrow`;
-  }
-
-  return `${activeLabel} · next renewal in ${daysUntil} days`;
-}
 
 export function Subscriptions() {
   const {
@@ -98,7 +69,7 @@ export function Subscriptions() {
 
   const subtitle = activeLoading
     ? 'Track recurring payments in one place.'
-    : buildSubtitle(activeTotalCount, nextRenewal?.date ?? null);
+    : buildSubscriptionsSubtitle(activeTotalCount, nextRenewal?.date ?? null);
 
   return (
     <>
