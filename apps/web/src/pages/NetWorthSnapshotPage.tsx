@@ -9,6 +9,7 @@ import {
 import { NetWorthSnapshotSkeleton } from '../components/netWorth/NetWorthSnapshotSkeleton';
 import { PageLayout } from '../components/ui';
 import { useNetWorthSnapshotData } from '../hooks/useNetWorthSnapshotData';
+import { toDateInputValue } from '../utils/toDateInputValue';
 
 export function NetWorthSnapshotPage() {
   const {
@@ -52,15 +53,6 @@ export function NetWorthSnapshotPage() {
         </p>
       </PageLayout>
     );
-  }
-
-  function toDateInputValue(isoString: string): string {
-    const date = new Date(isoString);
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
   }
 
   const initialEntries: Array<EntryInput> = snapshot.entries.map((entry) => ({

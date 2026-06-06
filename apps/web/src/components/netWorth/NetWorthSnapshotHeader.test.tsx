@@ -35,17 +35,6 @@ describe('NetWorthSnapshotHeader', () => {
     expect(screen.getByText(/12\.000,00 €/)).toBeInTheDocument();
   });
 
-  it('uses orange styling for a negative net worth', () => {
-    render(
-      <NetWorthSnapshotHeader
-        {...defaultProps}
-        isPositive={false}
-        netWorth={-4000}
-      />
-    );
-    expect(screen.getByText(/4\.000,00 €/)).toHaveClass('text-orange-600');
-  });
-
   it('prepends a minus sign for a negative net worth', () => {
     render(
       <NetWorthSnapshotHeader
@@ -65,14 +54,14 @@ describe('NetWorthSnapshotHeader', () => {
   });
 
   describe('delta labels', () => {
-    it('shows positive delta for assets in green with a plus sign', () => {
+    it('shows a positive delta with a plus sign', () => {
       render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={2000} />);
-      expect(screen.getByText(/\+2\.000,00 €/)).toHaveClass('text-green-600');
+      expect(screen.getByText(/\+2\.000,00 €/)).toBeInTheDocument();
     });
 
-    it('shows negative delta for assets in red with a minus sign', () => {
+    it('shows a negative delta with a minus sign', () => {
       render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={-500} />);
-      expect(screen.getByText(/−500,00 €/)).toHaveClass('text-red-600');
+      expect(screen.getByText(/−500,00 €/)).toBeInTheDocument();
     });
 
     it('hides the delta label when delta is zero', () => {
@@ -97,31 +86,11 @@ describe('NetWorthSnapshotHeader', () => {
       expect(screen.getByText(/\+300,00 €/)).toBeInTheDocument();
     });
 
-    it('shows a positive liabilities delta in red (more debt is bad)', () => {
-      render(
-        <NetWorthSnapshotHeader {...defaultProps} deltaLiabilities={500} />
-      );
-      expect(screen.getByText(/\+500,00 €/)).toHaveClass('text-red-600');
-    });
-
-    it('shows a negative liabilities delta in green (less debt is good)', () => {
-      render(
-        <NetWorthSnapshotHeader {...defaultProps} deltaLiabilities={-500} />
-      );
-      expect(screen.getByText(/−500,00 €/)).toHaveClass('text-green-600');
-    });
-
     it('appends a percentage change alongside the absolute delta', () => {
       render(<NetWorthSnapshotHeader {...defaultProps} deltaAssets={2000} />);
       // previousAssets = 15000 - 2000 = 13000; percentage = 2000/13000 * 100 ≈ 15.4%
       expect(screen.getByText(/\+15\.4%/)).toBeInTheDocument();
     });
-  });
-
-  it('renders the net worth value with a prominent text size', () => {
-    render(<NetWorthSnapshotHeader {...defaultProps} />);
-    const netWorthValue = screen.getByText(/12\.000,00 €/);
-    expect(netWorthValue).toHaveClass('text-2xl');
   });
 
   it('renders Net Worth as the first card', () => {

@@ -6,43 +6,43 @@ import { describe, expect, it } from 'vitest';
 
 import { GET_NET_WORTH_SNAPSHOT } from '../graphql/netWorth';
 import { MockedProvider } from '../test/apollo-test-utils';
+import {
+  makeNetWorthEntry,
+  makeNetWorthSnapshot,
+} from '../test/fixtures/netWorth';
 import { NetWorthSnapshotPage } from './NetWorthSnapshotPage';
 
-const mockEntries = [
-  {
-    id: 'entry-1',
-    type: 'ASSET',
-    label: 'Savings Account',
-    amount: 10000,
-    category: 'Savings',
-  },
-  {
-    id: 'entry-2',
-    type: 'ASSET',
-    label: 'Stocks',
-    amount: 5000,
-    category: 'Investments',
-  },
-  {
-    id: 'entry-3',
-    type: 'LIABILITY',
-    label: 'Car Loan',
-    amount: 3000,
-    category: 'Car Loan',
-  },
-];
-
-const mockSnapshot = {
+const mockSnapshot = makeNetWorthSnapshot({
   id: '1',
   title: 'January 2026',
   snapshotDate: '2026-01-15T00:00:00.000Z',
   totalAssets: 15000,
   totalLiabilities: 3000,
   netWorth: 12000,
-  entries: mockEntries,
+  entries: [
+    makeNetWorthEntry({
+      id: 'entry-1',
+      label: 'Savings Account',
+      amount: 10000,
+      category: 'Savings',
+    }),
+    makeNetWorthEntry({
+      id: 'entry-2',
+      label: 'Stocks',
+      amount: 5000,
+      category: 'Investments',
+    }),
+    makeNetWorthEntry({
+      id: 'entry-3',
+      type: 'LIABILITY',
+      label: 'Car Loan',
+      amount: 3000,
+      category: 'Car Loan',
+    }),
+  ],
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-04-20T00:00:00.000Z',
-};
+});
 
 const mockSnapshotQuery: MockLink.MockedResponse = {
   request: { query: GET_NET_WORTH_SNAPSHOT, variables: { id: '1' } },
