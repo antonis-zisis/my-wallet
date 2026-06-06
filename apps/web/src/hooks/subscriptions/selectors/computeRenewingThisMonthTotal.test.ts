@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { makeSubscription } from '../../../test/fixtures/subscription';
 import { computeRenewingThisMonthTotal } from './computeRenewingThisMonthTotal';
 
-// April 2026: 30 days, starts on Wednesday (day 3).
 describe('computeRenewingThisMonthTotal', () => {
   beforeEach(() => {
     vi.useFakeTimers();
