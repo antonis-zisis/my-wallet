@@ -29,6 +29,20 @@ export interface EntryDelta {
   isNew: boolean;
 }
 
+export interface EntryInput {
+  type: NetWorthEntryType;
+  category: string;
+  label: string;
+  amount: number;
+  notes?: string;
+}
+
+export interface SnapshotFormValues {
+  title: string;
+  snapshotDate: string;
+  entries: Array<EntryInput>;
+}
+
 export interface NetWorthSnapshotsData {
   netWorthSnapshots: {
     items: Array<NetWorthSnapshot>;

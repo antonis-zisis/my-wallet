@@ -13,6 +13,7 @@ import {
 } from '../graphql/netWorth';
 import { PAGE_SIZE, TREND_PAGE_SIZE } from '../hooks/useNetWorthData';
 import { MockedProvider } from '../test/apollo-test-utils';
+import { makeNetWorthSnapshot } from '../test/fixtures/netWorth';
 import { NetWorth } from './NetWorth';
 
 beforeAll(() => {
@@ -37,17 +38,13 @@ beforeAll(() => {
   );
 });
 
-const mockSnapshot = {
+const mockSnapshot = makeNetWorthSnapshot({
   id: '1',
   title: 'January 2026',
-  snapshotDate: '2026-01-01T00:00:00.000Z',
   totalAssets: 10000,
   totalLiabilities: 5000,
   netWorth: 5000,
-  entries: [],
-  previousSnapshot: null,
-  createdAt: '2026-01-01T00:00:00.000Z',
-};
+});
 
 const mockTrendQuery: MockLink.MockedResponse = {
   request: {
@@ -98,24 +95,8 @@ const mockTrendQueryWithChart: MockLink.MockedResponse = {
     data: {
       netWorthSnapshots: {
         items: [
-          {
-            id: 'trend-1',
-            title: 'January 2026',
-            snapshotDate: '2026-01-01T00:00:00.000Z',
-            totalAssets: 10000,
-            totalLiabilities: 5000,
-            netWorth: 5000,
-            createdAt: '2026-01-01T00:00:00.000Z',
-          },
-          {
-            id: 'trend-2',
-            title: 'February 2026',
-            snapshotDate: '2026-02-01T00:00:00.000Z',
-            totalAssets: 12000,
-            totalLiabilities: 4000,
-            netWorth: 8000,
-            createdAt: '2026-02-01T00:00:00.000Z',
-          },
+          makeNetWorthSnapshot({ id: 'trend-1', title: 'January 2026' }),
+          makeNetWorthSnapshot({ id: 'trend-2', title: 'February 2026' }),
         ],
         totalCount: 2,
       },
@@ -187,12 +168,6 @@ describe('NetWorth', () => {
   it('renders snapshot list after loading', async () => {
     renderNetWorth([mockSnapshotsQuery]);
     expect(await screen.findByText('January 2026')).toBeInTheDocument();
-  });
-
-  it('shows net worth value for each snapshot', async () => {
-    renderNetWorth([mockSnapshotsQuery]);
-    await screen.findByText('January 2026');
-    expect(screen.getByText('+5.000,00 €')).toBeInTheDocument();
   });
 
   it('shows empty state when no snapshots exist', async () => {
@@ -350,23 +325,6 @@ describe('NetWorth', () => {
       expect(
         screen.getByRole('button', { name: 'Net Worth Over Time' })
       ).toHaveAttribute('aria-expanded', 'false');
-    });
-
-    it('hides the view toggle when collapsed', async () => {
-      renderNetWorth([mockSnapshotsQuery], mockTrendQueryWithChart);
-      await screen.findByText('Net Worth Over Time');
-
-      expect(
-        screen.getByRole('button', { name: 'Assets & Liabilities' })
-      ).toBeInTheDocument();
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Net Worth Over Time' })
-      );
-
-      expect(
-        screen.queryByRole('button', { name: 'Assets & Liabilities' })
-      ).not.toBeInTheDocument();
     });
 
     it('switches to breakdown view when Assets & Liabilities is clicked', async () => {

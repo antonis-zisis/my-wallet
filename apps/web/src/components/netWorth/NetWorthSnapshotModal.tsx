@@ -1,35 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
-import {
-  ASSET_CATEGORIES,
-  LIABILITY_CATEGORIES,
-  NetWorthEntryType,
-} from '../../types/netWorth';
-import { XMarkIcon } from '../icons';
-import { Button, Input, Modal, MoneyAmount, Select } from '../ui';
+import { useNetWorthSnapshotForm } from '../../hooks/netWorthSnapshot/useNetWorthSnapshotForm';
+import { EntryInput, SnapshotFormValues } from '../../types/netWorth';
+import { Button, Input, Modal } from '../ui';
+import { NetWorthSnapshotModalEntryRow } from './NetWorthSnapshotModalEntryRow';
+import { NetWorthSnapshotModalSectionHeader } from './NetWorthSnapshotModalSectionHeader';
+import { NetWorthSnapshotModalSummary } from './NetWorthSnapshotModalSummary';
 
-interface EntryDraft {
-  key: number;
-  type: NetWorthEntryType;
-  category: string;
-  label: string;
-  amount: string;
-  notes: string;
-}
-
-export interface EntryInput {
-  type: NetWorthEntryType;
-  category: string;
-  label: string;
-  amount: number;
-  notes?: string;
-}
-
-export interface SnapshotFormValues {
-  title: string;
-  snapshotDate: string;
-  entries: Array<EntryInput>;
-}
+export type { EntryInput, SnapshotFormValues } from '../../types/netWorth';
 
 interface NetWorthSnapshotModalProps {
   initialEntries?: Array<EntryInput>;
@@ -42,60 +20,6 @@ interface NetWorthSnapshotModalProps {
   submitLabel: string;
 }
 
-function todayAsDateInput(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}
-
-function dateToTitle(dateString: string): string {
-  const [year, month] = dateString.split('-').map(Number);
-
-  return new Date(year, month - 1, 1).toLocaleDateString('en-US', {
-    month: 'long',
-    year: 'numeric',
-  });
-}
-
-let nextKey = 0;
-
-function makeEntry(type: NetWorthEntryType = 'ASSET'): EntryDraft {
-  const categories = type === 'ASSET' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES;
-
-  return {
-    key: nextKey++,
-    type,
-    category: categories[0],
-    label: '',
-    amount: '',
-    notes: '',
-  };
-}
-
-function toDraft(entry: EntryInput): EntryDraft {
-  return {
-    key: nextKey++,
-    type: entry.type,
-    category: entry.category,
-    label: entry.label,
-    amount: String(entry.amount),
-    notes: entry.notes ?? '',
-  };
-}
-
-function buildInitialEntries(
-  initialEntries: Array<EntryInput> | undefined
-): Array<EntryDraft> {
-  if (initialEntries && initialEntries.length > 0) {
-    return initialEntries.map(toDraft);
-  }
-
-  return [makeEntry('ASSET')];
-}
-
 export function NetWorthSnapshotModal({
   initialEntries,
   initialSnapshotDate,
@@ -106,230 +30,29 @@ export function NetWorthSnapshotModal({
   onSubmit,
   submitLabel,
 }: NetWorthSnapshotModalProps) {
-  const defaultDate = initialSnapshotDate ?? todayAsDateInput();
-  const defaultTitle = initialTitle || dateToTitle(defaultDate);
-
-  const [title, setTitle] = useState(defaultTitle);
-  const [snapshotDate, setSnapshotDate] = useState(defaultDate);
-  const [entries, setEntries] = useState<Array<EntryDraft>>(() =>
-    buildInitialEntries(initialEntries)
-  );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isTitleAutoRef = useRef(true);
-  const entriesContainerRef = useRef<HTMLDivElement>(null);
-  const liabilitiesSectionRef = useRef<HTMLDivElement>(null);
-  const lastAddedTypeRef = useRef<NetWorthEntryType | null>(null);
-  const prevEntriesLengthRef = useRef(entries.length);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const date = initialSnapshotDate ?? todayAsDateInput();
-    const autoTitle = dateToTitle(date);
-    const resolvedTitle = initialTitle || autoTitle;
-    setTitle(resolvedTitle);
-    setSnapshotDate(date);
-    setEntries(buildInitialEntries(initialEntries));
-    isTitleAutoRef.current = !initialTitle;
-  }, [isOpen, initialTitle, initialSnapshotDate, initialEntries]);
-
-  useEffect(() => {
-    if (
-      entries.length > prevEntriesLengthRef.current &&
-      entriesContainerRef.current
-    ) {
-      const container = entriesContainerRef.current;
-      if (
-        lastAddedTypeRef.current === 'LIABILITY' &&
-        liabilitiesSectionRef.current
-      ) {
-        const containerTop = container.getBoundingClientRect().top;
-        const sectionTop =
-          liabilitiesSectionRef.current.getBoundingClientRect().top;
-        container.scrollTop += sectionTop - containerTop;
-      } else {
-        container.scrollTop = 0;
-      }
-    }
-
-    prevEntriesLengthRef.current = entries.length;
-  }, [entries.length]);
-
-  const handleDateChange = (newDate: string) => {
-    if (isTitleAutoRef.current) {
-      setTitle(dateToTitle(newDate));
-    }
-
-    setSnapshotDate(newDate);
-  };
-
-  const handleTitleChange = (value: string) => {
-    isTitleAutoRef.current = false;
-    setTitle(value);
-  };
-
-  const addEntry = (type: NetWorthEntryType) => {
-    lastAddedTypeRef.current = type;
-    setEntries((previous) => [makeEntry(type), ...previous]);
-  };
-
-  const removeEntry = (key: number) => {
-    setEntries((previous) => previous.filter((entry) => entry.key !== key));
-  };
-
-  const updateEntry = (
-    key: number,
-    field: keyof Omit<EntryDraft, 'key' | 'type'>,
-    value: string
-  ) => {
-    setEntries((previous) =>
-      previous.map((entry) => {
-        if (entry.key !== key) {
-          return entry;
-        }
-
-        return { ...entry, [field]: value };
-      })
-    );
-  };
-
-  const assetEntries = entries.filter((entry) => entry.type === 'ASSET');
-  const liabilityEntries = entries.filter(
-    (entry) => entry.type === 'LIABILITY'
-  );
-
-  const totalAssets = assetEntries.reduce(
-    (sum, entry) => sum + (parseFloat(entry.amount) || 0),
-    0
-  );
-  const totalLiabilities = liabilityEntries.reduce(
-    (sum, entry) => sum + (parseFloat(entry.amount) || 0),
-    0
-  );
-  const netWorth = totalAssets - totalLiabilities;
-
-  const hasSomeAmount = entries.some((entry) => parseFloat(entry.amount) > 0);
-  const hasIncompleteEntries = entries.some(
-    (entry) => !entry.label.trim() || !(parseFloat(entry.amount) > 0)
-  );
-
-  const isValid =
-    title.trim().length > 0 &&
-    snapshotDate.length > 0 &&
-    entries.length > 0 &&
-    !hasIncompleteEntries;
+  const form = useNetWorthSnapshotForm({
+    initialEntries,
+    initialSnapshotDate,
+    initialTitle,
+    isOpen,
+  });
 
   const handleSubmit = async () => {
-    if (!isValid || isSubmitting) {
+    if (!form.isValid || isSubmitting) {
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await onSubmit({
-        title: title.trim(),
-        snapshotDate,
-        entries: entries.map((entry) => ({
-          type: entry.type,
-          label: entry.label.trim(),
-          amount: parseFloat(entry.amount),
-          category: entry.category,
-          notes: entry.notes.trim() || undefined,
-        })),
-      });
+      await onSubmit(form.toFormValues());
     } catch {
       // error handling is the caller's responsibility
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const renderEntryRow = (entry: EntryDraft) => {
-    const categoryOptions = (
-      entry.type === 'ASSET' ? ASSET_CATEGORIES : LIABILITY_CATEGORIES
-    ).map((cat) => ({ value: cat, label: cat }));
-
-    return (
-      <div
-        key={entry.key}
-        className="border-border grid grid-cols-[144px_1fr_160px_112px_28px] items-center gap-2 border-b py-1 last:border-0 dark:border-gray-700/50"
-      >
-        <Select
-          id={`category-${entry.key}`}
-          value={entry.category}
-          options={categoryOptions}
-          onChange={(event) =>
-            updateEntry(entry.key, 'category', event.target.value)
-          }
-          className="py-1! text-sm"
-        />
-
-        <Input
-          id={`label-${entry.key}`}
-          placeholder="e.g. Savings Account"
-          value={entry.label}
-          onChange={(event) =>
-            updateEntry(entry.key, 'label', event.target.value)
-          }
-          className="py-1! text-sm"
-        />
-
-        <Input
-          id={`notes-${entry.key}`}
-          placeholder="e.g. 52 shares"
-          value={entry.notes}
-          onChange={(event) =>
-            updateEntry(entry.key, 'notes', event.target.value)
-          }
-          className="py-1! text-sm"
-        />
-
-        <Input
-          id={`amount-${entry.key}`}
-          type="number"
-          placeholder="0.00"
-          min="0"
-          step="0.01"
-          value={entry.amount}
-          onChange={(event) =>
-            updateEntry(entry.key, 'amount', event.target.value)
-          }
-          className="py-1! text-sm"
-        />
-
-        <button
-          onClick={() => removeEntry(entry.key)}
-          className="text-text-tertiary flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:text-red-400"
-          aria-label="Remove entry"
-          disabled={entries.length === 1}
-        >
-          <XMarkIcon className="h-3.5 w-3.5" />
-        </button>
-      </div>
-    );
-  };
-
-  const renderSectionHeader = (
-    label: string,
-    type: NetWorthEntryType,
-    ref?: React.RefObject<HTMLDivElement | null>
-  ) => (
-    <div ref={ref} className="flex items-center gap-2 py-1.5">
-      <span className="text-text-tertiary text-xs font-semibold tracking-wide uppercase">
-        {label}
-      </span>
-      <div className="border-border flex-1 border-t" />
-      <button
-        className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 cursor-pointer text-xs"
-        onClick={() => addEntry(type)}
-      >
-        + Add
-      </button>
-    </div>
-  );
 
   return (
     <Modal
@@ -346,7 +69,7 @@ export function NetWorthSnapshotModal({
 
           <Button
             onClick={handleSubmit}
-            disabled={!isValid}
+            disabled={!form.isValid}
             isLoading={isSubmitting}
           >
             {submitLabel}
@@ -360,8 +83,8 @@ export function NetWorthSnapshotModal({
             label="Snapshot Title"
             id="snapshot-title"
             placeholder="e.g. February 2026"
-            value={title}
-            onChange={(event) => handleTitleChange(event.target.value)}
+            value={form.title}
+            onChange={(event) => form.handleTitleChange(event.target.value)}
             className="py-1! text-sm"
             autoFocus
           />
@@ -370,71 +93,76 @@ export function NetWorthSnapshotModal({
             label="Date"
             id="snapshot-date"
             type="date"
-            value={snapshotDate}
-            onChange={(event) => handleDateChange(event.target.value)}
+            value={form.snapshotDate}
+            onChange={(event) => form.handleDateChange(event.target.value)}
             className="py-1! text-sm"
           />
         </div>
 
         <div>
           <div
-            ref={entriesContainerRef}
+            ref={form.entriesContainerRef}
             className="max-h-96 overflow-y-auto pr-1"
           >
-            {renderSectionHeader('Assets', 'ASSET')}
-            {assetEntries.length === 0 ? (
+            <NetWorthSnapshotModalSectionHeader
+              label="Assets"
+              onAdd={() => form.addEntry('ASSET')}
+            />
+            {form.assetEntries.length === 0 ? (
               <p className="text-text-tertiary py-1 text-xs">
                 No assets added yet.
               </p>
             ) : (
-              assetEntries.map(renderEntryRow)
+              form.assetEntries.map((entry) => (
+                <NetWorthSnapshotModalEntryRow
+                  key={entry.key}
+                  entry={entry}
+                  isOnlyEntry={form.entries.length === 1}
+                  onRemove={() => form.removeEntry(entry.key)}
+                  onUpdate={(field, value) =>
+                    form.updateEntry(entry.key, field, value)
+                  }
+                />
+              ))
             )}
 
-            {renderSectionHeader(
-              'Liabilities',
-              'LIABILITY',
-              liabilitiesSectionRef
-            )}
-            {liabilityEntries.length === 0 ? (
+            <NetWorthSnapshotModalSectionHeader
+              containerRef={form.liabilitiesSectionRef}
+              label="Liabilities"
+              onAdd={() => form.addEntry('LIABILITY')}
+            />
+            {form.liabilityEntries.length === 0 ? (
               <p className="text-text-tertiary py-1 text-xs">
                 No liabilities added yet.
               </p>
             ) : (
-              liabilityEntries.map(renderEntryRow)
+              form.liabilityEntries.map((entry) => (
+                <NetWorthSnapshotModalEntryRow
+                  key={entry.key}
+                  entry={entry}
+                  isOnlyEntry={form.entries.length === 1}
+                  onRemove={() => form.removeEntry(entry.key)}
+                  onUpdate={(field, value) =>
+                    form.updateEntry(entry.key, field, value)
+                  }
+                />
+              ))
             )}
           </div>
 
-          {hasIncompleteEntries && hasSomeAmount && (
+          {form.hasIncompleteEntries && form.hasSomeAmount && (
             <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
               All entries need a label and an amount greater than zero.
             </p>
           )}
         </div>
 
-        {hasSomeAmount && (
-          <div className="border-border flex justify-between border-t pt-2 text-xs">
-            <span className="text-green-600 dark:text-green-400">
-              Assets: <MoneyAmount amount={totalAssets} />
-            </span>
-
-            <span className="text-red-600 dark:text-red-400">
-              Liabilities: <MoneyAmount amount={totalLiabilities} />
-            </span>
-
-            <span
-              className={`font-semibold ${
-                netWorth >= 0
-                  ? 'text-green-700 dark:text-green-300'
-                  : 'text-red-700 dark:text-red-300'
-              }`}
-            >
-              Net Worth:{' '}
-              <MoneyAmount
-                amount={Math.abs(netWorth)}
-                sign={netWorth >= 0 ? '' : '-'}
-              />
-            </span>
-          </div>
+        {form.hasSomeAmount && (
+          <NetWorthSnapshotModalSummary
+            netWorth={form.netWorth}
+            totalAssets={form.totalAssets}
+            totalLiabilities={form.totalLiabilities}
+          />
         )}
       </div>
     </Modal>

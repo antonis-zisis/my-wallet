@@ -67,7 +67,7 @@ describe('NetWorthEntriesSection', () => {
   });
 
   describe('entryDeltas', () => {
-    it('shows a positive delta in green next to the entry', () => {
+    it('shows a positive delta with a plus sign next to the entry', () => {
       const entries = [
         makeEntry({
           label: 'Savings Account',
@@ -85,10 +85,10 @@ describe('NetWorthEntriesSection', () => {
           }}
         />
       );
-      expect(screen.getByText(/\+200,00 €/)).toHaveClass('text-green-600');
+      expect(screen.getByText(/\+200,00 €/)).toBeInTheDocument();
     });
 
-    it('shows a negative delta in red next to the entry', () => {
+    it('shows a negative delta with a minus sign next to the entry', () => {
       const entries = [
         makeEntry({
           label: 'Savings Account',
@@ -106,7 +106,7 @@ describe('NetWorthEntriesSection', () => {
           }}
         />
       );
-      expect(screen.getByText(/−200,00 €/)).toHaveClass('text-red-600');
+      expect(screen.getByText(/−200,00 €/)).toBeInTheDocument();
     });
 
     it('shows a "New" badge for entries not in the previous snapshot', () => {

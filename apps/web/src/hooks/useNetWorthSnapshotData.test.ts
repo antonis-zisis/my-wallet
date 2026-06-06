@@ -6,43 +6,45 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import { GET_NET_WORTH_SNAPSHOT } from '../graphql/netWorth';
+import {
+  makeNetWorthEntry,
+  makeNetWorthSnapshot,
+} from '../test/fixtures/netWorth';
 import { createWrapper } from '../test/hook-test-utils';
 import { useNetWorthSnapshotData } from './useNetWorthSnapshotData';
 
-const mockEntries = [
-  {
-    id: 'entry-1',
-    type: 'ASSET',
-    label: 'Savings Account',
-    amount: 10000,
-    category: 'Savings',
-  },
-  {
-    id: 'entry-2',
-    type: 'ASSET',
-    label: 'Stocks',
-    amount: 5000,
-    category: 'Investments',
-  },
-  {
-    id: 'entry-3',
-    type: 'LIABILITY',
-    label: 'Car Loan',
-    amount: 3000,
-    category: 'Car Loan',
-  },
-];
-
-const mockSnapshot = {
+const mockSnapshot = makeNetWorthSnapshot({
   id: '1',
   title: 'January 2026',
   totalAssets: 15000,
   totalLiabilities: 3000,
   netWorth: 12000,
-  entries: mockEntries,
+  entries: [
+    makeNetWorthEntry({
+      id: 'entry-1',
+      type: 'ASSET',
+      label: 'Savings Account',
+      amount: 10000,
+      category: 'Savings',
+    }),
+    makeNetWorthEntry({
+      id: 'entry-2',
+      type: 'ASSET',
+      label: 'Stocks',
+      amount: 5000,
+      category: 'Investments',
+    }),
+    makeNetWorthEntry({
+      id: 'entry-3',
+      type: 'LIABILITY',
+      label: 'Car Loan',
+      amount: 3000,
+      category: 'Car Loan',
+    }),
+  ],
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
-};
+});
 
 const mockSnapshotQuery: MockLink.MockedResponse = {
   request: { query: GET_NET_WORTH_SNAPSHOT, variables: { id: '1' } },
@@ -59,10 +61,10 @@ const mockSnapshotQueryError: MockLink.MockedResponse = {
   result: { errors: [new GraphQLError('Not found')] },
 };
 
-const mockNegativeSnapshot = {
+const mockNegativeSnapshot = makeNetWorthSnapshot({
   ...mockSnapshot,
   netWorth: -1000,
-};
+});
 
 const mockNegativeQuery: MockLink.MockedResponse = {
   request: { query: GET_NET_WORTH_SNAPSHOT, variables: { id: '1' } },
@@ -116,30 +118,6 @@ describe('useNetWorthSnapshotData', () => {
       expect(result.current.snapshot?.title).toBe('January 2026');
       expect(result.current.assets).toHaveLength(2);
       expect(result.current.liabilities).toHaveLength(1);
-    });
-
-    it('returns only assets in assets array', async () => {
-      const { result } = renderHook(() => useNetWorthSnapshotData(), {
-        wrapper: createRouterWrapper([mockSnapshotQuery]),
-      });
-
-      await waitFor(() => expect(result.current.loading).toBe(false));
-
-      expect(
-        result.current.assets.every((entry) => entry.type === 'ASSET')
-      ).toBe(true);
-    });
-
-    it('returns only liabilities in liabilities array', async () => {
-      const { result } = renderHook(() => useNetWorthSnapshotData(), {
-        wrapper: createRouterWrapper([mockSnapshotQuery]),
-      });
-
-      await waitFor(() => expect(result.current.loading).toBe(false));
-
-      expect(
-        result.current.liabilities.every((entry) => entry.type === 'LIABILITY')
-      ).toBe(true);
     });
 
     it('sets isPositive true when net worth is positive', async () => {

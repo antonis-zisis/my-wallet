@@ -148,35 +148,16 @@ describe('NetWorthSnapshotModal', () => {
     expect(titleInput).toHaveValue('My Custom Title');
   });
 
-  it('submits the snapshotDate from the date input', async () => {
-    const onSubmit = vi.fn().mockResolvedValue(undefined);
-    renderModal({ onSubmit });
-
-    fireEvent.change(screen.getByLabelText('Date'), {
-      target: { value: '2026-03-01' },
-    });
-    await userEvent.type(
-      screen.getByPlaceholderText('e.g. Savings Account'),
-      'Savings'
-    );
-    await userEvent.type(screen.getByPlaceholderText('0.00'), '1000');
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Save Snapshot' })
-    );
-
-    expect(onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ snapshotDate: '2026-03-01' })
-    );
-  });
-
-  it('submits trimmed title and entry data', async () => {
+  it('submits the snapshotDate, trimmed title, and entries', async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     renderModal({ onSubmit });
 
     const titleInput = screen.getByPlaceholderText('e.g. February 2026');
     await userEvent.clear(titleInput);
     await userEvent.type(titleInput, '  January 2026  ');
+    fireEvent.change(screen.getByLabelText('Date'), {
+      target: { value: '2026-03-01' },
+    });
     await userEvent.type(
       screen.getByPlaceholderText('e.g. Savings Account'),
       'Savings'
@@ -190,6 +171,7 @@ describe('NetWorthSnapshotModal', () => {
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'January 2026',
+        snapshotDate: '2026-03-01',
         entries: [
           {
             type: 'ASSET',
