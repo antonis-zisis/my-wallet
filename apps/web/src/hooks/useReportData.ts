@@ -2,7 +2,6 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { type CreateTransactionInput } from '../components/reports/AddTransactionModal';
 import { useToast } from '../contexts/ToastContext';
 import {
   DELETE_REPORT,
@@ -21,8 +20,15 @@ import {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
   Transaction,
+  TransactionFormInput,
 } from '../types/transaction';
 import { exportReportToCsv } from '../utils/exportReportToCsv';
+import {
+  getFilteredTransactions,
+  TypeFilter,
+} from './reports/selectors/getFilteredTransactions';
+import { getPresentCategories } from './reports/selectors/getPresentCategories';
+import { useReportModals } from './useReportModals';
 
 interface ReportData {
   report: ReportType & { transactions: Array<Transaction> };
@@ -66,23 +72,14 @@ export function useReportData() {
     refetchQueries: [{ query: GET_REPORT, variables: { id } }],
   });
 
-  const [isChartOpen, setIsChartOpen] = useState(false);
-  const [isBudgetChartOpen, setIsBudgetChartOpen] = useState(false);
-  const [isAddTransactionModalOpen, setIsAddTransactionModalOpen] =
-    useState(false);
-  const [isDeleteReportModalOpen, setIsDeleteReportModalOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] =
-    useState<Transaction | null>(null);
-  const [deletingTransaction, setDeletingTransaction] =
-    useState<Transaction | null>(null);
+  const modals = useReportModals();
 
-  const [selectedTypeFilter, setSelectedTypeFilter] = useState<
-    'All' | 'Income' | 'Expense'
-  >('All');
+  const [selectedTypeFilter, setSelectedTypeFilter] =
+    useState<TypeFilter>('All');
   const [selectedCategoryFilter, setSelectedCategoryFilter] =
     useState<string>('All');
 
-  const onSelectTypeFilter = (type: 'All' | 'Income' | 'Expense') => {
+  const onSelectTypeFilter = (type: TypeFilter) => {
     setSelectedTypeFilter(type);
     setSelectedCategoryFilter('All');
   };
@@ -91,70 +88,62 @@ export function useReportData() {
   const transactions = report?.transactions ?? [];
   const isLocked = report?.isLocked ?? false;
 
-  const presentExpenseCategories = EXPENSE_CATEGORIES.filter((category) =>
-    transactions.some(
-      (transaction) =>
-        transaction.category === category && transaction.type === 'EXPENSE'
-    )
+  const presentExpenseCategories = getPresentCategories(
+    EXPENSE_CATEGORIES,
+    transactions,
+    'EXPENSE'
+  );
+  const presentIncomeCategories = getPresentCategories(
+    INCOME_CATEGORIES,
+    transactions,
+    'INCOME'
   );
 
-  const presentIncomeCategories = INCOME_CATEGORIES.filter((category) =>
-    transactions.some(
-      (transaction) =>
-        transaction.category === category && transaction.type === 'INCOME'
-    )
+  const filteredTransactions = getFilteredTransactions(
+    transactions,
+    selectedTypeFilter,
+    selectedCategoryFilter
   );
-
-  const filteredTransactions = transactions.filter((transaction) => {
-    const matchesType =
-      selectedTypeFilter === 'All' ||
-      (selectedTypeFilter === 'Income' && transaction.type === 'INCOME') ||
-      (selectedTypeFilter === 'Expense' && transaction.type === 'EXPENSE');
-
-    const matchesCategory =
-      selectedCategoryFilter === 'All' ||
-      transaction.category === selectedCategoryFilter;
-
-    return matchesType && matchesCategory;
-  });
 
   const onSaveTitle = async (title: string) => {
     await updateReport({ variables: { input: { id, title } } });
   };
 
-  const onCreateTransaction = async (input: CreateTransactionInput) => {
+  const onCreateTransaction = async (input: TransactionFormInput) => {
     try {
       await createTransaction({
         variables: { input: { ...input, reportId: id } },
       });
 
-      setIsAddTransactionModalOpen(false);
+      modals.onCloseAddTransactionModal();
       showSuccess('Transaction added.');
     } catch {
       showError('Failed to add transaction.');
     }
   };
 
-  const onUpdateTransaction = async (input: CreateTransactionInput) => {
-    if (!editingTransaction) {
+  const onUpdateTransaction = async (input: TransactionFormInput) => {
+    if (!modals.editingTransaction) {
       return;
     }
 
     await updateTransaction({
-      variables: { input: { ...input, id: editingTransaction.id } },
+      variables: { input: { ...input, id: modals.editingTransaction.id } },
     });
 
-    setEditingTransaction(null);
+    modals.onCloseEditTransactionModal();
   };
 
   const onConfirmDeleteTransaction = async () => {
-    if (!deletingTransaction) {
+    if (!modals.deletingTransaction) {
       return;
     }
 
-    await deleteTransaction({ variables: { id: deletingTransaction.id } });
+    await deleteTransaction({
+      variables: { id: modals.deletingTransaction.id },
+    });
 
-    setDeletingTransaction(null);
+    modals.onCloseDeleteTransactionModal();
   };
 
   const onConfirmDeleteReport = async () => {
@@ -169,37 +158,22 @@ export function useReportData() {
   };
 
   return {
-    deletingTransaction,
-    editingTransaction,
+    ...modals,
     error: !!error,
     filteredTransactions,
-    isAddTransactionModalOpen,
-    isBudgetChartOpen,
-    isChartOpen,
-    isDeleteReportModalOpen,
     isDeleting,
     isDeletingTransaction,
     isLocked,
     isLocking,
     loading,
-    onCloseAddTransactionModal: () => setIsAddTransactionModalOpen(false),
-    onCloseDeleteReportModal: () => setIsDeleteReportModalOpen(false),
-    onCloseDeleteTransactionModal: () => setDeletingTransaction(null),
-    onCloseEditTransactionModal: () => setEditingTransaction(null),
     onConfirmDeleteReport,
     onConfirmDeleteTransaction,
     onCreateTransaction,
     onExportCsv,
     onLockReport: () => lockReport({ variables: { id } }),
-    onOpenAddTransactionModal: () => setIsAddTransactionModalOpen(true),
-    onOpenDeleteReportModal: () => setIsDeleteReportModalOpen(true),
     onSaveTitle,
     onSelectCategoryFilter: setSelectedCategoryFilter,
-    onSelectTransactionForDelete: setDeletingTransaction,
-    onSelectTransactionForEdit: setEditingTransaction,
     onSelectTypeFilter,
-    onToggleBudgetChart: () => setIsBudgetChartOpen((prev) => !prev),
-    onToggleChart: () => setIsChartOpen((prev) => !prev),
     onUnlockReport: () => unlockReport({ variables: { id } }),
     onUpdateTransaction,
     presentExpenseCategories,

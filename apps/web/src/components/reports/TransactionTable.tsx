@@ -1,7 +1,7 @@
 import { Transaction } from '../../types/transaction';
 import { formatDate } from '../../utils/formatDate';
-import { FilterIcon } from '../icons';
 import { Badge, Button, Card, Dropdown, MoneyAmount } from '../ui';
+import { TransactionTableHeader } from './TransactionTableHeader';
 
 interface TransactionTableProps {
   isLocked?: boolean;
@@ -117,52 +117,14 @@ export function TransactionTable({
           </div>
 
           <table className="w-full">
-            <thead>
-              <tr className="border-border text-text-secondary border-b text-left text-sm font-medium">
-                <th className="pr-4 pb-3">Date</th>
-                <th className="pr-4 pb-3">
-                  <div className="flex items-center gap-1.5">
-                    Type
-                    {hasMultipleTypes && (
-                      <Dropdown
-                        align="left"
-                        className="relative inline-flex items-center"
-                        items={typeFilterItems}
-                        trigger={
-                          <button className="hover:bg-bg-muted cursor-pointer rounded p-0.5">
-                            <FilterIcon
-                              className={`h-3.5 w-3.5 ${selectedTypeFilter !== 'All' ? 'text-brand-500' : 'text-text-tertiary'}`}
-                            />
-                          </button>
-                        }
-                      />
-                    )}
-                  </div>
-                </th>
-                <th className="pr-4 pb-3">
-                  <div className="flex items-center gap-1.5">
-                    Category
-                    {presentCategoriesForType.length > 0 && (
-                      <Dropdown
-                        align="left"
-                        className="relative inline-flex items-center"
-                        items={categoryFilterItems}
-                        trigger={
-                          <button className="hover:bg-bg-muted cursor-pointer rounded p-0.5">
-                            <FilterIcon
-                              className={`h-3.5 w-3.5 ${selectedCategoryFilter !== 'All' ? 'text-brand-500' : 'text-text-tertiary'}`}
-                            />
-                          </button>
-                        }
-                      />
-                    )}
-                  </div>
-                </th>
-                <th className="pr-4 pb-3">Description</th>
-                <th className="pb-3 text-right">Amount</th>
-                <th className="pb-3"></th>
-              </tr>
-            </thead>
+            <TransactionTableHeader
+              categoryFilterItems={categoryFilterItems}
+              hasMultipleTypes={hasMultipleTypes}
+              presentCategoriesCount={presentCategoriesForType.length}
+              selectedCategoryFilter={selectedCategoryFilter}
+              selectedTypeFilter={selectedTypeFilter}
+              typeFilterItems={typeFilterItems}
+            />
 
             <tbody>
               {transactions.map((transaction, index) => (

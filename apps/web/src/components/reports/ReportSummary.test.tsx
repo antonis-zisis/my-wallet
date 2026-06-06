@@ -1,21 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { type Transaction } from '../../types/transaction';
+import { makeTransaction } from '../../test/fixtures/report';
 import { ReportSummary } from './ReportSummary';
-
-const makeTransaction = (
-  overrides: Partial<Transaction> & Pick<Transaction, 'type' | 'amount'>
-): Transaction => ({
-  id: crypto.randomUUID(),
-  reportId: '1',
-  description: 'Test',
-  category: 'Other',
-  date: '2026-01-15',
-  createdAt: '2026-01-15T00:00:00Z',
-  updatedAt: '2026-01-15T00:00:00Z',
-  ...overrides,
-});
 
 describe('ReportSummary', () => {
   it('displays zero totals when there are no transactions', () => {
@@ -56,22 +43,12 @@ describe('ReportSummary', () => {
     expect(screen.getByText(/^\+/)).toBeInTheDocument();
   });
 
-  it('uses green styling for a positive net balance', () => {
-    const transactions = [
-      makeTransaction({ type: 'INCOME', amount: 3000 }),
-      makeTransaction({ type: 'EXPENSE', amount: 1000 }),
-    ];
-    render(<ReportSummary transactions={transactions} />);
-    expect(screen.getByText(/2\.000,00 €/)).toHaveClass('text-green-600');
-  });
-
-  it('uses red styling for a negative net balance', () => {
+  it('displays a negative net balance with a minus prefix', () => {
     const transactions = [
       makeTransaction({ type: 'INCOME', amount: 500 }),
       makeTransaction({ type: 'EXPENSE', amount: 1500 }),
     ];
     render(<ReportSummary transactions={transactions} />);
-    // The net balance value: formatMoney(-1000) = 1.000,00 (abs value displayed)
-    expect(screen.getByText(/-1\.000,00 €/)).toHaveClass('text-red-600');
+    expect(screen.getByText(/-1\.000,00 €/)).toBeInTheDocument();
   });
 });

@@ -1,35 +1,11 @@
+import { GraphQLError } from 'graphql';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { makeReport, makeTransaction } from '../../test/fixtures/reports';
 import { reportResolvers } from './resolvers';
 
 const USER_ID = 'user-1';
 const CTX = { userId: USER_ID };
-
-const mockReport = {
-  id: 'report-1',
-  isLocked: false,
-  title: 'January Budget',
-  userId: USER_ID,
-  createdAt: new Date('2024-01-01T10:00:00Z'),
-  updatedAt: new Date('2024-01-01T10:00:00Z'),
-};
-
-const mockReportWithTransactions = {
-  ...mockReport,
-  transactions: [
-    {
-      id: 'tx-1',
-      reportId: 'report-1',
-      type: 'EXPENSE',
-      amount: 50,
-      description: 'Groceries',
-      category: 'Food',
-      date: new Date('2024-01-15'),
-      createdAt: new Date('2024-01-15T10:00:00Z'),
-      updatedAt: new Date('2024-01-15T10:00:00Z'),
-    },
-  ],
-};
 
 vi.mock('../../lib/prisma', () => ({
   default: {
@@ -59,7 +35,8 @@ beforeEach(async () => {
 describe('reportResolvers', () => {
   describe('Query.reports', () => {
     it('returns items and totalCount for page 1', async () => {
-      vi.mocked(prisma.report.findMany).mockResolvedValue([mockReport]);
+      const report = makeReport();
+      vi.mocked(prisma.report.findMany).mockResolvedValue([report]);
       vi.mocked(prisma.report.count).mockResolvedValue(1);
 
       const result = await reportResolvers.Query.reports(
@@ -77,11 +54,11 @@ describe('reportResolvers', () => {
       expect(prisma.report.count).toHaveBeenCalledWith({
         where: { userId: USER_ID },
       });
-      expect(result).toEqual({ items: [mockReport], totalCount: 1 });
+      expect(result).toEqual({ items: [report], totalCount: 1 });
     });
 
     it('skips 10 items for page 2', async () => {
-      vi.mocked(prisma.report.findMany).mockResolvedValue([mockReport]);
+      vi.mocked(prisma.report.findMany).mockResolvedValue([makeReport()]);
       vi.mocked(prisma.report.count).mockResolvedValue(11);
 
       await reportResolvers.Query.reports(
@@ -125,34 +102,37 @@ describe('reportResolvers', () => {
 
   describe('Report.transactions', () => {
     it('returns pre-loaded transactions from the parent without querying the DB', async () => {
-      const result = await reportResolvers.Report.transactions(
-        mockReportWithTransactions
-      );
+      const transactions = [makeTransaction()];
+      const parent = { ...makeReport(), transactions };
+
+      const result = await reportResolvers.Report.transactions(parent);
 
       expect(prisma.transaction.findMany).not.toHaveBeenCalled();
-      expect(result).toEqual(mockReportWithTransactions.transactions);
+      expect(result).toEqual(transactions);
     });
 
     it('fetches transactions from the DB when parent has none loaded', async () => {
+      const transactions = [makeTransaction()];
       vi.mocked(prisma.transaction.findMany).mockResolvedValue(
-        mockReportWithTransactions.transactions as never
+        transactions as never
       );
+      const parent = makeReport();
 
-      const result = await reportResolvers.Report.transactions(mockReport);
+      const result = await reportResolvers.Report.transactions(parent);
 
       expect(prisma.transaction.findMany).toHaveBeenCalledWith({
-        where: { reportId: mockReport.id },
+        where: { reportId: parent.id },
         orderBy: { date: 'desc' },
       });
-      expect(result).toEqual(mockReportWithTransactions.transactions);
+      expect(result).toEqual(transactions);
     });
   });
 
   describe('Report.transactionCount', () => {
     it('returns the length of pre-loaded transactions without querying the DB', async () => {
-      const result = await reportResolvers.Report.transactionCount(
-        mockReportWithTransactions
-      );
+      const parent = { ...makeReport(), transactions: [makeTransaction()] };
+
+      const result = await reportResolvers.Report.transactionCount(parent);
 
       expect(prisma.transaction.count).not.toHaveBeenCalled();
       expect(result).toBe(1);
@@ -160,11 +140,12 @@ describe('reportResolvers', () => {
 
     it('queries the DB when parent has no pre-loaded transactions', async () => {
       vi.mocked(prisma.transaction.count).mockResolvedValue(3);
+      const parent = makeReport();
 
-      const result = await reportResolvers.Report.transactionCount(mockReport);
+      const result = await reportResolvers.Report.transactionCount(parent);
 
       expect(prisma.transaction.count).toHaveBeenCalledWith({
-        where: { reportId: mockReport.id },
+        where: { reportId: parent.id },
       });
       expect(result).toBe(3);
     });
@@ -172,26 +153,15 @@ describe('reportResolvers', () => {
 
   describe('Report.netBalance', () => {
     it('computes net balance from pre-loaded transactions without querying the DB', async () => {
-      const reportWithMixedTransactions = {
-        ...mockReport,
+      const parent = {
+        ...makeReport(),
         transactions: [
-          {
-            ...mockReportWithTransactions.transactions[0],
-            type: 'EXPENSE',
-            amount: 50,
-          },
-          {
-            ...mockReportWithTransactions.transactions[0],
-            id: 'tx-2',
-            type: 'INCOME',
-            amount: 200,
-          },
+          makeTransaction({ type: 'EXPENSE', amount: 50 }),
+          makeTransaction({ id: 'transaction-2', type: 'INCOME', amount: 200 }),
         ],
       };
 
-      const result = await reportResolvers.Report.netBalance(
-        reportWithMixedTransactions
-      );
+      const result = await reportResolvers.Report.netBalance(parent);
 
       expect(prisma.transaction.aggregate).not.toHaveBeenCalled();
       expect(result).toBe(150);
@@ -202,7 +172,7 @@ describe('reportResolvers', () => {
         .mockResolvedValueOnce({ _sum: { amount: 500 } } as never)
         .mockResolvedValueOnce({ _sum: { amount: 300 } } as never);
 
-      const result = await reportResolvers.Report.netBalance(mockReport);
+      const result = await reportResolvers.Report.netBalance(makeReport());
 
       expect(prisma.transaction.aggregate).toHaveBeenCalledTimes(2);
       expect(result).toBe(200);
@@ -213,7 +183,7 @@ describe('reportResolvers', () => {
         .mockResolvedValueOnce({ _sum: { amount: null } } as never)
         .mockResolvedValueOnce({ _sum: { amount: null } } as never);
 
-      const result = await reportResolvers.Report.netBalance(mockReport);
+      const result = await reportResolvers.Report.netBalance(makeReport());
 
       expect(result).toBe(0);
     });
@@ -221,8 +191,12 @@ describe('reportResolvers', () => {
 
   describe('Query.report', () => {
     it('returns a report with its transactions', async () => {
+      const reportWithTransactions = {
+        ...makeReport(),
+        transactions: [makeTransaction()],
+      };
       vi.mocked(prisma.report.findFirst).mockResolvedValue(
-        mockReportWithTransactions as never
+        reportWithTransactions as never
       );
 
       const result = await reportResolvers.Query.report(
@@ -235,7 +209,7 @@ describe('reportResolvers', () => {
         where: { id: 'report-1', userId: USER_ID },
         include: { transactions: { orderBy: { date: 'desc' } } },
       });
-      expect(result).toEqual(mockReportWithTransactions);
+      expect(result).toEqual(reportWithTransactions);
     });
 
     it('returns null for non-existent report', async () => {
@@ -253,7 +227,8 @@ describe('reportResolvers', () => {
 
   describe('Mutation.createReport', () => {
     it('creates a report with the given title', async () => {
-      vi.mocked(prisma.report.create).mockResolvedValue(mockReport);
+      const report = makeReport();
+      vi.mocked(prisma.report.create).mockResolvedValue(report);
 
       const result = await reportResolvers.Mutation.createReport(
         undefined as unknown,
@@ -264,19 +239,30 @@ describe('reportResolvers', () => {
       expect(prisma.report.create).toHaveBeenCalledWith({
         data: { title: 'January Budget', userId: USER_ID },
       });
-      expect(result).toEqual(mockReport);
+      expect(result).toEqual(report);
+    });
+
+    it('throws BAD_USER_INPUT when title exceeds 255 characters', async () => {
+      await expect(
+        reportResolvers.Mutation.createReport(
+          undefined as unknown,
+          { input: { title: 'x'.repeat(256) } },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.create).not.toHaveBeenCalled();
     });
   });
 
   describe('Mutation.updateReport', () => {
     it('updates a report title', async () => {
-      const updatedReport = {
-        ...mockReport,
+      const existing = makeReport();
+      const updated = makeReport({
         title: 'February Budget',
         updatedAt: new Date('2024-01-02T10:00:00Z'),
-      };
-      vi.mocked(prisma.report.findFirst).mockResolvedValue(mockReport);
-      vi.mocked(prisma.report.update).mockResolvedValue(updatedReport);
+      });
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(existing);
+      vi.mocked(prisma.report.update).mockResolvedValue(updated);
 
       const result = await reportResolvers.Mutation.updateReport(
         undefined as unknown,
@@ -291,14 +277,43 @@ describe('reportResolvers', () => {
         where: { id: 'report-1' },
         data: { title: 'February Budget' },
       });
-      expect(result).toEqual(updatedReport);
+      expect(result).toEqual(updated);
+    });
+
+    it('throws NOT_FOUND when the report does not exist or belongs to another user', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(null);
+
+      await expect(
+        reportResolvers.Mutation.updateReport(
+          undefined as unknown,
+          { input: { id: 'report-1', title: 'February Budget' } },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.update).not.toHaveBeenCalled();
+    });
+
+    it('throws FORBIDDEN when the report is locked', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(
+        makeReport({ isLocked: true })
+      );
+
+      await expect(
+        reportResolvers.Mutation.updateReport(
+          undefined as unknown,
+          { input: { id: 'report-1', title: 'February Budget' } },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.update).not.toHaveBeenCalled();
     });
   });
 
   describe('Mutation.deleteReport', () => {
     it('deletes a report and returns true', async () => {
-      vi.mocked(prisma.report.findFirst).mockResolvedValue(mockReport);
-      vi.mocked(prisma.report.delete).mockResolvedValue(mockReport);
+      const report = makeReport();
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(report);
+      vi.mocked(prisma.report.delete).mockResolvedValue(report);
 
       const result = await reportResolvers.Mutation.deleteReport(
         undefined as unknown,
@@ -313,6 +328,64 @@ describe('reportResolvers', () => {
         where: { id: 'report-1' },
       });
       expect(result).toBe(true);
+    });
+
+    it('throws NOT_FOUND when the report does not exist or belongs to another user', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(null);
+
+      await expect(
+        reportResolvers.Mutation.deleteReport(
+          undefined as unknown,
+          { id: 'report-1' },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.delete).not.toHaveBeenCalled();
+    });
+
+    it('throws FORBIDDEN when the report is locked', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(
+        makeReport({ isLocked: true })
+      );
+
+      await expect(
+        reportResolvers.Mutation.deleteReport(
+          undefined as unknown,
+          { id: 'report-1' },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.delete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Mutation.lockReport', () => {
+    it('throws NOT_FOUND when the report does not exist or belongs to another user', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(null);
+
+      await expect(
+        reportResolvers.Mutation.lockReport(
+          undefined as unknown,
+          { id: 'report-1' },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Mutation.unlockReport', () => {
+    it('throws NOT_FOUND when the report does not exist or belongs to another user', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue(null);
+
+      await expect(
+        reportResolvers.Mutation.unlockReport(
+          undefined as unknown,
+          { id: 'report-1' },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.update).not.toHaveBeenCalled();
     });
   });
 });
