@@ -3,28 +3,8 @@ import { cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { type Subscription } from '../../types/subscription';
+import { makeSubscription } from '../../test/fixtures/subscription';
 import { SubscriptionList } from './SubscriptionList';
-
-const makeSubscription = (
-  overrides: Partial<Subscription> & Pick<Subscription, 'name'>
-): Subscription => ({
-  id: crypto.randomUUID(),
-  amount: 9.99,
-  billingCycle: 'MONTHLY',
-  isActive: true,
-  startDate: '2025-01-01',
-  endDate: null,
-  cancelledAt: null,
-  trialEndsAt: null,
-  notes: null,
-  paymentMethod: null,
-  url: null,
-  monthlyCost: 9.99,
-  createdAt: '2025-01-01T00:00:00Z',
-  updatedAt: '2025-01-01T00:00:00Z',
-  ...overrides,
-});
 
 const defaultProps = {
   error: false,

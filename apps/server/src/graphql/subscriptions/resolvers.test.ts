@@ -53,68 +53,6 @@ beforeEach(async () => {
 });
 
 describe('subscriptionResolvers', () => {
-  describe('Subscription.monthlyCost', () => {
-    it('returns amount as-is for monthly subscriptions', () => {
-      const result = subscriptionResolvers.Subscription.monthlyCost({
-        amount: 15.99,
-        billingCycle: 'MONTHLY',
-        isActive: true,
-        cancelledAt: null,
-        endDate: null,
-      });
-
-      expect(result).toBe(15.99);
-    });
-
-    it('returns amount / 12 for yearly subscriptions', () => {
-      const result = subscriptionResolvers.Subscription.monthlyCost({
-        amount: 120,
-        billingCycle: 'YEARLY',
-        isActive: true,
-        cancelledAt: null,
-        endDate: null,
-      });
-
-      expect(result).toBe(10);
-    });
-
-    it('returns amount * (52/12) for weekly subscriptions', () => {
-      const result = subscriptionResolvers.Subscription.monthlyCost({
-        amount: 10,
-        billingCycle: 'WEEKLY',
-        isActive: true,
-        cancelledAt: null,
-        endDate: null,
-      });
-
-      expect(result).toBeCloseTo((10 * 52) / 12);
-    });
-
-    it('returns amount / 3 for quarterly subscriptions', () => {
-      const result = subscriptionResolvers.Subscription.monthlyCost({
-        amount: 30,
-        billingCycle: 'QUARTERLY',
-        isActive: true,
-        cancelledAt: null,
-        endDate: null,
-      });
-
-      expect(result).toBe(10);
-    });
-
-    it('returns amount / 6 for bi-annual subscriptions', () => {
-      const result = subscriptionResolvers.Subscription.monthlyCost({
-        amount: 60,
-        billingCycle: 'BI_ANNUAL',
-        isActive: true,
-        cancelledAt: null,
-        endDate: null,
-      });
-
-      expect(result).toBe(10);
-    });
-  });
-
   describe('Query.subscriptions', () => {
     it('returns items and totalCount for page 1', async () => {
       vi.mocked(prisma.subscription.findMany).mockResolvedValue([

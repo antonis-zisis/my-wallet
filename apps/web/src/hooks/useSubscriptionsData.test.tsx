@@ -3,12 +3,12 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const showSuccess = vi.fn();
+const showError = vi.fn();
+const showInfo = vi.fn();
+
 vi.mock('../contexts/ToastContext', () => ({
-  useToast: vi.fn().mockReturnValue({
-    showSuccess: vi.fn(),
-    showError: vi.fn(),
-    showInfo: vi.fn(),
-  }),
+  useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
 import {
@@ -20,29 +20,19 @@ import {
   UPDATE_SUBSCRIPTION,
 } from '../graphql/subscriptions';
 import { MockedProvider } from '../test/apollo-test-utils';
+import { makeSubscription } from '../test/fixtures/subscription';
 import { Subscription } from '../types/subscription';
 import { PAGE_SIZE, useSubscriptionsData } from './useSubscriptionsData';
 
+beforeEach(() => {
+  showSuccess.mockReset();
+  showError.mockReset();
+  showInfo.mockReset();
+});
+
 const mockSubscription = (
   overrides: Partial<Subscription> = {}
-): Subscription => ({
-  id: '1',
-  name: 'Netflix',
-  amount: 15.99,
-  billingCycle: 'MONTHLY',
-  isActive: true,
-  startDate: '2025-01-01T00:00:00.000Z',
-  endDate: null,
-  cancelledAt: null,
-  trialEndsAt: null,
-  notes: null,
-  paymentMethod: null,
-  url: null,
-  monthlyCost: 15.99,
-  createdAt: '2025-01-01T00:00:00.000Z',
-  updatedAt: '2025-01-01T00:00:00.000Z',
-  ...overrides,
-});
+): Subscription => makeSubscription({ id: '1', ...overrides });
 
 const mockYearlySubscription = mockSubscription({
   id: '2',

@@ -16,7 +16,11 @@ import {
   SubscriptionsData,
   SubscriptionSortField,
 } from '../types/subscription';
-import { getNextRenewalDate } from '../utils/getNextRenewalDate';
+import { isActiveTrial } from '../utils/isActiveTrial';
+import { computeMostExpensive } from './subscriptions/selectors/computeMostExpensive';
+import { computeNextRenewal } from './subscriptions/selectors/computeNextRenewal';
+import { computeRenewingThisMonthTotal } from './subscriptions/selectors/computeRenewingThisMonthTotal';
+import { useSubscriptionsModals } from './subscriptions/useSubscriptionsModals';
 import { useLocalStorage } from './useLocalStorage';
 
 export const PAGE_SIZE = 10;
@@ -25,6 +29,27 @@ const SORT_ORDER_BY_FIELD: Record<SubscriptionSortField, 'ASC' | 'DESC'> = {
   MONTHLY_COST: 'DESC',
   NAME: 'ASC',
   NEXT_RENEWAL: 'ASC',
+};
+
+type CreateInput = {
+  name: string;
+  amount: number;
+  billingCycle: BillingCycle;
+  startDate: string;
+  endDate?: string;
+  trialEndsAt?: string;
+  notes?: string;
+  paymentMethod?: string;
+  url?: string;
+};
+
+type UpdateInput = CreateInput & { id: string };
+
+type ResumeInput = {
+  id: string;
+  startDate: string;
+  amount: number;
+  billingCycle: BillingCycle;
 };
 
 export function useSubscriptionsData() {
@@ -37,15 +62,7 @@ export function useSubscriptionsData() {
     );
   const [inactivePage, setInactivePage] = useState(1);
   const [showInactive, setShowInactive] = useState(false);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [subscriptionToEdit, setSubscriptionToEdit] =
-    useState<Subscription | null>(null);
-  const [subscriptionToCancel, setSubscriptionToCancel] =
-    useState<Subscription | null>(null);
-  const [subscriptionToResume, setSubscriptionToResume] =
-    useState<Subscription | null>(null);
-  const [subscriptionToDelete, setSubscriptionToDelete] =
-    useState<Subscription | null>(null);
+  const modals = useSubscriptionsModals();
 
   const activeSortOrder = SORT_ORDER_BY_FIELD[activeSortBy];
 
@@ -137,149 +154,40 @@ export function useSubscriptionsData() {
   const inactiveTotalCount = inactiveData?.subscriptions.totalCount ?? 0;
   const inactiveTotalPages = Math.ceil(inactiveTotalCount / PAGE_SIZE);
 
-  const now = new Date();
-  const currentMonth = now.getMonth();
-
-  const parseDate = (value: string): Date => {
-    const coerced = /^\d+$/.test(value) ? Number(value) : value;
-
-    return new Date(coerced);
-  };
-
-  const isActiveTrial = (subscription: { trialEndsAt: string | null }) =>
-    !!subscription.trialEndsAt && parseDate(subscription.trialEndsAt) > now;
-
   const totalMonthlyCost = activeItems
     .filter((subscription) => !isActiveTrial(subscription))
     .reduce((sum, subscription) => sum + subscription.monthlyCost, 0);
   const totalYearlyCost = totalMonthlyCost * 12;
+  const nextRenewal = computeNextRenewal(activeItems);
+  const renewingThisMonthTotal = computeRenewingThisMonthTotal(activeItems);
+  const mostExpensive = computeMostExpensive(activeItems);
 
-  const nextRenewal =
-    activeItems
-      .filter(
-        (subscription) =>
-          !subscription.cancelledAt && !isActiveTrial(subscription)
-      )
-      .map((subscription) => ({
-        amount: subscription.amount,
-        date: getNextRenewalDate(
-          subscription.startDate,
-          subscription.billingCycle
-        ),
-        name: subscription.name,
-      }))
-      .sort((left, right) => left.date.getTime() - right.date.getTime())[0] ??
-    null;
-
-  const renewingThisMonthTotal = activeItems
-    .filter(
-      (subscription) =>
-        !subscription.cancelledAt && !isActiveTrial(subscription)
-    )
-    .reduce((total, subscription) => {
-      const startDate = parseDate(subscription.startDate);
-      const startMonth = startDate.getMonth();
-
-      switch (subscription.billingCycle) {
-        case 'WEEKLY': {
-          const daysInMonth = new Date(
-            now.getFullYear(),
-            currentMonth + 1,
-            0
-          ).getDate();
-          const firstDayOfMonth = new Date(
-            now.getFullYear(),
-            currentMonth,
-            1
-          ).getDay();
-          const dayOfWeek = startDate.getDay();
-          const weeklyCount =
-            Math.floor(daysInMonth / 7) +
-            ((dayOfWeek - firstDayOfMonth + 7) % 7 < daysInMonth % 7 ? 1 : 0);
-
-          return total + subscription.amount * weeklyCount;
-        }
-
-        case 'MONTHLY':
-          return total + subscription.amount;
-        case 'QUARTERLY':
-          return (currentMonth - startMonth) % 3 === 0
-            ? total + subscription.amount
-            : total;
-        case 'BI_ANNUAL':
-          return (currentMonth - startMonth) % 6 === 0
-            ? total + subscription.amount
-            : total;
-        case 'YEARLY':
-          return startMonth === currentMonth
-            ? total + subscription.amount
-            : total;
-        default:
-          return total;
-      }
-    }, 0);
-
-  const mostExpensive = activeItems
-    .filter(
-      (subscription) =>
-        !subscription.cancelledAt && !isActiveTrial(subscription)
-    )
-    .reduce<{
-      monthlyCost: number;
-      name: string;
-    } | null>(
-      (best, subscription) =>
-        !best || subscription.monthlyCost > best.monthlyCost
-          ? { monthlyCost: subscription.monthlyCost, name: subscription.name }
-          : best,
-      null
-    );
-
-  const handleCreate = async (input: {
-    name: string;
-    amount: number;
-    billingCycle: BillingCycle;
-    startDate: string;
-    endDate?: string;
-    trialEndsAt?: string;
-    notes?: string;
-    paymentMethod?: string;
-    url?: string;
-  }) => {
+  const handleCreate = async (input: CreateInput) => {
     try {
       await createSubscription({ variables: { input } });
 
       setActivePage(1);
-      setIsCreateOpen(false);
+      modals.onCloseCreate();
       showSuccess('Subscription created.');
     } catch {
       showError('Failed to create subscription.');
     }
   };
 
-  const handleUpdate = async (input: {
-    id: string;
-    name: string;
-    amount: number;
-    billingCycle: BillingCycle;
-    startDate: string;
-    endDate?: string;
-    trialEndsAt?: string;
-    notes?: string;
-    paymentMethod?: string;
-    url?: string;
-  }) => {
+  const handleUpdate = async (input: UpdateInput) => {
     await updateSubscription({ variables: { input } });
-    setSubscriptionToEdit(null);
+    modals.onSelectForEdit(null);
   };
 
   const handleCancelConfirm = async () => {
-    if (!subscriptionToCancel) {
+    if (!modals.subscriptionToCancel) {
       return;
     }
 
-    await cancelSubscription({ variables: { id: subscriptionToCancel.id } });
-    setSubscriptionToCancel(null);
+    await cancelSubscription({
+      variables: { id: modals.subscriptionToCancel.id },
+    });
+    modals.onSelectForCancel(null);
   };
 
   const handleResumeActive = async (subscription: Subscription) => {
@@ -293,16 +201,11 @@ export function useSubscriptionsData() {
     }
   };
 
-  const handleResumeFromInactive = async (input: {
-    id: string;
-    startDate: string;
-    amount: number;
-    billingCycle: BillingCycle;
-  }) => {
+  const handleResumeFromInactive = async (input: ResumeInput) => {
     try {
       await resumeSubscription({ variables: { input } });
 
-      setSubscriptionToResume(null);
+      modals.onSelectForResume(null);
       showSuccess('Subscription resumed.');
     } catch {
       showError('Failed to resume subscription.');
@@ -310,12 +213,14 @@ export function useSubscriptionsData() {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!subscriptionToDelete) {
+    if (!modals.subscriptionToDelete) {
       return;
     }
 
-    await deleteSubscription({ variables: { id: subscriptionToDelete.id } });
-    setSubscriptionToDelete(null);
+    await deleteSubscription({
+      variables: { id: modals.subscriptionToDelete.id },
+    });
+    modals.onSelectForDelete(null);
   };
 
   const allLoadedNames = [
@@ -338,7 +243,7 @@ export function useSubscriptionsData() {
     inactiveTotalCount,
     inactiveTotalPages,
     isCancelling,
-    isCreateOpen,
+    isCreateOpen: modals.isCreateOpen,
     isDeleting,
     isResuming,
     mostExpensive,
@@ -351,24 +256,24 @@ export function useSubscriptionsData() {
       setActivePage(1);
     },
     onCancelConfirm: handleCancelConfirm,
-    onCloseCreate: () => setIsCreateOpen(false),
+    onCloseCreate: modals.onCloseCreate,
     onCreate: handleCreate,
     onDeleteConfirm: handleDeleteConfirm,
     onInactivePaginate: setInactivePage,
-    onOpenCreate: () => setIsCreateOpen(true),
+    onOpenCreate: modals.onOpenCreate,
     onResumeActive: handleResumeActive,
     onResumeFromInactive: handleResumeFromInactive,
-    onSelectForCancel: setSubscriptionToCancel,
-    onSelectForDelete: setSubscriptionToDelete,
-    onSelectForEdit: setSubscriptionToEdit,
-    onSelectForResume: setSubscriptionToResume,
+    onSelectForCancel: modals.onSelectForCancel,
+    onSelectForDelete: modals.onSelectForDelete,
+    onSelectForEdit: modals.onSelectForEdit,
+    onSelectForResume: modals.onSelectForResume,
     onToggleInactive: () => setShowInactive((previous) => !previous),
     onUpdate: handleUpdate,
     showInactive,
-    subscriptionToCancel,
-    subscriptionToDelete,
-    subscriptionToEdit,
-    subscriptionToResume,
+    subscriptionToCancel: modals.subscriptionToCancel,
+    subscriptionToDelete: modals.subscriptionToDelete,
+    subscriptionToEdit: modals.subscriptionToEdit,
+    subscriptionToResume: modals.subscriptionToResume,
     totalMonthlyCost,
     totalYearlyCost,
   };

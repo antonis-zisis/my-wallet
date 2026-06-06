@@ -2,26 +2,18 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { type Subscription } from '../../types/subscription';
+import { makeSubscription } from '../../test/fixtures/subscription';
 import { ResumeSubscriptionModal } from './ResumeSubscriptionModal';
 
-const mockSubscription: Subscription = {
+const mockSubscription = makeSubscription({
   id: 'sub-1',
-  name: 'Netflix',
-  amount: 15.99,
-  billingCycle: 'MONTHLY',
   isActive: false,
   startDate: '2025-01-15',
   endDate: '2026-01-15',
   cancelledAt: '2025-12-01T00:00:00Z',
-  trialEndsAt: null,
-  notes: null,
-  paymentMethod: null,
-  url: null,
-  monthlyCost: 15.99,
   createdAt: '2025-01-15T00:00:00Z',
   updatedAt: '2025-12-01T00:00:00Z',
-};
+});
 
 const defaultProps = {
   isOpen: true,
