@@ -86,7 +86,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
   }, [theme, resolvedTheme]);
 
-  // Only listen for OS preference changes when the user has chosen 'system'
   useEffect(() => {
     if (theme !== 'system') {
       return;

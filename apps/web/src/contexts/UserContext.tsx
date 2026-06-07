@@ -4,7 +4,7 @@ import { createContext, type ReactNode, useContext } from 'react';
 import { GET_ME, UPDATE_ME } from '../graphql/user';
 import { useAuth } from './AuthContext';
 
-interface User {
+export interface User {
   id: string;
   email: string;
   fullName: string | null;

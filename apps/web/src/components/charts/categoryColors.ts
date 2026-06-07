@@ -1,5 +1,3 @@
-// Cross-platform canonical palette — keep in sync with android/ios.
-
 export const EXPENSE_CATEGORY_COLORS: Record<string, string> = {
   'Dining Out': '#fb923c',
   Entertainment: '#a855f7',

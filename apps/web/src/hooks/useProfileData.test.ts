@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import type { SubmitEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { makeUser } from '../test/fixtures';
 import { useProfileData } from './useProfileData';
 
 const mockUpdateUser = vi.fn();
@@ -11,7 +12,7 @@ const mockShowError = vi.fn();
 
 vi.mock('../contexts/UserContext', () => ({
   useUser: vi.fn().mockReturnValue({
-    user: { id: '1', email: 'test@example.com', fullName: 'John Doe' },
+    user: makeUser({ email: 'test@example.com', fullName: 'John Doe' }),
     loading: false,
     updateUser: (...args: Array<unknown>) => mockUpdateUser(...args),
   }),

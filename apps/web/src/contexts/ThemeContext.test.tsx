@@ -71,7 +71,6 @@ describe('ThemeContext', () => {
   });
 
   it('resolves system theme to light when OS is light', () => {
-    // global matchMedia mock returns matches: false (light)
     render(
       <ThemeProvider>
         <TestConsumer />

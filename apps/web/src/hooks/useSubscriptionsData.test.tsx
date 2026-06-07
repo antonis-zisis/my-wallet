@@ -176,7 +176,6 @@ describe('useSubscriptionsData', () => {
 
     await waitFor(() => expect(result.current.activeLoading).toBe(false));
 
-    // Netflix: 15.99/mo + YouTube Premium: 10/mo = 25.99/mo
     expect(result.current.totalMonthlyCost).toBeCloseTo(25.99);
     expect(result.current.totalYearlyCost).toBeCloseTo(25.99 * 12);
   });
@@ -186,7 +185,6 @@ describe('useSubscriptionsData', () => {
       wrapper: createWrapper([mockActiveQuery, mockInactiveQueryEmpty]),
     });
     await waitFor(() => expect(result.current.activeLoading).toBe(false));
-    // Netflix: 15.99/mo > YouTube Premium: 10/mo
     expect(result.current.mostExpensive?.name).toBe('Netflix');
     expect(result.current.mostExpensive?.monthlyCost).toBeCloseTo(15.99);
   });
@@ -224,7 +222,6 @@ describe('useSubscriptionsData', () => {
       wrapper: createWrapper([trialQuery, mockInactiveQueryEmpty]),
     });
     await waitFor(() => expect(result.current.activeLoading).toBe(false));
-    // Only Netflix (15.99) counted; Notion Trial excluded
     expect(result.current.totalMonthlyCost).toBeCloseTo(15.99);
     expect(result.current.mostExpensive?.name).toBe('Netflix');
   });
@@ -753,8 +750,6 @@ describe('useSubscriptionsData', () => {
   });
 });
 
-// Use April 2026 (month index 3) as a fixed date for renewal math tests.
-// April 2026: 30 days, starts on Wednesday (day 3).
 describe('renewingThisMonthTotal', () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] });
@@ -793,7 +788,6 @@ describe('renewingThisMonthTotal', () => {
   });
 
   it('counts a yearly subscription only in its anniversary month', async () => {
-    // mockYearlySubscription has startDate March 2025 (month 2), not April (3)
     const { result } = renderHook(() => useSubscriptionsData(), {
       wrapper: createWrapper([
         buildActiveQuery([mockYearlySubscription]),
@@ -805,7 +799,6 @@ describe('renewingThisMonthTotal', () => {
   });
 
   it('counts a yearly subscription in its anniversary month', async () => {
-    // Start month April (3) === current month April (3)
     const aprilYearly = mockSubscription({
       id: '5',
       amount: 120,
@@ -823,7 +816,6 @@ describe('renewingThisMonthTotal', () => {
   });
 
   it('counts a quarterly subscription when current month aligns with start month', async () => {
-    // Start month January (0): (3 - 0) % 3 = 0 → renews in April
     const quarterly = mockSubscription({
       id: '6',
       amount: 30,
@@ -841,7 +833,6 @@ describe('renewingThisMonthTotal', () => {
   });
 
   it('does not count a quarterly subscription when current month does not align', async () => {
-    // Start month February (1): (3 - 1) % 3 = 2 ≠ 0 → does not renew in April
     const quarterly = mockSubscription({
       id: '7',
       amount: 30,
@@ -859,7 +850,6 @@ describe('renewingThisMonthTotal', () => {
   });
 
   it('counts a bi-annual subscription when current month aligns with start month', async () => {
-    // Start month October (9): (3 - 9) % 6 = -6 % 6 = 0 → renews in April
     const biAnnual = mockSubscription({
       id: '8',
       amount: 60,
@@ -877,7 +867,6 @@ describe('renewingThisMonthTotal', () => {
   });
 
   it('does not count a bi-annual subscription when current month does not align', async () => {
-    // Start month January (0): (3 - 0) % 6 = 3 ≠ 0 → does not renew in April
     const biAnnual = mockSubscription({
       id: '9',
       amount: 60,
@@ -895,8 +884,6 @@ describe('renewingThisMonthTotal', () => {
   });
 
   it('counts all weekly renewals in the month for a weekly subscription', async () => {
-    // Start date is a Wednesday (2026-01-07). April 2026 starts Wednesday (day 3).
-    // Wednesdays in April: 1, 8, 15, 22, 29 = 5 renewals
     const weekly = mockSubscription({
       id: '10',
       amount: 5,
@@ -914,8 +901,6 @@ describe('renewingThisMonthTotal', () => {
   });
 
   it('counts 4 weekly renewals when the day of week appears only 4 times in the month', async () => {
-    // Start date is a Monday (2026-01-05). April 2026 starts Wednesday (day 3).
-    // Mondays in April: 6, 13, 20, 27 = 4 renewals
     const weekly = mockSubscription({
       id: '11',
       amount: 5,
