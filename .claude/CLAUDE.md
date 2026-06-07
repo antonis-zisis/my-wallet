@@ -71,8 +71,9 @@ pnpm run env:encrypt      # Encrypt before committing
 
 **Testing** (Vitest 4):
 
-- Web: jsdom environment, setup in `src/test/setup.ts` (jest-dom matchers + `matchMedia` mock). Custom `MockedProvider` in `src/test/apollo-test-utils.tsx` for GraphQL mocking
+- Web: jsdom environment, setup in `src/test/setup.ts` (jest-dom matchers + `matchMedia` mock + module-level Supabase mock). Custom `MockedProvider` in `src/test/apollo-test-utils.tsx` for GraphQL mocking
 - Server: node environment, no special setup
+- Fixtures: per-domain factory files in `apps/web/src/test/fixtures/` and `apps/server/src/test/fixtures/` (each exports a `make<Domain>(overrides)` function). Web factories return GraphQL response shapes (ISO strings); server factories return Prisma model shapes (`Date` objects). Import via the `fixtures/` barrel rather than declaring inline mock objects.
 
 ## GraphQL Domains
 
@@ -89,11 +90,12 @@ Each domain lives in mirrored directories on both sides:
 `Home` page (`hooks/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, and subscriptions — it has no dedicated server domain.
 `NotFound` is a standalone 404 page with no data dependencies.
 
-**Server domain structure** (each domain has three files):
+**Server domain structure**:
 
 - `schema.ts` — SDL exported as `<domain>TypeDefs`
 - `resolvers.ts` — resolvers exported as `<domain>Resolvers`, TypeScript input interfaces at the top
 - `resolvers.test.ts` — Vitest unit tests, prisma mocked via `vi.mock`
+- `lib/<helper>.ts` (optional) — pure, reusable helpers > 10 LOC or with branchy logic worth testing on their own (e.g. `subscriptions/lib/computeMonthlyCost.ts`); each helper has its own `.test.ts` next to it
 
 All domains are merged in `apps/server/src/graphql/index.ts`.
 
