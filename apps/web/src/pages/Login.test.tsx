@@ -69,10 +69,13 @@ describe('Login', () => {
   });
 
   it('disables button and shows a spinner while submitting', async () => {
-    let resolveSignInPromise!: (value: unknown) => void;
+    type SignInResult = ReturnType<typeof resolveSignIn>;
+    let resolveSignInPromise!: (value: SignInResult) => void;
     vi.mocked(supabase.auth.signInWithPassword).mockImplementationOnce(
-      // @ts-expect-error - this is a test helper to control when the sign-in promise resolves
-      () => new Promise((resolve) => (resolveSignInPromise = resolve))
+      () =>
+        new Promise<SignInResult>((resolve) => {
+          resolveSignInPromise = resolve;
+        })
     );
 
     renderLogin();
