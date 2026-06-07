@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { supabase } from '../lib/supabase';
+import { makeSupabaseSession, resolveGetSession } from '../test/fixtures';
 import { AuthProvider, useAuth } from './AuthContext';
 
 function TestConsumer() {
@@ -39,14 +40,9 @@ describe('AuthContext', () => {
   });
 
   it('provides session when getSession returns one', async () => {
-    const mockSession = { user: { id: 'user-1' }, access_token: 'token' };
-
-    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce({
-      data: { session: mockSession },
-      error: null,
-    } as ReturnType<typeof supabase.auth.getSession> extends Promise<infer U>
-      ? U
-      : never);
+    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce(
+      resolveGetSession(makeSupabaseSession())
+    );
 
     render(
       <AuthProvider>

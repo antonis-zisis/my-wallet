@@ -6,6 +6,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabase';
+import {
+  makeSupabaseSession,
+  resolveGetSession,
+  resolveSignIn,
+} from '../test/fixtures';
 import { Login } from './Login';
 
 const renderLogin = () => {
@@ -26,12 +31,9 @@ const renderLogin = () => {
 describe('Login', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(supabase.auth.getSession).mockResolvedValue({
-      data: { session: null },
-      error: null,
-    } as ReturnType<typeof supabase.auth.getSession> extends Promise<infer U>
-      ? U
-      : never);
+    vi.mocked(supabase.auth.getSession).mockResolvedValue(
+      resolveGetSession(null)
+    );
   });
 
   it('renders email and password inputs and submit button', async () => {
@@ -46,14 +48,9 @@ describe('Login', () => {
   });
 
   it('shows error message on failed sign-in', async () => {
-    vi.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
-      data: { user: null, session: null },
-      error: { message: 'Invalid login credentials' },
-    } as ReturnType<typeof supabase.auth.signInWithPassword> extends Promise<
-      infer U
-    >
-      ? U
-      : never);
+    vi.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce(
+      resolveSignIn({ error: { message: 'Invalid login credentials' } })
+    );
 
     renderLogin();
 
@@ -72,10 +69,13 @@ describe('Login', () => {
   });
 
   it('disables button and shows a spinner while submitting', async () => {
-    let resolveSignIn!: (value: unknown) => void;
+    type SignInResult = ReturnType<typeof resolveSignIn>;
+    let resolveSignInPromise!: (value: SignInResult) => void;
     vi.mocked(supabase.auth.signInWithPassword).mockImplementationOnce(
-      // @ts-expect-error - this is a test helper to control when the sign-in promise resolves
-      () => new Promise((resolve) => (resolveSignIn = resolve))
+      () =>
+        new Promise<SignInResult>((resolve) => {
+          resolveSignInPromise = resolve;
+        })
     );
 
     renderLogin();
@@ -93,18 +93,13 @@ describe('Login', () => {
       expect(screen.getByRole('button', { name: 'Sign in' })).toBeDisabled();
     });
 
-    resolveSignIn({ data: { user: null, session: null }, error: null });
+    resolveSignInPromise(resolveSignIn());
   });
 
   it('redirects to / when user is already authenticated', async () => {
-    const mockSession = { user: { id: 'user-1' }, access_token: 'token' };
-
-    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce({
-      data: { session: mockSession },
-      error: null,
-    } as ReturnType<typeof supabase.auth.getSession> extends Promise<infer U>
-      ? U
-      : never);
+    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce(
+      resolveGetSession(makeSupabaseSession())
+    );
 
     renderLogin();
 

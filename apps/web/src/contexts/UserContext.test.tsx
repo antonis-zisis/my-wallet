@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { GET_ME } from '../graphql/user';
 import { supabase } from '../lib/supabase';
 import { MockedProvider } from '../test/apollo-test-utils';
+import { makeSupabaseSession, resolveGetSession } from '../test/fixtures';
 import { AuthProvider } from './AuthContext';
 import { UserProvider, useUser } from './UserContext';
 
@@ -51,14 +52,9 @@ describe('UserContext', () => {
   });
 
   it('fetches user when session exists', async () => {
-    const mockSession = { user: { id: 'user-1' }, access_token: 'token' };
-
-    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce({
-      data: { session: mockSession },
-      error: null,
-    } as ReturnType<typeof supabase.auth.getSession> extends Promise<infer U>
-      ? U
-      : never);
+    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce(
+      resolveGetSession(makeSupabaseSession())
+    );
 
     const mocks = [
       {
@@ -75,14 +71,9 @@ describe('UserContext', () => {
   });
 
   it('falls back to email when fullName is null', async () => {
-    const mockSession = { user: { id: 'user-1' }, access_token: 'token' };
-
-    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce({
-      data: { session: mockSession },
-      error: null,
-    } as ReturnType<typeof supabase.auth.getSession> extends Promise<infer U>
-      ? U
-      : never);
+    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce(
+      resolveGetSession(makeSupabaseSession())
+    );
 
     const mocks = [
       {
