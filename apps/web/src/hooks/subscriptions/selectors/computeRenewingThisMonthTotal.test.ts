@@ -79,13 +79,11 @@ describe('computeRenewingThisMonthTotal', () => {
   });
 
   it('counts every weekly renewal that lands in the month', () => {
-    // Wednesday start: April 2026 has Wednesdays on 1, 8, 15, 22, 29 → 5
     const wednesdayWeekly = makeSubscription({
       amount: 5,
       billingCycle: 'WEEKLY',
       startDate: '2026-01-07T00:00:00.000Z',
     });
-    // Monday start: April 2026 has Mondays on 6, 13, 20, 27 → 4
     const mondayWeekly = makeSubscription({
       id: '2',
       amount: 5,

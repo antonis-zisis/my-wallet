@@ -17,7 +17,6 @@ describe('ReportSummary', () => {
       makeTransaction({ type: 'EXPENSE', amount: 1000 }),
     ];
     render(<ReportSummary transactions={transactions} />);
-    // income=3000, expenses=1000, net=2000 — all three values are distinct
     expect(screen.getByText('Total Income')).toBeInTheDocument();
     expect(screen.getByText(/3\.000,00 €/)).toBeInTheDocument();
   });
@@ -29,7 +28,6 @@ describe('ReportSummary', () => {
       makeTransaction({ type: 'EXPENSE', amount: 150 }),
     ];
     render(<ReportSummary transactions={transactions} />);
-    // income=1000, expenses=350, net=+650 — all three values are distinct
     expect(screen.getByText('Total Expenses')).toBeInTheDocument();
     expect(screen.getByText(/350,00 €/)).toBeInTheDocument();
   });

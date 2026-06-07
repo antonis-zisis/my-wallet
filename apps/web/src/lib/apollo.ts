@@ -10,6 +10,7 @@ const httpLink = new HttpLink({
     if (response.status === 401) {
       try {
         const body = await response.clone().json();
+
         if (typeof body?.error === 'string') {
           await supabase.auth.signOut();
         }

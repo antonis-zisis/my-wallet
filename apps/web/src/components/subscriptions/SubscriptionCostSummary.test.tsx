@@ -100,7 +100,7 @@ describe('SubscriptionCostSummary', () => {
     expect(labels).toEqual([
       'Monthly cost',
       'Yearly cost',
-      'Most expensive', // label when mostExpensive is null
+      'Most expensive',
       'Next renewal',
       'Renewing this month',
     ]);

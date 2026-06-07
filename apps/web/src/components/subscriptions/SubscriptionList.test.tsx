@@ -361,7 +361,6 @@ describe('SubscriptionList', () => {
     });
 
     it('shows "in Nd" when the next renewal is within 30 days', () => {
-      // startDate on the 28th → next monthly renewal is April 28 (4 days away)
       const subscriptions = [
         makeSubscription({
           name: 'Netflix',
@@ -376,7 +375,6 @@ describe('SubscriptionList', () => {
     });
 
     it('does not show a relative label when the next renewal is 30 or more days away', () => {
-      // Yearly subscription renewing on June 15 → 52 days from April 24
       const subscriptions = [
         makeSubscription({
           name: 'Adobe',

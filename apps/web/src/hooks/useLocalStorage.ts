@@ -25,7 +25,7 @@ export function useLocalStorage<T>(
         try {
           localStorage.setItem(key, JSON.stringify(next));
         } catch {
-          // localStorage unavailable (e.g. private browsing quota exceeded)
+          // localStorage unavailable
         }
 
         return next;

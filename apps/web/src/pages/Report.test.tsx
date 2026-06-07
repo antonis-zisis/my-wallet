@@ -178,8 +178,8 @@ describe('Report', () => {
         name: /expense breakdown/i,
       });
 
-      fireEvent.click(button); // open
-      fireEvent.click(button); // close
+      fireEvent.click(button);
+      fireEvent.click(button);
 
       expect(
         screen.queryByTestId('expense-breakdown-chart')
@@ -223,8 +223,8 @@ describe('Report', () => {
         name: /budget breakdown/i,
       });
 
-      fireEvent.click(button); // open
-      fireEvent.click(button); // close
+      fireEvent.click(button);
+      fireEvent.click(button);
 
       expect(
         screen.queryByTestId('budget-breakdown-chart')
