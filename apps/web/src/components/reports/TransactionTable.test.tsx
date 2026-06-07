@@ -2,11 +2,12 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
+import { makeTransaction } from '../../test/fixtures/report';
 import { Transaction } from '../../types/transaction';
 import { TransactionTable } from './TransactionTable';
 
 const mockTransactions: Array<Transaction> = [
-  {
+  makeTransaction({
     id: '1',
     reportId: 'r1',
     type: 'INCOME',
@@ -14,10 +15,8 @@ const mockTransactions: Array<Transaction> = [
     description: 'Monthly salary',
     category: 'Salary',
     date: '2024-01-15T00:00:00.000Z',
-    createdAt: '2024-01-15T00:00:00.000Z',
-    updatedAt: '2024-01-15T00:00:00.000Z',
-  },
-  {
+  }),
+  makeTransaction({
     id: '2',
     reportId: 'r1',
     type: 'EXPENSE',
@@ -25,9 +24,7 @@ const mockTransactions: Array<Transaction> = [
     description: 'Groceries',
     category: 'Food',
     date: '2024-01-16T00:00:00.000Z',
-    createdAt: '2024-01-16T00:00:00.000Z',
-    updatedAt: '2024-01-16T00:00:00.000Z',
-  },
+  }),
 ];
 
 describe('TransactionTable', () => {

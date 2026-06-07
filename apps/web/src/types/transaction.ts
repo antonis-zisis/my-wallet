@@ -12,6 +12,14 @@ export interface Transaction {
   updatedAt: string;
 }
 
+export interface TransactionFormInput {
+  type: TransactionType;
+  amount: number;
+  description: string;
+  category: string;
+  date: string;
+}
+
 export const EXPENSE_CATEGORIES = [
   'Rent',
   'Utilities',

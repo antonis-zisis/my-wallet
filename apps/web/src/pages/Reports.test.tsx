@@ -3,14 +3,13 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const showSuccess = vi.fn();
+const showError = vi.fn();
+const showInfo = vi.fn();
 vi.mock('../contexts/ToastContext', () => ({
-  useToast: vi.fn().mockReturnValue({
-    showSuccess: vi.fn(),
-    showError: vi.fn(),
-    showInfo: vi.fn(),
-  }),
+  useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
 import { GET_REPORTS } from '../graphql/reports';
@@ -107,6 +106,12 @@ const renderReports = (mocks: Array<MockLink.MockedResponse>) => {
 };
 
 describe('Reports', () => {
+  beforeEach(() => {
+    showSuccess.mockReset();
+    showError.mockReset();
+    showInfo.mockReset();
+  });
+
   it('shows loading state initially', () => {
     renderReports([mockReportsQuery]);
     expect(screen.getByTestId('report-list-skeleton')).toBeInTheDocument();

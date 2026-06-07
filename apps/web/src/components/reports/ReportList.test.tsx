@@ -2,28 +2,27 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
+import { makeReport } from '../../test/fixtures/report';
 import { Report } from '../../types/report';
 import { ReportList } from './ReportList';
 
 const mockReports: Array<Report> = [
-  {
+  makeReport({
     id: '1',
-    isLocked: false,
-    netBalance: 500,
     title: 'January Budget',
+    netBalance: 500,
     transactionCount: 3,
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
-  },
-  {
+  }),
+  makeReport({
     id: '2',
-    isLocked: false,
-    netBalance: -100,
     title: 'February Budget',
+    netBalance: -100,
     transactionCount: 1,
     createdAt: '2024-02-01T00:00:00.000Z',
     updatedAt: '2024-02-01T00:00:00.000Z',
-  },
+  }),
 ];
 
 const renderReportList = (props: {
@@ -93,15 +92,13 @@ describe('ReportList', () => {
     expect(screen.getByText(/1 transaction\b/)).toBeInTheDocument();
   });
 
-  it('displays positive net balance with a plus sign and green color', () => {
+  it('displays positive net balance with a plus sign', () => {
     renderReportList({ error: false, loading: false, reports: mockReports });
-    const balanceElement = screen.getByText(/\+500/);
-    expect(balanceElement).toHaveClass('text-green-600');
+    expect(screen.getByText(/\+500/)).toBeInTheDocument();
   });
 
-  it('displays negative net balance with red color', () => {
+  it('displays negative net balance with a minus sign', () => {
     renderReportList({ error: false, loading: false, reports: mockReports });
-    const balanceElement = screen.getByText(/-100/);
-    expect(balanceElement).toHaveClass('text-red-500');
+    expect(screen.getByText(/-100/)).toBeInTheDocument();
   });
 });

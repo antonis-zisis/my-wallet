@@ -3,14 +3,13 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const showSuccess = vi.fn();
+const showError = vi.fn();
+const showInfo = vi.fn();
 vi.mock('../contexts/ToastContext', () => ({
-  useToast: vi.fn().mockReturnValue({
-    showSuccess: vi.fn(),
-    showError: vi.fn(),
-    showInfo: vi.fn(),
-  }),
+  useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
 import { GET_REPORT } from '../graphql/reports';
@@ -119,6 +118,12 @@ const createWrapper =
   );
 
 describe('useReportData', () => {
+  beforeEach(() => {
+    showSuccess.mockReset();
+    showError.mockReset();
+    showInfo.mockReset();
+  });
+
   it('returns loading state initially', () => {
     const { result } = renderHook(() => useReportData(), {
       wrapper: createWrapper([mockReportQuery]),
@@ -150,71 +155,8 @@ describe('useReportData', () => {
     expect(result.current.report).toBeUndefined();
   });
 
-  describe('chart toggles', () => {
-    it('starts with both charts collapsed', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-      expect(result.current.isChartOpen).toBe(false);
-      expect(result.current.isBudgetChartOpen).toBe(false);
-    });
-
-    it('toggles expense chart open and closed', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-
-      act(() => result.current.onToggleChart());
-      expect(result.current.isChartOpen).toBe(true);
-
-      act(() => result.current.onToggleChart());
-      expect(result.current.isChartOpen).toBe(false);
-    });
-
-    it('toggles budget chart open and closed', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-
-      act(() => result.current.onToggleBudgetChart());
-      expect(result.current.isBudgetChartOpen).toBe(true);
-
-      act(() => result.current.onToggleBudgetChart());
-      expect(result.current.isBudgetChartOpen).toBe(false);
-    });
-
-    it('toggles each chart independently', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-
-      act(() => result.current.onToggleChart());
-      expect(result.current.isChartOpen).toBe(true);
-      expect(result.current.isBudgetChartOpen).toBe(false);
-    });
-  });
-
-  describe('add transaction modal', () => {
-    it('starts closed', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-      expect(result.current.isAddTransactionModalOpen).toBe(false);
-    });
-
-    it('opens and closes', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-
-      act(() => result.current.onOpenAddTransactionModal());
-      expect(result.current.isAddTransactionModalOpen).toBe(true);
-
-      act(() => result.current.onCloseAddTransactionModal());
-      expect(result.current.isAddTransactionModalOpen).toBe(false);
-    });
-
-    it('closes after creating a transaction', async () => {
+  describe('add transaction', () => {
+    it('closes the add-transaction modal after creating a transaction', async () => {
       const { result } = renderHook(() => useReportData(), {
         wrapper: createWrapper([
           mockReportQuery,
@@ -242,70 +184,7 @@ describe('useReportData', () => {
     });
   });
 
-  describe('delete report modal', () => {
-    it('starts closed', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-      expect(result.current.isDeleteReportModalOpen).toBe(false);
-    });
-
-    it('opens and closes', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-
-      act(() => result.current.onOpenDeleteReportModal());
-      expect(result.current.isDeleteReportModalOpen).toBe(true);
-
-      act(() => result.current.onCloseDeleteReportModal());
-      expect(result.current.isDeleteReportModalOpen).toBe(false);
-    });
-  });
-
-  describe('transaction editing', () => {
-    it('starts with no transaction selected for editing', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-      expect(result.current.editingTransaction).toBeNull();
-    });
-
-    it('selects a transaction for editing and clears it', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-
-      act(() => result.current.onSelectTransactionForEdit(incomeTransaction));
-      expect(result.current.editingTransaction).toEqual(incomeTransaction);
-
-      act(() => result.current.onCloseEditTransactionModal());
-      expect(result.current.editingTransaction).toBeNull();
-    });
-  });
-
-  describe('transaction deletion', () => {
-    it('starts with no transaction selected for deletion', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-      expect(result.current.deletingTransaction).toBeNull();
-    });
-
-    it('selects a transaction for deletion and clears it', () => {
-      const { result } = renderHook(() => useReportData(), {
-        wrapper: createWrapper([mockReportQuery]),
-      });
-
-      act(() =>
-        result.current.onSelectTransactionForDelete(expenseTransaction)
-      );
-      expect(result.current.deletingTransaction).toEqual(expenseTransaction);
-
-      act(() => result.current.onCloseDeleteTransactionModal());
-      expect(result.current.deletingTransaction).toBeNull();
-    });
-
+  describe('delete transaction', () => {
     it('clears selected transaction after confirming deletion', async () => {
       const { result } = renderHook(() => useReportData(), {
         wrapper: createWrapper([

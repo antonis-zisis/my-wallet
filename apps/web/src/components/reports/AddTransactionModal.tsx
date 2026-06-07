@@ -1,14 +1,10 @@
-import {
-  TransactionFormInput,
-  TransactionFormModal,
-} from './TransactionFormModal';
-
-export type CreateTransactionInput = TransactionFormInput;
+import { TransactionFormInput } from '../../types/transaction';
+import { TransactionFormModal } from './TransactionFormModal';
 
 interface AddTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (input: CreateTransactionInput) => void;
+  onSubmit: (input: TransactionFormInput) => void;
 }
 
 export function AddTransactionModal({

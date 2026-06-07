@@ -1,14 +1,13 @@
 import { MockLink } from '@apollo/client/testing';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const showSuccess = vi.fn();
+const showError = vi.fn();
+const showInfo = vi.fn();
 vi.mock('../contexts/ToastContext', () => ({
-  useToast: vi.fn().mockReturnValue({
-    showSuccess: vi.fn(),
-    showError: vi.fn(),
-    showInfo: vi.fn(),
-  }),
+  useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
 import { CREATE_REPORT, GET_REPORTS } from '../graphql/reports';
@@ -89,6 +88,12 @@ const createWrapper =
   );
 
 describe('useReportsData', () => {
+  beforeEach(() => {
+    showSuccess.mockReset();
+    showError.mockReset();
+    showInfo.mockReset();
+  });
+
   it('returns loading state initially', () => {
     const { result } = renderHook(() => useReportsData(), {
       wrapper: createWrapper([mockReportsPage1]),

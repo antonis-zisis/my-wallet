@@ -2,14 +2,13 @@ import { MockLink } from '@apollo/client/testing';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const showSuccess = vi.fn();
+const showError = vi.fn();
+const showInfo = vi.fn();
 vi.mock('../contexts/ToastContext', () => ({
-  useToast: vi.fn().mockReturnValue({
-    showSuccess: vi.fn(),
-    showError: vi.fn(),
-    showInfo: vi.fn(),
-  }),
+  useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
 import { GET_REPORT } from '../graphql/reports';
@@ -96,6 +95,12 @@ const renderReport = (mocks: Array<MockLink.MockedResponse>) => {
 };
 
 describe('Report', () => {
+  beforeEach(() => {
+    showSuccess.mockReset();
+    showError.mockReset();
+    showInfo.mockReset();
+  });
+
   it('shows loading skeleton initially', () => {
     renderReport([mockReportQuery]);
     expect(screen.getByTestId('report-skeleton')).toBeInTheDocument();

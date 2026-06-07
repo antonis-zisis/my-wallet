@@ -4,17 +4,10 @@ import {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
   Transaction,
+  TransactionFormInput,
   TransactionType,
 } from '../../types/transaction';
 import { Button, Input, Modal, Select } from '../ui';
-
-export interface TransactionFormInput {
-  type: TransactionType;
-  amount: number;
-  description: string;
-  category: string;
-  date: string;
-}
 
 interface TransactionFormModalProps {
   isOpen: boolean;

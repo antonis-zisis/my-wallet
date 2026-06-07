@@ -1,8 +1,5 @@
-import { Transaction } from '../../types/transaction';
-import {
-  AddTransactionModal,
-  type CreateTransactionInput,
-} from './AddTransactionModal';
+import { Transaction, TransactionFormInput } from '../../types/transaction';
+import { AddTransactionModal } from './AddTransactionModal';
 import { DeleteReportModal } from './DeleteReportModal';
 import { DeleteTransactionModal } from './DeleteTransactionModal';
 import { TransactionFormModal } from './TransactionFormModal';
@@ -21,8 +18,8 @@ interface ReportModalsProps {
   onCloseEditTransactionModal: () => void;
   onConfirmDeleteReport: () => Promise<void>;
   onConfirmDeleteTransaction: () => Promise<void>;
-  onCreateTransaction: (input: CreateTransactionInput) => Promise<void>;
-  onUpdateTransaction: (input: CreateTransactionInput) => Promise<void>;
+  onCreateTransaction: (input: TransactionFormInput) => Promise<void>;
+  onUpdateTransaction: (input: TransactionFormInput) => Promise<void>;
 }
 
 export function ReportModals({
