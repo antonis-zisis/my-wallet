@@ -1,36 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { makeSubscription } from '../../test/fixtures/subscriptions';
 import { subscriptionResolvers } from './resolvers';
 
 const USER_ID = 'user-1';
 const CTX = { userId: USER_ID };
 
-const mockSubscription = {
-  id: 'sub-1',
-  name: 'Netflix',
-  amount: 15.99,
-  billingCycle: 'MONTHLY',
-  isActive: true,
-  startDate: new Date('2025-01-01T00:00:00Z'),
-  endDate: null,
-  trialEndsAt: null,
-  userId: USER_ID,
-  createdAt: new Date('2025-01-01T00:00:00Z'),
-  updatedAt: new Date('2025-01-01T00:00:00Z'),
-};
+const mockSubscription = makeSubscription({ id: 'sub-1', userId: USER_ID });
 
-const mockYearlySubscription = {
+const mockYearlySubscription = makeSubscription({
   id: 'sub-2',
   name: 'YouTube Premium',
   amount: 120,
   billingCycle: 'YEARLY',
-  isActive: true,
   startDate: new Date('2025-03-01T00:00:00Z'),
   endDate: new Date('2026-03-01T00:00:00Z'),
   userId: USER_ID,
   createdAt: new Date('2025-03-01T00:00:00Z'),
   updatedAt: new Date('2025-03-01T00:00:00Z'),
-};
+});
 
 vi.mock('../../lib/prisma', () => ({
   default: {
@@ -539,6 +527,51 @@ describe('subscriptionResolvers', () => {
           CTX
         )
       ).rejects.toThrow('Subscription not found');
+    });
+  });
+
+  describe('Subscription.isActive', () => {
+    it('returns the stored isActive when the subscription has not been cancelled', () => {
+      const parent = makeSubscription({ isActive: true, cancelledAt: null });
+
+      const result = subscriptionResolvers.Subscription.isActive(parent);
+
+      expect(result).toBe(true);
+    });
+
+    it('returns true when cancelled but endDate is still in the future', () => {
+      const futureEndDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const parent = makeSubscription({
+        cancelledAt: new Date('2026-01-01'),
+        endDate: futureEndDate,
+      });
+
+      const result = subscriptionResolvers.Subscription.isActive(parent);
+
+      expect(result).toBe(true);
+    });
+
+    it('returns false when cancelled and endDate has passed', () => {
+      const pastEndDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const parent = makeSubscription({
+        cancelledAt: new Date('2026-01-01'),
+        endDate: pastEndDate,
+      });
+
+      const result = subscriptionResolvers.Subscription.isActive(parent);
+
+      expect(result).toBe(false);
+    });
+
+    it('returns false when cancelled with no endDate set', () => {
+      const parent = makeSubscription({
+        cancelledAt: new Date('2026-01-01'),
+        endDate: null,
+      });
+
+      const result = subscriptionResolvers.Subscription.isActive(parent);
+
+      expect(result).toBe(false);
     });
   });
 });
