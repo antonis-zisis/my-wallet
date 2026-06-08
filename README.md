@@ -150,6 +150,7 @@ pnpm typecheck
 - **Privacy Mode**: Toggle to hide all money amounts across the app, persisted across sessions
 - **Theme**: Dark and light mode toggle, persisted across sessions
 - **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API
+- **Profile**: Update your display name and change your password from the in-app profile page
 
 ## Project Structure
 
