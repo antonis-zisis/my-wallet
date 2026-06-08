@@ -15,10 +15,11 @@ import {
 
 import { usePrivacy } from '../../contexts/PrivacyContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { buildTrendChartData } from '../../hooks/netWorth/selectors/buildTrendChartData';
 import { NetWorthSnapshot } from '../../types/netWorth';
-import { abbreviateReportTitle } from '../../utils/abbreviateReportTitle';
-import { formatDate } from '../../utils/formatDate';
 import { formatMoneyOrMask } from '../../utils/formatMoney';
+import { BreakdownChartTooltip } from './netWorthTrend/BreakdownChartTooltip';
+import { NetWorthChartTooltip } from './netWorthTrend/NetWorthChartTooltip';
 
 type TrendSnapshot = Pick<
   NetWorthSnapshot,
@@ -37,96 +38,6 @@ interface NetWorthTrendChartProps {
   view: ChartView;
 }
 
-interface NetWorthTooltipPayloadEntry {
-  payload: {
-    snapshotDate: string;
-    id: string;
-    netWorth: number;
-    title: string;
-  };
-}
-
-interface NetWorthTooltipProps {
-  active?: boolean;
-  payload?: Array<NetWorthTooltipPayloadEntry>;
-}
-
-function NetWorthChartTooltip({ active, payload }: NetWorthTooltipProps) {
-  const { isAmountsHidden } = usePrivacy();
-
-  if (!active || !payload?.length) {
-    return null;
-  }
-
-  const { netWorth, snapshotDate, title } = payload[0].payload;
-  const sign = netWorth < 0 ? '-' : '';
-
-  return (
-    <div className="bg-bg-surface ring-border rounded px-3 py-2 shadow-lg ring-1">
-      <p className="text-text-primary text-xs font-semibold">{title}</p>
-
-      <p className="text-text-secondary text-xs">{formatDate(snapshotDate)}</p>
-
-      <p className="text-text-primary mt-1 text-xs font-semibold">
-        {sign}
-        {formatMoneyOrMask(Math.abs(netWorth), isAmountsHidden)} €
-      </p>
-    </div>
-  );
-}
-
-interface BreakdownTooltipPayloadEntry {
-  payload: {
-    snapshotDate: string;
-    id: string;
-    totalAssets: number;
-    totalLiabilities: number;
-    title: string;
-  };
-}
-
-interface BreakdownTooltipProps {
-  active?: boolean;
-  payload?: Array<BreakdownTooltipPayloadEntry>;
-}
-
-function BreakdownChartTooltip({ active, payload }: BreakdownTooltipProps) {
-  const { isAmountsHidden } = usePrivacy();
-
-  if (!active || !payload?.length) {
-    return null;
-  }
-
-  const { snapshotDate, title, totalAssets, totalLiabilities } =
-    payload[0].payload;
-
-  return (
-    <div className="bg-bg-surface ring-border rounded px-3 py-2 shadow-lg ring-1">
-      <p className="text-text-primary text-xs font-semibold">{title}</p>
-
-      <p className="text-text-secondary text-xs">{formatDate(snapshotDate)}</p>
-
-      <div className="mt-1 space-y-0.5">
-        <p className="text-text-secondary flex items-center gap-1.5 text-xs">
-          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-          Assets:{' '}
-          <span className="font-semibold">
-            {formatMoneyOrMask(totalAssets, isAmountsHidden)} €
-          </span>
-        </p>
-
-        <p className="text-text-secondary flex items-center gap-1.5 text-xs">
-          <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
-          Liabilities:{' '}
-          <span className="font-semibold">
-            {formatMoneyOrMask(totalLiabilities, isAmountsHidden)} €
-          </span>
-        </p>
-      </div>
-    </div>
-  );
-}
-
 export function NetWorthTrendChart({
   snapshots,
   view,
@@ -137,17 +48,7 @@ export function NetWorthTrendChart({
   const tickColor = resolvedTheme === 'dark' ? '#d1d5db' : '#374151';
   const gridColor = resolvedTheme === 'dark' ? '#374151' : '#e5e7eb';
 
-  const chartData = useMemo(() => {
-    return [...snapshots.slice(0, 10)].reverse().map((snapshot) => ({
-      snapshotDate: snapshot.snapshotDate,
-      id: snapshot.id,
-      name: abbreviateReportTitle(snapshot.title),
-      netWorth: snapshot.netWorth,
-      title: snapshot.title,
-      totalAssets: snapshot.totalAssets,
-      totalLiabilities: snapshot.totalLiabilities,
-    }));
-  }, [snapshots]);
+  const chartData = useMemo(() => buildTrendChartData(snapshots), [snapshots]);
 
   if (chartData.length < 2) {
     return null;
@@ -158,11 +59,6 @@ export function NetWorthTrendChart({
     if (payload?.id) {
       navigate(`/net-worth/${payload.id}`);
     }
-  };
-
-  const commonAxisProps = {
-    gridColor,
-    tickColor,
   };
 
   const latest = chartData[chartData.length - 1];
@@ -177,20 +73,17 @@ export function NetWorthTrendChart({
         >
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke={commonAxisProps.gridColor}
+            stroke={gridColor}
             vertical={false}
           />
 
-          <XAxis
-            dataKey="name"
-            tick={{ fontSize: 12, fill: commonAxisProps.tickColor }}
-          />
+          <XAxis dataKey="name" tick={{ fontSize: 12, fill: tickColor }} />
 
           <YAxis
             tickFormatter={(value: number) =>
               `${formatMoneyOrMask(value, isAmountsHidden)}€`
             }
-            tick={{ fontSize: 12, fill: commonAxisProps.tickColor }}
+            tick={{ fontSize: 12, fill: tickColor }}
             width={80}
           />
 
@@ -248,20 +141,17 @@ export function NetWorthTrendChart({
       >
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke={commonAxisProps.gridColor}
+          stroke={gridColor}
           vertical={false}
         />
 
-        <XAxis
-          dataKey="name"
-          tick={{ fontSize: 12, fill: commonAxisProps.tickColor }}
-        />
+        <XAxis dataKey="name" tick={{ fontSize: 12, fill: tickColor }} />
 
         <YAxis
           tickFormatter={(value: number) =>
             `${formatMoneyOrMask(value, isAmountsHidden)}€`
           }
-          tick={{ fontSize: 12, fill: commonAxisProps.tickColor }}
+          tick={{ fontSize: 12, fill: tickColor }}
           width={80}
         />
 

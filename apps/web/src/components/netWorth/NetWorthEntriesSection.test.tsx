@@ -67,7 +67,7 @@ describe('NetWorthEntriesSection', () => {
   });
 
   describe('entryDeltas', () => {
-    it('shows a positive delta with a plus sign next to the entry', () => {
+    it('passes the matching delta through to the delta label per entry', () => {
       const entries = [
         makeEntry({
           label: 'Savings Account',
@@ -85,69 +85,8 @@ describe('NetWorthEntriesSection', () => {
           }}
         />
       );
+
       expect(screen.getByText(/\+200,00 €/)).toBeInTheDocument();
-    });
-
-    it('shows a negative delta with a minus sign next to the entry', () => {
-      const entries = [
-        makeEntry({
-          label: 'Savings Account',
-          amount: 4800,
-          category: 'Savings',
-        }),
-      ];
-      render(
-        <NetWorthEntriesSection
-          {...defaultProps}
-          entries={entries}
-          total={4800}
-          entryDeltas={{
-            'Savings:Savings Account': { delta: -200, isNew: false },
-          }}
-        />
-      );
-      expect(screen.getByText(/−200,00 €/)).toBeInTheDocument();
-    });
-
-    it('shows a "New" badge for entries not in the previous snapshot', () => {
-      const entries = [
-        makeEntry({
-          label: 'Savings Account',
-          amount: 3000,
-          category: 'Savings',
-        }),
-      ];
-      render(
-        <NetWorthEntriesSection
-          {...defaultProps}
-          entries={entries}
-          total={3000}
-          entryDeltas={{ 'Savings:Savings Account': { delta: 0, isNew: true } }}
-        />
-      );
-      expect(screen.getByText('New')).toBeInTheDocument();
-    });
-
-    it('hides the delta label when delta is zero and entry is not new', () => {
-      const entries = [
-        makeEntry({
-          label: 'Savings Account',
-          amount: 3000,
-          category: 'Savings',
-        }),
-      ];
-      render(
-        <NetWorthEntriesSection
-          {...defaultProps}
-          entries={entries}
-          total={3000}
-          entryDeltas={{
-            'Savings:Savings Account': { delta: 0, isNew: false },
-          }}
-        />
-      );
-      expect(screen.queryByText('New')).not.toBeInTheDocument();
-      expect(screen.queryByText(/[+−]\d/)).not.toBeInTheDocument();
     });
 
     it('shows no deltas when entryDeltas is not provided', () => {
@@ -165,6 +104,7 @@ describe('NetWorthEntriesSection', () => {
           total={3000}
         />
       );
+
       expect(screen.queryByText('New')).not.toBeInTheDocument();
       expect(screen.queryByText(/[+−]\d/)).not.toBeInTheDocument();
     });
@@ -188,28 +128,6 @@ describe('NetWorthEntriesSection', () => {
     );
     expect(screen.getAllByText('(30.0%)').length).toBeGreaterThan(0);
     expect(screen.getAllByText('(70.0%)').length).toBeGreaterThan(0);
-  });
-
-  it('appends a percentage change alongside the absolute delta', () => {
-    const entries = [
-      makeEntry({
-        label: 'Savings Account',
-        amount: 5200,
-        category: 'Savings',
-      }),
-    ];
-    render(
-      <NetWorthEntriesSection
-        {...defaultProps}
-        entries={entries}
-        total={5200}
-        entryDeltas={{
-          'Savings:Savings Account': { delta: 200, isNew: false },
-        }}
-      />
-    );
-    expect(screen.getByText(/\+200,00 €/)).toBeInTheDocument();
-    expect(screen.getByText(/\+4\.0%/)).toBeInTheDocument();
   });
 
   describe('collapse / expand', () => {

@@ -97,7 +97,7 @@ describe('Home', () => {
       await screen.findByText('No net worth snapshot yet')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('No subscriptions tracked yet')
+      await screen.findByText('No subscriptions tracked yet')
     ).toBeInTheDocument();
   });
 });
