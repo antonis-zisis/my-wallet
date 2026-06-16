@@ -49,6 +49,8 @@ For the target only, identify violations:
 - Module-level mutable state (`let nextKey = 0`, mutating top-level arrays).
 - Hook > 200 LOC, or with > 3 modal flags, or with non-trivial derived analytics inline.
 - Component > 200 LOC, or with > 4 `useState` calls.
+- Component contains a self-contained JSX block with its own state ownership → candidate subcomponent split (don't rely on LOC alone; a 120-LOC component with two independent JSX regions still splits). Each extracted component keeps a named export, one per file.
+- State + effects co-located inside a component and reusable elsewhere → candidate `use<Domain>` hook extraction. Co-located-but-single-use stays inline; reusability or testability-without-React is what justifies the hook.
 - Helper > 10 LOC living inside a `.tsx` or `resolvers.ts` file.
 - `resolvers.ts` > 300 LOC.
 - GraphQL operation file > 150 LOC.
