@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
+import { useSubscriptionForm } from '../../hooks/subscriptions/useSubscriptionForm';
 import { BillingCycle, Subscription } from '../../types/subscription';
 import { Button, Modal } from '../ui';
 import { SubscriptionFormFields } from './SubscriptionFormFields';
-import { useSubscriptionForm } from './useSubscriptionForm';
 
 interface EditSubscriptionModalProps {
   existingNames?: Array<string>;

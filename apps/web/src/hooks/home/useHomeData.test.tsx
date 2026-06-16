@@ -3,9 +3,9 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import { MockedProvider } from '../test/apollo-test-utils';
-import { homeMocks } from '../test/fixtures/home';
-import { makeReport, makeTransaction } from '../test/fixtures/report';
+import { MockedProvider } from '../../test/apollo-test-utils';
+import { homeMocks } from '../../test/fixtures/home';
+import { makeReport, makeTransaction } from '../../test/fixtures/report';
 import { useHomeData } from './useHomeData';
 
 function renderWithMocks(mocks: Array<MockLink.MockedResponse>) {

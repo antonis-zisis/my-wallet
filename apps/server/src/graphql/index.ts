@@ -1,9 +1,9 @@
+import { healthResolvers } from './health/resolvers';
+import { healthTypeDefs } from './health/schema';
 import { netWorthResolvers } from './netWorth/resolvers';
 import { netWorthTypeDefs } from './netWorth/schema';
 import { reportResolvers } from './reports/resolvers';
 import { reportTypeDefs } from './reports/schema';
-import { baseResolvers } from './resolvers';
-import { baseTypeDefs } from './schema';
 import { subscriptionResolvers } from './subscriptions/resolvers';
 import { subscriptionTypeDefs } from './subscriptions/schema';
 import { transactionResolvers } from './transactions/resolvers';
@@ -12,7 +12,7 @@ import { userResolvers } from './user/resolvers';
 import { userTypeDefs } from './user/schema';
 
 export const typeDefs = [
-  baseTypeDefs,
+  healthTypeDefs,
   transactionTypeDefs,
   reportTypeDefs,
   netWorthTypeDefs,
@@ -31,7 +31,7 @@ export const resolvers = {
     ...subscriptionResolvers.Subscription,
   },
   Query: {
-    ...baseResolvers.Query,
+    ...healthResolvers.Query,
     ...transactionResolvers.Query,
     ...reportResolvers.Query,
     ...netWorthResolvers.Query,

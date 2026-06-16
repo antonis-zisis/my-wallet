@@ -7,7 +7,10 @@ import { ResumeSubscriptionModal } from '../components/subscriptions/ResumeSubsc
 import { SubscriptionCostSummary } from '../components/subscriptions/SubscriptionCostSummary';
 import { SubscriptionList } from '../components/subscriptions/SubscriptionList';
 import { Button, PageLayout, Pagination, Select } from '../components/ui';
-import { PAGE_SIZE, useSubscriptionsData } from '../hooks/useSubscriptionsData';
+import {
+  PAGE_SIZE,
+  useSubscriptionsData,
+} from '../hooks/subscriptions/useSubscriptionsData';
 import { SubscriptionSortField } from '../types/subscription';
 import { buildSubscriptionsSubtitle } from '../utils/buildSubscriptionsSubtitle';
 

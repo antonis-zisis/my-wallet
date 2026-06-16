@@ -1,8 +1,8 @@
 import { type SubmitEvent, useEffect, useState } from 'react';
 
-import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../contexts/ToastContext';
-import { useUser } from '../contexts/UserContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
+import { useUser } from '../../contexts/UserContext';
 
 const MIN_PASSWORD_LENGTH = 6;
 

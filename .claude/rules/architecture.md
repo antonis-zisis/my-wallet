@@ -34,13 +34,23 @@ Sibling rules: [rules.md](./rules.md) for naming/workflow/design, [security.md](
 
   Trigger: the derivation is more than a one-liner, branches on multiple fields, or is unit-testable without React. Example: `renewingThisMonthTotal` in `useSubscriptionsData` — branchy per billing cycle, deserves its own file and test.
 
-- **Modal flags + their setters > 3 in one hook → extract `use<Domain>Modals`** that owns just the open/close state and the "select X for action" setters. The data hook composes it.
+- **Modal flags + their setters > 3 in one hook → extract `use<Domain>Modals`** to `apps/web/src/hooks/<domain>/use<Domain>Modals.ts` — it owns just the open/close state and the "select X for action" setters. The data hook composes it. Example: `subscriptions/useSubscriptionsModals.ts`, `reports/useReportModals.ts`.
 
-- **A `use<Domain>Data` hook exceeds 200 LOC → split it.** Candidate splits, in this order: selectors out, modal state out, mutation handlers into their own `use<Domain>Mutations`.
+- **A `use<Domain>Data` hook exceeds 200 LOC → split it.** Candidate splits, in this order: selectors out, modal state out, mutation handlers into their own `use<Domain>Mutations` at `apps/web/src/hooks/<domain>/use<Domain>Mutations.ts`. The mutations hook owns the `useMutation` calls and their `on<Action>` handlers; the data hook passes in the query variables, the modals object, and any state setters the handlers need, then composes the result. Example: `subscriptions/useSubscriptionsMutations.ts`, extracted from `useSubscriptionsData`.
 
-- **A hook is consumed by exactly one page → it lives at `apps/web/src/hooks/use<Domain>Data.ts`** (current pattern). Shared by multiple pages → keep it there but document the callers in the file header.
+- **Every domain hook lives under `apps/web/src/hooks/<domain>/`** — the primary `use<Domain>Data` hook and everything it composes (`use<Domain>Modals`, `use<Domain>Mutations`, form hooks like `useSubscriptionForm`, and pure unit-tested helpers under `apps/web/src/hooks/<domain>/selectors/` — query-derived selectors and form/draft factories alike). This mirrors `components/<domain>/` and `pages/` reaching into `<domain>/`: one `<layer>/<domain>/` model across the app. There is no flat-at-`hooks/` placement for domain hooks. A domain folder may hold a single file (e.g. `hooks/user/useProfileData.ts`) — that's fine; the folder still earns its place by keeping the domain's hooks together.
+
+- **A hook tightly coupled to one component still belongs in `hooks/<domain>/`, not beside the component.** A form hook (`useSubscriptionForm`) consumed only by that domain's modals lives in `hooks/<domain>/`, and the component imports it. Hooks do not live under `components/`.
+
+- **Only genuinely generic, cross-domain hooks stay flat at `apps/web/src/hooks/`** (e.g. `useLocalStorage`, consumed by several domains and tied to none). A hook shared by multiple pages within one domain stays in that `<domain>/` folder; document the callers in the file header.
 
 ## Web — components
+
+- **Writing a component → it's a function component with a named export, one per file.** No class components. No default exports. The filename matches the PascalCase component name (`TodoItems.tsx` exports `TodoItems`). The single-component-per-file rule has one exception: small subcomponents only rendered by the file's primary component and pointless to import elsewhere may share the file.
+
+- **Building a component → keep it presentational where possible.** Push data fetching, mutations, and derived state into a `use<Domain>Data` hook or a selector; the component takes props and renders. Data fetching and presentational JSX never share a file.
+
+- **State growing inside a component → lift it up, then extract a hook.** Start with local `useState`; when state needs to be shared, coordinated, or tested without React, lift it to the nearest common parent and — once it has real logic — extract it into a custom hook. (The `useState > 4 in one component` ceiling below is the hard backstop, not the first signal.)
 
 - **Component file exceeds 200 LOC → split into subcomponents** in the same domain folder. Each subcomponent gets its own file unless it's a 3-line presentational piece that's only rendered by its parent.
 

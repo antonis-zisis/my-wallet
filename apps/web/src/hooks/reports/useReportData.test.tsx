@@ -8,17 +8,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const showSuccess = vi.fn();
 const showError = vi.fn();
 const showInfo = vi.fn();
-vi.mock('../contexts/ToastContext', () => ({
+vi.mock('../../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
-import { GET_REPORT } from '../graphql/reports';
+import { GET_REPORT } from '../../graphql/reports';
 import {
   CREATE_TRANSACTION,
   DELETE_TRANSACTION,
-} from '../graphql/transactions';
-import { MockedProvider } from '../test/apollo-test-utils';
-import { Transaction } from '../types/transaction';
+} from '../../graphql/transactions';
+import { MockedProvider } from '../../test/apollo-test-utils';
+import { Transaction } from '../../types/transaction';
 import { useReportData } from './useReportData';
 
 const mockTransaction = (

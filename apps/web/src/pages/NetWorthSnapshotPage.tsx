@@ -8,7 +8,7 @@ import {
 } from '../components/netWorth/NetWorthSnapshotModal';
 import { NetWorthSnapshotSkeleton } from '../components/netWorth/NetWorthSnapshotSkeleton';
 import { PageLayout } from '../components/ui';
-import { useNetWorthSnapshotData } from '../hooks/useNetWorthSnapshotData';
+import { useNetWorthSnapshotData } from '../hooks/netWorthSnapshot/useNetWorthSnapshotData';
 import { toDateInputValue } from '../utils/toDateInputValue';
 
 export function NetWorthSnapshotPage() {

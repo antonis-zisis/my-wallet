@@ -5,12 +5,12 @@ import { createElement } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
-import { GET_NET_WORTH_SNAPSHOT } from '../graphql/netWorth';
+import { GET_NET_WORTH_SNAPSHOT } from '../../graphql/netWorth';
 import {
   makeNetWorthEntry,
   makeNetWorthSnapshot,
-} from '../test/fixtures/netWorth';
-import { createWrapper } from '../test/hook-test-utils';
+} from '../../test/fixtures/netWorth';
+import { createWrapper } from '../../test/hook-test-utils';
 import { useNetWorthSnapshotData } from './useNetWorthSnapshotData';
 
 const mockSnapshot = makeNetWorthSnapshot({

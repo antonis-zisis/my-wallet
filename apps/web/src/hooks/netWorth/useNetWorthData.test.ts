@@ -8,12 +8,12 @@ import {
   DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOTS,
   GET_NET_WORTH_TREND,
-} from '../graphql/netWorth';
+} from '../../graphql/netWorth';
 import {
   makeNetWorthEntry,
   makeNetWorthSnapshot,
-} from '../test/fixtures/netWorth';
-import { createWrapper } from '../test/hook-test-utils';
+} from '../../test/fixtures/netWorth';
+import { createWrapper } from '../../test/hook-test-utils';
 import { PAGE_SIZE, TREND_PAGE_SIZE, useNetWorthData } from './useNetWorthData';
 
 const mockSnapshot = makeNetWorthSnapshot({

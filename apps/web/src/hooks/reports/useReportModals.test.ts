@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { makeTransaction } from '../test/fixtures/report';
+import { makeTransaction } from '../../test/fixtures/report';
 import { useReportModals } from './useReportModals';
 
 describe('useReportModals', () => {

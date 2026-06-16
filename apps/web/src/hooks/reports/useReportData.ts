@@ -2,32 +2,32 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from '../../contexts/ToastContext';
 import {
   DELETE_REPORT,
   GET_REPORT,
   LOCK_REPORT,
   UNLOCK_REPORT,
   UPDATE_REPORT,
-} from '../graphql/reports';
+} from '../../graphql/reports';
 import {
   CREATE_TRANSACTION,
   DELETE_TRANSACTION,
   UPDATE_TRANSACTION,
-} from '../graphql/transactions';
-import { Report as ReportType } from '../types/report';
+} from '../../graphql/transactions';
+import { Report as ReportType } from '../../types/report';
 import {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
   Transaction,
   TransactionFormInput,
-} from '../types/transaction';
-import { exportReportToCsv } from '../utils/exportReportToCsv';
+} from '../../types/transaction';
+import { exportReportToCsv } from '../../utils/exportReportToCsv';
 import {
   getFilteredTransactions,
   TypeFilter,
-} from './reports/selectors/getFilteredTransactions';
-import { getPresentCategories } from './reports/selectors/getPresentCategories';
+} from './selectors/getFilteredTransactions';
+import { getPresentCategories } from './selectors/getPresentCategories';
 import { useReportModals } from './useReportModals';
 
 interface ReportData {

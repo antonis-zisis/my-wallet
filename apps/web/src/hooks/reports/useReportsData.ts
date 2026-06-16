@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
-import { useToast } from '../contexts/ToastContext';
-import { CREATE_REPORT, GET_REPORTS } from '../graphql/reports';
-import { ReportsData } from '../types/report';
+import { useToast } from '../../contexts/ToastContext';
+import { CREATE_REPORT, GET_REPORTS } from '../../graphql/reports';
+import { ReportsData } from '../../types/report';
 
 export const PAGE_SIZE = 10;
 

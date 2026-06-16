@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Transaction } from '../types/transaction';
+import { Transaction } from '../../types/transaction';
 
 export function useReportModals() {
   const [isChartOpen, setIsChartOpen] = useState(false);

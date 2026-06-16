@@ -13,7 +13,7 @@ vi.mock('../contexts/ToastContext', () => ({
 }));
 
 import { GET_REPORTS } from '../graphql/reports';
-import { PAGE_SIZE } from '../hooks/useReportsData';
+import { PAGE_SIZE } from '../hooks/reports/useReportsData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Reports } from './Reports';
 

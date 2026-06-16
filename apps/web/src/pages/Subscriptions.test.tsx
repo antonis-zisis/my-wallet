@@ -19,7 +19,7 @@ import {
   DELETE_SUBSCRIPTION,
   GET_SUBSCRIPTIONS,
 } from '../graphql/subscriptions';
-import { PAGE_SIZE } from '../hooks/useSubscriptionsData';
+import { PAGE_SIZE } from '../hooks/subscriptions/useSubscriptionsData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { makeSubscription } from '../test/fixtures/subscription';
 import { Subscriptions } from './Subscriptions';

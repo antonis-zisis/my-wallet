@@ -1,4 +1,9 @@
 export const transactionTypeDefs = `#graphql
+  enum TransactionType {
+    INCOME
+    EXPENSE
+  }
+
   type Transaction {
     id: ID!
     reportId: ID!

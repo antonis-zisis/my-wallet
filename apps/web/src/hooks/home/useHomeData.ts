@@ -1,15 +1,15 @@
 import { useQuery } from '@apollo/client/react';
 
-import { GET_NET_WORTH_SNAPSHOTS } from '../graphql/netWorth';
+import { GET_NET_WORTH_SNAPSHOTS } from '../../graphql/netWorth';
 import {
   GET_REPORT,
   GET_REPORTS,
   GET_REPORTS_SUMMARY,
-} from '../graphql/reports';
-import { GET_SUBSCRIPTIONS } from '../graphql/subscriptions';
-import { NetWorthSnapshotsData } from '../types/netWorth';
-import { Report, ReportsData, ReportsSummaryData } from '../types/report';
-import { SubscriptionsData } from '../types/subscription';
+} from '../../graphql/reports';
+import { GET_SUBSCRIPTIONS } from '../../graphql/subscriptions';
+import { NetWorthSnapshotsData } from '../../types/netWorth';
+import { Report, ReportsData, ReportsSummaryData } from '../../types/report';
+import { SubscriptionsData } from '../../types/subscription';
 
 export function useHomeData() {
   const { data: reportsData, loading: reportsLoading } =

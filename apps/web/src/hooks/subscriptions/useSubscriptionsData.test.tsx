@@ -7,7 +7,7 @@ const showSuccess = vi.fn();
 const showError = vi.fn();
 const showInfo = vi.fn();
 
-vi.mock('../contexts/ToastContext', () => ({
+vi.mock('../../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
@@ -18,10 +18,10 @@ import {
   GET_SUBSCRIPTIONS,
   RESUME_SUBSCRIPTION,
   UPDATE_SUBSCRIPTION,
-} from '../graphql/subscriptions';
-import { MockedProvider } from '../test/apollo-test-utils';
-import { makeSubscription } from '../test/fixtures/subscription';
-import { Subscription } from '../types/subscription';
+} from '../../graphql/subscriptions';
+import { MockedProvider } from '../../test/apollo-test-utils';
+import { makeSubscription } from '../../test/fixtures/subscription';
+import { Subscription } from '../../types/subscription';
 import { PAGE_SIZE, useSubscriptionsData } from './useSubscriptionsData';
 
 beforeEach(() => {

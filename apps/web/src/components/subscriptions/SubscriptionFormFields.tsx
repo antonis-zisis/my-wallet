@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
+import type { SubscriptionFormValues } from '../../hooks/subscriptions/useSubscriptionForm';
 import { BILLING_CYCLE_OPTIONS, BillingCycle } from '../../types/subscription';
 import { Input, Select } from '../ui';
-import type { SubscriptionFormValues } from './useSubscriptionForm';
 
 interface SubscriptionFormFieldsProps {
   defaultExpandAdditional?: boolean;
