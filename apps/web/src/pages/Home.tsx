@@ -4,7 +4,7 @@ import { NetWorthSummaryCard } from '../components/home/NetWorthSummaryCard';
 import { ReportSummaryGrid } from '../components/home/ReportSummaryGrid';
 import { SubscriptionsSection } from '../components/home/SubscriptionsSection';
 import { Divider, PageLayout } from '../components/ui';
-import { useHomeData } from '../hooks/useHomeData';
+import { useHomeData } from '../hooks/home/useHomeData';
 
 export function Home() {
   const {

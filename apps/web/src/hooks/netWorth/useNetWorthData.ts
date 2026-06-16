@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
-import { SnapshotFormValues } from '../components/netWorth/NetWorthSnapshotModal';
+import { SnapshotFormValues } from '../../components/netWorth/NetWorthSnapshotModal';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
@@ -9,8 +9,8 @@ import {
   GET_NET_WORTH_SNAPSHOTS,
   GET_NET_WORTH_TREND,
   UPDATE_NET_WORTH_SNAPSHOT,
-} from '../graphql/netWorth';
-import { NetWorthSnapshot, NetWorthSnapshotsData } from '../types/netWorth';
+} from '../../graphql/netWorth';
+import { NetWorthSnapshot, NetWorthSnapshotsData } from '../../types/netWorth';
 
 export const PAGE_SIZE = 10;
 export const TREND_PAGE_SIZE = 500;

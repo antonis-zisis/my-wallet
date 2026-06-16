@@ -8,7 +8,7 @@ import {
 } from '../../types/netWorth';
 import { dateToTitle } from '../../utils/dateToTitle';
 import { todayAsDateInput } from '../../utils/todayAsDateInput';
-import { makeEmptyEntryDraft, toEntryDraft } from './makeEntryDraft';
+import { makeEmptyEntryDraft, toEntryDraft } from './selectors/makeEntryDraft';
 
 interface UseNetWorthSnapshotFormInput {
   initialEntries?: Array<EntryInput>;

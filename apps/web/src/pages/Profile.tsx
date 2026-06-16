@@ -1,6 +1,6 @@
 import { LockClosedIcon, UserIcon } from '../components/icons';
 import { Button, Card, Input, PageLayout } from '../components/ui';
-import { useProfileData } from '../hooks/useProfileData';
+import { useProfileData } from '../hooks/user/useProfileData';
 import { getInitials } from '../utils/getInitials';
 
 export function Profile() {

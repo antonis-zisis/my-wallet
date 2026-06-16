@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import type { SubmitEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { makeUser } from '../test/fixtures';
+import { makeUser } from '../../test/fixtures';
 import { useProfileData } from './useProfileData';
 
 const mockUpdateUser = vi.fn();
@@ -10,7 +10,7 @@ const mockUpdatePassword = vi.fn();
 const mockShowSuccess = vi.fn();
 const mockShowError = vi.fn();
 
-vi.mock('../contexts/UserContext', () => ({
+vi.mock('../../contexts/UserContext', () => ({
   useUser: vi.fn().mockReturnValue({
     user: makeUser({ email: 'test@example.com', fullName: 'John Doe' }),
     loading: false,
@@ -18,7 +18,7 @@ vi.mock('../contexts/UserContext', () => ({
   }),
 }));
 
-vi.mock('../contexts/AuthContext', () => ({
+vi.mock('../../contexts/AuthContext', () => ({
   useAuth: vi.fn().mockReturnValue({
     session: { access_token: 'token' },
     loading: false,
@@ -26,7 +26,7 @@ vi.mock('../contexts/AuthContext', () => ({
   }),
 }));
 
-vi.mock('../contexts/ToastContext', () => ({
+vi.mock('../../contexts/ToastContext', () => ({
   useToast: vi.fn().mockReturnValue({
     showSuccess: (...args: Array<unknown>) => mockShowSuccess(...args),
     showError: (...args: Array<unknown>) => mockShowError(...args),

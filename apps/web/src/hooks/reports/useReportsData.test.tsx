@@ -6,12 +6,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const showSuccess = vi.fn();
 const showError = vi.fn();
 const showInfo = vi.fn();
-vi.mock('../contexts/ToastContext', () => ({
+vi.mock('../../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
-import { CREATE_REPORT, GET_REPORTS } from '../graphql/reports';
-import { MockedProvider } from '../test/apollo-test-utils';
+import { CREATE_REPORT, GET_REPORTS } from '../../graphql/reports';
+import { MockedProvider } from '../../test/apollo-test-utils';
 import { PAGE_SIZE, useReportsData } from './useReportsData';
 
 const mockReport = (id: string, title: string) => ({

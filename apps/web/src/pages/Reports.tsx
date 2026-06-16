@@ -1,7 +1,7 @@
 import { CreateReportModal } from '../components/reports/CreateReportModal';
 import { ReportList } from '../components/reports/ReportList';
 import { Button, PageLayout, Pagination } from '../components/ui';
-import { PAGE_SIZE, useReportsData } from '../hooks/useReportsData';
+import { PAGE_SIZE, useReportsData } from '../hooks/reports/useReportsData';
 
 export function Reports() {
   const {

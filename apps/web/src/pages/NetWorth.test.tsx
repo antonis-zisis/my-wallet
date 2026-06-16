@@ -11,7 +11,7 @@ import {
   GET_NET_WORTH_SNAPSHOTS,
   GET_NET_WORTH_TREND,
 } from '../graphql/netWorth';
-import { PAGE_SIZE, TREND_PAGE_SIZE } from '../hooks/useNetWorthData';
+import { PAGE_SIZE, TREND_PAGE_SIZE } from '../hooks/netWorth/useNetWorthData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { makeNetWorthSnapshot } from '../test/fixtures/netWorth';
 import { NetWorth } from './NetWorth';

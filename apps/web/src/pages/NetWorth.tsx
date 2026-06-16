@@ -10,8 +10,8 @@ import {
   Skeleton,
   Tooltip,
 } from '../components/ui';
+import { PAGE_SIZE, useNetWorthData } from '../hooks/netWorth/useNetWorthData';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { PAGE_SIZE, useNetWorthData } from '../hooks/useNetWorthData';
 
 export function NetWorth() {
   const [isChartOpen, setIsChartOpen] = useLocalStorage(

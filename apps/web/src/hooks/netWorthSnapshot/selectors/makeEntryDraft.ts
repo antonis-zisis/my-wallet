@@ -1,10 +1,10 @@
-import { EntryRowDraft } from '../../components/netWorth/NetWorthSnapshotModalEntryRow';
+import { EntryRowDraft } from '../../../components/netWorth/NetWorthSnapshotModalEntryRow';
 import {
   ASSET_CATEGORIES,
   EntryInput,
   LIABILITY_CATEGORIES,
   NetWorthEntryType,
-} from '../../types/netWorth';
+} from '../../../types/netWorth';
 
 export function makeEmptyEntryDraft(
   key: number,

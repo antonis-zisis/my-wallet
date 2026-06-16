@@ -2,15 +2,15 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { SnapshotFormValues } from '../components/netWorth/NetWorthSnapshotModal';
+import { SnapshotFormValues } from '../../components/netWorth/NetWorthSnapshotModal';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
   GET_NET_WORTH_SNAPSHOT,
   UPDATE_NET_WORTH_SNAPSHOT,
-} from '../graphql/netWorth';
-import { NetWorthSnapshot } from '../types/netWorth';
-import { buildEntryDeltas } from './netWorthSnapshot/selectors/buildEntryDeltas';
+} from '../../graphql/netWorth';
+import { NetWorthSnapshot } from '../../types/netWorth';
+import { buildEntryDeltas } from './selectors/buildEntryDeltas';
 
 interface SnapshotData {
   netWorthSnapshot: NetWorthSnapshot | null;

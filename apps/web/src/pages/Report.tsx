@@ -11,7 +11,7 @@ import { ReportSkeleton } from '../components/reports/ReportSkeleton';
 import { ReportSummary } from '../components/reports/ReportSummary';
 import { TransactionTable } from '../components/reports/TransactionTable';
 import { PageLayout } from '../components/ui';
-import { useReportData } from '../hooks/useReportData';
+import { useReportData } from '../hooks/reports/useReportData';
 
 export function Report() {
   const {
