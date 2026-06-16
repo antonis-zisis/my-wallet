@@ -42,6 +42,12 @@ Sibling rules: [rules.md](./rules.md) for naming/workflow/design, [security.md](
 
 ## Web — components
 
+- **Writing a component → it's a function component with a named export, one per file.** No class components. No default exports. The filename matches the PascalCase component name (`TodoItems.tsx` exports `TodoItems`). The single-component-per-file rule has one exception: small subcomponents only rendered by the file's primary component and pointless to import elsewhere may share the file.
+
+- **Building a component → keep it presentational where possible.** Push data fetching, mutations, and derived state into a `use<Domain>Data` hook or a selector; the component takes props and renders. Data fetching and presentational JSX never share a file.
+
+- **State growing inside a component → lift it up, then extract a hook.** Start with local `useState`; when state needs to be shared, coordinated, or tested without React, lift it to the nearest common parent and — once it has real logic — extract it into a custom hook. (The `useState > 4 in one component` ceiling below is the hard backstop, not the first signal.)
+
 - **Component file exceeds 200 LOC → split into subcomponents** in the same domain folder. Each subcomponent gets its own file unless it's a 3-line presentational piece that's only rendered by its parent.
 
 - **Helper function inside a `.tsx` file → fine only if it's < 5 LOC and not exported.** Anything bigger or reused moves to:
