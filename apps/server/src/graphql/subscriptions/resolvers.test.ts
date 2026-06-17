@@ -136,6 +136,47 @@ describe('subscriptionResolvers', () => {
         })
       );
     });
+
+    it('sorts by computed next renewal date, not raw startDate', async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const renewsSoonerStart = new Date(today);
+      renewsSoonerStart.setDate(today.getDate() + 1 - 7 * 52);
+
+      const renewsLaterStart = new Date(today);
+      renewsLaterStart.setDate(today.getDate() + 5 - 7 * 100);
+
+      const renewsSooner = makeSubscription({
+        id: 'renews-sooner',
+        billingCycle: 'WEEKLY',
+        startDate: renewsSoonerStart,
+      });
+
+      const renewsLater = makeSubscription({
+        id: 'renews-later',
+        billingCycle: 'WEEKLY',
+        startDate: renewsLaterStart,
+      });
+
+      vi.mocked(prisma.subscription.findMany).mockResolvedValue([
+        renewsLater,
+        renewsSooner,
+      ] as never);
+
+      vi.mocked(prisma.subscription.count).mockResolvedValue(2);
+
+      const result = await subscriptionResolvers.Query.subscriptions(
+        undefined as unknown,
+        { sortBy: 'NEXT_RENEWAL', sortOrder: 'ASC' },
+        CTX
+      );
+
+      expect(result.items.map((item) => item.id)).toEqual([
+        'renews-sooner',
+        'renews-later',
+      ]);
+    });
   });
 
   describe('Mutation.createSubscription', () => {
