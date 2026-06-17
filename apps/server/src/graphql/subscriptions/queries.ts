@@ -2,6 +2,7 @@ import prisma from '../../lib/prisma';
 import { clampPage } from '../../lib/validate';
 import { buildSubscriptionsWhere } from './lib/buildSubscriptionsWhere';
 import { computeMonthlyCost } from './lib/computeMonthlyCost';
+import { getNextRenewalDate } from './lib/getNextRenewalDate';
 
 export interface SubscriptionsArgs {
   active?: boolean;
@@ -30,14 +31,18 @@ export const subscriptionQueryResolvers = {
 
     const where = buildSubscriptionsWhere({ active, now, userId });
 
-    if (sortBy === 'MONTHLY_COST') {
+    if (sortBy === 'MONTHLY_COST' || sortBy === 'NEXT_RENEWAL') {
       const [allItems, totalCount] = await Promise.all([
         prisma.subscription.findMany({ where }),
         prisma.subscription.count({ where }),
       ]);
 
       allItems.sort((left, right) => {
-        const diff = computeMonthlyCost(left) - computeMonthlyCost(right);
+        const diff =
+          sortBy === 'MONTHLY_COST'
+            ? computeMonthlyCost(left) - computeMonthlyCost(right)
+            : getNextRenewalDate(left.startDate, left.billingCycle).getTime() -
+              getNextRenewalDate(right.startDate, right.billingCycle).getTime();
 
         return sortOrder === 'ASC' ? diff : -diff;
       });
@@ -48,15 +53,10 @@ export const subscriptionQueryResolvers = {
       };
     }
 
-    const orderBy =
-      sortBy === 'NEXT_RENEWAL'
-        ? { startDate: order as 'asc' | 'desc' }
-        : { name: order as 'asc' | 'desc' };
-
     const [items, totalCount] = await Promise.all([
       prisma.subscription.findMany({
         where,
-        orderBy,
+        orderBy: { name: order as 'asc' | 'desc' },
         skip,
         take: clampedPageSize,
       }),
