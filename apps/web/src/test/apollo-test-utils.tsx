@@ -3,10 +3,10 @@ import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
 import { ReactNode } from 'react';
 
-interface MockedProviderProps {
+type MockedProviderProps = {
   mocks?: Array<MockLink.MockedResponse>;
   children: ReactNode;
-}
+};
 
 export function MockedProvider({ children, mocks = [] }: MockedProviderProps) {
   const mockLink = new MockLink(mocks);

@@ -3,12 +3,12 @@ import { ReactNode } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '../icons';
 import { Card } from '../ui';
 
-interface ReportChartSectionProps {
+type ReportChartSectionProps = {
   children: ReactNode;
   isOpen: boolean;
   title: string;
   onToggle: () => void;
-}
+};
 
 export function ReportChartSection({
   children,

@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import type { BillingCycle } from '../../types/subscription';
 
-export interface SubscriptionFormValues {
+export type SubscriptionFormValues = {
   amount: string;
   billingCycle: BillingCycle;
   isTrial: boolean;
@@ -12,7 +12,7 @@ export interface SubscriptionFormValues {
   startDate: string;
   trialEndsAt: string;
   url: string;
-}
+};
 
 export const DEFAULT_SUBSCRIPTION_FORM_VALUES: SubscriptionFormValues = {
   amount: '',

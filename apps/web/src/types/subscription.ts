@@ -18,7 +18,7 @@ export const BILLING_CYCLE_OPTIONS: Array<{
   { label: 'Yearly', value: 'YEARLY' },
 ];
 
-export interface Subscription {
+export type Subscription = {
   id: string;
   name: string;
   amount: number;
@@ -34,11 +34,11 @@ export interface Subscription {
   monthlyCost: number;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface SubscriptionsData {
+export type SubscriptionsData = {
   subscriptions: {
     items: Array<Subscription>;
     totalCount: number;
   };
-}
+};

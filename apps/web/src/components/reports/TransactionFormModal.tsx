@@ -9,13 +9,13 @@ import {
 } from '../../types/transaction';
 import { Button, Input, Modal, Select } from '../ui';
 
-interface TransactionFormModalProps {
+type TransactionFormModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (input: TransactionFormInput) => void;
   mode: 'add' | 'edit';
   transaction?: Transaction;
-}
+};
 
 const INITIAL_FORM = {
   type: 'EXPENSE' as TransactionType,

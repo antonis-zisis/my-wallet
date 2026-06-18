@@ -4,10 +4,10 @@ import { Report } from '../../types/report';
 import { ArrowDownIcon, ArrowUpIcon } from '../icons';
 import { Badge, Card, MoneyAmount } from '../ui';
 
-interface ReportCardProps {
+type ReportCardProps = {
   label: string;
   report: Report;
-}
+};
 
 export function ReportCard({ label, report }: ReportCardProps) {
   const transactions = report.transactions ?? [];

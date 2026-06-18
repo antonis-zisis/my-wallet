@@ -11,7 +11,7 @@ import {
 } from '../../lib/validate';
 import { getNextRenewalDate } from './lib/getNextRenewalDate';
 
-export interface CreateSubscriptionInput {
+export type CreateSubscriptionInput = {
   name: string;
   amount: number;
   billingCycle: string;
@@ -21,9 +21,9 @@ export interface CreateSubscriptionInput {
   notes?: string;
   paymentMethod?: string;
   url?: string;
-}
+};
 
-export interface UpdateSubscriptionInput {
+export type UpdateSubscriptionInput = {
   id: string;
   name: string;
   amount: number;
@@ -34,14 +34,14 @@ export interface UpdateSubscriptionInput {
   notes?: string;
   paymentMethod?: string;
   url?: string;
-}
+};
 
-export interface ResumeSubscriptionInput {
+export type ResumeSubscriptionInput = {
   id: string;
   startDate?: string;
   amount?: number;
   billingCycle?: string;
-}
+};
 
 export const subscriptionMutationResolvers = {
   createSubscription: async (

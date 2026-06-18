@@ -4,7 +4,7 @@ import { Card } from '../ui';
 import { SubscriptionListRow } from './SubscriptionListRow';
 import { SubscriptionListSkeleton } from './SubscriptionListSkeleton';
 
-interface SubscriptionListProps {
+type SubscriptionListProps = {
   subscriptions: Array<Subscription>;
   loading: boolean;
   error: boolean;
@@ -14,7 +14,7 @@ interface SubscriptionListProps {
   onDelete: (subscription: Subscription) => void;
   onAdd?: () => void;
   emptyMessage?: string;
-}
+};
 
 function EmptyState({
   message,

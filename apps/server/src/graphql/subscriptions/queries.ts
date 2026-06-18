@@ -4,13 +4,13 @@ import { buildSubscriptionsWhere } from './lib/buildSubscriptionsWhere';
 import { computeMonthlyCost } from './lib/computeMonthlyCost';
 import { getNextRenewalDate } from './lib/getNextRenewalDate';
 
-export interface SubscriptionsArgs {
+export type SubscriptionsArgs = {
   active?: boolean;
   page?: number;
   pageSize?: number;
   sortBy?: 'NAME' | 'MONTHLY_COST' | 'NEXT_RENEWAL';
   sortOrder?: 'ASC' | 'DESC';
-}
+};
 
 export const subscriptionQueryResolvers = {
   subscriptions: async (

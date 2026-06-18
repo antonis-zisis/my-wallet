@@ -11,25 +11,25 @@ import {
   validateMaxLength,
 } from '../../lib/validate';
 
-interface NetWorthEntryInput {
+type NetWorthEntryInput = {
   type: string;
   label: string;
   amount: number;
   category: string;
   notes?: string;
-}
+};
 
-export interface CreateNetWorthSnapshotInput {
+export type CreateNetWorthSnapshotInput = {
   title: string;
   snapshotDate: string;
   entries: Array<NetWorthEntryInput>;
-}
+};
 
-export interface UpdateNetWorthSnapshotInput {
+export type UpdateNetWorthSnapshotInput = {
   title: string;
   snapshotDate: string;
   entries: Array<NetWorthEntryInput>;
-}
+};
 
 type SnapshotParent = {
   id: string;

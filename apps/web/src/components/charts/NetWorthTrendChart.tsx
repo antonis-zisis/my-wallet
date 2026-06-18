@@ -33,10 +33,10 @@ type TrendSnapshot = Pick<
 
 export type ChartView = 'netWorth' | 'breakdown';
 
-interface NetWorthTrendChartProps {
+type NetWorthTrendChartProps = {
   snapshots: Array<TrendSnapshot>;
   view: ChartView;
-}
+};
 
 export function NetWorthTrendChart({
   snapshots,

@@ -1,12 +1,12 @@
 import { Button, Modal } from '../ui';
 
-interface CancelSubscriptionModalProps {
+type CancelSubscriptionModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   subscriptionName: string;
   isCancelling: boolean;
-}
+};
 
 export function CancelSubscriptionModal({
   isCancelling,

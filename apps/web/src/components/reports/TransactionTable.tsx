@@ -3,7 +3,7 @@ import { formatDate } from '../../utils/formatDate';
 import { Badge, Button, Card, Dropdown, MoneyAmount } from '../ui';
 import { TransactionTableHeader } from './TransactionTableHeader';
 
-interface TransactionTableProps {
+type TransactionTableProps = {
   isLocked?: boolean;
   presentExpenseCategories?: ReadonlyArray<string>;
   presentIncomeCategories?: ReadonlyArray<string>;
@@ -15,7 +15,7 @@ interface TransactionTableProps {
   onEdit?: (transaction: Transaction) => void;
   onSelectCategoryFilter?: (category: string) => void;
   onSelectTypeFilter?: (type: 'All' | 'Income' | 'Expense') => void;
-}
+};
 
 export function TransactionTable({
   isLocked = false,

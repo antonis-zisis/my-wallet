@@ -4,7 +4,7 @@ import { formatDate } from '../../utils/formatDate';
 import { LockClosedIcon } from '../icons';
 import { Button, Dropdown, Input } from '../ui';
 
-interface ReportHeaderProps {
+type ReportHeaderProps = {
   createdAt: string;
   isLocked: boolean;
   title: string;
@@ -15,7 +15,7 @@ interface ReportHeaderProps {
   onLockReport: () => void;
   onSaveTitle: (title: string) => void;
   onUnlockReport: () => void;
-}
+};
 
 export function ReportHeader({
   createdAt,

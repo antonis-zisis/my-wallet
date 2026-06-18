@@ -6,13 +6,13 @@ import { ChevronDownIcon } from '../icons';
 import { Card, Divider, MoneyAmount } from '../ui';
 import { EntryDeltaLabel } from './EntryDeltaLabel';
 
-interface NetWorthEntriesSectionProps {
+type NetWorthEntriesSectionProps = {
   colorClass: string;
   entries: Array<NetWorthEntry>;
   entryDeltas?: Record<string, EntryDelta>;
   title: string;
   total: number;
-}
+};
 
 export function NetWorthEntriesSection({
   colorClass,

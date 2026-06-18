@@ -5,7 +5,7 @@ import { BillingCycle, Subscription } from '../../types/subscription';
 import { Button, Modal } from '../ui';
 import { SubscriptionFormFields } from './SubscriptionFormFields';
 
-interface EditSubscriptionModalProps {
+type EditSubscriptionModalProps = {
   existingNames?: Array<string>;
   isOpen: boolean;
   onClose: () => void;
@@ -22,7 +22,7 @@ interface EditSubscriptionModalProps {
     url?: string;
   }) => void;
   subscription: Subscription | null;
-}
+};
 
 function formatDateForInput(dateString: string): string {
   const value = /^\d+$/.test(dateString) ? Number(dateString) : dateString;

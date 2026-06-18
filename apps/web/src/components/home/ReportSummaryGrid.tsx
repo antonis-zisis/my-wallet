@@ -11,14 +11,14 @@ function SkeletonCard() {
   );
 }
 
-interface ReportSummaryGridProps {
+type ReportSummaryGridProps = {
   currentLoading: boolean;
   currentReport: Report | undefined;
   previousLoading: boolean;
   previousReport: Report | undefined;
   reportsLoading: boolean;
   totalCount: number | undefined;
-}
+};
 
 export function ReportSummaryGrid({
   currentLoading,

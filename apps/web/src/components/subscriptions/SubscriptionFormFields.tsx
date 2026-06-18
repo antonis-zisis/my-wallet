@@ -4,12 +4,12 @@ import type { SubscriptionFormValues } from '../../hooks/subscriptions/useSubscr
 import { BILLING_CYCLE_OPTIONS, BillingCycle } from '../../types/subscription';
 import { Input, Select } from '../ui';
 
-interface SubscriptionFormFieldsProps {
+type SubscriptionFormFieldsProps = {
   defaultExpandAdditional?: boolean;
   isDuplicate: boolean;
   onChange: (updates: Partial<SubscriptionFormValues>) => void;
   values: SubscriptionFormValues;
-}
+};
 
 export function SubscriptionFormFields({
   defaultExpandAdditional = false,

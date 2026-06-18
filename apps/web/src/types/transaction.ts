@@ -1,6 +1,6 @@
 export type TransactionType = 'INCOME' | 'EXPENSE';
 
-export interface Transaction {
+export type Transaction = {
   id: string;
   reportId: string;
   type: TransactionType;
@@ -10,15 +10,15 @@ export interface Transaction {
   date: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface TransactionFormInput {
+export type TransactionFormInput = {
   type: TransactionType;
   amount: number;
   description: string;
   category: string;
   date: string;
-}
+};
 
 export const EXPENSE_CATEGORIES = [
   'Rent',

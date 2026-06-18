@@ -30,9 +30,9 @@ import {
 import { getPresentCategories } from './selectors/getPresentCategories';
 import { useReportModals } from './useReportModals';
 
-interface ReportData {
+type ReportData = {
   report: ReportType & { transactions: Array<Transaction> };
-}
+};
 
 export function useReportData() {
   const { showError, showSuccess } = useToast();

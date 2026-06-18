@@ -17,17 +17,17 @@ import { type Report } from '../../types/report';
 import { abbreviateReportTitle } from '../../utils/abbreviateReportTitle';
 import { formatMoneyOrMask } from '../../utils/formatMoney';
 
-interface TooltipPayloadEntry {
+type TooltipPayloadEntry = {
   name: string;
   value: number;
   color: string;
-}
+};
 
-interface ChartTooltipProps {
+type ChartTooltipProps = {
   active?: boolean;
   label?: string;
   payload?: Array<TooltipPayloadEntry>;
-}
+};
 
 function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
   const { isAmountsHidden } = usePrivacy();
@@ -72,10 +72,10 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
   );
 }
 
-interface IncomeExpensesChartProps {
+type IncomeExpensesChartProps = {
   reports: Array<Report>;
   limit?: number;
-}
+};
 
 export function IncomeExpensesChart({
   limit = 12,

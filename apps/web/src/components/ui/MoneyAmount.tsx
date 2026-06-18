@@ -1,12 +1,12 @@
 import { usePrivacy } from '../../contexts/PrivacyContext';
 import { formatMoney } from '../../utils/formatMoney';
 
-interface MoneyAmountProps {
+type MoneyAmountProps = {
   amount: number;
   className?: string;
   currency?: string;
   sign?: string;
-}
+};
 
 export function MoneyAmount({
   amount,

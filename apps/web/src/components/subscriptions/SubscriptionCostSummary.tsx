@@ -4,33 +4,33 @@ import { formatMoneyOrMask } from '../../utils/formatMoney';
 import { InfoIcon } from '../icons';
 import { Card, Skeleton, Tooltip } from '../ui';
 
-interface NextRenewal {
+type NextRenewal = {
   name: string;
   amount: number;
   date: Date;
-}
+};
 
-interface MostExpensive {
+type MostExpensive = {
   monthlyCost: number;
   name: string;
-}
+};
 
-interface SubscriptionCostSummaryProps {
+type SubscriptionCostSummaryProps = {
   loading?: boolean;
   mostExpensive: MostExpensive | null;
   nextRenewal: NextRenewal | null;
   renewingThisMonthTotal: number;
   totalMonthlyCost: number;
   totalYearlyCost: number;
-}
+};
 
-interface TileProps {
+type TileProps = {
   label: string;
   loading?: boolean;
   primary: string;
   secondary?: string;
   tooltip?: string;
-}
+};
 
 function Tile({ label, loading, primary, secondary, tooltip }: TileProps) {
   return (

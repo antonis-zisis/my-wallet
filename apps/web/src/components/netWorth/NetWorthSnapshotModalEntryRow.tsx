@@ -6,23 +6,23 @@ import {
 import { XMarkIcon } from '../icons';
 import { Input, Select } from '../ui';
 
-export interface EntryRowDraft {
+export type EntryRowDraft = {
   key: number;
   type: NetWorthEntryType;
   category: string;
   label: string;
   amount: string;
   notes: string;
-}
+};
 
 type EntryRowField = 'category' | 'label' | 'amount' | 'notes';
 
-interface NetWorthSnapshotModalEntryRowProps {
+type NetWorthSnapshotModalEntryRowProps = {
   entry: EntryRowDraft;
   isOnlyEntry: boolean;
   onRemove: () => void;
   onUpdate: (field: EntryRowField, value: string) => void;
-}
+};
 
 export function NetWorthSnapshotModalEntryRow({
   entry,

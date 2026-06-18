@@ -1,12 +1,12 @@
 import { Button, Modal } from '../ui';
 
-interface DeleteSubscriptionModalProps {
+type DeleteSubscriptionModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   subscriptionName: string;
   isDeleting: boolean;
-}
+};
 
 export function DeleteSubscriptionModal({
   isDeleting,

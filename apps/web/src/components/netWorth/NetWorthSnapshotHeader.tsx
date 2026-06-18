@@ -1,7 +1,7 @@
 import { formatDate } from '../../utils/formatDate';
 import { Card, Dropdown, MoneyAmount } from '../ui';
 
-interface NetWorthSnapshotHeaderProps {
+type NetWorthSnapshotHeaderProps = {
   createdAt: string;
   deltaAssets?: number | null;
   deltaLiabilities?: number | null;
@@ -15,7 +15,7 @@ interface NetWorthSnapshotHeaderProps {
   totalAssets: number;
   totalLiabilities: number;
   updatedAt: string;
-}
+};
 
 function DeltaLabel({
   currentValue,

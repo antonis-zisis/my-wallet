@@ -2,14 +2,14 @@ import { Component, type ReactNode } from 'react';
 
 import { Button } from './ui';
 
-interface Props {
+type Props = {
   children: ReactNode;
   compact?: boolean;
-}
+};
 
-interface State {
+type State = {
   hasError: boolean;
-}
+};
 
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };

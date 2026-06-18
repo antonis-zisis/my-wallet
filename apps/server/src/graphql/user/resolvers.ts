@@ -3,9 +3,9 @@ import { GraphQLError } from 'graphql';
 import prisma from '../../lib/prisma';
 import { validateMaxLength } from '../../lib/validate';
 
-export interface UpdateUserInput {
+export type UpdateUserInput = {
   fullName?: string;
-}
+};
 
 export const userResolvers = {
   Query: {

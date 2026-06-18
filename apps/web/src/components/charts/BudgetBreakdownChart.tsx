@@ -14,9 +14,9 @@ import { type Transaction } from '../../types/transaction';
 import { formatMoneyOrMask } from '../../utils/formatMoney';
 import { BUDGET_BUCKET_COLORS } from './categoryColors';
 
-interface BudgetBreakdownChartProps {
+type BudgetBreakdownChartProps = {
   transactions: Array<Transaction>;
-}
+};
 
 export const CATEGORY_TO_BUCKET: Record<string, string> = {
   'Dining Out': 'Wants',
@@ -33,11 +33,11 @@ export const CATEGORY_TO_BUCKET: Record<string, string> = {
   Utilities: 'Needs',
 };
 
-interface ChartDataItem {
+type ChartDataItem = {
   name: string;
   value: number;
   fill: string;
-}
+};
 
 const RADIAN = Math.PI / 180;
 

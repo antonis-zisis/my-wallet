@@ -4,7 +4,7 @@ import { DeleteReportModal } from './DeleteReportModal';
 import { DeleteTransactionModal } from './DeleteTransactionModal';
 import { TransactionFormModal } from './TransactionFormModal';
 
-interface ReportModalsProps {
+type ReportModalsProps = {
   deletingTransaction: Transaction | null;
   editingTransaction: Transaction | null;
   isAddTransactionModalOpen: boolean;
@@ -20,7 +20,7 @@ interface ReportModalsProps {
   onConfirmDeleteTransaction: () => Promise<void>;
   onCreateTransaction: (input: TransactionFormInput) => Promise<void>;
   onUpdateTransaction: (input: TransactionFormInput) => Promise<void>;
-}
+};
 
 export function ReportModals({
   deletingTransaction,

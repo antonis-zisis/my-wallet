@@ -3,10 +3,10 @@ import { HTMLAttributes } from 'react';
 type BadgeVariant = 'default' | 'success' | 'danger' | 'info' | 'warning';
 type BadgeSize = 'sm' | 'md';
 
-interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+type BadgeProps = {
   size?: BadgeSize;
   variant?: BadgeVariant;
-}
+} & HTMLAttributes<HTMLSpanElement>;
 
 const variantStyles: Record<BadgeVariant, string> = {
   default: 'bg-bg-muted text-text-secondary',

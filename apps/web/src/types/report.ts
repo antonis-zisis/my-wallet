@@ -1,6 +1,6 @@
 import { Transaction } from './transaction';
 
-export interface Report {
+export type Report = {
   id: string;
   isLocked: boolean;
   netBalance?: number;
@@ -9,17 +9,17 @@ export interface Report {
   createdAt: string;
   updatedAt: string;
   transactions?: Array<Transaction>;
-}
+};
 
-export interface ReportsData {
+export type ReportsData = {
   reports: {
     items: Array<Report>;
     totalCount: number;
   };
-}
+};
 
-export interface ReportsSummaryData {
+export type ReportsSummaryData = {
   reports: {
     items: Array<Report>;
   };
-}
+};

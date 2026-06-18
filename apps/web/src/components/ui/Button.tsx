@@ -5,11 +5,11 @@ import { Spinner } from './Spinner';
 type ButtonVariant = 'primary' | 'secondary' | 'success' | 'danger' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
-}
+} & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:

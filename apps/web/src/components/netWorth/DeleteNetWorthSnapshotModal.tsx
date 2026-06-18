@@ -1,12 +1,12 @@
 import { Button, Modal } from '../ui';
 
-interface DeleteNetWorthSnapshotModalProps {
+type DeleteNetWorthSnapshotModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   snapshotTitle: string;
   isDeleting: boolean;
-}
+};
 
 export function DeleteNetWorthSnapshotModal({
   isDeleting,

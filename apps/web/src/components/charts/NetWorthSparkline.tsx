@@ -3,19 +3,19 @@ import { Line, LineChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { MoneyAmount } from '../ui';
 
-interface NetWorthSparklineProps {
+type NetWorthSparklineProps = {
   isPositive: boolean;
   snapshots: Array<Pick<NetWorthSnapshot, 'id' | 'netWorth' | 'title'>>;
-}
+};
 
-interface SparklineTooltipPayloadEntry {
+type SparklineTooltipPayloadEntry = {
   payload: { netWorth: number; title: string };
-}
+};
 
-interface SparklineTooltipProps {
+type SparklineTooltipProps = {
   active?: boolean;
   payload?: Array<SparklineTooltipPayloadEntry>;
-}
+};
 
 function SparklineTooltip({ active, payload }: SparklineTooltipProps) {
   if (!active || !payload?.length) {

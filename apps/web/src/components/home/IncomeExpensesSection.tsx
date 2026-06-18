@@ -9,10 +9,10 @@ import { Card, Skeleton } from '../ui';
 const LIMIT_OPTIONS = [3, 6, 9, 12] as const;
 type LimitOption = (typeof LIMIT_OPTIONS)[number];
 
-interface IncomeExpensesSectionProps {
+type IncomeExpensesSectionProps = {
   loading: boolean;
   reports: Array<Report>;
-}
+};
 
 export function IncomeExpensesSection({
   loading,

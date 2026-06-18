@@ -11,10 +11,10 @@ import {
 import { ChevronDownIcon, InfoIcon } from '../icons';
 import { Card, MoneyAmount, Skeleton, Tooltip } from '../ui';
 
-interface UpcomingRenewalsCardProps {
+type UpcomingRenewalsCardProps = {
   loading?: boolean;
   subscriptions: Array<Subscription>;
-}
+};
 
 export function UpcomingRenewalsCard({
   loading = false,

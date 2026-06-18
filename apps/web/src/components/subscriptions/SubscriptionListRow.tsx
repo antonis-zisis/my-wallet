@@ -12,13 +12,13 @@ import { isSafeUrl } from '../../utils/isSafeUrl';
 import { Badge, Dropdown, MoneyAmount } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
 
-interface SubscriptionListRowProps {
+type SubscriptionListRowProps = {
   subscription: Subscription;
   onEdit?: (subscription: Subscription) => void;
   onCancel?: (subscription: Subscription) => void;
   onResume?: (subscription: Subscription) => void;
   onDelete: (subscription: Subscription) => void;
-}
+};
 
 function TertiaryLine({ subscription }: { subscription: Subscription }) {
   const parts: Array<string> = [];
