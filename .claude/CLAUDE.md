@@ -59,7 +59,7 @@ pnpm run env:encrypt      # Encrypt before committing
 - UI primitives: `components/ui/` (Badge, Button, Card, Divider, Dropdown, Input, Modal, MoneyAmount, PageLayout, Pagination, Select, Skeleton, Spinner, Toast, Tooltip)
 - Feature components: `components/home/`, `components/netWorth/`, `components/reports/`, `components/subscriptions/` — domain-specific composed components
 - Charts: Recharts in `components/charts/` — `BudgetBreakdownChart`, `ExpenseBreakdownChart`, `IncomeExpensesChart`, `NetWorthCategoryBreakdownChart`, `NetWorthSparkline`, `NetWorthTrendChart`
-- Types: `types/` — shared TypeScript interfaces per domain (`report.ts`, `subscription.ts`, `netWorth.ts`, `transaction.ts`)
+- Types: `types/` — shared TypeScript types per domain (`report.ts`, `subscription.ts`, `netWorth.ts`, `transaction.ts`)
 - Utils: `utils/` — pure helpers: `formatMoney`, `formatDate`, `formatRelativeTime`, `abbreviateReportTitle`, `getInitials`, `getNextRenewalDate`, `getDaysUntil`
 
 **Server** (Express 5 + Apollo Server 5):
@@ -93,7 +93,7 @@ Each domain lives in mirrored directories on both sides:
 **Server domain structure**:
 
 - `schema.ts` — SDL exported as `<domain>TypeDefs`
-- `resolvers.ts` — resolvers exported as `<domain>Resolvers`, TypeScript input interfaces at the top
+- `resolvers.ts` — resolvers exported as `<domain>Resolvers`, TypeScript input types at the top
 - `resolvers.test.ts` — Vitest unit tests, prisma mocked via `vi.mock`
 - `lib/<helper>.ts` (optional) — pure, reusable helpers > 10 LOC or with branchy logic worth testing on their own (e.g. `subscriptions/lib/computeMonthlyCost.ts`); each helper has its own `.test.ts` next to it
 

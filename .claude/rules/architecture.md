@@ -7,8 +7,8 @@ Sibling rules: [rules.md](./rules.md) for naming/workflow/design, [security.md](
 - **Creating a new file → it must have one clear responsibility.** A file's exports should belong together because they are the same thing or two halves of one thing, not because they happen to be in the same domain.
 
   Allowed groupings:
-  - A React Context Provider + its `useX` hook + the context's `Value` interface.
-  - A hook + the TypeScript interfaces describing its arguments / return value.
+  - A React Context Provider + its `useX` hook + the context's `Value` type.
+  - A hook + the TypeScript types describing its arguments / return value.
   - A small family of related constants used together (e.g. `EXPENSE_CATEGORY_COLORS` + `ASSET_CATEGORY_COLORS` in `categoryColors.ts`).
   - A component + small subcomponents that are only rendered by it and would be pointless to import elsewhere.
 
@@ -77,7 +77,7 @@ Sibling rules: [rules.md](./rules.md) for naming/workflow/design, [security.md](
 
 - **`resolvers.ts` exceeds ~300 LOC → split into `queries.ts` / `mutations.ts` / `fields.ts`** and re-export the merged resolver map from `resolvers.ts`. The merged shape stays the same so `graphql/index.ts` doesn't change.
 
-- **Resolver argument shape → declare the TypeScript interface at the top of the file** (current pattern). Don't inline `{ input }: { input: { ... } }` in the signature when the input has more than two fields.
+- **Resolver argument shape → declare the TypeScript type at the top of the file** (current pattern). Don't inline `{ input }: { input: { ... } }` in the signature when the input has more than two fields.
 
 - **Throwing in a resolver → `GraphQLError` with `extensions.code`.** `NOT_FOUND` for missing-or-not-yours, `FORBIDDEN` for permission, `BAD_USER_INPUT` for validation. The message is safe to show the user; internal detail goes in `extensions` or the log.
 
