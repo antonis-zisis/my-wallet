@@ -1,19 +1,19 @@
 import { FilterIcon } from '../icons';
 import { Dropdown } from '../ui';
 
-interface FilterItem {
+type FilterItem = {
   label: string;
   onClick: () => void;
-}
+};
 
-interface TransactionTableHeaderProps {
+type TransactionTableHeaderProps = {
   categoryFilterItems: Array<FilterItem>;
   hasMultipleTypes: boolean;
   presentCategoriesCount: number;
   selectedCategoryFilter: string;
   selectedTypeFilter: 'All' | 'Income' | 'Expense';
   typeFilterItems: Array<FilterItem>;
-}
+};
 
 export function TransactionTableHeader({
   categoryFilterItems,

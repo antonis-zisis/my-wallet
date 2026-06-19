@@ -10,12 +10,12 @@ import { Card, MoneyAmount, Skeleton } from '../ui';
 
 const STALE_DAYS = 45;
 
-interface NetWorthSummaryCardProps {
+type NetWorthSummaryCardProps = {
   loading: boolean;
   previousSnapshot: NetWorthSnapshot | null;
   recentSnapshots: Array<NetWorthSnapshot>;
   snapshot: NetWorthSnapshot | null;
-}
+};
 
 export function NetWorthSummaryCard({
   loading,

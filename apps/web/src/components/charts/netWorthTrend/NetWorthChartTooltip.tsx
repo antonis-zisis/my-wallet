@@ -2,19 +2,19 @@ import { usePrivacy } from '../../../contexts/PrivacyContext';
 import { formatDate } from '../../../utils/formatDate';
 import { formatMoneyOrMask } from '../../../utils/formatMoney';
 
-interface NetWorthTooltipPayloadEntry {
+type NetWorthTooltipPayloadEntry = {
   payload: {
     snapshotDate: string;
     id: string;
     netWorth: number;
     title: string;
   };
-}
+};
 
-interface NetWorthChartTooltipProps {
+type NetWorthChartTooltipProps = {
   active?: boolean;
   payload?: Array<NetWorthTooltipPayloadEntry>;
-}
+};
 
 export function NetWorthChartTooltip({
   active,

@@ -1,10 +1,10 @@
 import { RefObject } from 'react';
 
-interface NetWorthSnapshotModalSectionHeaderProps {
+type NetWorthSnapshotModalSectionHeaderProps = {
   containerRef?: RefObject<HTMLDivElement | null>;
   label: string;
   onAdd: () => void;
-}
+};
 
 export function NetWorthSnapshotModalSectionHeader({
   containerRef,

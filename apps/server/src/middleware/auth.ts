@@ -12,10 +12,10 @@ function getSupabaseAdmin() {
   return createClient(supabaseUrl, supabaseSecretKey);
 }
 
-export interface AuthenticatedRequest extends Request {
+export type AuthenticatedRequest = {
   userId?: string;
   email?: string;
-}
+} & Request;
 
 export async function authMiddleware(
   req: AuthenticatedRequest,

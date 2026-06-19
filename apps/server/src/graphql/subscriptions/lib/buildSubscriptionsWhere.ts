@@ -1,8 +1,8 @@
-interface BuildSubscriptionsWhereInput {
+type BuildSubscriptionsWhereInput = {
   userId: string;
   active?: boolean;
   now: Date;
-}
+};
 
 export function buildSubscriptionsWhere({
   active,

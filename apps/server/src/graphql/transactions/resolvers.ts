@@ -9,23 +9,23 @@ import {
   validateMaxLength,
 } from '../../lib/validate';
 
-export interface CreateTransactionInput {
+export type CreateTransactionInput = {
   reportId: string;
   type: 'INCOME' | 'EXPENSE';
   amount: number;
   description: string;
   category: string;
   date: string;
-}
+};
 
-export interface UpdateTransactionInput {
+export type UpdateTransactionInput = {
   id: string;
   type: 'INCOME' | 'EXPENSE';
   amount: number;
   description: string;
   category: string;
   date: string;
-}
+};
 
 export const transactionResolvers = {
   Query: {

@@ -11,7 +11,7 @@ type TrendSnapshot = Pick<
   | 'snapshotDate'
 >;
 
-export interface TrendChartDatum {
+export type TrendChartDatum = {
   snapshotDate: string;
   id: string;
   name: string;
@@ -19,7 +19,7 @@ export interface TrendChartDatum {
   title: string;
   totalAssets: number;
   totalLiabilities: number;
-}
+};
 
 export function buildTrendChartData(
   snapshots: Array<TrendSnapshot>

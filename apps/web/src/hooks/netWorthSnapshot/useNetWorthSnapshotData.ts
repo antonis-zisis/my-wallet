@@ -12,9 +12,9 @@ import {
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { buildEntryDeltas } from './selectors/buildEntryDeltas';
 
-interface SnapshotData {
+type SnapshotData = {
   netWorthSnapshot: NetWorthSnapshot | null;
-}
+};
 
 export function useNetWorthSnapshotData() {
   const { id } = useParams<{ id: string }>();

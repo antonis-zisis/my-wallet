@@ -7,7 +7,7 @@ import {
 } from '../../types/subscription';
 import { Button, Input, Modal, Select } from '../ui';
 
-interface ResumeSubscriptionModalProps {
+type ResumeSubscriptionModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (input: {
@@ -18,7 +18,7 @@ interface ResumeSubscriptionModalProps {
   }) => void;
   subscription: Subscription | null;
   isResuming: boolean;
-}
+};
 
 export function ResumeSubscriptionModal({
   isOpen,

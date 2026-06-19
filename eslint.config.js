@@ -7,7 +7,14 @@ import tseslint from 'typescript-eslint';
 export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.recommended,
-  { ignores: ['**/dist/**', '**/node_modules/**', '**/coverage/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+      '**/generated/**',
+    ],
+  },
   {
     plugins: {
       'simple-import-sort': simpleImportSort,
@@ -15,6 +22,7 @@ export default defineConfig(
     },
     rules: {
       '@typescript-eslint/array-type': ['error', { default: 'generic' }],
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_' },

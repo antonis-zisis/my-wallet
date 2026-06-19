@@ -11,10 +11,10 @@ import {
   LIABILITY_CATEGORY_COLORS,
 } from './categoryColors';
 
-interface NetWorthCategoryBreakdownChartProps {
+type NetWorthCategoryBreakdownChartProps = {
   entries: Array<NetWorthEntry>;
   type: NetWorthEntryType;
-}
+};
 
 export function NetWorthCategoryBreakdownChart({
   entries,

@@ -10,11 +10,11 @@ import {
 } from '../icons';
 import { Card, MoneyAmount, Skeleton } from '../ui';
 
-interface NetWorthListProps {
+type NetWorthListProps = {
   error: boolean;
   loading: boolean;
   snapshots: Array<NetWorthSnapshot>;
-}
+};
 
 function ColumnHeaders() {
   return (

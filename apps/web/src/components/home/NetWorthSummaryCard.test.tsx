@@ -48,12 +48,12 @@ const staleSnapshot: NetWorthSnapshot = {
   updatedAt: '2025-12-01T00:00:00.000Z',
 };
 
-interface RenderOptions {
+type RenderOptions = {
   loading?: boolean;
   previousSnapshot?: NetWorthSnapshot | null;
   recentSnapshots?: Array<NetWorthSnapshot>;
   snapshot: NetWorthSnapshot | null;
-}
+};
 
 const renderCard = ({
   loading = false,

@@ -1,9 +1,9 @@
 import { createContext, type ReactNode, useContext, useState } from 'react';
 
-interface PrivacyContextType {
+type PrivacyContextType = {
   isAmountsHidden: boolean;
   toggleAmountsHidden: () => void;
-}
+};
 
 const PrivacyContext = createContext<PrivacyContextType>({
   isAmountsHidden: false,

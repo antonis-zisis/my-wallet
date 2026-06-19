@@ -1,12 +1,12 @@
 import { Button, Modal } from '../ui';
 
-interface DeleteReportModalProps {
+type DeleteReportModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   reportTitle: string;
   isDeleting: boolean;
-}
+};
 
 export function DeleteReportModal({
   isDeleting,

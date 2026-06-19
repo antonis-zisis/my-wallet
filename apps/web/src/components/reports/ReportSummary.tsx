@@ -1,9 +1,9 @@
 import { Transaction } from '../../types/transaction';
 import { Card, MoneyAmount } from '../ui';
 
-interface ReportSummaryProps {
+type ReportSummaryProps = {
   transactions: Array<Transaction>;
-}
+};
 
 export function ReportSummary({ transactions }: ReportSummaryProps) {
   const totalIncome = transactions

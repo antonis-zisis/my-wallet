@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from 'react';
 
 import { Button } from './Button';
 
-interface ModalProps {
+type ModalProps = {
   closeOnBackdropClick?: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -10,7 +10,7 @@ interface ModalProps {
   children: ReactNode;
   footer?: ReactNode;
   size?: 'md' | 'lg';
-}
+};
 
 export function Modal({
   children,

@@ -7,10 +7,10 @@ type SignInResult = Awaited<
   ReturnType<typeof supabase.auth.signInWithPassword>
 >;
 
-interface SessionOverrides {
+type SessionOverrides = {
   user?: { id: string };
   access_token?: string;
-}
+};
 
 export function makeSupabaseSession(overrides: SessionOverrides = {}): Session {
   return {

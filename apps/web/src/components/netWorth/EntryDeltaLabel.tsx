@@ -1,10 +1,10 @@
 import { type EntryDelta } from '../../types/netWorth';
 import { Badge, MoneyAmount } from '../ui';
 
-interface EntryDeltaLabelProps {
+type EntryDeltaLabelProps = {
   currentAmount: number;
   entryDelta: EntryDelta;
-}
+};
 
 export function EntryDeltaLabel({
   currentAmount,

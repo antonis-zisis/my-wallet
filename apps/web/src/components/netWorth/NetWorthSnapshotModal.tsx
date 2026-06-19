@@ -9,7 +9,7 @@ import { NetWorthSnapshotModalSummary } from './NetWorthSnapshotModalSummary';
 
 export type { EntryInput, SnapshotFormValues } from '../../types/netWorth';
 
-interface NetWorthSnapshotModalProps {
+type NetWorthSnapshotModalProps = {
   initialEntries?: Array<EntryInput>;
   initialSnapshotDate?: string;
   initialTitle?: string;
@@ -18,7 +18,7 @@ interface NetWorthSnapshotModalProps {
   onClose: () => void;
   onSubmit: (input: SnapshotFormValues) => Promise<void>;
   submitLabel: string;
-}
+};
 
 export function NetWorthSnapshotModal({
   initialEntries,

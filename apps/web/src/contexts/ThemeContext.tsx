@@ -9,11 +9,11 @@ import {
 
 export type Theme = 'light' | 'dark' | 'system';
 
-interface ThemeContextType {
+type ThemeContextType = {
   resolvedTheme: 'light' | 'dark';
   setTheme: (theme: Theme) => void;
   theme: Theme;
-}
+};
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 

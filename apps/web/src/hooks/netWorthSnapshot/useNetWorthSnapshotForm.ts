@@ -10,12 +10,12 @@ import { dateToTitle } from '../../utils/dateToTitle';
 import { todayAsDateInput } from '../../utils/todayAsDateInput';
 import { makeEmptyEntryDraft, toEntryDraft } from './selectors/makeEntryDraft';
 
-interface UseNetWorthSnapshotFormInput {
+type UseNetWorthSnapshotFormInput = {
   initialEntries?: Array<EntryInput>;
   initialSnapshotDate?: string;
   initialTitle: string;
   isOpen: boolean;
-}
+};
 
 export function useNetWorthSnapshotForm({
   initialEntries,

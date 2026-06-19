@@ -1,6 +1,6 @@
 export type NetWorthEntryType = 'ASSET' | 'LIABILITY';
 
-export interface NetWorthEntry {
+export type NetWorthEntry = {
   id: string;
   type: NetWorthEntryType;
   label: string;
@@ -9,9 +9,9 @@ export interface NetWorthEntry {
   notes: string | null;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface NetWorthSnapshot {
+export type NetWorthSnapshot = {
   id: string;
   title: string;
   snapshotDate: string;
@@ -22,33 +22,33 @@ export interface NetWorthSnapshot {
   previousSnapshot?: NetWorthSnapshot | null;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface EntryDelta {
+export type EntryDelta = {
   delta: number;
   isNew: boolean;
-}
+};
 
-export interface EntryInput {
+export type EntryInput = {
   type: NetWorthEntryType;
   category: string;
   label: string;
   amount: number;
   notes?: string;
-}
+};
 
-export interface SnapshotFormValues {
+export type SnapshotFormValues = {
   title: string;
   snapshotDate: string;
   entries: Array<EntryInput>;
-}
+};
 
-export interface NetWorthSnapshotsData {
+export type NetWorthSnapshotsData = {
   netWorthSnapshots: {
     items: Array<NetWorthSnapshot>;
     totalCount: number;
   };
-}
+};
 
 export const ASSET_CATEGORIES = [
   'Savings',

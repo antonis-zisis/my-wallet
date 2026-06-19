@@ -4,14 +4,14 @@ import { Transaction } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
 import { clampPage, validateMaxLength } from '../../lib/validate';
 
-export interface CreateReportInput {
+export type CreateReportInput = {
   title: string;
-}
+};
 
-export interface UpdateReportInput {
+export type UpdateReportInput = {
   id: string;
   title: string;
-}
+};
 
 export const reportResolvers = {
   Report: {

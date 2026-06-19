@@ -1,13 +1,13 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '../icons';
 
-interface PaginationProps {
+type PaginationProps = {
   page: number;
   totalPages: number;
   totalCount: number;
   pageSize: number;
   itemCount: number;
   onPageChange: (newPage: number) => void;
-}
+};
 
 const iconButtonClass =
   'rounded cursor-pointer p-1.5 text-text-secondary transition-colors hover:bg-bg-muted disabled:cursor-not-allowed disabled:opacity-50';

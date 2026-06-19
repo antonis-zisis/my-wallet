@@ -1,10 +1,10 @@
 import { MoneyAmount } from '../ui';
 
-interface NetWorthSnapshotModalSummaryProps {
+type NetWorthSnapshotModalSummaryProps = {
   netWorth: number;
   totalAssets: number;
   totalLiabilities: number;
-}
+};
 
 export function NetWorthSnapshotModalSummary({
   netWorth,

@@ -4,25 +4,25 @@ import { createContext, type ReactNode, useContext } from 'react';
 import { GET_ME, UPDATE_ME } from '../graphql/user';
 import { useAuth } from './AuthContext';
 
-export interface User {
+export type User = {
   id: string;
   email: string;
   fullName: string | null;
-}
+};
 
-interface UpdateUserInput {
+type UpdateUserInput = {
   fullName?: string;
-}
+};
 
-interface MeData {
+type MeData = {
   me: User;
-}
+};
 
-interface UserContextType {
+type UserContextType = {
   user: User | null;
   loading: boolean;
   updateUser: (input: UpdateUserInput) => Promise<void>;
-}
+};
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 

@@ -2,7 +2,7 @@ import { usePrivacy } from '../../../contexts/PrivacyContext';
 import { formatDate } from '../../../utils/formatDate';
 import { formatMoneyOrMask } from '../../../utils/formatMoney';
 
-interface BreakdownTooltipPayloadEntry {
+type BreakdownTooltipPayloadEntry = {
   payload: {
     snapshotDate: string;
     id: string;
@@ -10,12 +10,12 @@ interface BreakdownTooltipPayloadEntry {
     totalLiabilities: number;
     title: string;
   };
-}
+};
 
-interface BreakdownChartTooltipProps {
+type BreakdownChartTooltipProps = {
   active?: boolean;
   payload?: Array<BreakdownTooltipPayloadEntry>;
-}
+};
 
 export function BreakdownChartTooltip({
   active,

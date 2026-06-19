@@ -1,9 +1,9 @@
 import { ReactNode, useRef, useState } from 'react';
 
-interface TooltipProps {
+type TooltipProps = {
   content: string;
   children: ReactNode;
-}
+};
 
 export function Tooltip({ children, content }: TooltipProps) {
   const [visible, setVisible] = useState(false);

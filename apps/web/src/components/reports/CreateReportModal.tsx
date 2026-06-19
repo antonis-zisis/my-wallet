@@ -5,11 +5,11 @@ import { Button, Input, Modal } from '../ui';
 const MIN_TITLE_LENGTH = 3;
 const MAX_TITLE_LENGTH = 100;
 
-interface CreateReportModalProps {
+type CreateReportModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (title: string) => Promise<void>;
-}
+};
 
 export function CreateReportModal({
   isOpen,

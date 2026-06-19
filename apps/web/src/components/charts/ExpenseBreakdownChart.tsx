@@ -17,17 +17,17 @@ import {
   FALLBACK_CATEGORY_COLOR,
 } from './categoryColors';
 
-interface ExpenseBreakdownChartProps {
+type ExpenseBreakdownChartProps = {
   transactions: Array<Transaction>;
-}
+};
 
 const RADIAN = Math.PI / 180;
 
-interface ChartDataItem {
+type ChartDataItem = {
   name: string;
   value: number;
   fill: string;
-}
+};
 
 function makeRenderShape(isAmountsHidden: boolean, labelColor: string) {
   return function renderShape({

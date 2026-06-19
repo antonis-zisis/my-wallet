@@ -5,12 +5,12 @@ import { formatRelativeTime } from '../../utils/formatRelativeTime';
 import { ChevronRightIcon, DocumentTextIcon, LockClosedIcon } from '../icons';
 import { Card, MoneyAmount, Skeleton } from '../ui';
 
-interface ReportListProps {
+type ReportListProps = {
   error: boolean;
   loading: boolean;
   onCreateReport?: () => void;
   reports: Array<Report>;
-}
+};
 
 function SkeletonRow() {
   return (

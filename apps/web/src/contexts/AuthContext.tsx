@@ -9,13 +9,13 @@ import {
 
 import { supabase } from '../lib/supabase';
 
-interface AuthContextType {
+type AuthContextType = {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updatePassword: (newPassword: string) => Promise<{ error: Error | null }>;
-}
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

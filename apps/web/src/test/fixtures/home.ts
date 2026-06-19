@@ -72,13 +72,13 @@ export function subscriptionsResponse(
   };
 }
 
-interface HomeMocksOverrides {
+type HomeMocksOverrides = {
   reports?: Array<Report>;
   summaryReports?: Array<Report>;
   snapshots?: Array<NetWorthSnapshot>;
   subscriptions?: Array<Subscription>;
   reportDetails?: Array<{ id: string; report: Partial<Report> }>;
-}
+};
 
 export function homeMocks(
   overrides: HomeMocksOverrides = {}

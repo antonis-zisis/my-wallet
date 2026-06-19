@@ -15,12 +15,12 @@ export type DropdownItem =
       content: ReactNode;
     };
 
-interface DropdownProps {
+type DropdownProps = {
   align?: 'left' | 'right';
   className?: string;
   items: Array<DropdownItem>;
   trigger?: ReactNode;
-}
+};
 
 const actionStyles = {
   default: 'text-text-secondary hover:bg-bg-muted',

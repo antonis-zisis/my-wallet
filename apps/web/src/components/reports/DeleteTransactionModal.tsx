@@ -1,12 +1,12 @@
 import { Button, Modal } from '../ui';
 
-interface DeleteTransactionModalProps {
+type DeleteTransactionModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   transactionDescription: string;
   isDeleting: boolean;
-}
+};
 
 export function DeleteTransactionModal({
   isDeleting,

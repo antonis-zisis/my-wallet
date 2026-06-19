@@ -8,19 +8,19 @@ import {
 
 export type ToastVariant = 'success' | 'error' | 'info';
 
-export interface Toast {
+export type Toast = {
   id: string;
   message: string;
   variant: ToastVariant;
-}
+};
 
-interface ToastContextType {
+type ToastContextType = {
   toasts: Array<Toast>;
   dismiss: (id: string) => void;
   showError: (message: string) => void;
   showInfo: (message: string) => void;
   showSuccess: (message: string) => void;
-}
+};
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 

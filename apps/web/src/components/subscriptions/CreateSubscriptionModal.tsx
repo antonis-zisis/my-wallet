@@ -3,7 +3,7 @@ import { BillingCycle } from '../../types/subscription';
 import { Button, Modal } from '../ui';
 import { SubscriptionFormFields } from './SubscriptionFormFields';
 
-interface CreateSubscriptionModalProps {
+type CreateSubscriptionModalProps = {
   existingNames?: Array<string>;
   isOpen: boolean;
   onClose: () => void;
@@ -18,7 +18,7 @@ interface CreateSubscriptionModalProps {
     trialEndsAt?: string;
     url?: string;
   }) => void;
-}
+};
 
 export function CreateSubscriptionModal({
   existingNames = [],

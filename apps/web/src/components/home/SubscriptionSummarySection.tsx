@@ -3,10 +3,10 @@ import { isActiveTrial } from '../../utils/isActiveTrial';
 import { InfoIcon } from '../icons';
 import { Card, MoneyAmount, Tooltip } from '../ui';
 
-interface SubscriptionSummarySectionProps {
+type SubscriptionSummarySectionProps = {
   subscriptions: Array<Subscription>;
   currentIncome: number;
-}
+};
 
 export function SubscriptionSummarySection({
   currentIncome,
