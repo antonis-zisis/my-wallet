@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
 import cors from 'cors';
@@ -9,12 +7,13 @@ import helmet from 'helmet';
 
 import { resolvers, typeDefs } from './graphql/index';
 import { createDepthLimitRule } from './lib/depthLimitRule';
+import { env } from './lib/env';
 import { connectDatabase } from './lib/prisma';
 import { type AuthenticatedRequest, authMiddleware } from './middleware/auth';
 
 const app: Express = express();
-const PORT = process.env.PORT || 4000;
-const isProduction = process.env.NODE_ENV === 'production';
+const PORT = env.PORT;
+const isProduction = env.NODE_ENV === 'production';
 
 const graphqlRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

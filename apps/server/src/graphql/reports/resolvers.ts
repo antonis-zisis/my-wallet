@@ -2,16 +2,8 @@ import { GraphQLError } from 'graphql';
 
 import { Transaction } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
-import { clampPage, validateMaxLength } from '../../lib/validate';
-
-export type CreateReportInput = {
-  title: string;
-};
-
-export type UpdateReportInput = {
-  id: string;
-  title: string;
-};
+import { clampPage, parseInput } from '../../lib/validate';
+import { ReportInput } from './inputSchemas';
 
 export const reportResolvers = {
   Report: {
@@ -100,20 +92,21 @@ export const reportResolvers = {
   Mutation: {
     createReport: async (
       _parent: unknown,
-      { input }: { input: CreateReportInput },
+      { input }: { input: unknown },
       { userId }: { userId: string }
     ) => {
-      validateMaxLength(input.title, 'Title', 255);
+      const data = parseInput(ReportInput, input);
 
-      return prisma.report.create({ data: { title: input.title, userId } });
+      return prisma.report.create({ data: { title: data.title, userId } });
     },
     updateReport: async (
       _parent: unknown,
-      { input }: { input: UpdateReportInput },
+      { input }: { input: unknown },
       { userId }: { userId: string }
     ) => {
+      const { id } = input as { id: string };
       const existing = await prisma.report.findFirst({
-        where: { id: input.id, userId },
+        where: { id, userId },
       });
 
       if (!existing) {
@@ -128,11 +121,11 @@ export const reportResolvers = {
         });
       }
 
-      validateMaxLength(input.title, 'Title', 255);
+      const data = parseInput(ReportInput, input);
 
       return prisma.report.update({
-        where: { id: input.id },
-        data: { title: input.title },
+        where: { id },
+        data: { title: data.title },
       });
     },
     deleteReport: async (

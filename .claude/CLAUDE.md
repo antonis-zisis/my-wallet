@@ -66,7 +66,9 @@ pnpm run env:encrypt      # Encrypt before committing
 
 - Entry: `src/index.ts` — Apollo Server mounted at `/graphql` via `@as-integrations/express5`. Auth middleware validates Supabase JWT and extracts `userId` + `email` onto context
 - GraphQL schema: SDL strings and resolvers per domain in `graphql/` subdirectories, re-exported from `graphql/index.ts`
-- Database: PostgreSQL via Prisma 7 (`@prisma/adapter-pg`). Client generated to `src/generated/prisma/`. Uses `PG_*` env vars in `lib/prisma.ts`
+- Database: PostgreSQL via Prisma 7 (`@prisma/adapter-pg`). Client generated to `src/generated/prisma/`. Connection built from the typed `env` in `lib/env.ts`
+- Config: `lib/env.ts` parses `process.env` against a Zod schema once at boot (fail-fast); `prisma.ts`, `middleware/auth.ts`, and `index.ts` read the typed `env` instead of `process.env`
+- Validation: mutation inputs are Zod schemas in `graphql/<domain>/inputSchemas.ts`, parsed via `parseInput` (`lib/validate`); the `zodErrorToGraphQLError` adapter preserves the `BAD_USER_INPUT` contract. Shared field builders in `lib/validate/fields.ts`
 - Build: tsup bundles to `dist/` for production
 
 **Testing** (Vitest 4):
@@ -93,7 +95,8 @@ Each domain lives in mirrored directories on both sides:
 **Server domain structure**:
 
 - `schema.ts` — SDL exported as `<domain>TypeDefs`
-- `resolvers.ts` — resolvers exported as `<domain>Resolvers`, TypeScript input types at the top
+- `inputSchemas.ts` — Zod mutation input schemas with types derived via `z.infer`
+- `resolvers.ts` — resolvers exported as `<domain>Resolvers`; mutation resolvers call `parseInput(schema, input)`
 - `resolvers.test.ts` — Vitest unit tests, prisma mocked via `vi.mock`
 - `lib/<helper>.ts` (optional) — pure, reusable helpers > 10 LOC or with branchy logic worth testing on their own (e.g. `subscriptions/lib/computeMonthlyCost.ts`); each helper has its own `.test.ts` next to it
 

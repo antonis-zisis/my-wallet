@@ -1,16 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { NextFunction, Request, Response } from 'express';
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+import { env } from '../lib/env';
 
-function getSupabaseAdmin() {
-  if (!supabaseUrl || !supabaseSecretKey) {
-    throw new Error('SUPABASE_URL and SUPABASE_SECRET_KEY must be configured');
-  }
-
-  return createClient(supabaseUrl, supabaseSecretKey);
-}
+const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SECRET_KEY);
 
 export type AuthenticatedRequest = {
   userId?: string;
@@ -33,8 +26,7 @@ export async function authMiddleware(
   const token = authHeader.slice(7);
 
   try {
-    const supabase = getSupabaseAdmin();
-    const { data, error } = await supabase.auth.getUser(token);
+    const { data, error } = await supabaseAdmin.auth.getUser(token);
 
     if (error || !data.user) {
       res.status(401).json({ error: 'Invalid or expired token' });

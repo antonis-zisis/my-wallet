@@ -2,34 +2,8 @@ import { GraphQLError } from 'graphql';
 
 import { NetWorthEntry } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
-import {
-  clampPage,
-  NET_WORTH_ENTRY_TYPES,
-  validateAmount,
-  validateDate,
-  validateEnum,
-  validateMaxLength,
-} from '../../lib/validate';
-
-type NetWorthEntryInput = {
-  type: string;
-  label: string;
-  amount: number;
-  category: string;
-  notes?: string;
-};
-
-export type CreateNetWorthSnapshotInput = {
-  title: string;
-  snapshotDate: string;
-  entries: Array<NetWorthEntryInput>;
-};
-
-export type UpdateNetWorthSnapshotInput = {
-  title: string;
-  snapshotDate: string;
-  entries: Array<NetWorthEntryInput>;
-};
+import { clampPage, parseInput } from '../../lib/validate';
+import { NetWorthSnapshotInput } from './inputSchemas';
 
 type SnapshotParent = {
   id: string;
@@ -144,28 +118,18 @@ export const netWorthResolvers = {
   Mutation: {
     createNetWorthSnapshot: async (
       _parent: unknown,
-      { input }: { input: CreateNetWorthSnapshotInput },
+      { input }: { input: unknown },
       { userId }: { userId: string }
     ) => {
-      validateMaxLength(input.title, 'Title', 255);
-      const snapshotDate = validateDate(input.snapshotDate);
-      for (const entry of input.entries) {
-        validateEnum(entry.type, NET_WORTH_ENTRY_TYPES, 'Entry type');
-        validateMaxLength(entry.label, 'Label', 255);
-        validateMaxLength(entry.category, 'Category', 100);
-        validateAmount(entry.amount);
-        if (entry.notes) {
-          validateMaxLength(entry.notes, 'Notes', 1000);
-        }
-      }
+      const data = parseInput(NetWorthSnapshotInput, input);
 
       return prisma.netWorthSnapshot.create({
         data: {
-          title: input.title,
-          snapshotDate,
+          title: data.title,
+          snapshotDate: data.snapshotDate,
           userId,
           entries: {
-            create: input.entries.map((entry) => ({
+            create: data.entries.map((entry) => ({
               type: entry.type,
               label: entry.label,
               amount: entry.amount,
@@ -179,7 +143,7 @@ export const netWorthResolvers = {
     },
     updateNetWorthSnapshot: async (
       _parent: unknown,
-      { id, input }: { id: string; input: UpdateNetWorthSnapshotInput },
+      { id, input }: { id: string; input: unknown },
       { userId }: { userId: string }
     ) => {
       const existing = await prisma.netWorthSnapshot.findFirst({
@@ -192,26 +156,16 @@ export const netWorthResolvers = {
         });
       }
 
-      validateMaxLength(input.title, 'Title', 255);
-      const snapshotDate = validateDate(input.snapshotDate);
-      for (const entry of input.entries) {
-        validateEnum(entry.type, NET_WORTH_ENTRY_TYPES, 'Entry type');
-        validateMaxLength(entry.label, 'Label', 255);
-        validateMaxLength(entry.category, 'Category', 100);
-        validateAmount(entry.amount);
-        if (entry.notes) {
-          validateMaxLength(entry.notes, 'Notes', 1000);
-        }
-      }
+      const data = parseInput(NetWorthSnapshotInput, input);
 
       return prisma.netWorthSnapshot.update({
         where: { id },
         data: {
-          title: input.title,
-          snapshotDate,
+          title: data.title,
+          snapshotDate: data.snapshotDate,
           entries: {
             deleteMany: {},
-            create: input.entries.map((entry) => ({
+            create: data.entries.map((entry) => ({
               type: entry.type,
               label: entry.label,
               amount: entry.amount,
