@@ -1,10 +1,11 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
 import { SetContextLink } from '@apollo/client/link/context';
 
+import { env } from './env';
 import { supabase } from './supabase';
 
 const httpLink = new HttpLink({
-  uri: import.meta.env.VITE_GRAPHQL_URL || '/graphql',
+  uri: env.VITE_GRAPHQL_URL,
   fetch: async (uri, options) => {
     const response = await fetch(uri, options);
     if (response.status === 401) {
