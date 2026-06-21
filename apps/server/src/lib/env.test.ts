@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-// The module eagerly parses `process.env` on import, so seed the required vars
-// before the import is evaluated.
+// seed the required vars before the import is evaluated
 vi.hoisted(() => {
   process.env.PG_USER = 'user';
   process.env.PG_PASSWORD = 'password';

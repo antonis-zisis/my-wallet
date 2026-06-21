@@ -1,12 +1,5 @@
 import { z } from 'zod';
 
-/**
- * Reusable Zod field builders shared by the domain input schemas in
- * `graphql/<domain>/inputSchemas.ts`. They preserve the user-facing messages and
- * limits of the previous imperative `validateX` helpers so the validation
- * contract (message + `BAD_USER_INPUT` code) stays stable.
- */
-
 export function boundedString(field: string, maxLength: number) {
   return z
     .string()

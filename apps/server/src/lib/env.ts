@@ -2,12 +2,6 @@ import 'dotenv/config';
 
 import { z } from 'zod';
 
-/**
- * Single source of truth for server environment configuration. The schema is
- * parsed once at boot (`env`), so a missing or malformed variable fails fast with
- * a readable message instead of surfacing lazily on the first request. Consumers
- * (`lib/prisma.ts`, `middleware/auth.ts`, `index.ts`) read the typed `env`.
- */
 export const EnvSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'test', 'production'])
@@ -20,7 +14,7 @@ export const EnvSchema = z.object({
   PG_DATABASE: z.string().min(1, 'PG_DATABASE is required'),
   SUPABASE_URL: z.url('SUPABASE_URL must be a valid URL'),
   SUPABASE_SECRET_KEY: z.string().min(1, 'SUPABASE_SECRET_KEY is required'),
-  // Only needed for seeding, not required for normal operation.
+  // only needed for seeding, not required for normal operation.
   SEED_USER_ID: z.string().optional(),
 });
 
