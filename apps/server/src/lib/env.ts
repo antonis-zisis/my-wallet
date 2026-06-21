@@ -14,7 +14,7 @@ export const EnvSchema = z.object({
   PG_DATABASE: z.string().min(1, 'PG_DATABASE is required'),
   SUPABASE_URL: z.url('SUPABASE_URL must be a valid URL'),
   SUPABASE_SECRET_KEY: z.string().min(1, 'SUPABASE_SECRET_KEY is required'),
-  // only needed for seeding, not required for normal operation.
+  // only needed for seeding, not required for normal operation
   SEED_USER_ID: z.string().optional(),
 });
 

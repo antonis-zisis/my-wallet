@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-// seed the required vars before the import is evaluated, so the
-// module-level `parseEnv()` call in env.ts does not throw on import
+// seed the required vars before the import is evaluated
 vi.hoisted(() => {
   vi.stubEnv('VITE_SUPABASE_URL', 'https://example.supabase.co');
   vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY', 'key');
