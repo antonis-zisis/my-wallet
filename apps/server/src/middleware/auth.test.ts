@@ -6,6 +6,9 @@ const mockGetUser = vi.hoisted(() => vi.fn());
 vi.hoisted(() => {
   process.env.SUPABASE_URL = 'https://test.supabase.co';
   process.env.SUPABASE_SECRET_KEY = 'test-secret';
+  process.env.PG_USER = 'user';
+  process.env.PG_PASSWORD = 'password';
+  process.env.PG_DATABASE = 'wallet';
 });
 
 vi.mock('@supabase/supabase-js', () => ({

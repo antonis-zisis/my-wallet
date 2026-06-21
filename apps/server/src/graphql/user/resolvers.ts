@@ -1,11 +1,8 @@
 import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
-import { validateMaxLength } from '../../lib/validate';
-
-export type UpdateUserInput = {
-  fullName?: string;
-};
+import { parseInput } from '../../lib/validate';
+import { UpdateUserInput } from './inputSchemas';
 
 export const userResolvers = {
   Query: {
@@ -28,7 +25,7 @@ export const userResolvers = {
   Mutation: {
     updateMe: async (
       _parent: unknown,
-      { input }: { input: UpdateUserInput },
+      { input }: { input: unknown },
       context: { userId: string }
     ) => {
       const user = await prisma.user.findUnique({
@@ -41,14 +38,11 @@ export const userResolvers = {
         });
       }
 
-      const fullName = input.fullName?.trim();
-      if (fullName) {
-        validateMaxLength(fullName, 'Full name', 255);
-      }
+      const data = parseInput(UpdateUserInput, input);
 
       return prisma.user.update({
         where: { supabaseId: context.userId },
-        data: { fullName: fullName ?? null },
+        data: { fullName: data.fullName || null },
       });
     },
   },

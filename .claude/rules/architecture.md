@@ -77,15 +77,19 @@ Sibling rules: [rules.md](./rules.md) for naming/workflow/design, [security.md](
 
 - **`resolvers.ts` exceeds ~300 LOC → split into `queries.ts` / `mutations.ts` / `fields.ts`** and re-export the merged resolver map from `resolvers.ts`. The merged shape stays the same so `graphql/index.ts` doesn't change.
 
-- **Resolver argument shape → declare the TypeScript type at the top of the file** (current pattern). Don't inline `{ input }: { input: { ... } }` in the signature when the input has more than two fields.
+- **Resolver argument shape → for mutation inputs, the type comes from the Zod schema, not a hand-written type.** The signature takes `{ input }: { input: unknown }` and the body calls `parseInput(schema, input)` to get the typed, validated data. When the resolver needs the id (or `reportId`) for an ownership lookup _before_ parsing, extract it with a localized cast — `const { id } = input as { id: string };` — then run the lookup, then `parseInput`. For non-input args (ids, pagination) keep the inline `{ id }: { id: string }` shape.
 
 - **Throwing in a resolver → `GraphQLError` with `extensions.code`.** `NOT_FOUND` for missing-or-not-yours, `FORBIDDEN` for permission, `BAD_USER_INPUT` for validation. The message is safe to show the user; internal detail goes in `extensions` or the log.
 
 ## Server — validation
 
-- **Reusable validator → lives in** `apps/server/src/lib/validate/<name>.ts` **and is re-exported from `validate/index.ts`.** Enum constants (`BILLING_CYCLES`, `TRANSACTION_TYPES`, etc.) live with the validator that uses them, or in `validate/enums.ts` if they're shared by multiple validators.
+- **Mutation input schema → lives in** `apps/server/src/graphql/<domain>/inputSchemas.ts` **as a Zod schema, with the input type derived via `z.infer`.** The resolver imports the schema and calls `parseInput(schema, input)`. Don't hand-write a parallel `CreateXInput` / `UpdateXInput` type — the schema is the single source of truth.
 
-- **Validating ad-hoc inside a resolver → don't.** If the check is reusable, add it to `validate/`. If it's genuinely one-off, document why in a comment.
+- **Shared validation primitives → live in** `apps/server/src/lib/validate/`: the field builders in `fields.ts` (`boundedString`, `amount`, `date`, `enumField`, `httpUrl`), the `parseInput` helper, the `zodErrorToGraphQLError` adapter, `clampPage`, and the enum constants in `enums.ts` (`BILLING_CYCLES`, `TRANSACTION_TYPES`, `NET_WORTH_ENTRY_TYPES`). All are re-exported from `validate/index.ts` (except the lower-level `fields.ts`, imported directly). Need a new reusable check → add it to `fields.ts`, not inline.
+
+- **Validating ad-hoc inside a resolver → don't.** Add the rule to the domain's Zod schema (or `fields.ts` if reusable). If a check is genuinely one-off and can't be expressed in the schema, document why in a comment.
+
+- **Environment configuration in server runtime code (resolvers, middleware, the server entry, the Prisma client) → read from the typed `env` in** `apps/server/src/lib/env.ts`, **never `process.env` directly.** `env.ts` parses `process.env` against a Zod schema once at boot (fail-fast). Standalone scripts with a different required-var set (e.g. `prisma/seed.ts`, which needs `PG_*` but not the Supabase vars) may read `process.env` directly. Adding a new runtime env var → add it to the schema and to `.env.sample` in the same change.
 
 ## Server — domain structure
 
@@ -94,6 +98,7 @@ A server domain has this layout:
 ```
 apps/server/src/graphql/<domain>/
   schema.ts              # SDL exported as <domain>TypeDefs
+  inputSchemas.ts        # Zod input schemas + z.infer types
   resolvers.ts           # merged resolver map
   resolvers.test.ts      # tests
   lib/<helper>.ts        # pure helpers, one per file

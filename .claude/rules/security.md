@@ -12,9 +12,11 @@ This rule is a prior on how you write code, not the only line of defence. Hooks 
 
 ## Input validation
 
-- **Adding or modifying a mutation input → route every field through `apps/server/src/lib/validate.ts`** before touching the database. If a check you need isn't there, add it there rather than inlining ad-hoc validation.
-- Strings: length limit. Numbers: finiteness + range. Dates: validated before `new Date()`. Enums: runtime validation (TypeScript types are not enforced on the wire).
-- **Adding a new schema enum → add a matching runtime validator in the same change.**
+- **Adding or modifying a mutation input → define it as a Zod schema in `apps/server/src/graphql/<domain>/inputSchemas.ts` and parse it with `parseInput(schema, input)`** (from `lib/validate`) before touching the database. Never validate fields ad-hoc inside the resolver. The resolver derives its input type from the schema via `z.infer` — don't hand-write a parallel input `type`.
+- Build fields from the shared Zod builders in `apps/server/src/lib/validate/fields.ts` (`boundedString`, `amount`, `date`, `enumField`, `httpUrl`) so messages and limits stay consistent. If a check you need isn't there, add it to `fields.ts` rather than inlining it.
+- Strings: length limit (`boundedString`). Numbers: finiteness + range (`amount`). Dates: `date` (coerces + rejects invalid) — never `new Date()` on raw input. Enums: `enumField` (TypeScript types are not enforced on the wire). User-facing URLs: `httpUrl`.
+- **Validation errors must stay `BAD_USER_INPUT` with safe, user-facing messages.** `parseInput` routes `ZodError` through `zodErrorToGraphQLError`, which preserves the code and surfaces a clean message; the full issue list goes in `extensions.issues` for the log, never leaks internals.
+- **Adding a new schema enum → add the constant in `lib/validate/enums.ts` and consume it via `enumField` in the same change.**
 
 ## Database access
 

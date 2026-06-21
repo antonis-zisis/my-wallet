@@ -1,96 +1,41 @@
 import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
-import {
-  BILLING_CYCLES,
-  validateAmount,
-  validateDate,
-  validateEnum,
-  validateMaxLength,
-  validateUrl,
-} from '../../lib/validate';
+import { parseInput } from '../../lib/validate';
+import { ResumeSubscriptionInput, SubscriptionInput } from './inputSchemas';
 import { getNextRenewalDate } from './lib/getNextRenewalDate';
-
-export type CreateSubscriptionInput = {
-  name: string;
-  amount: number;
-  billingCycle: string;
-  startDate: string;
-  endDate?: string;
-  trialEndsAt?: string;
-  notes?: string;
-  paymentMethod?: string;
-  url?: string;
-};
-
-export type UpdateSubscriptionInput = {
-  id: string;
-  name: string;
-  amount: number;
-  billingCycle: string;
-  startDate: string;
-  endDate?: string;
-  trialEndsAt?: string;
-  notes?: string;
-  paymentMethod?: string;
-  url?: string;
-};
-
-export type ResumeSubscriptionInput = {
-  id: string;
-  startDate?: string;
-  amount?: number;
-  billingCycle?: string;
-};
 
 export const subscriptionMutationResolvers = {
   createSubscription: async (
     _parent: unknown,
-    { input }: { input: CreateSubscriptionInput },
+    { input }: { input: unknown },
     { userId }: { userId: string }
   ) => {
-    validateMaxLength(input.name, 'Name', 255);
-    validateAmount(input.amount);
-    validateEnum(input.billingCycle, BILLING_CYCLES, 'Billing cycle');
-    const startDate = validateDate(input.startDate);
-    const endDate = input.endDate ? validateDate(input.endDate) : null;
-    const trialEndsAt = input.trialEndsAt
-      ? validateDate(input.trialEndsAt)
-      : null;
-    if (input.notes) {
-      validateMaxLength(input.notes, 'Notes', 1000);
-    }
-
-    if (input.paymentMethod) {
-      validateMaxLength(input.paymentMethod, 'Payment method', 255);
-    }
-
-    if (input.url) {
-      validateUrl(input.url);
-    }
+    const data = parseInput(SubscriptionInput, input);
 
     return prisma.subscription.create({
       data: {
-        name: input.name,
-        amount: input.amount,
-        billingCycle: input.billingCycle,
-        startDate,
-        endDate,
-        trialEndsAt,
-        notes: input.notes ?? null,
-        paymentMethod: input.paymentMethod ?? null,
-        url: input.url ?? null,
+        name: data.name,
+        amount: data.amount,
+        billingCycle: data.billingCycle,
+        startDate: data.startDate,
+        endDate: data.endDate ?? null,
+        trialEndsAt: data.trialEndsAt ?? null,
+        notes: data.notes ?? null,
+        paymentMethod: data.paymentMethod ?? null,
+        url: data.url ?? null,
         userId,
       },
     });
   },
   updateSubscription: async (
     _parent: unknown,
-    { input }: { input: UpdateSubscriptionInput },
+    { input }: { input: unknown },
     { userId }: { userId: string }
   ) => {
+    const { id } = input as { id: string };
     const existing = await prisma.subscription.findFirst({
-      where: { id: input.id, userId },
+      where: { id, userId },
     });
 
     if (!existing) {
@@ -99,38 +44,20 @@ export const subscriptionMutationResolvers = {
       });
     }
 
-    validateMaxLength(input.name, 'Name', 255);
-    validateAmount(input.amount);
-    validateEnum(input.billingCycle, BILLING_CYCLES, 'Billing cycle');
-    const startDate = validateDate(input.startDate);
-    const endDate = input.endDate ? validateDate(input.endDate) : null;
-    const trialEndsAt = input.trialEndsAt
-      ? validateDate(input.trialEndsAt)
-      : null;
-    if (input.notes) {
-      validateMaxLength(input.notes, 'Notes', 1000);
-    }
-
-    if (input.paymentMethod) {
-      validateMaxLength(input.paymentMethod, 'Payment method', 255);
-    }
-
-    if (input.url) {
-      validateUrl(input.url);
-    }
+    const data = parseInput(SubscriptionInput, input);
 
     return prisma.subscription.update({
-      where: { id: input.id },
+      where: { id },
       data: {
-        name: input.name,
-        amount: input.amount,
-        billingCycle: input.billingCycle,
-        startDate,
-        endDate,
-        trialEndsAt,
-        notes: input.notes ?? null,
-        paymentMethod: input.paymentMethod ?? null,
-        url: input.url ?? null,
+        name: data.name,
+        amount: data.amount,
+        billingCycle: data.billingCycle,
+        startDate: data.startDate,
+        endDate: data.endDate ?? null,
+        trialEndsAt: data.trialEndsAt ?? null,
+        notes: data.notes ?? null,
+        paymentMethod: data.paymentMethod ?? null,
+        url: data.url ?? null,
       },
     });
   },
@@ -160,11 +87,12 @@ export const subscriptionMutationResolvers = {
   },
   resumeSubscription: async (
     _parent: unknown,
-    { input }: { input: ResumeSubscriptionInput },
+    { input }: { input: unknown },
     { userId }: { userId: string }
   ) => {
+    const { id } = input as { id: string };
     const existing = await prisma.subscription.findFirst({
-      where: { id: input.id, userId },
+      where: { id, userId },
     });
 
     if (!existing) {
@@ -173,27 +101,17 @@ export const subscriptionMutationResolvers = {
       });
     }
 
-    if (input.amount !== undefined) {
-      validateAmount(input.amount);
-    }
-
-    if (input.billingCycle) {
-      validateEnum(input.billingCycle, BILLING_CYCLES, 'Billing cycle');
-    }
-
-    const resumeStartDate = input.startDate
-      ? validateDate(input.startDate)
-      : undefined;
+    const data = parseInput(ResumeSubscriptionInput, input);
 
     return prisma.subscription.update({
-      where: { id: input.id },
+      where: { id },
       data: {
         isActive: true,
         cancelledAt: null,
         endDate: null,
-        ...(resumeStartDate && { startDate: resumeStartDate }),
-        ...(input.amount !== undefined && { amount: input.amount }),
-        ...(input.billingCycle && { billingCycle: input.billingCycle }),
+        ...(data.startDate && { startDate: data.startDate }),
+        ...(data.amount !== undefined && { amount: data.amount }),
+        ...(data.billingCycle && { billingCycle: data.billingCycle }),
       },
     });
   },

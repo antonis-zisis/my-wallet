@@ -1,31 +1,8 @@
 import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
-import {
-  TRANSACTION_TYPES,
-  validateAmount,
-  validateDate,
-  validateEnum,
-  validateMaxLength,
-} from '../../lib/validate';
-
-export type CreateTransactionInput = {
-  reportId: string;
-  type: 'INCOME' | 'EXPENSE';
-  amount: number;
-  description: string;
-  category: string;
-  date: string;
-};
-
-export type UpdateTransactionInput = {
-  id: string;
-  type: 'INCOME' | 'EXPENSE';
-  amount: number;
-  description: string;
-  category: string;
-  date: string;
-};
+import { parseInput } from '../../lib/validate';
+import { TransactionInput } from './inputSchemas';
 
 export const transactionResolvers = {
   Query: {
@@ -52,11 +29,12 @@ export const transactionResolvers = {
   Mutation: {
     createTransaction: async (
       _parent: unknown,
-      { input }: { input: CreateTransactionInput },
+      { input }: { input: unknown },
       { userId }: { userId: string }
     ) => {
+      const { reportId } = input as { reportId: string };
       const report = await prisma.report.findFirst({
-        where: { id: input.reportId, userId },
+        where: { id: reportId, userId },
       });
 
       if (!report) {
@@ -71,25 +49,21 @@ export const transactionResolvers = {
         });
       }
 
-      validateEnum(input.type, TRANSACTION_TYPES, 'Type');
-      validateAmount(input.amount);
-      validateMaxLength(input.description, 'Description', 1000);
-      validateMaxLength(input.category, 'Category', 100);
-      const date = validateDate(input.date);
+      const data = parseInput(TransactionInput, input);
 
       const transaction = await prisma.transaction.create({
         data: {
-          reportId: input.reportId,
-          type: input.type,
-          amount: input.amount,
-          description: input.description,
-          category: input.category,
-          date,
+          reportId,
+          type: data.type,
+          amount: data.amount,
+          description: data.description,
+          category: data.category,
+          date: data.date,
         },
       });
 
       await prisma.report.update({
-        where: { id: input.reportId },
+        where: { id: reportId },
         data: { updatedAt: new Date() },
       });
 
@@ -97,11 +71,12 @@ export const transactionResolvers = {
     },
     updateTransaction: async (
       _parent: unknown,
-      { input }: { input: UpdateTransactionInput },
+      { input }: { input: unknown },
       { userId }: { userId: string }
     ) => {
+      const { id } = input as { id: string };
       const existing = await prisma.transaction.findFirst({
-        where: { id: input.id, report: { userId } },
+        where: { id, report: { userId } },
         include: { report: true },
       });
 
@@ -117,20 +92,16 @@ export const transactionResolvers = {
         });
       }
 
-      validateEnum(input.type, TRANSACTION_TYPES, 'Type');
-      validateAmount(input.amount);
-      validateMaxLength(input.description, 'Description', 1000);
-      validateMaxLength(input.category, 'Category', 100);
-      const date = validateDate(input.date);
+      const data = parseInput(TransactionInput, input);
 
       const transaction = await prisma.transaction.update({
-        where: { id: input.id },
+        where: { id },
         data: {
-          type: input.type,
-          amount: input.amount,
-          description: input.description,
-          category: input.category,
-          date,
+          type: data.type,
+          amount: data.amount,
+          description: data.description,
+          category: data.category,
+          date: data.date,
         },
       });
 
