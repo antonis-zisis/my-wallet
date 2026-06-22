@@ -165,6 +165,12 @@ export function SubscriptionListRow(props: SubscriptionListRowProps) {
               {subscription.billingCycle === 'MONTHLY' ? 'Monthly' : 'Yearly'}
             </Badge>
 
+            {subscription.category && (
+              <Badge variant="default" size="sm">
+                {subscription.category}
+              </Badge>
+            )}
+
             {subscription.trialEndsAt &&
               getDaysUntil(subscription.trialEndsAt) >= 0 && (
                 <Badge variant="warning" size="sm">

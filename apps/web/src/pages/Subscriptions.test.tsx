@@ -172,7 +172,7 @@ describe('Subscriptions', () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
     await screen.findAllByText('Netflix');
     expect(screen.getByText('Monthly cost')).toBeInTheDocument();
-    expect(screen.getByText('25,99 €')).toBeInTheDocument();
+    expect(screen.getAllByText('25,99 €').length).toBeGreaterThan(0);
     expect(screen.getByText('Yearly cost')).toBeInTheDocument();
     expect(screen.getByText('311,88 €')).toBeInTheDocument();
   });

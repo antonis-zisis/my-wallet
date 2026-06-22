@@ -1,7 +1,12 @@
 import { useState } from 'react';
 
 import type { SubscriptionFormValues } from '../../hooks/subscriptions/useSubscriptionForm';
-import { BILLING_CYCLE_OPTIONS, BillingCycle } from '../../types/subscription';
+import {
+  BILLING_CYCLE_OPTIONS,
+  BillingCycle,
+  SUBSCRIPTION_CATEGORY_OPTIONS,
+  SubscriptionCategory,
+} from '../../types/subscription';
 import { Input, Select } from '../ui';
 
 type SubscriptionFormFieldsProps = {
@@ -64,14 +69,27 @@ export function SubscriptionFormFields({
         />
       </div>
 
-      <Input
-        id="subscription-start-date"
-        label="Start Date"
-        required
-        type="date"
-        value={values.startDate}
-        onChange={(event) => onChange({ startDate: event.target.value })}
-      />
+      <div className="grid grid-cols-2 gap-3">
+        <Input
+          id="subscription-start-date"
+          label="Start Date"
+          required
+          type="date"
+          value={values.startDate}
+          onChange={(event) => onChange({ startDate: event.target.value })}
+        />
+        <Select
+          id="subscription-category"
+          label="Category"
+          options={SUBSCRIPTION_CATEGORY_OPTIONS}
+          value={values.category}
+          onChange={(event) =>
+            onChange({
+              category: event.target.value as SubscriptionCategory | '',
+            })
+          }
+        />
+      </div>
 
       <div className="space-y-3">
         <label className="flex cursor-pointer items-center gap-2">

@@ -1,10 +1,14 @@
 import { useCallback, useState } from 'react';
 
-import type { BillingCycle } from '../../types/subscription';
+import type {
+  BillingCycle,
+  SubscriptionCategory,
+} from '../../types/subscription';
 
 export type SubscriptionFormValues = {
   amount: string;
   billingCycle: BillingCycle;
+  category: SubscriptionCategory | '';
   isTrial: boolean;
   name: string;
   notes: string;
@@ -17,6 +21,7 @@ export type SubscriptionFormValues = {
 export const DEFAULT_SUBSCRIPTION_FORM_VALUES: SubscriptionFormValues = {
   amount: '',
   billingCycle: 'MONTHLY',
+  category: '',
   isTrial: false,
   name: '',
   notes: '',

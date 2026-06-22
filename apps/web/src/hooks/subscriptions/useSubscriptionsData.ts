@@ -8,6 +8,7 @@ import {
 } from '../../types/subscription';
 import { isActiveTrial } from '../../utils/isActiveTrial';
 import { useLocalStorage } from '../useLocalStorage';
+import { computeCategoryBreakdown } from './selectors/computeCategoryBreakdown';
 import { computeMostExpensive } from './selectors/computeMostExpensive';
 import { computeNextRenewal } from './selectors/computeNextRenewal';
 import { computeRenewingThisMonthTotal } from './selectors/computeRenewingThisMonthTotal';
@@ -91,6 +92,7 @@ export function useSubscriptionsData() {
   const nextRenewal = computeNextRenewal(activeItems);
   const renewingThisMonthTotal = computeRenewingThisMonthTotal(activeItems);
   const mostExpensive = computeMostExpensive(activeItems);
+  const categoryBreakdown = computeCategoryBreakdown(activeItems);
 
   const allLoadedNames = [
     ...activeItems.map((subscription) => subscription.name),
@@ -103,6 +105,7 @@ export function useSubscriptionsData() {
     activeLoading,
     allLoadedNames,
     activePage,
+    categoryBreakdown,
     activeTotalCount,
     activeTotalPages,
     inactiveError: !!inactiveError,

@@ -206,6 +206,7 @@ describe('subscriptionResolvers', () => {
           startDate: new Date('2025-01-01'),
           endDate: null,
           trialEndsAt: null,
+          category: null,
           notes: null,
           paymentMethod: null,
           url: null,
@@ -298,6 +299,50 @@ describe('subscriptionResolvers', () => {
         }),
       });
     });
+
+    it('creates a subscription with a category', async () => {
+      vi.mocked(prisma.subscription.create).mockResolvedValue(
+        mockSubscription as never
+      );
+
+      await subscriptionResolvers.Mutation.createSubscription(
+        undefined as unknown,
+        {
+          input: {
+            name: 'Netflix',
+            amount: 15.99,
+            billingCycle: 'MONTHLY',
+            startDate: '2025-01-01',
+            category: 'Entertainment',
+          },
+        },
+        CTX
+      );
+
+      expect(prisma.subscription.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          category: 'Entertainment',
+        }),
+      });
+    });
+
+    it('rejects an unknown category', async () => {
+      await expect(
+        subscriptionResolvers.Mutation.createSubscription(
+          undefined as unknown,
+          {
+            input: {
+              name: 'Netflix',
+              amount: 15.99,
+              billingCycle: 'MONTHLY',
+              startDate: '2025-01-01',
+              category: 'NotARealCategory',
+            },
+          },
+          CTX
+        )
+      ).rejects.toThrow();
+    });
   });
 
   describe('Mutation.updateSubscription', () => {
@@ -336,6 +381,7 @@ describe('subscriptionResolvers', () => {
           startDate: new Date('2025-01-01'),
           endDate: null,
           trialEndsAt: null,
+          category: null,
           notes: null,
           paymentMethod: null,
           url: null,

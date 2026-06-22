@@ -13,6 +13,7 @@ export function makeSubscription(
     endDate: null,
     cancelledAt: null,
     trialEndsAt: null,
+    category: null,
     notes: null,
     paymentMethod: null,
     url: null,

@@ -39,4 +39,16 @@ export const LIABILITY_CATEGORY_COLORS: Record<string, string> = {
   'Student Loan': '#f59e0b',
 };
 
+export const SUBSCRIPTION_CATEGORY_COLORS: Record<string, string> = {
+  Education: '#f59e0b',
+  Entertainment: '#a855f7',
+  Finance: '#10b981',
+  Health: '#14b8a6',
+  Music: '#ec4899',
+  News: '#fb923c',
+  Other: '#64748b',
+  Productivity: '#3b82f6',
+  Utilities: '#0891b2',
+};
+
 export const FALLBACK_CATEGORY_COLOR = '#9ca3af';
