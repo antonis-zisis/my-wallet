@@ -13,6 +13,15 @@ describe('SubscriptionCategoryBreakdownChart', () => {
     expect(container.innerHTML).toBe('');
   });
 
+  it('renders a skeleton placeholder while loading', () => {
+    const { container } = render(
+      <SubscriptionCategoryBreakdownChart breakdown={[]} loading />
+    );
+
+    expect(container.querySelector('.animate-pulse')).toBeInTheDocument();
+    expect(screen.queryByText(/%/)).not.toBeInTheDocument();
+  });
+
   it('renders a legend item and percentage for each category', () => {
     const breakdown: Array<CategoryBreakdownSlice> = [
       { category: 'Entertainment', total: 30 },

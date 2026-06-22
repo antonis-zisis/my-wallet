@@ -107,7 +107,7 @@ export function Subscriptions() {
           />
         )}
 
-        {!activeLoading && !activeError && categoryBreakdown.length > 0 && (
+        {(activeLoading || (!activeError && categoryBreakdown.length > 0)) && (
           <Card className="-mt-2 mb-6">
             <p className="text-text-secondary mb-3 flex items-center gap-1 text-sm">
               <span>Spending by category</span>
@@ -115,7 +115,10 @@ export function Subscriptions() {
                 <InfoIcon className="text-text-tertiary h-3.5 w-3.5 shrink-0 cursor-pointer" />
               </Tooltip>
             </p>
-            <SubscriptionCategoryBreakdownChart breakdown={categoryBreakdown} />
+            <SubscriptionCategoryBreakdownChart
+              breakdown={categoryBreakdown}
+              loading={activeLoading}
+            />
           </Card>
         )}
 
