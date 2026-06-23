@@ -20,6 +20,7 @@ export const GET_SUBSCRIPTIONS = gql`
         name
         amount
         billingCycle
+        category
         isActive
         startDate
         endDate
@@ -44,6 +45,7 @@ export const CREATE_SUBSCRIPTION = gql`
       name
       amount
       billingCycle
+      category
       isActive
       startDate
       endDate
@@ -66,6 +68,7 @@ export const UPDATE_SUBSCRIPTION = gql`
       name
       amount
       billingCycle
+      category
       isActive
       startDate
       endDate
@@ -99,6 +102,7 @@ export const RESUME_SUBSCRIPTION = gql`
       name
       amount
       billingCycle
+      category
       isActive
       startDate
       endDate

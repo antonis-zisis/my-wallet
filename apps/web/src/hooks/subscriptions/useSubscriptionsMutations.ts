@@ -12,6 +12,7 @@ import {
 import {
   BillingCycle,
   Subscription,
+  SubscriptionCategory,
   SubscriptionSortField,
 } from '../../types/subscription';
 import { useSubscriptionsModals } from './useSubscriptionsModals';
@@ -23,6 +24,7 @@ type CreateInput = {
   startDate: string;
   endDate?: string;
   trialEndsAt?: string;
+  category?: SubscriptionCategory;
   notes?: string;
   paymentMethod?: string;
   url?: string;

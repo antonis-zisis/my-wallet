@@ -1,4 +1,5 @@
-import { ChevronDownIcon } from '../components/icons';
+import { SubscriptionCategoryBreakdownChart } from '../components/charts';
+import { ChevronDownIcon, InfoIcon } from '../components/icons';
 import { CancelSubscriptionModal } from '../components/subscriptions/CancelSubscriptionModal';
 import { CreateSubscriptionModal } from '../components/subscriptions/CreateSubscriptionModal';
 import { DeleteSubscriptionModal } from '../components/subscriptions/DeleteSubscriptionModal';
@@ -6,7 +7,14 @@ import { EditSubscriptionModal } from '../components/subscriptions/EditSubscript
 import { ResumeSubscriptionModal } from '../components/subscriptions/ResumeSubscriptionModal';
 import { SubscriptionCostSummary } from '../components/subscriptions/SubscriptionCostSummary';
 import { SubscriptionList } from '../components/subscriptions/SubscriptionList';
-import { Button, PageLayout, Pagination, Select } from '../components/ui';
+import {
+  Button,
+  Card,
+  PageLayout,
+  Pagination,
+  Select,
+  Tooltip,
+} from '../components/ui';
 import {
   PAGE_SIZE,
   useSubscriptionsData,
@@ -32,6 +40,7 @@ export function Subscriptions() {
     activeTotalCount,
     activeTotalPages,
     allLoadedNames,
+    categoryBreakdown,
     inactiveError,
     inactiveItems,
     inactiveLoading,
@@ -96,6 +105,21 @@ export function Subscriptions() {
             totalMonthlyCost={totalMonthlyCost}
             totalYearlyCost={totalYearlyCost}
           />
+        )}
+
+        {(activeLoading || (!activeError && categoryBreakdown.length > 0)) && (
+          <Card className="-mt-2 mb-6">
+            <p className="text-text-secondary mb-3 flex items-center gap-1 text-sm">
+              <span>Spending by category</span>
+              <Tooltip content="Every amount is a monthly equivalent. Yearly and other billing cycles are spread evenly across the year, so each category reflects its true monthly share.">
+                <InfoIcon className="text-text-tertiary h-3.5 w-3.5 shrink-0 cursor-pointer" />
+              </Tooltip>
+            </p>
+            <SubscriptionCategoryBreakdownChart
+              breakdown={categoryBreakdown}
+              loading={activeLoading}
+            />
+          </Card>
         )}
 
         {!activeError && (

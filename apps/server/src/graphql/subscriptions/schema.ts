@@ -9,6 +9,7 @@ export const subscriptionTypeDefs = `#graphql
     endDate: String
     cancelledAt: String
     trialEndsAt: String
+    category: String
     notes: String
     paymentMethod: String
     url: String
@@ -40,6 +41,7 @@ export const subscriptionTypeDefs = `#graphql
     startDate: String!
     endDate: String
     trialEndsAt: String
+    category: String
     notes: String
     paymentMethod: String
     url: String
@@ -53,6 +55,7 @@ export const subscriptionTypeDefs = `#graphql
     startDate: String!
     endDate: String
     trialEndsAt: String
+    category: String
     notes: String
     paymentMethod: String
     url: String

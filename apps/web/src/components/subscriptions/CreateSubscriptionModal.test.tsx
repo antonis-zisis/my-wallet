@@ -62,6 +62,23 @@ describe('CreateSubscriptionModal', () => {
     expect(screen.getByLabelText('Name')).toHaveValue('');
   });
 
+  it('submits the selected category', async () => {
+    const onSubmit = vi.fn();
+    render(<CreateSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
+    await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
+    await userEvent.type(screen.getByLabelText('Amount'), '15.99');
+    await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
+    await userEvent.selectOptions(
+      screen.getByLabelText('Category'),
+      'Entertainment'
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Create' }));
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ category: 'Entertainment' })
+    );
+  });
+
   it('hides Additional details fields by default', () => {
     render(<CreateSubscriptionModal {...defaultProps} />);
     expect(

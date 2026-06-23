@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { BILLING_CYCLES } from '../../lib/validate';
+import { BILLING_CYCLES, SUBSCRIPTION_CATEGORIES } from '../../lib/validate';
 import {
   amount,
   boundedString,
@@ -18,6 +18,7 @@ export const SubscriptionInput = z.object({
   startDate: date,
   endDate: date.nullish(),
   trialEndsAt: date.nullish(),
+  category: enumField(SUBSCRIPTION_CATEGORIES, 'Category').nullish(),
   notes: boundedString('Notes', 1000).nullish(),
   paymentMethod: boundedString('Payment method', 255).nullish(),
   url: httpUrl.nullish(),

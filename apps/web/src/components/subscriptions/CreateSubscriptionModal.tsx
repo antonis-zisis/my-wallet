@@ -1,5 +1,5 @@
 import { useSubscriptionForm } from '../../hooks/subscriptions/useSubscriptionForm';
-import { BillingCycle } from '../../types/subscription';
+import { BillingCycle, SubscriptionCategory } from '../../types/subscription';
 import { Button, Modal } from '../ui';
 import { SubscriptionFormFields } from './SubscriptionFormFields';
 
@@ -10,6 +10,7 @@ type CreateSubscriptionModalProps = {
   onSubmit: (input: {
     amount: number;
     billingCycle: BillingCycle;
+    category?: SubscriptionCategory;
     endDate?: string;
     name: string;
     notes?: string;
@@ -56,6 +57,7 @@ export function CreateSubscriptionModal({
     onSubmit({
       amount: parseFloat(values.amount),
       billingCycle: values.billingCycle,
+      category: values.category || undefined,
       name: values.name.trim(),
       notes: values.notes.trim() || undefined,
       paymentMethod: values.paymentMethod.trim() || undefined,

@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 
 import { useSubscriptionForm } from '../../hooks/subscriptions/useSubscriptionForm';
-import { BillingCycle, Subscription } from '../../types/subscription';
+import {
+  BillingCycle,
+  Subscription,
+  SubscriptionCategory,
+} from '../../types/subscription';
 import { Button, Modal } from '../ui';
 import { SubscriptionFormFields } from './SubscriptionFormFields';
 
@@ -12,6 +16,7 @@ type EditSubscriptionModalProps = {
   onSubmit: (input: {
     amount: number;
     billingCycle: BillingCycle;
+    category?: SubscriptionCategory;
     endDate?: string;
     id: string;
     name: string;
@@ -49,6 +54,7 @@ export function EditSubscriptionModal({
       onChange({
         amount: String(subscription.amount),
         billingCycle: subscription.billingCycle,
+        category: subscription.category ?? '',
         isTrial: hasTrial,
         name: subscription.name,
         notes: subscription.notes ?? '',
@@ -92,6 +98,7 @@ export function EditSubscriptionModal({
     onSubmit({
       amount: parseFloat(values.amount),
       billingCycle: values.billingCycle,
+      category: values.category || undefined,
       id: subscription.id,
       name: values.name.trim(),
       notes: values.notes.trim() || undefined,

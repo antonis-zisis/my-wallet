@@ -18,6 +18,31 @@ export const BILLING_CYCLE_OPTIONS: Array<{
   { label: 'Yearly', value: 'YEARLY' },
 ];
 
+export const SUBSCRIPTION_CATEGORIES = [
+  'Entertainment',
+  'Productivity',
+  'Utilities',
+  'Health',
+  'Finance',
+  'Education',
+  'Music',
+  'News',
+  'Other',
+] as const;
+
+export type SubscriptionCategory = (typeof SUBSCRIPTION_CATEGORIES)[number];
+
+export const SUBSCRIPTION_CATEGORY_OPTIONS: Array<{
+  label: string;
+  value: SubscriptionCategory | '';
+}> = [
+  { label: 'Uncategorized', value: '' },
+  ...SUBSCRIPTION_CATEGORIES.map((category) => ({
+    label: category,
+    value: category,
+  })),
+];
+
 export type Subscription = {
   id: string;
   name: string;
@@ -28,6 +53,7 @@ export type Subscription = {
   endDate: string | null;
   cancelledAt: string | null;
   trialEndsAt: string | null;
+  category: SubscriptionCategory | null;
   notes: string | null;
   paymentMethod: string | null;
   url: string | null;

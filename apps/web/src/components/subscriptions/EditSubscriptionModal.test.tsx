@@ -33,6 +33,17 @@ describe('EditSubscriptionModal', () => {
     expect(screen.getByLabelText('Amount')).toHaveValue(15.99);
   });
 
+  it('pre-selects the category from the subscription prop', () => {
+    render(
+      <EditSubscriptionModal
+        {...defaultProps}
+        subscription={makeSubscription({ category: 'Entertainment' })}
+      />
+    );
+
+    expect(screen.getByLabelText('Category')).toHaveValue('Entertainment');
+  });
+
   it('disables Save when subscription is null', () => {
     render(<EditSubscriptionModal {...defaultProps} subscription={null} />);
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
