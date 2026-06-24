@@ -98,3 +98,18 @@ model Subscription {
 
   @@map("subscriptions")
 }
+
+model Contract {
+  id        String    @id @default(uuid())
+  category  String
+  provider  String
+  plan      String?
+  startDate DateTime? @map("start_date")
+  endDate   DateTime? @map("end_date")
+  cost      Float?
+  userId    String    @map("user_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("contracts")
+}

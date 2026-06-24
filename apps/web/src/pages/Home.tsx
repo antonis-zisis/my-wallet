@@ -1,4 +1,5 @@
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { ContractsExpiringSoonCard } from '../components/home/ContractsExpiringSoonCard';
 import { IncomeExpensesSection } from '../components/home/IncomeExpensesSection';
 import { NetWorthSummaryCard } from '../components/home/NetWorthSummaryCard';
 import { ReportSummaryGrid } from '../components/home/ReportSummaryGrid';
@@ -10,9 +11,11 @@ export function Home() {
   const {
     activeSubscriptions,
     chartReports,
+    contractsLoading,
     currentIncome,
     currentLoading,
     currentReport,
+    expiringContracts,
     lastSnapshot,
     netWorthLoading,
     previousLoading,
@@ -52,6 +55,15 @@ export function Home() {
           currentIncome={currentIncome}
           loading={subscriptionsLoading}
           subscriptions={activeSubscriptions}
+        />
+      </section>
+
+      <Divider />
+
+      <section>
+        <ContractsExpiringSoonCard
+          contracts={expiringContracts}
+          loading={contractsLoading}
         />
       </section>
 

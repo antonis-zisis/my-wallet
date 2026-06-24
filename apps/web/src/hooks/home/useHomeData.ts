@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 
+import { GET_CONTRACTS } from '../../graphql/contracts';
 import { GET_NET_WORTH_SNAPSHOTS } from '../../graphql/netWorth';
 import {
   GET_REPORT,
@@ -7,9 +8,11 @@ import {
   GET_REPORTS_SUMMARY,
 } from '../../graphql/reports';
 import { GET_SUBSCRIPTIONS } from '../../graphql/subscriptions';
+import { ContractsData } from '../../types/contract';
 import { NetWorthSnapshotsData } from '../../types/netWorth';
 import { Report, ReportsData, ReportsSummaryData } from '../../types/report';
 import { SubscriptionsData } from '../../types/subscription';
+import { computeExpiringSoon } from '../contracts/selectors/computeExpiringSoon';
 
 export function useHomeData() {
   const { data: reportsData, loading: reportsLoading } =
@@ -23,6 +26,15 @@ export function useHomeData() {
   const { data: subscriptionsData, loading: subscriptionsLoading } =
     useQuery<SubscriptionsData>(GET_SUBSCRIPTIONS, {
       variables: { page: 1, active: true },
+    });
+  const { data: contractsData, loading: contractsLoading } =
+    useQuery<ContractsData>(GET_CONTRACTS, {
+      variables: {
+        page: 1,
+        expired: false,
+        sortBy: 'END_DATE',
+        sortOrder: 'ASC',
+      },
     });
 
   const reportItems = reportsData?.reports.items ?? [];
@@ -45,8 +57,14 @@ export function useHomeData() {
   const snapshotItems = netWorthData?.netWorthSnapshots.items ?? [];
   const recentSnapshots = snapshotItems.slice(0, 6).reverse();
 
+  const expiringContracts = computeExpiringSoon(
+    contractsData?.contracts.items ?? []
+  );
+
   return {
     activeSubscriptions,
+    contractsLoading,
+    expiringContracts,
     chartReports: summaryData?.reports.items ?? [],
     currentIncome,
     currentLoading,
