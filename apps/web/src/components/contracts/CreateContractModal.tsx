@@ -1,9 +1,9 @@
-import { useContractForm } from '../../hooks/contracts/useContractForm';
-import type { ContractInput } from '../../hooks/contracts/useContractsData';
 import {
   buildContractInput,
   isContractFormValid,
-} from '../../utils/buildContractInput';
+} from '../../hooks/contracts/selectors/buildContractInput';
+import { useContractForm } from '../../hooks/contracts/useContractForm';
+import type { ContractInput } from '../../hooks/contracts/useContractsData';
 import { Button, Modal } from '../ui';
 import { ContractFormFields } from './ContractFormFields';
 

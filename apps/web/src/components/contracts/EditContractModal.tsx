@@ -1,5 +1,9 @@
 import { useEffect } from 'react';
 
+import {
+  buildContractInput,
+  isContractFormValid,
+} from '../../hooks/contracts/selectors/buildContractInput';
 import { useContractForm } from '../../hooks/contracts/useContractForm';
 import type { ContractInput } from '../../hooks/contracts/useContractsData';
 import {
@@ -7,10 +11,6 @@ import {
   CONTRACT_CATEGORIES,
   ContractCategory,
 } from '../../types/contract';
-import {
-  buildContractInput,
-  isContractFormValid,
-} from '../../utils/buildContractInput';
 import { formatDateForInput } from '../../utils/formatDateForInput';
 import { Button, Modal } from '../ui';
 import { ContractFormFields } from './ContractFormFields';
