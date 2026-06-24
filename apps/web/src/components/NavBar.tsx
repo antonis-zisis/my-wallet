@@ -1,16 +1,18 @@
 import { useQuery } from '@apollo/client/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { HEALTH_QUERY } from '../graphql/health';
+import { APP_VERSION } from '../utils/appVersion';
 import { getInitials } from '../utils/getInitials';
-import { AppLogoIcon, LogOutIcon, UserIcon } from './icons';
+import { AppLogoIcon, LogOutIcon, SparklesIcon, UserIcon } from './icons';
 import { PrivacyToggle } from './PrivacyToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { Dropdown } from './ui';
+import { WhatsNewModal } from './WhatsNewModal';
 
 const navLinks = [
   { end: true, label: 'Overview', to: '/' },
@@ -32,6 +34,7 @@ export function NavBar() {
   const { loading, user } = useUser();
   const { showError } = useToast();
   const navigate = useNavigate();
+  const [isWhatsNewOpen, setIsWhatsNewOpen] = useState(false);
   const { error: healthError, loading: healthLoading } = useQuery<{
     health: string;
   }>(HEALTH_QUERY);
@@ -55,89 +58,109 @@ export function NavBar() {
       : 'Server connected';
 
   return (
-    <nav className="border-border bg-bg-surface border-b">
-      <div className="mx-auto max-w-5xl px-4">
-        <div className="flex h-14 items-stretch justify-between">
-          <div className="flex items-stretch">
-            <Link
-              to="/"
-              className="text-text-primary mr-4 flex items-center gap-2"
-            >
-              <AppLogoIcon className="text-brand-500 h-6 w-6" />
-              <span className="text-sm font-semibold">My Wallet</span>
-            </Link>
-
-            <div className="bg-border my-3 w-px" />
-
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end={link.end}
-                className={getLinkClassName}
+    <>
+      <nav className="border-border bg-bg-surface border-b">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="flex h-14 items-stretch justify-between">
+            <div className="flex items-stretch">
+              <Link
+                to="/"
+                className="text-text-primary mr-4 flex items-center gap-2"
               >
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
+                <AppLogoIcon className="text-brand-500 h-6 w-6" />
+                <span className="text-sm font-semibold">My Wallet</span>
+              </Link>
 
-          <div className="flex items-center gap-2">
-            <PrivacyToggle />
-            <ThemeToggle />
+              <div className="bg-border my-3 w-px" />
 
-            {loading ? (
-              <div className="h-9 w-9 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600" />
-            ) : (
-              user && (
-                <Dropdown
-                  items={[
-                    {
-                      type: 'custom',
-                      content: (
-                        <div className="border-border border-b px-4 py-3">
-                          {user.fullName && (
-                            <p className="text-text-primary truncate text-sm font-medium">
-                              {user.fullName}
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.end}
+                  className={getLinkClassName}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <PrivacyToggle />
+              <ThemeToggle />
+
+              {loading ? (
+                <div className="h-9 w-9 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600" />
+              ) : (
+                user && (
+                  <Dropdown
+                    items={[
+                      {
+                        type: 'custom',
+                        content: (
+                          <div className="border-border border-b px-4 py-3">
+                            {user.fullName && (
+                              <p className="text-text-primary truncate text-sm font-medium">
+                                {user.fullName}
+                              </p>
+                            )}
+                            <p className="text-text-secondary truncate text-xs">
+                              {user.email}
                             </p>
-                          )}
-                          <p className="text-text-secondary truncate text-xs">
-                            {user.email}
-                          </p>
-                        </div>
-                      ),
-                    },
-                    {
-                      icon: <UserIcon />,
-                      label: 'Profile',
-                      onClick: () => navigate('/profile'),
-                    },
-                    {
-                      icon: <LogOutIcon />,
-                      label: 'Log out',
-                      variant: 'danger',
-                      onClick: signOut,
-                    },
-                  ]}
-                  trigger={
-                    <div className="relative">
-                      <button
-                        aria-label="User menu"
-                        className="bg-brand-500 hover:bg-brand-600 dark:ring-bg-surface flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-medium tracking-wider text-white ring-2 ring-white transition-colors"
-                      >
-                        {getInitials(user.fullName ?? user.email)}
-                      </button>
-                      <span
-                        className={`dark:border-bg-surface absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${healthDotClass}`}
-                        title={healthTitle}
-                      />
-                    </div>
-                  }
-                />
-              )
-            )}
+                          </div>
+                        ),
+                      },
+                      {
+                        icon: <UserIcon />,
+                        label: 'Profile',
+                        onClick: () => navigate('/profile'),
+                      },
+                      {
+                        icon: <SparklesIcon />,
+                        label: "What's New",
+                        onClick: () => setIsWhatsNewOpen(true),
+                      },
+                      {
+                        icon: <LogOutIcon />,
+                        label: 'Log out',
+                        variant: 'danger',
+                        onClick: signOut,
+                      },
+                      {
+                        type: 'custom',
+                        content: (
+                          <div className="border-border text-text-tertiary border-t px-4 py-2 text-xs">
+                            Version {APP_VERSION}
+                          </div>
+                        ),
+                      },
+                    ]}
+                    trigger={
+                      <div className="relative">
+                        <button
+                          aria-label="User menu"
+                          className="bg-brand-500 hover:bg-brand-600 dark:ring-bg-surface flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-medium tracking-wider text-white ring-2 ring-white transition-colors"
+                        >
+                          {getInitials(user.fullName ?? user.email)}
+                        </button>
+                        <span
+                          className={`dark:border-bg-surface absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${healthDotClass}`}
+                          title={healthTitle}
+                        />
+                      </div>
+                    }
+                  />
+                )
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      <WhatsNewModal
+        isOpen={isWhatsNewOpen}
+        onClose={() => setIsWhatsNewOpen(false)}
+      />
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import { LockClosedIcon, UserIcon } from '../components/icons';
 import { Button, Card, Input, PageLayout } from '../components/ui';
 import { useProfileData } from '../hooks/user/useProfileData';
+import { APP_VERSION } from '../utils/appVersion';
 import { getInitials } from '../utils/getInitials';
 
 export function Profile() {
@@ -130,6 +131,10 @@ export function Profile() {
           </div>
         </form>
       </Card>
+
+      <p className="text-text-tertiary text-center text-xs">
+        Version {APP_VERSION}
+      </p>
     </PageLayout>
   );
 }
