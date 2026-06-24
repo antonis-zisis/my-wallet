@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { ExpiringContract } from '../../hooks/contracts/selectors/computeExpiringSoon';
 import { makeContract } from '../../test/fixtures/contracts';
@@ -26,6 +26,10 @@ function renderCard(props: Parameters<typeof ContractsExpiringSoonCard>[0]) {
 }
 
 describe('ContractsExpiringSoonCard', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   it('renders the empty state when nothing is expiring', () => {
     renderCard({ contracts: [], loading: false });
 
@@ -66,5 +70,23 @@ describe('ContractsExpiringSoonCard', () => {
     expect(screen.getByText('C')).toBeInTheDocument();
     expect(screen.queryByText('D')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: '+2 more' })).toBeInTheDocument();
+  });
+
+  it('collapses and expands when the toggle button is clicked', () => {
+    renderCard({
+      contracts: [makeExpiring(5, { id: 'a', provider: 'DEI' })],
+      loading: false,
+    });
+    const button = screen.getByRole('button', {
+      name: /contracts expiring soon/i,
+    });
+
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'true');
   });
 });

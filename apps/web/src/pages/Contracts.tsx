@@ -53,7 +53,7 @@ export function Contracts() {
           <Button onClick={onOpenCreate}>New Contract</Button>
         </div>
 
-        {!error && totalCount > 0 && (
+        {(loading || (!error && totalCount > 0)) && (
           <div className="mb-2 flex items-center justify-end">
             <Select
               className="w-40 py-1 text-sm"

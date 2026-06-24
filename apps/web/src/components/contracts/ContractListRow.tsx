@@ -35,7 +35,7 @@ function ExpiryBadge({ contract }: { contract: Contract }) {
 
 function ExpiryLine({ contract }: { contract: Contract }) {
   if (!contract.endDate) {
-    return <p className="text-text-secondary mt-0.5 text-xs">Open-ended</p>;
+    return <span className="text-text-secondary shrink-0">Open-ended</span>;
   }
 
   const daysUntil = getDaysUntilExpiration(contract);
@@ -51,11 +51,11 @@ function ExpiryLine({ contract }: { contract: Contract }) {
             : `in ${daysUntil}d`;
 
   return (
-    <p className="text-text-secondary mt-0.5 text-xs">
+    <span className="text-text-secondary shrink-0">
       expires{' '}
       <span className="font-semibold">{formatDate(contract.endDate)}</span>
       {relativeLabel && ` · ${relativeLabel}`}
-    </p>
+    </span>
   );
 }
 
@@ -77,10 +77,10 @@ export function ContractListRow({
     <li
       className={`flex items-center gap-3 ${contract.isExpired ? 'opacity-60' : ''}`}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
+      <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-text-primary truncate font-medium">
+            <span className="text-text-primary min-w-0 truncate font-medium">
               {contract.provider}
             </span>
 
@@ -91,13 +91,24 @@ export function ContractListRow({
             <ExpiryBadge contract={contract} />
           </div>
 
-          {contract.plan && (
-            <p className="text-text-tertiary mt-0.5 truncate text-xs">
-              {contract.plan}
-            </p>
-          )}
+          <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs">
+            {contract.plan && (
+              <>
+                <span className="text-text-tertiary min-w-0 truncate">
+                  {contract.plan}
+                </span>
 
-          <ExpiryLine contract={contract} />
+                <span
+                  aria-hidden="true"
+                  className="text-text-tertiary shrink-0"
+                >
+                  ·
+                </span>
+              </>
+            )}
+
+            <ExpiryLine contract={contract} />
+          </div>
         </div>
 
         {contract.cost !== null && (
