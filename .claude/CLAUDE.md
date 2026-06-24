@@ -57,10 +57,10 @@ pnpm run env:encrypt      # Encrypt before committing
 - Privacy: `contexts/PrivacyContext.tsx` (`usePrivacy`) — toggles visibility of money amounts, persisted to localStorage
 - Toasts: `contexts/ToastContext.tsx` (`useToast`) — global toast notification system (`showSuccess`, `showError`, `showInfo`)
 - UI primitives: `components/ui/` (Badge, Button, Card, Divider, Dropdown, Input, Modal, MoneyAmount, PageLayout, Pagination, Select, Skeleton, Spinner, Toast, Tooltip)
-- Feature components: `components/home/`, `components/netWorth/`, `components/reports/`, `components/subscriptions/` — domain-specific composed components
+- Feature components: `components/contracts/`, `components/home/`, `components/netWorth/`, `components/reports/`, `components/subscriptions/` — domain-specific composed components
 - Charts: Recharts in `components/charts/` — `BudgetBreakdownChart`, `ExpenseBreakdownChart`, `IncomeExpensesChart`, `NetWorthCategoryBreakdownChart`, `NetWorthSparkline`, `NetWorthTrendChart`
-- Types: `types/` — shared TypeScript types per domain (`report.ts`, `subscription.ts`, `netWorth.ts`, `transaction.ts`)
-- Utils: `utils/` — pure helpers: `formatMoney`, `formatDate`, `formatRelativeTime`, `abbreviateReportTitle`, `getInitials`, `getNextRenewalDate`, `getDaysUntil`
+- Types: `types/` — shared TypeScript types per domain (`report.ts`, `subscription.ts`, `contract.ts`, `netWorth.ts`, `transaction.ts`)
+- Utils: `utils/` — pure helpers: `formatMoney`, `formatDate`, `formatDateForInput`, `formatRelativeTime`, `abbreviateReportTitle`, `getInitials`, `getNextRenewalDate`, `getDaysUntil`, `buildContractInput`
 
 **Server** (Express 5 + Apollo Server 5):
 
@@ -86,10 +86,11 @@ Each domain lives in mirrored directories on both sides:
 | **reports**       | `apps/server/src/graphql/reports/`       | `graphql/reports.ts`       | `useReportsData` / `useReportData`            | `Reports`, `Report`                |
 | **transactions**  | `apps/server/src/graphql/transactions/`  | `graphql/transactions.ts`  | _(used inside report hook)_                   | _(inside Report page)_             |
 | **subscriptions** | `apps/server/src/graphql/subscriptions/` | `graphql/subscriptions.ts` | `useSubscriptionsData`                        | `Subscriptions`                    |
+| **contracts**     | `apps/server/src/graphql/contracts/`     | `graphql/contracts.ts`     | `useContractsData`                            | `Contracts`                        |
 | **netWorth**      | `apps/server/src/graphql/netWorth/`      | `graphql/netWorth.ts`      | `useNetWorthData` / `useNetWorthSnapshotData` | `NetWorth`, `NetWorthSnapshotPage` |
 | **user**          | `apps/server/src/graphql/user/`          | `graphql/user.ts`          | `useProfileData`                              | `Profile`                          |
 
-`Home` page (`hooks/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, and subscriptions — it has no dedicated server domain.
+`Home` page (`hooks/home/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, subscriptions, and contracts (an "expiring soon" card) — it has no dedicated server domain.
 `NotFound` is a standalone 404 page with no data dependencies.
 
 **Server domain structure**:
@@ -105,3 +106,5 @@ All domains are merged in `apps/server/src/graphql/index.ts`.
 **Web data hook pattern:** hooks own all query/mutation logic and return a flat object of state + `on<Action>` handlers. Pages are thin — they just destructure the hook and render.
 
 **Subscription cancellation model:** `cancelledAt` marks when cancelled, `endDate` is the last active date (set to next renewal on cancellation). `isActive` is a computed field — it checks `cancelledAt` + `endDate` rather than the stored `isActive` column when a subscription has been cancelled.
+
+**Contracts model:** tracks real-world service contracts (provider, plan, category, optional cost) and, above all, their `endDate`. `category` is stored as a free-text string (curated `<Select>` with an "Other → free-text" fallback), deliberately not an enum — a future user-defined-options system across domains will migrate it. `isExpired` is a computed server field (`endDate < now`); the "expiring soon" window (30 days) is a web-side concern in `hooks/contracts/selectors/computeExpiringSoon.ts`. Plain CRUD only (no cancel/resume), single list sorted by `END_DATE`.
