@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { App } from './App';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { Contracts } from './pages/Contracts';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { NetWorth } from './pages/NetWorth';
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
           { path: 'reports', element: <Reports /> },
           { path: 'reports/:id', element: <Report /> },
           { path: 'subscriptions', element: <Subscriptions /> },
+          { path: 'contracts', element: <Contracts /> },
           { path: 'net-worth', element: <NetWorth /> },
           { path: 'net-worth/:id', element: <NetWorthSnapshotPage /> },
           { path: 'profile', element: <Profile /> },
