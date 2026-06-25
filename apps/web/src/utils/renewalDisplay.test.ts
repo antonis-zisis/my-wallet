@@ -39,12 +39,11 @@ describe('getUrgencyColor', () => {
 });
 
 describe('billingCycleLabel', () => {
-  it('returns "Monthly" for MONTHLY', () => {
+  it('returns the matching label for each billing cycle', () => {
+    expect(billingCycleLabel('WEEKLY')).toBe('Weekly');
     expect(billingCycleLabel('MONTHLY')).toBe('Monthly');
-  });
-
-  it('returns "Yearly" for any other cycle', () => {
+    expect(billingCycleLabel('QUARTERLY')).toBe('Quarterly');
+    expect(billingCycleLabel('BI_ANNUAL')).toBe('Bi-annual');
     expect(billingCycleLabel('YEARLY')).toBe('Yearly');
-    expect(billingCycleLabel('WEEKLY')).toBe('Yearly');
   });
 });

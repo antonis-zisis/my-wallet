@@ -122,6 +122,50 @@ describe('SubscriptionList', () => {
     expect(screen.getByText(/15,99 €/)).toBeInTheDocument();
   });
 
+  it('shows the actual charged amount as the hero figure, without a suffix', () => {
+    const subscriptions = [
+      makeSubscription({
+        name: 'Adobe',
+        billingCycle: 'YEARLY',
+        amount: 120,
+        monthlyCost: 10,
+      }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+
+    expect(screen.getByText(/120,00 €/)).toBeInTheDocument();
+    expect(screen.queryByText(/120,00 € \/ yr/)).not.toBeInTheDocument();
+  });
+
+  it('shows the monthly-normalized cost as a secondary line for non-monthly cycles', () => {
+    const subscriptions = [
+      makeSubscription({
+        name: 'Insurance',
+        billingCycle: 'QUARTERLY',
+        amount: 30,
+        monthlyCost: 10,
+      }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+
+    expect(screen.getByText(/≈ 10,00 € \/ mo/)).toBeInTheDocument();
+  });
+
+  it('does not show a monthly-equivalent line for monthly subscriptions', () => {
+    const subscriptions = [
+      makeSubscription({ name: 'Netflix', billingCycle: 'MONTHLY' }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+
+    expect(screen.queryByText(/≈/)).not.toBeInTheDocument();
+  });
+
   it('renders a Monthly badge for monthly subscriptions', () => {
     const subscriptions = [
       makeSubscription({ name: 'Netflix', billingCycle: 'MONTHLY' }),
@@ -145,6 +189,17 @@ describe('SubscriptionList', () => {
       <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
     );
     expect(screen.getByText('Yearly')).toBeInTheDocument();
+  });
+
+  it('renders the matching badge for non-monthly, non-yearly cycles', () => {
+    const subscriptions = [
+      makeSubscription({ name: 'Insurance', billingCycle: 'BI_ANNUAL' }),
+    ];
+    render(
+      <SubscriptionList {...defaultProps} subscriptions={subscriptions} />
+    );
+
+    expect(screen.getByText('Bi-annual')).toBeInTheDocument();
   });
 
   it('calls onDelete when Delete is selected from the dropdown', async () => {

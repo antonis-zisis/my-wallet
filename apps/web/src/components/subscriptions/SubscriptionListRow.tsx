@@ -1,7 +1,5 @@
-import { usePrivacy } from '../../contexts/PrivacyContext';
-import { Subscription } from '../../types/subscription';
+import { BILLING_CYCLE_LABELS, Subscription } from '../../types/subscription';
 import { formatDate } from '../../utils/formatDate';
-import { formatMoneyOrMask } from '../../utils/formatMoney';
 import {
   formatCancellationCountdown,
   formatTrialCountdown,
@@ -91,18 +89,22 @@ function SecondaryLine({ subscription }: { subscription: Subscription }) {
 }
 
 function AmountCell({ subscription }: { subscription: Subscription }) {
-  const { isAmountsHidden } = usePrivacy();
-  const normalized =
-    subscription.billingCycle === 'MONTHLY'
-      ? `${formatMoneyOrMask(subscription.amount * 12, isAmountsHidden)} € / yr`
-      : `${formatMoneyOrMask(subscription.monthlyCost, isAmountsHidden)} € / mo`;
+  // The hero is always the amount that actually hits the card; cadence comes
+  // from the badge next to the name. For non-monthly cycles, show the
+  // monthly-normalized cost as a secondary comparison line. The monthly and
+  // yearly totals live in the cost summary, not on every row.
+  const showMonthlyEquivalent = subscription.billingCycle !== 'MONTHLY';
 
   return (
     <div className="text-right">
       <p className="text-text-primary text-sm font-semibold">
         <MoneyAmount amount={subscription.amount} />
       </p>
-      <p className="text-text-tertiary mt-0.5 text-xs">{normalized}</p>
+      {showMonthlyEquivalent && (
+        <p className="text-text-tertiary mt-0.5 text-xs">
+          ≈ <MoneyAmount amount={subscription.monthlyCost} /> / mo
+        </p>
+      )}
     </div>
   );
 }
@@ -162,7 +164,7 @@ export function SubscriptionListRow(props: SubscriptionListRowProps) {
             )}
 
             <Badge variant="default" size="sm">
-              {subscription.billingCycle === 'MONTHLY' ? 'Monthly' : 'Yearly'}
+              {BILLING_CYCLE_LABELS[subscription.billingCycle]}
             </Badge>
 
             {subscription.category && (
