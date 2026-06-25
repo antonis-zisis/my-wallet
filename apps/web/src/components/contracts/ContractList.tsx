@@ -8,10 +8,23 @@ type ContractListProps = {
   contracts: Array<Contract>;
   loading: boolean;
   error: boolean;
+  isSearching?: boolean;
   onEdit: (contract: Contract) => void;
   onDelete: (contract: Contract) => void;
   onAdd: () => void;
 };
+
+function NoMatchesState() {
+  return (
+    <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
+      <DocumentTextIcon className="text-border-strong size-10" />
+
+      <p className="text-text-secondary text-sm font-medium">
+        No contracts match your search.
+      </p>
+    </div>
+  );
+}
 
 function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
@@ -35,6 +48,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 export function ContractList({
   contracts,
   error,
+  isSearching,
   loading,
   onAdd,
   onDelete,
@@ -51,7 +65,7 @@ export function ContractList({
   }
 
   if (contracts.length === 0) {
-    return <EmptyState onAdd={onAdd} />;
+    return isSearching ? <NoMatchesState /> : <EmptyState onAdd={onAdd} />;
   }
 
   return (

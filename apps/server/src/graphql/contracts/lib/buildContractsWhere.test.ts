@@ -34,4 +34,42 @@ describe('buildContractsWhere', () => {
       OR: [{ endDate: null }, { endDate: { gte: NOW } }],
     });
   });
+
+  it('adds a case-insensitive provider filter when search is given', () => {
+    const where = buildContractsWhere({
+      now: NOW,
+      search: '  cosmote ',
+      userId: USER_ID,
+    });
+
+    expect(where).toEqual({
+      userId: USER_ID,
+      provider: { contains: 'cosmote', mode: 'insensitive' },
+    });
+  });
+
+  it('combines an expired filter with a provider search', () => {
+    const where = buildContractsWhere({
+      expired: true,
+      now: NOW,
+      search: 'dei',
+      userId: USER_ID,
+    });
+
+    expect(where).toEqual({
+      userId: USER_ID,
+      endDate: { lt: NOW },
+      provider: { contains: 'dei', mode: 'insensitive' },
+    });
+  });
+
+  it('ignores a blank search', () => {
+    const where = buildContractsWhere({
+      now: NOW,
+      search: '   ',
+      userId: USER_ID,
+    });
+
+    expect(where).toEqual({ userId: USER_ID });
+  });
 });

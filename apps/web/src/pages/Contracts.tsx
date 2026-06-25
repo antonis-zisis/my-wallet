@@ -2,17 +2,18 @@ import { ContractList } from '../components/contracts/ContractList';
 import { CreateContractModal } from '../components/contracts/CreateContractModal';
 import { DeleteContractModal } from '../components/contracts/DeleteContractModal';
 import { EditContractModal } from '../components/contracts/EditContractModal';
-import { Button, PageLayout, Pagination, Select } from '../components/ui';
+import {
+  Button,
+  PageLayout,
+  Pagination,
+  SearchInput,
+  Select,
+} from '../components/ui';
 import {
   PAGE_SIZE,
   useContractsData,
 } from '../hooks/contracts/useContractsData';
-import { ContractSortField } from '../types/contract';
-
-const SORT_OPTIONS: Array<{ value: ContractSortField; label: string }> = [
-  { value: 'END_DATE', label: 'End Date' },
-  { value: 'PROVIDER', label: 'Provider (A–Z)' },
-];
+import { CONTRACT_SORT_OPTIONS, ContractSortField } from '../types/contract';
 
 export function Contracts() {
   const {
@@ -28,11 +29,13 @@ export function Contracts() {
     onDeleteConfirm,
     onOpenCreate,
     onPaginate,
+    onSearchChange,
     onSelectForDelete,
     onSelectForEdit,
     onSortChange,
     onUpdate,
     page,
+    search,
     sortBy,
     totalCount,
     totalPages,
@@ -53,11 +56,18 @@ export function Contracts() {
           <Button onClick={onOpenCreate}>New Contract</Button>
         </div>
 
-        {(loading || (!error && totalCount > 0)) && (
-          <div className="mb-2 flex items-center justify-end">
+        {(loading || (!error && (totalCount > 0 || !!search))) && (
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <SearchInput
+              className="max-w-xs flex-1"
+              placeholder="Search by provider…"
+              value={search}
+              onChange={onSearchChange}
+            />
+
             <Select
               className="w-40 py-1 text-sm"
-              options={SORT_OPTIONS}
+              options={CONTRACT_SORT_OPTIONS}
               value={sortBy}
               onChange={(event) =>
                 onSortChange(event.target.value as ContractSortField)
@@ -69,6 +79,7 @@ export function Contracts() {
         <ContractList
           contracts={items}
           error={error}
+          isSearching={!!search}
           loading={loading}
           onAdd={onOpenCreate}
           onDelete={onSelectForDelete}
