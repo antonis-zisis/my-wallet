@@ -21,6 +21,7 @@ vi.mock('../../lib/prisma', () => ({
       findMany: vi.fn(),
       count: vi.fn(),
       aggregate: vi.fn(),
+      groupBy: vi.fn(),
     },
   },
 }));
@@ -97,6 +98,64 @@ describe('reportResolvers', () => {
       );
 
       expect(result).toEqual({ items: [], totalCount: 0 });
+    });
+
+    it('filters by a case-insensitive title search', async () => {
+      vi.mocked(prisma.report.findMany).mockResolvedValue([makeReport()]);
+      vi.mocked(prisma.report.count).mockResolvedValue(1);
+
+      await reportResolvers.Query.reports(
+        undefined as unknown,
+        { search: '  jan ' },
+        CTX
+      );
+
+      expect(prisma.report.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            userId: USER_ID,
+            title: { contains: 'jan', mode: 'insensitive' },
+          },
+        })
+      );
+    });
+
+    it('sorts by net balance descending and paginates in memory', async () => {
+      const low = makeReport({ id: 'low' });
+      const high = makeReport({ id: 'high' });
+      vi.mocked(prisma.report.findMany).mockResolvedValue([low, high]);
+      vi.mocked(prisma.transaction.groupBy).mockResolvedValue([
+        { reportId: 'low', type: 'INCOME', _sum: { amount: 100 } },
+        { reportId: 'high', type: 'INCOME', _sum: { amount: 900 } },
+      ] as never);
+
+      const result = await reportResolvers.Query.reports(
+        undefined as unknown,
+        { sortBy: 'NET_BALANCE', sortOrder: 'DESC' },
+        CTX
+      );
+
+      expect(prisma.report.count).not.toHaveBeenCalled();
+      expect(result.items.map((report) => report.id)).toEqual(['high', 'low']);
+      expect(result.totalCount).toBe(2);
+    });
+
+    it('sorts by net balance ascending', async () => {
+      const low = makeReport({ id: 'low' });
+      const high = makeReport({ id: 'high' });
+      vi.mocked(prisma.report.findMany).mockResolvedValue([high, low]);
+      vi.mocked(prisma.transaction.groupBy).mockResolvedValue([
+        { reportId: 'low', type: 'EXPENSE', _sum: { amount: 100 } },
+        { reportId: 'high', type: 'INCOME', _sum: { amount: 900 } },
+      ] as never);
+
+      const result = await reportResolvers.Query.reports(
+        undefined as unknown,
+        { sortBy: 'NET_BALANCE', sortOrder: 'ASC' },
+        CTX
+      );
+
+      expect(result.items.map((report) => report.id)).toEqual(['low', 'high']);
     });
   });
 

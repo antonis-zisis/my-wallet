@@ -15,6 +15,11 @@ export const reportTypeDefs = `#graphql
     totalCount: Int!
   }
 
+  enum ReportSortField {
+    NEWEST
+    NET_BALANCE
+  }
+
   input CreateReportInput {
     title: String!
   }
@@ -25,7 +30,7 @@ export const reportTypeDefs = `#graphql
   }
 
   extend type Query {
-    reports(page: Int, pageSize: Int): ReportsResult!
+    reports(page: Int, pageSize: Int, search: String, sortBy: ReportSortField, sortOrder: SortOrder): ReportsResult!
     report(id: ID!): Report
   }
 

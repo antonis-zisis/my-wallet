@@ -17,8 +17,15 @@ import { PAGE_SIZE } from '../hooks/reports/useReportsData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { Reports } from './Reports';
 
+const baseVariables = {
+  page: 1,
+  pageSize: PAGE_SIZE,
+  sortBy: 'NEWEST',
+  sortOrder: 'DESC',
+};
+
 const mockReportsQuery: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
+  request: { query: GET_REPORTS, variables: baseVariables },
   result: {
     data: {
       reports: {
@@ -49,14 +56,14 @@ const mockReportsQuery: MockLink.MockedResponse = {
 };
 
 const mockReportsQueryError: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
+  request: { query: GET_REPORTS, variables: baseVariables },
   result: {
     errors: [new GraphQLError('Failed to load reports')],
   },
 };
 
 const mockPage1: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
+  request: { query: GET_REPORTS, variables: baseVariables },
   result: {
     data: {
       reports: {
@@ -76,7 +83,7 @@ const mockPage1: MockLink.MockedResponse = {
 };
 
 const mockPage2: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 2, pageSize: PAGE_SIZE } },
+  request: { query: GET_REPORTS, variables: { ...baseVariables, page: 2 } },
   result: {
     data: {
       reports: {
