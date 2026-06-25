@@ -7,6 +7,10 @@ import {
 import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { isSafeUrl } from '../../utils/isSafeUrl';
+import {
+  FALLBACK_CATEGORY_COLOR,
+  SUBSCRIPTION_CATEGORY_COLORS,
+} from '../charts/categoryColors';
 import { Badge, Dropdown, MoneyAmount } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
 
@@ -168,7 +172,20 @@ export function SubscriptionListRow(props: SubscriptionListRowProps) {
             </Badge>
 
             {subscription.category && (
-              <Badge variant="default" size="sm">
+              <Badge
+                variant="default"
+                size="sm"
+                className="inline-flex items-center gap-1"
+              >
+                <span
+                  aria-hidden="true"
+                  className="h-1.5 w-1.5 shrink-0 rounded-full"
+                  style={{
+                    backgroundColor:
+                      SUBSCRIPTION_CATEGORY_COLORS[subscription.category] ??
+                      FALLBACK_CATEGORY_COLOR,
+                  }}
+                />
                 {subscription.category}
               </Badge>
             )}

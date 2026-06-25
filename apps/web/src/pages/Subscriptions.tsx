@@ -19,16 +19,13 @@ import {
   PAGE_SIZE,
   useSubscriptionsData,
 } from '../hooks/subscriptions/useSubscriptionsData';
-import { SubscriptionSortField } from '../types/subscription';
+import {
+  SUBSCRIPTION_SORT_OPTIONS,
+  SubscriptionSortOption,
+} from '../types/subscription';
 import { buildSubscriptionsSubtitle } from '../utils/buildSubscriptionsSubtitle';
 
 const INACTIVE_SECTION_ID = 'inactive-subscriptions-section';
-
-const SORT_OPTIONS: Array<{ value: SubscriptionSortField; label: string }> = [
-  { value: 'NAME', label: 'Name (A–Z)' },
-  { value: 'MONTHLY_COST', label: 'Cost (High–Low)' },
-  { value: 'NEXT_RENEWAL', label: 'Next Renewal' },
-];
 
 export function Subscriptions() {
   const {
@@ -36,7 +33,7 @@ export function Subscriptions() {
     activeItems,
     activeLoading,
     activePage,
-    activeSortBy,
+    activeSortOption,
     activeTotalCount,
     activeTotalPages,
     allLoadedNames,
@@ -126,10 +123,10 @@ export function Subscriptions() {
           <div className="mb-2 flex items-center justify-end">
             <Select
               className="w-40 py-1 text-sm"
-              options={SORT_OPTIONS}
-              value={activeSortBy}
+              options={SUBSCRIPTION_SORT_OPTIONS}
+              value={activeSortOption}
               onChange={(event) =>
-                onActiveSortChange(event.target.value as SubscriptionSortField)
+                onActiveSortChange(event.target.value as SubscriptionSortOption)
               }
             />
           </div>
