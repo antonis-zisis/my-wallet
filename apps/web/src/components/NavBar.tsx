@@ -6,7 +6,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { HEALTH_QUERY } from '../graphql/health';
-import { APP_VERSION } from '../utils/appVersion';
 import { getInitials } from '../utils/getInitials';
 import { AppLogoIcon, LogOutIcon, SparklesIcon, UserIcon } from './icons';
 import { PrivacyToggle } from './PrivacyToggle';
@@ -125,14 +124,6 @@ export function NavBar() {
                         label: 'Log out',
                         variant: 'danger',
                         onClick: signOut,
-                      },
-                      {
-                        type: 'custom',
-                        content: (
-                          <div className="border-border text-text-tertiary border-t px-4 py-2 text-xs">
-                            Version {APP_VERSION}
-                          </div>
-                        ),
                       },
                     ]}
                     trigger={

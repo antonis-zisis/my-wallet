@@ -114,6 +114,24 @@ describe('Profile', () => {
     });
   });
 
+  describe('About section', () => {
+    it('shows the app version', () => {
+      render(<Profile />);
+
+      expect(screen.getByText(/^v\d+\.\d+\.\d+$/)).toBeInTheDocument();
+    });
+
+    it("opens the What's New modal when the button is clicked", async () => {
+      render(<Profile />);
+
+      fireEvent.click(screen.getByRole('button', { name: "What's New" }));
+
+      expect(
+        screen.getByRole('heading', { name: "What's New" })
+      ).toBeInTheDocument();
+    });
+  });
+
   it('invokes updatePassword when the password form is submitted', async () => {
     mockUpdatePassword.mockResolvedValueOnce({ error: null });
     render(<Profile />);

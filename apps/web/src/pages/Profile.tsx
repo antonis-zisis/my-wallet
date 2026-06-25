@@ -1,10 +1,14 @@
-import { LockClosedIcon, UserIcon } from '../components/icons';
+import { useState } from 'react';
+
+import { InfoIcon, LockClosedIcon, UserIcon } from '../components/icons';
 import { Button, Card, Input, PageLayout } from '../components/ui';
+import { WhatsNewModal } from '../components/WhatsNewModal';
 import { useProfileData } from '../hooks/user/useProfileData';
 import { APP_VERSION } from '../utils/appVersion';
 import { getInitials } from '../utils/getInitials';
 
 export function Profile() {
+  const [isWhatsNewOpen, setIsWhatsNewOpen] = useState(false);
   const {
     confirmPassword,
     email,
@@ -132,9 +136,36 @@ export function Profile() {
         </form>
       </Card>
 
-      <p className="text-text-tertiary text-center text-xs">
-        Version {APP_VERSION}
-      </p>
+      <Card className="p-6">
+        <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">
+          <div className="bg-bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded">
+            <span className="text-text-secondary h-4 w-4">
+              <InfoIcon />
+            </span>
+          </div>
+          <div>
+            <h2 className="text-text-primary text-sm font-semibold">About</h2>
+            <p className="text-text-secondary text-xs">
+              App version and release notes
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-text-secondary text-sm font-medium">Version</p>
+            <p className="text-text-tertiary text-xs">v{APP_VERSION}</p>
+          </div>
+          <Button variant="secondary" onClick={() => setIsWhatsNewOpen(true)}>
+            What's New
+          </Button>
+        </div>
+      </Card>
+
+      <WhatsNewModal
+        isOpen={isWhatsNewOpen}
+        onClose={() => setIsWhatsNewOpen(false)}
+      />
     </PageLayout>
   );
 }
