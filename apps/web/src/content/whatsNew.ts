@@ -1,7 +1,4 @@
-// User-facing release notes, newest first. The "What's New" modal renders only
-// the first entry (`whatsNew[0]`); the rest is retained history. Entries are
-// hand-curated — drafted from `feat:`/`fix:` commits by the `/release` skill and
-// then edited for tone. Keep `version` in lockstep with package.json.
+// user-facing release notes, newest first. The "What's New" modal renders only the first entry (`whatsNew[0]`); the rest is retained history
 
 export type WhatsNewItem = {
   title: string;
@@ -9,10 +6,10 @@ export type WhatsNewItem = {
 };
 
 export type WhatsNewRelease = {
-  version: string; // matches package.json, e.g. "0.7.0"
-  date: string; // ISO date, e.g. "2026-06-24"
-  highlights: Array<WhatsNewItem>; // new features (from feat: commits)
-  improvements?: Array<WhatsNewItem>; // notable fixes/refinements (from fix: commits)
+  version: string;
+  date: string;
+  highlights: Array<WhatsNewItem>;
+  improvements?: Array<WhatsNewItem>;
 };
 
 export const whatsNew: Array<WhatsNewRelease> = [

@@ -1,6 +1,6 @@
 ---
 name: release
-description: Prepare a release — decide the version bump from Conventional Commits, draft the user-facing "What's New" entry, and bump every package.json in lockstep. Use when the user wants to cut a release, prepare a version, or mentions "/release". Never tags or commits.
+description: Prepare a release - decide the version bump from Conventional Commits, draft the user-facing "What's New" entry, and bump every package.json in lockstep. Use when the user wants to cut a release, prepare a version, or mentions "/release". Never tags or commits.
 ---
 
 Prepare a release for My Wallet. You drive the version bump and the user-facing
