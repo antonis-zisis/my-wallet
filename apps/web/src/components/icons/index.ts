@@ -17,6 +17,7 @@ export { LockOpenIcon } from './LockOpenIcon';
 export { LogOutIcon } from './LogOutIcon';
 export { MonitorIcon } from './MonitorIcon';
 export { MoonIcon } from './MoonIcon';
+export { SearchIcon } from './SearchIcon';
 export { SparklesIcon } from './SparklesIcon';
 export { SunIcon } from './SunIcon';
 export { TrendingChartIcon } from './TrendingChartIcon';
