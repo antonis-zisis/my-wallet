@@ -1,5 +1,5 @@
 import { MockLink } from '@apollo/client/testing';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
@@ -184,16 +184,23 @@ describe('Subscriptions', () => {
     expect(renewalTexts.length).toBeGreaterThan(0);
   });
 
-  it('shows yearly cost equivalent for monthly subscriptions', async () => {
+  it('shows the charged amount without a monthly equivalent for monthly subscriptions', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-    await screen.findAllByText('Netflix');
-    expect(screen.getByText('191,88 € / yr')).toBeInTheDocument();
+    const netflixNames = await screen.findAllByText('Netflix');
+    const row = netflixNames
+      .map((element) => element.closest('li'))
+      .find((listItem) => listItem !== null)!;
+
+    expect(within(row).getByText('15,99 €')).toBeInTheDocument();
+    expect(within(row).queryByText(/\/ mo/)).not.toBeInTheDocument();
   });
 
-  it('shows monthly cost equivalent for yearly subscriptions', async () => {
+  it('shows the monthly equivalent for non-monthly subscriptions', async () => {
     renderSubscriptions([mockActiveQuery, mockInactiveQueryEmpty]);
-    await screen.findByText('YouTube Premium');
-    expect(screen.getByText('10,00 € / mo')).toBeInTheDocument();
+    const youtubeName = await screen.findByText('YouTube Premium');
+    const row = youtubeName.closest('li')!;
+
+    expect(within(row).getByText(/\/ mo/)).toHaveTextContent('≈ 10,00 € / mo');
   });
 
   it('shows empty state when no active subscriptions exist', async () => {
@@ -289,6 +296,7 @@ describe('Subscriptions', () => {
               name: 'Disney+',
               amount: 8.99,
               billingCycle: 'MONTHLY',
+              category: null,
               isActive: true,
               startDate: '2026-01-15T00:00:00.000Z',
               endDate: null,

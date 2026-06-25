@@ -1,5 +1,6 @@
 import { MockLink } from '@apollo/client/testing';
 
+import { GET_CONTRACTS } from '../../graphql/contracts';
 import { GET_NET_WORTH_SNAPSHOTS } from '../../graphql/netWorth';
 import {
   GET_REPORT,
@@ -7,6 +8,7 @@ import {
   GET_REPORTS_SUMMARY,
 } from '../../graphql/reports';
 import { GET_SUBSCRIPTIONS } from '../../graphql/subscriptions';
+import { Contract } from '../../types/contract';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { Report } from '../../types/report';
 import { Subscription } from '../../types/subscription';
@@ -72,11 +74,33 @@ export function subscriptionsResponse(
   };
 }
 
+export function contractsResponse(
+  contracts: Array<Contract> = []
+): MockLink.MockedResponse {
+  return {
+    request: {
+      query: GET_CONTRACTS,
+      variables: {
+        page: 1,
+        expired: false,
+        sortBy: 'END_DATE',
+        sortOrder: 'ASC',
+      },
+    },
+    result: {
+      data: {
+        contracts: { items: contracts, totalCount: contracts.length },
+      },
+    },
+  };
+}
+
 type HomeMocksOverrides = {
   reports?: Array<Report>;
   summaryReports?: Array<Report>;
   snapshots?: Array<NetWorthSnapshot>;
   subscriptions?: Array<Subscription>;
+  contracts?: Array<Contract>;
   reportDetails?: Array<{ id: string; report: Partial<Report> }>;
 };
 
@@ -88,6 +112,7 @@ export function homeMocks(
     reportsSummaryResponse(overrides.summaryReports),
     netWorthSnapshotsResponse(overrides.snapshots),
     subscriptionsResponse(overrides.subscriptions),
+    contractsResponse(overrides.contracts),
     ...(overrides.reportDetails ?? []).map(({ id, report }) =>
       reportResponse(id, report)
     ),
