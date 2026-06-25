@@ -7,11 +7,14 @@ import {
   Card,
   PageLayout,
   Pagination,
+  SearchInput,
+  Select,
   Skeleton,
   Tooltip,
 } from '../components/ui';
 import { PAGE_SIZE, useNetWorthData } from '../hooks/netWorth/useNetWorthData';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { NET_WORTH_SORT_OPTIONS, NetWorthSortOption } from '../types/netWorth';
 
 export function NetWorth() {
   const [isChartOpen, setIsChartOpen] = useLocalStorage(
@@ -31,8 +34,12 @@ export function NetWorth() {
     onModalSubmit,
     onOpenCreate,
     onPageChange,
+    onSearchChange,
+    onSortChange,
     page,
+    search,
     snapshots,
+    sortOption,
     totalCount,
     totalPages,
     trendLoading,
@@ -145,7 +152,32 @@ export function NetWorth() {
           </Card>
         ) : null}
 
-        <NetWorthList error={error} loading={loading} snapshots={snapshots} />
+        {(loading || (!error && (totalCount > 0 || !!search))) && (
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <SearchInput
+              className="max-w-xs flex-1"
+              placeholder="Search snapshots…"
+              value={search}
+              onChange={onSearchChange}
+            />
+
+            <Select
+              className="w-44 py-1 text-sm"
+              options={NET_WORTH_SORT_OPTIONS}
+              value={sortOption}
+              onChange={(event) =>
+                onSortChange(event.target.value as NetWorthSortOption)
+              }
+            />
+          </div>
+        )}
+
+        <NetWorthList
+          error={error}
+          isSearching={!!search}
+          loading={loading}
+          snapshots={snapshots}
+        />
 
         {!loading && !error && totalCount > 0 && (
           <Pagination

@@ -1,7 +1,7 @@
 import { MockLink } from '@apollo/client/testing';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
   CREATE_NET_WORTH_SNAPSHOT,
@@ -34,10 +34,17 @@ const mockSnapshot = makeNetWorthSnapshot({
   ],
 });
 
+const snapshotsVariables = {
+  page: 1,
+  pageSize: PAGE_SIZE,
+  sortBy: 'SNAPSHOT_DATE',
+  sortOrder: 'DESC',
+};
+
 const mockSnapshotsQuery: MockLink.MockedResponse = {
   request: {
     query: GET_NET_WORTH_SNAPSHOTS,
-    variables: { page: 1, pageSize: PAGE_SIZE },
+    variables: snapshotsVariables,
   },
   result: {
     data: {
@@ -49,7 +56,7 @@ const mockSnapshotsQuery: MockLink.MockedResponse = {
 const mockSnapshotsQueryError: MockLink.MockedResponse = {
   request: {
     query: GET_NET_WORTH_SNAPSHOTS,
-    variables: { page: 1, pageSize: PAGE_SIZE },
+    variables: snapshotsVariables,
   },
   result: { errors: [new GraphQLError('Failed to load snapshots')] },
 };
@@ -67,6 +74,10 @@ const mockTrendQuery: MockLink.MockedResponse = {
 };
 
 describe('useNetWorthData', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   describe('initial state', () => {
     it('starts on page 1 with loading=true, empty snapshots, modal closed, no delete selection', () => {
       const { result } = renderHook(() => useNetWorthData(), {
@@ -108,7 +119,7 @@ describe('useNetWorthData', () => {
       const multiPageQuery: MockLink.MockedResponse = {
         request: {
           query: GET_NET_WORTH_SNAPSHOTS,
-          variables: { page: 1, pageSize: PAGE_SIZE },
+          variables: snapshotsVariables,
         },
         result: {
           data: {
@@ -124,6 +135,47 @@ describe('useNetWorthData', () => {
       await waitFor(() => expect(result.current.loading).toBe(false));
 
       expect(result.current.totalPages).toBe(3);
+    });
+  });
+
+  describe('sorting', () => {
+    it('refetches with the change sort variables and resets to page 1', async () => {
+      const changeSortMock: MockLink.MockedResponse = {
+        request: {
+          query: GET_NET_WORTH_SNAPSHOTS,
+          variables: {
+            ...snapshotsVariables,
+            sortBy: 'CHANGE',
+            sortOrder: 'DESC',
+          },
+        },
+        result: {
+          data: {
+            netWorthSnapshots: {
+              items: [makeNetWorthSnapshot({ id: '9', title: 'Biggest jump' })],
+              totalCount: 1,
+            },
+          },
+        },
+      };
+
+      const { result } = renderHook(() => useNetWorthData(), {
+        wrapper: createWrapper([
+          mockTrendQuery,
+          mockSnapshotsQuery,
+          changeSortMock,
+        ]),
+      });
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      act(() => result.current.onSortChange('CHANGE_HIGH_LOW'));
+
+      await waitFor(() =>
+        expect(result.current.snapshots[0]?.title).toBe('Biggest jump')
+      );
+      expect(result.current.sortOption).toBe('CHANGE_HIGH_LOW');
+      expect(result.current.page).toBe(1);
     });
   });
 

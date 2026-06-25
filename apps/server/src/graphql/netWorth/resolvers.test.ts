@@ -241,6 +241,55 @@ describe('netWorthResolvers', () => {
         expect.objectContaining({ skip: 0, take: 10 })
       );
     });
+
+    it('filters by a case-insensitive title search', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findMany).mockResolvedValue([]);
+      vi.mocked(prisma.netWorthSnapshot.count).mockResolvedValue(0);
+
+      await netWorthResolvers.Query.netWorthSnapshots(
+        undefined as unknown,
+        { search: ' jan ' },
+        CTX
+      );
+
+      expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            userId: USER_ID,
+            title: { contains: 'jan', mode: 'insensitive' },
+          },
+        })
+      );
+    });
+
+    it('ranks by net-worth change descending and paginates in memory', async () => {
+      const oldest = {
+        ...mockSnapshot,
+        id: 'oldest',
+        entries: [{ type: 'ASSET', amount: 1000 }],
+      };
+      const biggestGain = {
+        ...mockSnapshot,
+        id: 'biggestGain',
+        entries: [{ type: 'ASSET', amount: 2000 }],
+      };
+      vi.mocked(prisma.netWorthSnapshot.findMany).mockResolvedValue([
+        oldest,
+        biggestGain,
+      ] as never);
+
+      const result = await netWorthResolvers.Query.netWorthSnapshots(
+        undefined as unknown,
+        { sortBy: 'CHANGE', sortOrder: 'DESC' },
+        CTX
+      );
+
+      expect(prisma.netWorthSnapshot.count).not.toHaveBeenCalled();
+      expect(
+        result.items.map((snapshot: { id: string }) => snapshot.id)
+      ).toEqual(['biggestGain', 'oldest']);
+      expect(result.totalCount).toBe(2);
+    });
   });
 
   describe('Query.netWorthSnapshot', () => {

@@ -28,6 +28,11 @@ export const netWorthTypeDefs = `#graphql
     totalCount: Int!
   }
 
+  enum NetWorthSnapshotSortField {
+    SNAPSHOT_DATE
+    CHANGE
+  }
+
   input NetWorthEntryInput {
     type: String!
     label: String!
@@ -49,7 +54,7 @@ export const netWorthTypeDefs = `#graphql
   }
 
   extend type Query {
-    netWorthSnapshots(page: Int, pageSize: Int): NetWorthSnapshotsResult!
+    netWorthSnapshots(page: Int, pageSize: Int, search: String, sortBy: NetWorthSnapshotSortField, sortOrder: SortOrder): NetWorthSnapshotsResult!
     netWorthSnapshot(id: ID!): NetWorthSnapshot
   }
 
