@@ -150,6 +150,17 @@ describe('NavBar', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
   });
 
+  it("opens the What's New modal when the dropdown item is clicked", async () => {
+    await renderNavBar();
+
+    fireEvent.click(screen.getByLabelText('User menu'));
+    fireEvent.click(screen.getByText("What's New"));
+
+    expect(
+      screen.getByRole('heading', { name: "What's New" })
+    ).toBeInTheDocument();
+  });
+
   it('renders brand link', async () => {
     await renderNavBar();
     expect(screen.getByText('My Wallet').closest('a')).toHaveAttribute(
