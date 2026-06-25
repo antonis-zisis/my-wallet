@@ -1,4 +1,4 @@
-import { BillingCycle } from '../types/subscription';
+import { BILLING_CYCLE_LABELS, BillingCycle } from '../types/subscription';
 
 export function formatUrgencyLabel(days: number): string {
   if (days === 0) {
@@ -25,5 +25,5 @@ export function getUrgencyColor(days: number): string {
 }
 
 export function billingCycleLabel(billingCycle: BillingCycle): string {
-  return billingCycle === 'MONTHLY' ? 'Monthly' : 'Yearly';
+  return BILLING_CYCLE_LABELS[billingCycle];
 }

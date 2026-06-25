@@ -7,16 +7,23 @@ export type BillingCycle =
   | 'BI_ANNUAL'
   | 'YEARLY';
 
+export const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
+  WEEKLY: 'Weekly',
+  MONTHLY: 'Monthly',
+  QUARTERLY: 'Quarterly',
+  BI_ANNUAL: 'Bi-annual',
+  YEARLY: 'Yearly',
+};
+
 export const BILLING_CYCLE_OPTIONS: Array<{
   label: string;
   value: BillingCycle;
-}> = [
-  { label: 'Weekly', value: 'WEEKLY' },
-  { label: 'Monthly', value: 'MONTHLY' },
-  { label: 'Quarterly', value: 'QUARTERLY' },
-  { label: 'Bi-annual', value: 'BI_ANNUAL' },
-  { label: 'Yearly', value: 'YEARLY' },
-];
+}> = (Object.keys(BILLING_CYCLE_LABELS) as Array<BillingCycle>).map(
+  (value) => ({
+    label: BILLING_CYCLE_LABELS[value],
+    value,
+  })
+);
 
 export const SUBSCRIPTION_CATEGORIES = [
   'Entertainment',

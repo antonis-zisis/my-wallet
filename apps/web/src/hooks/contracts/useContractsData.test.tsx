@@ -1,5 +1,5 @@
 import { MockLink } from '@apollo/client/testing';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -106,10 +106,12 @@ describe('useContractsData', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    await result.current.onCreate({
-      category: 'Internet',
-      provider: 'Cosmote',
-    });
+    await act(() =>
+      result.current.onCreate({
+        category: 'Internet',
+        provider: 'Cosmote',
+      })
+    );
 
     await waitFor(() =>
       expect(showSuccess).toHaveBeenCalledWith('Contract created.')
@@ -131,10 +133,12 @@ describe('useContractsData', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    await result.current.onCreate({
-      category: 'Internet',
-      provider: 'Cosmote',
-    });
+    await act(() =>
+      result.current.onCreate({
+        category: 'Internet',
+        provider: 'Cosmote',
+      })
+    );
 
     await waitFor(() =>
       expect(showError).toHaveBeenCalledWith('Failed to create contract.')
