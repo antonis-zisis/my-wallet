@@ -4,11 +4,6 @@ type GroupedTransactionSum = {
   _sum: { amount: number | null };
 };
 
-/**
- * Folds a `transaction.groupBy(['reportId', 'type'])` aggregate into a map of
- * `reportId -> net balance` (income minus expense). Reports with no
- * transactions are simply absent from the map; callers treat a miss as 0.
- */
 export function buildNetBalanceMap(
   grouped: Array<GroupedTransactionSum>
 ): Map<string, number> {

@@ -89,9 +89,6 @@ export const reportResolvers = {
           : {}),
       };
 
-      // Net balance is derived from transactions, not a stored column, so the
-      // database can't order by it. Pull the matching reports, aggregate their
-      // balances in one grouped query, then sort and paginate in memory.
       if (sortBy === 'NET_BALANCE') {
         const allReports = await prisma.report.findMany({ where });
         const grouped = await prisma.transaction.groupBy({

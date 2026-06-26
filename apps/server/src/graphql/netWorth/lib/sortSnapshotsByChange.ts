@@ -10,13 +10,6 @@ function computeNetWorth(entries: Array<EntryLike>): number {
   );
 }
 
-/**
- * Orders snapshots by how much net worth changed versus the chronologically
- * previous one — the same delta the web list shows. `snapshotsOldestFirst`
- * must already be sorted by `snapshotDate` ascending so each snapshot's change
- * is measured against the one before it. The earliest snapshot has no previous
- * point, so its change is unknown; those always sort last regardless of order.
- */
 export function sortSnapshotsByChange<T extends SnapshotLike>(
   snapshotsOldestFirst: Array<T>,
   order: 'ASC' | 'DESC'

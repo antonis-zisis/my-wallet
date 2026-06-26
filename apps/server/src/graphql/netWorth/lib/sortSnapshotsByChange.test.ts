@@ -9,7 +9,6 @@ const snapshot = (id: string, netWorth: number) => ({
 
 describe('sortSnapshotsByChange', () => {
   it('orders by net-worth change descending', () => {
-    // Changes: b +100, c +50 (a is the earliest, no change).
     const ordered = sortSnapshotsByChange(
       [snapshot('a', 1000), snapshot('b', 1100), snapshot('c', 1150)],
       'DESC'
@@ -19,7 +18,6 @@ describe('sortSnapshotsByChange', () => {
   });
 
   it('orders by net-worth change ascending', () => {
-    // Changes: b -200, c +50.
     const ordered = sortSnapshotsByChange(
       [snapshot('a', 1000), snapshot('b', 800), snapshot('c', 850)],
       'ASC'
@@ -52,7 +50,6 @@ describe('sortSnapshotsByChange', () => {
       'DESC'
     );
 
-    // b's net worth (700) dropped 300 from a's (1000).
     expect(ordered.map((entry) => entry.id)).toEqual(['b', 'a']);
   });
 });

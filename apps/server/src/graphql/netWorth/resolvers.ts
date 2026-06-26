@@ -114,10 +114,6 @@ export const netWorthResolvers = {
           : {}),
       };
 
-      // Change is the delta versus the chronologically previous snapshot, which
-      // depends on a snapshot's neighbours — the database can't order by it.
-      // Pull the matching snapshots oldest-first, rank them by change, then
-      // paginate in memory.
       if (sortBy === 'CHANGE') {
         const oldestFirst = await prisma.netWorthSnapshot.findMany({
           where,
