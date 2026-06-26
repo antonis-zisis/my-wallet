@@ -23,7 +23,7 @@ export function SearchInput({
         type="text"
         role="searchbox"
         aria-label={placeholder}
-        className="focus:border-brand-500 focus:ring-brand-500 border-border-strong text-text-primary bg-bg-surface placeholder-text-tertiary dark:bg-bg-muted w-full rounded border py-1 pr-8 pl-8 text-sm focus:ring-1 focus:outline-none"
+        className="focus:border-brand-500 focus:ring-brand-500 border-border-strong text-text-primary bg-bg-surface placeholder-text-tertiary dark:bg-bg-muted w-full rounded border py-2 pr-8 pl-8 text-sm focus:ring-1 focus:outline-none"
         placeholder={placeholder}
         value={value}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
