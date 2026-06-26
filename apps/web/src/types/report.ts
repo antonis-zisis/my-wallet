@@ -18,7 +18,7 @@ export const REPORT_SORT_OPTIONS: Array<{
   value: ReportSortOption;
   label: string;
 }> = [
-  { value: 'NEWEST', label: 'Newest first' },
+  { value: 'NEWEST', label: 'Created At' },
   { value: 'NET_HIGH_LOW', label: 'Net (High–Low)' },
   { value: 'NET_LOW_HIGH', label: 'Net (Low–High)' },
 ];

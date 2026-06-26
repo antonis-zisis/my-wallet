@@ -4,7 +4,7 @@ export type NetWorthEntryType = 'ASSET' | 'LIABILITY';
 
 export type NetWorthSnapshotSortField = 'SNAPSHOT_DATE' | 'CHANGE';
 
-export type NetWorthSortOption = 'DATE' | 'CHANGE_HIGH_LOW';
+export type NetWorthSortOption = 'DATE' | 'CHANGE_HIGH_LOW' | 'CHANGE_LOW_HIGH';
 
 export const NET_WORTH_SORT_CONFIG: Record<
   NetWorthSortOption,
@@ -12,14 +12,16 @@ export const NET_WORTH_SORT_CONFIG: Record<
 > = {
   DATE: { sortBy: 'SNAPSHOT_DATE', sortOrder: 'DESC' },
   CHANGE_HIGH_LOW: { sortBy: 'CHANGE', sortOrder: 'DESC' },
+  CHANGE_LOW_HIGH: { sortBy: 'CHANGE', sortOrder: 'ASC' },
 };
 
 export const NET_WORTH_SORT_OPTIONS: Array<{
   value: NetWorthSortOption;
   label: string;
 }> = [
-  { value: 'DATE', label: 'Newest first' },
+  { value: 'DATE', label: 'Created At' },
   { value: 'CHANGE_HIGH_LOW', label: 'Change (High–Low)' },
+  { value: 'CHANGE_LOW_HIGH', label: 'Change (Low–High)' },
 ];
 
 export type NetWorthEntry = {
