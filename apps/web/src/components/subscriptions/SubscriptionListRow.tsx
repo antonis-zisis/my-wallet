@@ -22,6 +22,20 @@ type SubscriptionListRowProps = {
   onDelete: (subscription: Subscription) => void;
 };
 
+function CategoryBadge({ category }: { category: string }) {
+  const categoryColor =
+    SUBSCRIPTION_CATEGORY_COLORS[category] ?? FALLBACK_CATEGORY_COLOR;
+
+  return (
+    <Badge
+      size="sm"
+      style={{ backgroundColor: `${categoryColor}1f`, color: categoryColor }}
+    >
+      {category}
+    </Badge>
+  );
+}
+
 function TertiaryLine({ subscription }: { subscription: Subscription }) {
   const parts: Array<string> = [];
 
@@ -93,10 +107,6 @@ function SecondaryLine({ subscription }: { subscription: Subscription }) {
 }
 
 function AmountCell({ subscription }: { subscription: Subscription }) {
-  // The hero is always the amount that actually hits the card; cadence comes
-  // from the badge next to the name. For non-monthly cycles, show the
-  // monthly-normalized cost as a secondary comparison line. The monthly and
-  // yearly totals live in the cost summary, not on every row.
   const showMonthlyEquivalent = subscription.billingCycle !== 'MONTHLY';
 
   return (
@@ -172,22 +182,7 @@ export function SubscriptionListRow(props: SubscriptionListRowProps) {
             </Badge>
 
             {subscription.category && (
-              <Badge
-                variant="default"
-                size="sm"
-                className="inline-flex items-center gap-1"
-              >
-                <span
-                  aria-hidden="true"
-                  className="h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{
-                    backgroundColor:
-                      SUBSCRIPTION_CATEGORY_COLORS[subscription.category] ??
-                      FALLBACK_CATEGORY_COLOR,
-                  }}
-                />
-                {subscription.category}
-              </Badge>
+              <CategoryBadge category={subscription.category} />
             )}
 
             {subscription.trialEndsAt &&
