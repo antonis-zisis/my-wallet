@@ -104,10 +104,17 @@ const mockTrendQueryWithChart: MockLink.MockedResponse = {
   },
 };
 
+const snapshotsVariables = {
+  page: 1,
+  pageSize: PAGE_SIZE,
+  sortBy: 'SNAPSHOT_DATE',
+  sortOrder: 'DESC',
+};
+
 const mockSnapshotsQuery: MockLink.MockedResponse = {
   request: {
     query: GET_NET_WORTH_SNAPSHOTS,
-    variables: { page: 1, pageSize: PAGE_SIZE },
+    variables: snapshotsVariables,
   },
   result: {
     data: {
@@ -122,7 +129,7 @@ const mockSnapshotsQuery: MockLink.MockedResponse = {
 const mockSnapshotsQueryEmpty: MockLink.MockedResponse = {
   request: {
     query: GET_NET_WORTH_SNAPSHOTS,
-    variables: { page: 1, pageSize: PAGE_SIZE },
+    variables: snapshotsVariables,
   },
   result: {
     data: {
@@ -137,7 +144,7 @@ const mockSnapshotsQueryEmpty: MockLink.MockedResponse = {
 const mockSnapshotsQueryError: MockLink.MockedResponse = {
   request: {
     query: GET_NET_WORTH_SNAPSHOTS,
-    variables: { page: 1, pageSize: PAGE_SIZE },
+    variables: snapshotsVariables,
   },
   result: {
     errors: [new GraphQLError('Failed to load snapshots')],
@@ -255,7 +262,7 @@ describe('NetWorth', () => {
       const refetchMock: MockLink.MockedResponse = {
         request: {
           query: GET_NET_WORTH_SNAPSHOTS,
-          variables: { page: 1, pageSize: PAGE_SIZE },
+          variables: snapshotsVariables,
         },
         result: {
           data: {

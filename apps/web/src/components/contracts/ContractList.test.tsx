@@ -33,6 +33,15 @@ describe('ContractList', () => {
     expect(screen.getByText('No contracts yet.')).toBeInTheDocument();
   });
 
+  it('shows a no-matches state instead of the empty state while searching', () => {
+    render(<ContractList {...defaultProps} isSearching />);
+
+    expect(
+      screen.getByText('No contracts match your search.')
+    ).toBeInTheDocument();
+    expect(screen.queryByText('No contracts yet.')).not.toBeInTheDocument();
+  });
+
   it('renders the provider, category and plan for each contract', () => {
     render(
       <ContractList

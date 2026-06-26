@@ -28,6 +28,7 @@ beforeEach(() => {
   showSuccess.mockReset();
   showError.mockReset();
   showInfo.mockReset();
+  localStorage.clear();
 });
 
 const mockSubscription = (
@@ -143,6 +144,47 @@ describe('useSubscriptionsData', () => {
       wrapper: createWrapper([mockActiveQuery, mockInactiveQueryEmpty]),
     });
     expect(result.current.activeLoading).toBe(true);
+  });
+
+  it('refetches with ascending monthly cost when the Cost (Low–High) sort is chosen', async () => {
+    const costLowHighMock: MockLink.MockedResponse = {
+      request: {
+        query: GET_SUBSCRIPTIONS,
+        variables: {
+          active: true,
+          page: 1,
+          pageSize: PAGE_SIZE,
+          sortBy: 'MONTHLY_COST',
+          sortOrder: 'ASC',
+        },
+      },
+      result: {
+        data: {
+          subscriptions: {
+            items: [mockSubscription({ id: '4', name: 'Cheapest' })],
+            totalCount: 1,
+          },
+        },
+      },
+    };
+
+    const { result } = renderHook(() => useSubscriptionsData(), {
+      wrapper: createWrapper([
+        mockActiveQuery,
+        mockInactiveQueryEmpty,
+        costLowHighMock,
+      ]),
+    });
+
+    await waitFor(() => expect(result.current.activeLoading).toBe(false));
+
+    act(() => result.current.onActiveSortChange('COST_LOW_HIGH'));
+
+    await waitFor(() =>
+      expect(result.current.activeItems[0]?.name).toBe('Cheapest')
+    );
+    expect(result.current.activeSortOption).toBe('COST_LOW_HIGH');
+    expect(result.current.activePage).toBe(1);
   });
 
   it('returns active subscriptions after loading', async () => {

@@ -4,6 +4,15 @@ import { NetWorthEntry } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
 import { clampPage, parseInput } from '../../lib/validate';
 import { NetWorthSnapshotInput } from './inputSchemas';
+import { sortSnapshotsByChange } from './lib/sortSnapshotsByChange';
+
+type NetWorthSnapshotsArgs = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortBy?: 'SNAPSHOT_DATE' | 'CHANGE';
+  sortOrder?: 'ASC' | 'DESC';
+};
 
 type SnapshotParent = {
   id: string;
@@ -86,20 +95,49 @@ export const netWorthResolvers = {
   Query: {
     netWorthSnapshots: async (
       _parent: unknown,
-      { page = 1, pageSize = 10 }: { page?: number; pageSize?: number },
+      {
+        page = 1,
+        pageSize = 10,
+        search,
+        sortBy = 'SNAPSHOT_DATE',
+        sortOrder = 'DESC',
+      }: NetWorthSnapshotsArgs,
       { userId }: { userId: string }
     ) => {
       const { clampedPage, clampedPageSize } = clampPage(page, pageSize);
       const skip = (clampedPage - 1) * clampedPageSize;
+      const trimmedSearch = search?.trim();
+      const where = {
+        userId,
+        ...(trimmedSearch
+          ? { title: { contains: trimmedSearch, mode: 'insensitive' as const } }
+          : {}),
+      };
+
+      if (sortBy === 'CHANGE') {
+        const oldestFirst = await prisma.netWorthSnapshot.findMany({
+          where,
+          orderBy: { snapshotDate: 'asc' },
+          include: { entries: { orderBy: { createdAt: 'asc' } } },
+        });
+        const ranked = sortSnapshotsByChange(oldestFirst, sortOrder);
+
+        return {
+          items: ranked.slice(skip, skip + clampedPageSize),
+          totalCount: ranked.length,
+        };
+      }
+
+      const order = sortOrder === 'ASC' ? 'asc' : 'desc';
       const [items, totalCount] = await Promise.all([
         prisma.netWorthSnapshot.findMany({
-          where: { userId },
-          orderBy: { snapshotDate: 'desc' },
+          where,
+          orderBy: { snapshotDate: order },
           include: { entries: { orderBy: { createdAt: 'asc' } } },
           skip,
           take: clampedPageSize,
         }),
-        prisma.netWorthSnapshot.count({ where: { userId } }),
+        prisma.netWorthSnapshot.count({ where }),
       ]);
 
       return { items, totalCount };

@@ -3,8 +3,9 @@ import { useState } from 'react';
 
 import { GET_SUBSCRIPTIONS } from '../../graphql/subscriptions';
 import {
+  SUBSCRIPTION_SORT_CONFIG,
   SubscriptionsData,
-  SubscriptionSortField,
+  SubscriptionSortOption,
 } from '../../types/subscription';
 import { isActiveTrial } from '../../utils/isActiveTrial';
 import { useLocalStorage } from '../useLocalStorage';
@@ -17,31 +18,25 @@ import { useSubscriptionsMutations } from './useSubscriptionsMutations';
 
 export const PAGE_SIZE = 10;
 
-const SORT_ORDER_BY_FIELD: Record<SubscriptionSortField, 'ASC' | 'DESC'> = {
-  MONTHLY_COST: 'DESC',
-  NAME: 'ASC',
-  NEXT_RENEWAL: 'ASC',
-};
-
 export function useSubscriptionsData() {
   const [activePage, setActivePage] = useState(1);
-  const [activeSortBy, setActiveSortBy] =
-    useLocalStorage<SubscriptionSortField>(
-      'subscriptions.activeSortBy',
+  const [activeSortOption, setActiveSortOption] =
+    useLocalStorage<SubscriptionSortOption>(
+      'subscriptions.activeSortOption',
       'NAME'
     );
   const [inactivePage, setInactivePage] = useState(1);
   const [showInactive, setShowInactive] = useState(false);
   const modals = useSubscriptionsModals();
 
-  const activeSortOrder = SORT_ORDER_BY_FIELD[activeSortBy];
+  const { sortBy, sortOrder } = SUBSCRIPTION_SORT_CONFIG[activeSortOption];
 
   const activeVariables = {
     active: true,
     page: activePage,
     pageSize: PAGE_SIZE,
-    sortBy: activeSortBy,
-    sortOrder: activeSortOrder,
+    sortBy,
+    sortOrder,
   };
 
   const inactiveVariables = {
@@ -121,10 +116,10 @@ export function useSubscriptionsData() {
     mostExpensive,
     nextRenewal,
     renewingThisMonthTotal,
-    activeSortBy,
+    activeSortOption,
     onActivePaginate: setActivePage,
-    onActiveSortChange: (sortField: SubscriptionSortField) => {
-      setActiveSortBy(sortField);
+    onActiveSortChange: (option: SubscriptionSortOption) => {
+      setActiveSortOption(option);
       setActivePage(1);
     },
     onCancelConfirm: mutations.onCancelConfirm,

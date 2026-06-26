@@ -10,7 +10,14 @@ import {
   GET_NET_WORTH_TREND,
   UPDATE_NET_WORTH_SNAPSHOT,
 } from '../../graphql/netWorth';
-import { NetWorthSnapshot, NetWorthSnapshotsData } from '../../types/netWorth';
+import {
+  NET_WORTH_SORT_CONFIG,
+  NetWorthSnapshot,
+  NetWorthSnapshotsData,
+  NetWorthSortOption,
+} from '../../types/netWorth';
+import { useDebouncedValue } from '../useDebouncedValue';
+import { useLocalStorage } from '../useLocalStorage';
 
 export const PAGE_SIZE = 10;
 export const TREND_PAGE_SIZE = 500;
@@ -23,16 +30,34 @@ export type SnapshotModalState =
 
 export function useNetWorthData() {
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [sortOption, setSortOption] = useLocalStorage<NetWorthSortOption>(
+    'netWorth.sortOption',
+    'DATE'
+  );
   const [modalState, setModalState] = useState<SnapshotModalState>({
     kind: 'closed',
   });
   const [snapshotToDelete, setSnapshotToDelete] =
     useState<NetWorthSnapshot | null>(null);
 
-  const { data, error, loading } = useQuery<NetWorthSnapshotsData>(
-    GET_NET_WORTH_SNAPSHOTS,
-    { variables: { page, pageSize: PAGE_SIZE } }
-  );
+  const debouncedSearch = useDebouncedValue(search);
+  const { sortBy, sortOrder } = NET_WORTH_SORT_CONFIG[sortOption];
+
+  const snapshotsVariables = {
+    page,
+    pageSize: PAGE_SIZE,
+    search: debouncedSearch.trim() || undefined,
+    sortBy,
+    sortOrder,
+  };
+
+  const { data, error, loading, previousData } =
+    useQuery<NetWorthSnapshotsData>(GET_NET_WORTH_SNAPSHOTS, {
+      variables: snapshotsVariables,
+    });
+
+  const resolvedData = data ?? previousData;
 
   const { data: trendData, loading: trendLoading } =
     useQuery<NetWorthSnapshotsData>(GET_NET_WORTH_TREND, {
@@ -43,7 +68,7 @@ export function useNetWorthData() {
     refetchQueries: [
       {
         query: GET_NET_WORTH_SNAPSHOTS,
-        variables: { page: 1, pageSize: PAGE_SIZE },
+        variables: { ...snapshotsVariables, page: 1 },
       },
       {
         query: GET_NET_WORTH_TREND,
@@ -62,7 +87,7 @@ export function useNetWorthData() {
       refetchQueries: [
         {
           query: GET_NET_WORTH_SNAPSHOTS,
-          variables: { page, pageSize: PAGE_SIZE },
+          variables: snapshotsVariables,
         },
         {
           query: GET_NET_WORTH_TREND,
@@ -72,8 +97,8 @@ export function useNetWorthData() {
     }
   );
 
-  const snapshots = data?.netWorthSnapshots.items ?? [];
-  const totalCount = data?.netWorthSnapshots.totalCount ?? 0;
+  const snapshots = resolvedData?.netWorthSnapshots.items ?? [];
+  const totalCount = resolvedData?.netWorthSnapshots.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
   const trendSnapshots = trendData?.netWorthSnapshots.items ?? [];
 
@@ -91,7 +116,7 @@ export function useNetWorthData() {
       refetchQueries: [
         {
           query: GET_NET_WORTH_SNAPSHOTS,
-          variables: { page, pageSize: PAGE_SIZE },
+          variables: snapshotsVariables,
         },
         {
           query: GET_NET_WORTH_TREND,
@@ -126,7 +151,7 @@ export function useNetWorthData() {
     error: !!error,
     isDeleting,
     isUpdating,
-    loading,
+    loading: loading && !resolvedData,
     modalState,
     onCloseModal: handleCloseModal,
     onDeleteConfirm: handleDeleteConfirm,
@@ -137,10 +162,20 @@ export function useNetWorthData() {
     onOpenEdit: (snapshot: NetWorthSnapshot) =>
       setModalState({ kind: 'edit', snapshot }),
     onPageChange: setPage,
+    onSearchChange: (value: string) => {
+      setSearch(value);
+      setPage(1);
+    },
     onSelectForDelete: setSnapshotToDelete,
+    onSortChange: (option: NetWorthSortOption) => {
+      setSortOption(option);
+      setPage(1);
+    },
     page,
+    search,
     snapshotToDelete,
     snapshots,
+    sortOption,
     totalCount,
     totalPages,
     trendLoading,

@@ -6,6 +6,7 @@ export type ContractsArgs = {
   expired?: boolean;
   page?: number;
   pageSize?: number;
+  search?: string;
   sortBy?: 'END_DATE' | 'PROVIDER';
   sortOrder?: 'ASC' | 'DESC';
 };
@@ -17,6 +18,7 @@ export const contractQueryResolvers = {
       expired,
       page = 1,
       pageSize = 10,
+      search,
       sortBy = 'END_DATE',
       sortOrder = 'ASC',
     }: ContractsArgs,
@@ -27,7 +29,7 @@ export const contractQueryResolvers = {
     const skip = (clampedPage - 1) * clampedPageSize;
     const order = sortOrder === 'ASC' ? ('asc' as const) : ('desc' as const);
 
-    const where = buildContractsWhere({ expired, now, userId });
+    const where = buildContractsWhere({ expired, now, search, userId });
 
     const orderBy =
       sortBy === 'PROVIDER'

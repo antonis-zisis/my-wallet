@@ -77,7 +77,7 @@ export function ContractListRow({
     <li
       className={`flex items-center gap-3 ${contract.isExpired ? 'opacity-60' : ''}`}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-2">
+      <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-text-primary min-w-0 truncate font-medium">
@@ -120,7 +120,7 @@ export function ContractListRow({
         )}
       </div>
 
-      <Dropdown items={dropdownItems} />
+      <Dropdown className="relative shrink-0" items={dropdownItems} />
     </li>
   );
 }

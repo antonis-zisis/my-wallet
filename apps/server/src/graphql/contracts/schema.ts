@@ -42,7 +42,7 @@ export const contractTypeDefs = `#graphql
   }
 
   extend type Query {
-    contracts(page: Int, pageSize: Int, expired: Boolean, sortBy: ContractSortField, sortOrder: SortOrder): ContractsResult!
+    contracts(page: Int, pageSize: Int, expired: Boolean, search: String, sortBy: ContractSortField, sortOrder: SortOrder): ContractsResult!
   }
 
   extend type Mutation {

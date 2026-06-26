@@ -5,6 +5,7 @@ export const GET_CONTRACTS = gql`
     $page: Int
     $pageSize: Int
     $expired: Boolean
+    $search: String
     $sortBy: ContractSortField
     $sortOrder: SortOrder
   ) {
@@ -12,6 +13,7 @@ export const GET_CONTRACTS = gql`
       page: $page
       pageSize: $pageSize
       expired: $expired
+      search: $search
       sortBy: $sortBy
       sortOrder: $sortOrder
     ) {

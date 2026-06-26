@@ -118,6 +118,37 @@ describe('useContractsData', () => {
     );
   });
 
+  it('refetches with a provider search after the debounce', async () => {
+    const searchMock: MockLink.MockedResponse = {
+      request: {
+        query: GET_CONTRACTS,
+        variables: { ...baseVariables, search: 'cosmote' },
+      },
+      result: {
+        data: {
+          contracts: {
+            items: [makeContract({ id: '7', provider: 'Cosmote' })],
+            totalCount: 1,
+          },
+        },
+      },
+    };
+
+    const { result } = renderHook(() => useContractsData(), {
+      wrapper: createWrapper([mockQuery, searchMock]),
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => result.current.onSearchChange('cosmote'));
+
+    await waitFor(() =>
+      expect(result.current.items[0]?.provider).toBe('Cosmote')
+    );
+    expect(result.current.search).toBe('cosmote');
+    expect(result.current.page).toBe(1);
+  });
+
   it('shows an error toast when creating a contract fails', async () => {
     const createErrorMock: MockLink.MockedResponse = {
       request: {

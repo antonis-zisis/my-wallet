@@ -1,5 +1,13 @@
 export type ContractSortField = 'END_DATE' | 'PROVIDER';
 
+export const CONTRACT_SORT_OPTIONS: Array<{
+  value: ContractSortField;
+  label: string;
+}> = [
+  { value: 'PROVIDER', label: 'Provider (A–Z)' },
+  { value: 'END_DATE', label: 'Expiry Date' },
+];
+
 export const CONTRACT_CATEGORIES = [
   'Electricity',
   'Gas',

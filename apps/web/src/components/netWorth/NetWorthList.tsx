@@ -12,9 +12,22 @@ import { Card, MoneyAmount, Skeleton } from '../ui';
 
 type NetWorthListProps = {
   error: boolean;
+  isSearching?: boolean;
   loading: boolean;
   snapshots: Array<NetWorthSnapshot>;
 };
+
+function NoMatchesState() {
+  return (
+    <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
+      <TrendingChartIcon className="text-border-strong size-10" />
+
+      <p className="text-text-secondary text-sm font-medium">
+        No snapshots match your search
+      </p>
+    </div>
+  );
+}
 
 function ColumnHeaders() {
   return (
@@ -107,7 +120,12 @@ function DeltaBadge({ delta }: { delta: number | null }) {
   );
 }
 
-export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
+export function NetWorthList({
+  error,
+  isSearching,
+  loading,
+  snapshots,
+}: NetWorthListProps) {
   if (loading) {
     return (
       <Card>
@@ -131,7 +149,7 @@ export function NetWorthList({ error, loading, snapshots }: NetWorthListProps) {
   }
 
   if (snapshots.length === 0) {
-    return <EmptyState />;
+    return isSearching ? <NoMatchesState /> : <EmptyState />;
   }
 
   return (

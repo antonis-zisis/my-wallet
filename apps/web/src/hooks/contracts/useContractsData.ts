@@ -9,6 +9,7 @@ import {
   UPDATE_CONTRACT,
 } from '../../graphql/contracts';
 import { ContractsData, ContractSortField } from '../../types/contract';
+import { useDebouncedValue } from '../useDebouncedValue';
 import { useLocalStorage } from '../useLocalStorage';
 import { getDaysUntilExpiration } from './selectors/getDaysUntilExpiration';
 import { useContractsModals } from './useContractsModals';
@@ -32,15 +33,19 @@ export type ContractInput = {
 export function useContractsData() {
   const { showError, showSuccess } = useToast();
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useLocalStorage<ContractSortField>(
     'contracts.sortBy',
     'END_DATE'
   );
   const modals = useContractsModals();
 
+  const debouncedSearch = useDebouncedValue(search);
+
   const variables = {
     page,
     pageSize: PAGE_SIZE,
+    search: debouncedSearch.trim() || undefined,
     sortBy,
     sortOrder: SORT_ORDER_BY_FIELD[sortBy],
   };
@@ -121,6 +126,10 @@ export function useContractsData() {
     onDeleteConfirm: handleDeleteConfirm,
     onOpenCreate: modals.onOpenCreate,
     onPaginate: setPage,
+    onSearchChange: (value: string) => {
+      setSearch(value);
+      setPage(1);
+    },
     onSelectForDelete: modals.onSelectForDelete,
     onSelectForEdit: modals.onSelectForEdit,
     onSortChange: (sortField: ContractSortField) => {
@@ -129,6 +138,7 @@ export function useContractsData() {
     },
     onUpdate: handleUpdate,
     page,
+    search,
     sortBy,
     totalCount,
     totalPages,

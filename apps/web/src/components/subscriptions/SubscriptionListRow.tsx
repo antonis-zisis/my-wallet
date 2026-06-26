@@ -7,6 +7,10 @@ import {
 import { getDaysUntil } from '../../utils/getDaysUntil';
 import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { isSafeUrl } from '../../utils/isSafeUrl';
+import {
+  FALLBACK_CATEGORY_COLOR,
+  SUBSCRIPTION_CATEGORY_COLORS,
+} from '../charts/categoryColors';
 import { Badge, Dropdown, MoneyAmount } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
 
@@ -17,6 +21,20 @@ type SubscriptionListRowProps = {
   onResume?: (subscription: Subscription) => void;
   onDelete: (subscription: Subscription) => void;
 };
+
+function CategoryBadge({ category }: { category: string }) {
+  const categoryColor =
+    SUBSCRIPTION_CATEGORY_COLORS[category] ?? FALLBACK_CATEGORY_COLOR;
+
+  return (
+    <Badge
+      size="sm"
+      style={{ backgroundColor: `${categoryColor}1f`, color: categoryColor }}
+    >
+      {category}
+    </Badge>
+  );
+}
 
 function TertiaryLine({ subscription }: { subscription: Subscription }) {
   const parts: Array<string> = [];
@@ -89,10 +107,6 @@ function SecondaryLine({ subscription }: { subscription: Subscription }) {
 }
 
 function AmountCell({ subscription }: { subscription: Subscription }) {
-  // The hero is always the amount that actually hits the card; cadence comes
-  // from the badge next to the name. For non-monthly cycles, show the
-  // monthly-normalized cost as a secondary comparison line. The monthly and
-  // yearly totals live in the cost summary, not on every row.
   const showMonthlyEquivalent = subscription.billingCycle !== 'MONTHLY';
 
   return (
@@ -168,9 +182,7 @@ export function SubscriptionListRow(props: SubscriptionListRowProps) {
             </Badge>
 
             {subscription.category && (
-              <Badge variant="default" size="sm">
-                {subscription.category}
-              </Badge>
+              <CategoryBadge category={subscription.category} />
             )}
 
             {subscription.trialEndsAt &&

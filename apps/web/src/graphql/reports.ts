@@ -1,8 +1,20 @@
 import { gql } from '@apollo/client';
 
 export const GET_REPORTS = gql`
-  query GetReports($page: Int, $pageSize: Int) {
-    reports(page: $page, pageSize: $pageSize) {
+  query GetReports(
+    $page: Int
+    $pageSize: Int
+    $search: String
+    $sortBy: ReportSortField
+    $sortOrder: SortOrder
+  ) {
+    reports(
+      page: $page
+      pageSize: $pageSize
+      search: $search
+      sortBy: $sortBy
+      sortOrder: $sortOrder
+    ) {
       items {
         id
         isLocked

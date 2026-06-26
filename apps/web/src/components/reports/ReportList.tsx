@@ -7,10 +7,23 @@ import { Card, MoneyAmount, Skeleton } from '../ui';
 
 type ReportListProps = {
   error: boolean;
+  isSearching?: boolean;
   loading: boolean;
   onCreateReport?: () => void;
   reports: Array<Report>;
 };
+
+function NoMatchesState() {
+  return (
+    <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
+      <DocumentTextIcon className="text-border-strong size-10" />
+
+      <p className="text-text-secondary text-sm font-medium">
+        No reports match your search
+      </p>
+    </div>
+  );
+}
 
 function SkeletonRow() {
   return (
@@ -49,6 +62,7 @@ function EmptyState({ onCreateReport }: { onCreateReport?: () => void }) {
 
 export function ReportList({
   error,
+  isSearching,
   loading,
   onCreateReport,
   reports,
@@ -73,7 +87,11 @@ export function ReportList({
   }
 
   if (reports.length === 0) {
-    return <EmptyState onCreateReport={onCreateReport} />;
+    return isSearching ? (
+      <NoMatchesState />
+    ) : (
+      <EmptyState onCreateReport={onCreateReport} />
+    );
   }
 
   return (

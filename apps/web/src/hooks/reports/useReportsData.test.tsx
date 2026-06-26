@@ -24,8 +24,15 @@ const mockReport = (id: string, title: string) => ({
   updatedAt: '2024-01-01T00:00:00.000Z',
 });
 
+const baseVariables = {
+  page: 1,
+  pageSize: PAGE_SIZE,
+  sortBy: 'NEWEST',
+  sortOrder: 'DESC',
+};
+
 const mockReportsPage1: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
+  request: { query: GET_REPORTS, variables: baseVariables },
   result: {
     data: {
       reports: {
@@ -37,7 +44,7 @@ const mockReportsPage1: MockLink.MockedResponse = {
 };
 
 const mockReportsPage2: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 2, pageSize: PAGE_SIZE } },
+  request: { query: GET_REPORTS, variables: { ...baseVariables, page: 2 } },
   result: {
     data: {
       reports: {
@@ -49,7 +56,7 @@ const mockReportsPage2: MockLink.MockedResponse = {
 };
 
 const emptyReportsMock: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
+  request: { query: GET_REPORTS, variables: baseVariables },
   result: { data: { reports: { items: [], totalCount: 0 } } },
 };
 
@@ -66,7 +73,7 @@ const createReportMock: MockLink.MockedResponse = {
 };
 
 const refetchAfterCreateMock: MockLink.MockedResponse = {
-  request: { query: GET_REPORTS, variables: { page: 1, pageSize: PAGE_SIZE } },
+  request: { query: GET_REPORTS, variables: baseVariables },
   result: {
     data: {
       reports: {
@@ -92,6 +99,7 @@ describe('useReportsData', () => {
     showSuccess.mockReset();
     showError.mockReset();
     showInfo.mockReset();
+    localStorage.clear();
   });
 
   it('returns loading state initially', () => {
@@ -190,5 +198,37 @@ describe('useReportsData', () => {
 
     expect(result.current.page).toBe(1);
     expect(result.current.isModalOpen).toBe(false);
+  });
+
+  it('refetches with the net-balance sort variables when the sort changes', async () => {
+    const netSortMock: MockLink.MockedResponse = {
+      request: {
+        query: GET_REPORTS,
+        variables: {
+          ...baseVariables,
+          sortBy: 'NET_BALANCE',
+          sortOrder: 'DESC',
+        },
+      },
+      result: {
+        data: {
+          reports: { items: [mockReport('9', 'Surplus')], totalCount: 1 },
+        },
+      },
+    };
+
+    const { result } = renderHook(() => useReportsData(), {
+      wrapper: createWrapper([mockReportsPage1, netSortMock]),
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => result.current.onSortChange('NET_HIGH_LOW'));
+
+    await waitFor(() =>
+      expect(result.current.reports[0]?.title).toBe('Surplus')
+    );
+    expect(result.current.sortOption).toBe('NET_HIGH_LOW');
+    expect(result.current.page).toBe(1);
   });
 });

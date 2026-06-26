@@ -48,6 +48,14 @@ describe('NetWorthList', () => {
     expect(screen.getByText('No snapshots yet')).toBeInTheDocument();
   });
 
+  it('shows a no-matches state instead of the empty state while searching', () => {
+    renderList({ ...defaultProps, isSearching: true });
+    expect(
+      screen.getByText('No snapshots match your search')
+    ).toBeInTheDocument();
+    expect(screen.queryByText('No snapshots yet')).not.toBeInTheDocument();
+  });
+
   it('renders snapshot titles with links to detail pages', () => {
     const snapshot = makeSnapshot({ id: 'snap-1', title: 'January 2026' });
     renderList({ ...defaultProps, snapshots: [snapshot] });

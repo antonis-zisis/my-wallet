@@ -1,4 +1,32 @@
+import { SortOrder } from './sort';
+
 export type SubscriptionSortField = 'NAME' | 'MONTHLY_COST' | 'NEXT_RENEWAL';
+
+export type SubscriptionSortOption =
+  | 'NAME'
+  | 'COST_HIGH_LOW'
+  | 'COST_LOW_HIGH'
+  | 'NEXT_RENEWAL';
+
+export const SUBSCRIPTION_SORT_CONFIG: Record<
+  SubscriptionSortOption,
+  { sortBy: SubscriptionSortField; sortOrder: SortOrder }
+> = {
+  NAME: { sortBy: 'NAME', sortOrder: 'ASC' },
+  COST_HIGH_LOW: { sortBy: 'MONTHLY_COST', sortOrder: 'DESC' },
+  COST_LOW_HIGH: { sortBy: 'MONTHLY_COST', sortOrder: 'ASC' },
+  NEXT_RENEWAL: { sortBy: 'NEXT_RENEWAL', sortOrder: 'ASC' },
+};
+
+export const SUBSCRIPTION_SORT_OPTIONS: Array<{
+  value: SubscriptionSortOption;
+  label: string;
+}> = [
+  { value: 'NAME', label: 'Name (A–Z)' },
+  { value: 'COST_HIGH_LOW', label: 'Cost (High–Low)' },
+  { value: 'COST_LOW_HIGH', label: 'Cost (Low–High)' },
+  { value: 'NEXT_RENEWAL', label: 'Next Renewal' },
+];
 
 export type BillingCycle =
   | 'WEEKLY'

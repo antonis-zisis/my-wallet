@@ -27,6 +27,7 @@ const mockReports: Array<Report> = [
 
 const renderReportList = (props: {
   error: boolean;
+  isSearching?: boolean;
   loading: boolean;
   onCreateReport?: () => void;
   reports: Array<Report>;
@@ -52,6 +53,20 @@ describe('ReportList', () => {
   it('shows empty state', () => {
     renderReportList({ error: false, loading: false, reports: [] });
     expect(screen.getByText('No reports yet')).toBeInTheDocument();
+  });
+
+  it('shows a no-matches state instead of the empty state while searching', () => {
+    renderReportList({
+      error: false,
+      isSearching: true,
+      loading: false,
+      reports: [],
+    });
+
+    expect(
+      screen.getByText('No reports match your search')
+    ).toBeInTheDocument();
+    expect(screen.queryByText('No reports yet')).not.toBeInTheDocument();
   });
 
   it('shows create button in empty state when onCreateReport is provided', () => {
