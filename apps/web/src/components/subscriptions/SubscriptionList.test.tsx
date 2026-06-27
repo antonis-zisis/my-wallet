@@ -10,6 +10,10 @@ vi.mock('../../contexts/ThemeContext', () => ({
   useTheme: () => ({ resolvedTheme: 'light' }),
 }));
 
+vi.mock('../../lib/env', () => ({
+  env: { VITE_LOGO_DEV_TOKEN: 'pk_test' },
+}));
+
 const defaultProps = {
   error: false,
   loading: false,
