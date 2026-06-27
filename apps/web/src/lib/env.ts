@@ -6,6 +6,7 @@ export const EnvSchema = z.object({
   VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: z
     .string()
     .min(1, 'VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY is required'),
+  VITE_LOGO_DEV_TOKEN: z.string().default(''),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

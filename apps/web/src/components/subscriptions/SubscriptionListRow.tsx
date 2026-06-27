@@ -13,6 +13,7 @@ import {
 } from '../charts/categoryColors';
 import { Badge, Dropdown, MoneyAmount } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
+import { SubscriptionAvatar } from './SubscriptionAvatar';
 
 type SubscriptionListRowProps = {
   subscription: Subscription;
@@ -160,6 +161,8 @@ export function SubscriptionListRow(props: SubscriptionListRowProps) {
   return (
     <li className="flex items-center gap-3">
       <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
+        <SubscriptionAvatar subscription={subscription} />
+
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             {subscription.url && isSafeUrl(subscription.url) ? (

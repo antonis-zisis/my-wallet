@@ -13,6 +13,14 @@ vi.mock('../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
+vi.mock('../contexts/ThemeContext', () => ({
+  useTheme: () => ({ resolvedTheme: 'light' }),
+}));
+
+vi.mock('../lib/env', () => ({
+  env: { VITE_LOGO_DEV_TOKEN: 'pk_test' },
+}));
+
 import {
   CANCEL_SUBSCRIPTION,
   CREATE_SUBSCRIPTION,

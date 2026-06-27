@@ -160,6 +160,19 @@ export function Profile() {
             What's New
           </Button>
         </div>
+
+        <p className="text-text-tertiary border-border mt-5 border-t pt-4 text-xs">
+          Subscription logos provided by{' '}
+          <a
+            className="text-brand-600 dark:text-brand-400 hover:underline"
+            href="https://logo.dev"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Logo.dev
+          </a>
+          .
+        </p>
       </Card>
 
       <WhatsNewModal

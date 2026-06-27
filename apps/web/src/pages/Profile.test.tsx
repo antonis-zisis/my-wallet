@@ -130,6 +130,15 @@ describe('Profile', () => {
         screen.getByRole('heading', { name: "What's New" })
       ).toBeInTheDocument();
     });
+
+    it('links to the Logo.dev attribution', () => {
+      render(<Profile />);
+
+      expect(screen.getByRole('link', { name: 'Logo.dev' })).toHaveAttribute(
+        'href',
+        'https://logo.dev'
+      );
+    });
   });
 
   it('invokes updatePassword when the password form is submitted', async () => {
