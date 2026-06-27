@@ -143,11 +143,11 @@ pnpm typecheck
 
 - **Reports**: Create and manage budget reports, each containing its own set of transactions
 - **Transaction Management**: Add income and expense transactions with categories within a report
-- **Subscriptions**: Track recurring payments (Netflix, Spotify, etc.) with monthly/yearly billing cycles, next renewal date calculation, cost equivalents (yearly for monthly, monthly for yearly), cancel or delete subscriptions, and view total monthly cost
+- **Subscriptions**: Track recurring payments (Netflix, Spotify, etc.) with monthly/yearly billing cycles, next renewal date calculation, cost equivalents (yearly for monthly, monthly for yearly), per-service logos, categories, search and sorting, cancel or delete subscriptions, and view total monthly cost
 - **Contracts**: Track real-world service contracts (electricity, internet, insurance, etc.) by provider, plan, and category, with an optional cost and an expiration date — contracts are flagged as expiring soon or expired, and surfaced on the Home dashboard before they lapse
 - **Net Worth**: Track your financial position by creating snapshots of assets and liabilities, with automatic net worth calculation and paginated snapshot history
 - **Home Dashboard**: Overview of recent reports, income vs. expenses, active subscriptions, contracts expiring soon, and net worth trend
-- **Charts**: Income/expenses bar chart and net worth sparkline on Home; expense breakdown pie chart and budget breakdown chart on the Report page; net worth trend chart on the Net Worth page; category breakdown chart on the Net Worth Snapshot page
+- **Charts**: Income/expenses bar chart and net worth sparkline on Home; expense breakdown pie chart and budget breakdown chart on the Report page; net worth trend chart on the Net Worth page; category breakdown chart on the Net Worth Snapshot page; subscription category breakdown chart on the Subscriptions page
 - **Privacy Mode**: Toggle to hide all money amounts across the app, persisted across sessions
 - **Theme**: Dark and light mode toggle, persisted across sessions
 - **Authentication**: Login-only access with Supabase Auth, session-based authentication, and JWT-protected API

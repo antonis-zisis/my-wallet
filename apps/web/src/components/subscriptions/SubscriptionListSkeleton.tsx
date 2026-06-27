@@ -4,6 +4,7 @@ function SkeletonRow() {
   return (
     <li className="flex items-center gap-3">
       <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
+        <Skeleton className="size-8 shrink-0 rounded" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <Skeleton className="h-4 w-28" />

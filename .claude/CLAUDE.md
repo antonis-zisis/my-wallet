@@ -56,11 +56,11 @@ pnpm run env:encrypt      # Encrypt before committing
 - Auth: `contexts/AuthContext.tsx` (`useAuth`) backed by Supabase Auth. User record in `contexts/UserContext.tsx` (`useUser`), lazily created via upsert on first `me` query
 - Privacy: `contexts/PrivacyContext.tsx` (`usePrivacy`) — toggles visibility of money amounts, persisted to localStorage
 - Toasts: `contexts/ToastContext.tsx` (`useToast`) — global toast notification system (`showSuccess`, `showError`, `showInfo`)
-- UI primitives: `components/ui/` (Badge, Button, Card, Divider, Dropdown, Input, Modal, MoneyAmount, PageLayout, Pagination, Select, Skeleton, Spinner, Toast, Tooltip)
-- Feature components: `components/contracts/`, `components/home/`, `components/netWorth/`, `components/reports/`, `components/subscriptions/` — domain-specific composed components
-- Charts: Recharts in `components/charts/` — `BudgetBreakdownChart`, `ExpenseBreakdownChart`, `IncomeExpensesChart`, `NetWorthCategoryBreakdownChart`, `NetWorthSparkline`, `NetWorthTrendChart`
-- Types: `types/` — shared TypeScript types per domain (`report.ts`, `subscription.ts`, `contract.ts`, `netWorth.ts`, `transaction.ts`)
-- Utils: `utils/` — pure helpers: `formatMoney`, `formatDate`, `formatDateForInput`, `formatRelativeTime`, `abbreviateReportTitle`, `getInitials`, `getNextRenewalDate`, `getDaysUntil`, `buildContractInput`
+- UI primitives: `components/ui/` (Badge, Button, Card, Divider, Dropdown, Input, Modal, MoneyAmount, PageLayout, Pagination, SearchInput, Select, Skeleton, Spinner, Toast, Tooltip)
+- Feature components: `components/contracts/`, `components/home/`, `components/netWorth/`, `components/reports/`, `components/subscriptions/` — domain-specific composed components. `components/icons/` holds the SVG icon set (barrel-exported from `icons/index.ts`)
+- Charts: Recharts in `components/charts/` — `BudgetBreakdownChart`, `ExpenseBreakdownChart`, `IncomeExpensesChart`, `NetWorthCategoryBreakdownChart`, `NetWorthSparkline`, `NetWorthTrendChart`, `SubscriptionCategoryBreakdownChart`
+- Types: `types/` — shared TypeScript types per domain (`report.ts`, `subscription.ts`, `contract.ts`, `netWorth.ts`, `transaction.ts`) plus `sort.ts` (shared sort-direction type)
+- Utils: `utils/` — pure helpers: `formatMoney`, `formatDate`, `formatDateForInput`, `formatRelativeTime`, `abbreviateReportTitle`, `getInitials`, `getNextRenewalDate`, `getDaysUntil`, `getSubscriptionLogoUrl`, `isSafeUrl`, `exportReportToCsv`, `groupEntriesByCategory`, `isActiveTrial`, `renewalDisplay`, `formatSubscriptionCountdown` (domain-specific draft/input builders like `buildContractInput` live under `hooks/<domain>/selectors/`)
 
 **Server** (Express 5 + Apollo Server 5):
 
