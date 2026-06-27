@@ -6,6 +6,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { makeSubscription } from '../../test/fixtures/subscription';
 import { SubscriptionList } from './SubscriptionList';
 
+vi.mock('../../contexts/ThemeContext', () => ({
+  useTheme: () => ({ resolvedTheme: 'light' }),
+}));
+
 const defaultProps = {
   error: false,
   loading: false,

@@ -13,6 +13,10 @@ vi.mock('../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
+vi.mock('../contexts/ThemeContext', () => ({
+  useTheme: () => ({ resolvedTheme: 'light' }),
+}));
+
 import {
   CANCEL_SUBSCRIPTION,
   CREATE_SUBSCRIPTION,
