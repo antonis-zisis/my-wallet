@@ -116,6 +116,7 @@ jobs:
           VITE_GRAPHQL_URL: ${{ secrets.VITE_GRAPHQL_URL }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY }}
+          VITE_LOGO_DEV_TOKEN: ${{ secrets.VITE_LOGO_DEV_TOKEN }}
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3
