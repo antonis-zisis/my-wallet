@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { NextFunction, Request, Response } from 'express';
 
 import { env } from '../lib/env';
+import { touchLastSeen } from '../lib/lastSeen';
 
 const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SECRET_KEY);
 
@@ -36,6 +37,7 @@ export async function authMiddleware(
 
     req.userId = data.user.id;
     req.email = data.user.email;
+    touchLastSeen(data.user.id);
     next();
   } catch {
     res.status(401).json({ error: 'Authentication failed' });

@@ -11,6 +11,7 @@ import { env } from './lib/env';
 import { connectDatabase } from './lib/prisma';
 import { type AuthenticatedRequest, authMiddleware } from './middleware/auth';
 import { healthHandler } from './routes/health';
+import { statsHandler } from './routes/stats';
 
 const app: Express = express();
 const PORT = env.PORT;
@@ -64,6 +65,7 @@ async function startServer() {
   app.use(express.json());
 
   app.get('/health', healthHandler);
+  app.get('/internal/stats', statsHandler);
 
   app.use(
     '/graphql',
