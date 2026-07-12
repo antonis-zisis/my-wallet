@@ -10,6 +10,7 @@ import { createDepthLimitRule } from './lib/depthLimitRule';
 import { env } from './lib/env';
 import { connectDatabase } from './lib/prisma';
 import { type AuthenticatedRequest, authMiddleware } from './middleware/auth';
+import { healthHandler } from './routes/health';
 
 const app: Express = express();
 const PORT = env.PORT;
@@ -61,6 +62,8 @@ async function startServer() {
   app.use(helmet());
   app.use(cors({ origin: allowedOrigins }));
   app.use(express.json());
+
+  app.get('/health', healthHandler);
 
   app.use(
     '/graphql',
