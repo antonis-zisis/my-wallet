@@ -2,6 +2,7 @@ import type { NextFunction, Response } from 'express';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockGetUser = vi.hoisted(() => vi.fn());
+const mockTouchLastSeen = vi.hoisted(() => vi.fn());
 
 vi.hoisted(() => {
   process.env.SUPABASE_URL = 'https://test.supabase.co';
@@ -17,6 +18,10 @@ vi.mock('@supabase/supabase-js', () => ({
       getUser: mockGetUser,
     },
   }),
+}));
+
+vi.mock('../lib/lastSeen', () => ({
+  touchLastSeen: mockTouchLastSeen,
 }));
 
 import { type AuthenticatedRequest, authMiddleware } from './auth';
@@ -110,6 +115,7 @@ describe('authMiddleware', () => {
     await authMiddleware(req, res, next);
 
     expect(req.userId).toBe('user-123');
+    expect(mockTouchLastSeen).toHaveBeenCalledWith('user-123');
     expect(next).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
   });

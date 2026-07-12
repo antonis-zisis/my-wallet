@@ -14,12 +14,13 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  supabaseId String   @unique @map("supabase_id")
+  id         String    @id @default(uuid())
+  supabaseId String    @unique @map("supabase_id")
   email      String
-  fullName   String?  @map("full_name")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  fullName   String?   @map("full_name")
+  lastSeenAt DateTime? @map("last_seen_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   @@map("users")
 }
