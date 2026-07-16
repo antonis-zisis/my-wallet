@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeReport, makeTransaction } from '../../test/fixtures/reports';
 import { makeUser } from '../../test/fixtures/users';
+import { reportAccessWhere } from './lib/reportAccess';
 import { reportQueries } from './queries';
 
 const USER_ID = 'user-1';
@@ -51,13 +52,13 @@ describe('reportQueries', () => {
       );
 
       expect(prisma.report.findMany).toHaveBeenCalledWith({
-        where: { userId: USER_ID },
+        where: reportAccessWhere(USER_ID),
         orderBy: { createdAt: 'desc' },
         skip: 0,
         take: 10,
       });
       expect(prisma.report.count).toHaveBeenCalledWith({
-        where: { userId: USER_ID },
+        where: reportAccessWhere(USER_ID),
       });
       expect(result).toEqual({
         items: [
@@ -85,7 +86,7 @@ describe('reportQueries', () => {
       await reportQueries.reports(undefined as unknown, { page: 2 }, CTX);
 
       expect(prisma.report.findMany).toHaveBeenCalledWith({
-        where: { userId: USER_ID },
+        where: reportAccessWhere(USER_ID),
         orderBy: { createdAt: 'desc' },
         skip: 10,
         take: 10,
@@ -129,7 +130,7 @@ describe('reportQueries', () => {
       expect(prisma.report.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
-            userId: USER_ID,
+            ...reportAccessWhere(USER_ID),
             title: { contains: 'jan', mode: 'insensitive' },
           },
         })
@@ -192,7 +193,7 @@ describe('reportQueries', () => {
       );
 
       expect(prisma.report.findFirst).toHaveBeenCalledWith({
-        where: { id: 'report-1', userId: USER_ID },
+        where: { id: 'report-1', ...reportAccessWhere(USER_ID) },
         include: { transactions: { orderBy: { date: 'desc' } } },
       });
       expect(result).toEqual(reportWithTransactions);

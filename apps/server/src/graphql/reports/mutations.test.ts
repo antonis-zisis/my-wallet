@@ -72,7 +72,10 @@ describe('reportMutations', () => {
         title: 'February Budget',
         updatedAt: new Date('2024-01-02T10:00:00Z'),
       });
-      vi.mocked(prisma.report.findFirst).mockResolvedValue(existing);
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...existing,
+        shares: [],
+      } as never);
       vi.mocked(prisma.report.update).mockResolvedValue(updated);
 
       const result = await reportMutations.updateReport(
@@ -82,13 +85,49 @@ describe('reportMutations', () => {
       );
 
       expect(prisma.report.findFirst).toHaveBeenCalledWith({
-        where: { id: 'report-1', userId: USER_ID },
+        where: { id: 'report-1' },
+        include: { shares: true },
       });
       expect(prisma.report.update).toHaveBeenCalledWith({
         where: { id: 'report-1' },
         data: { title: 'February Budget' },
       });
       expect(result).toEqual(updated);
+    });
+
+    it('allows a shared editor to rename the report', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ userId: 'other-owner' }),
+        shares: [makeReportShare({ userId: USER_ID, role: 'EDITOR' })],
+      } as never);
+      vi.mocked(prisma.report.update).mockResolvedValue(makeReport());
+
+      await reportMutations.updateReport(
+        undefined as unknown,
+        { input: { id: 'report-1', title: 'February Budget' } },
+        CTX
+      );
+
+      expect(prisma.report.update).toHaveBeenCalledWith({
+        where: { id: 'report-1' },
+        data: { title: 'February Budget' },
+      });
+    });
+
+    it('throws FORBIDDEN for a shared viewer', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ userId: 'other-owner' }),
+        shares: [makeReportShare({ userId: USER_ID, role: 'VIEWER' })],
+      } as never);
+
+      await expect(
+        reportMutations.updateReport(
+          undefined as unknown,
+          { input: { id: 'report-1', title: 'February Budget' } },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.update).not.toHaveBeenCalled();
     });
 
     it('throws NOT_FOUND when the report does not exist or belongs to another user', async () => {
@@ -105,9 +144,10 @@ describe('reportMutations', () => {
     });
 
     it('throws FORBIDDEN when the report is locked', async () => {
-      vi.mocked(prisma.report.findFirst).mockResolvedValue(
-        makeReport({ isLocked: true })
-      );
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ isLocked: true }),
+        shares: [],
+      } as never);
 
       await expect(
         reportMutations.updateReport(
@@ -123,7 +163,10 @@ describe('reportMutations', () => {
   describe('deleteReport', () => {
     it('deletes a report and returns true', async () => {
       const report = makeReport();
-      vi.mocked(prisma.report.findFirst).mockResolvedValue(report);
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...report,
+        shares: [],
+      } as never);
       vi.mocked(prisma.report.delete).mockResolvedValue(report);
 
       const result = await reportMutations.deleteReport(
@@ -133,12 +176,29 @@ describe('reportMutations', () => {
       );
 
       expect(prisma.report.findFirst).toHaveBeenCalledWith({
-        where: { id: 'report-1', userId: USER_ID },
+        where: { id: 'report-1' },
+        include: { shares: true },
       });
       expect(prisma.report.delete).toHaveBeenCalledWith({
         where: { id: 'report-1' },
       });
       expect(result).toBe(true);
+    });
+
+    it('throws FORBIDDEN for a shared editor', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ userId: 'other-owner' }),
+        shares: [makeReportShare({ userId: USER_ID, role: 'EDITOR' })],
+      } as never);
+
+      await expect(
+        reportMutations.deleteReport(
+          undefined as unknown,
+          { id: 'report-1' },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.delete).not.toHaveBeenCalled();
     });
 
     it('throws NOT_FOUND when the report does not exist or belongs to another user', async () => {
@@ -155,9 +215,10 @@ describe('reportMutations', () => {
     });
 
     it('throws FORBIDDEN when the report is locked', async () => {
-      vi.mocked(prisma.report.findFirst).mockResolvedValue(
-        makeReport({ isLocked: true })
-      );
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ isLocked: true }),
+        shares: [],
+      } as never);
 
       await expect(
         reportMutations.deleteReport(
@@ -171,6 +232,22 @@ describe('reportMutations', () => {
   });
 
   describe('lockReport', () => {
+    it('throws FORBIDDEN for a shared editor', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ userId: 'other-owner' }),
+        shares: [makeReportShare({ userId: USER_ID, role: 'EDITOR' })],
+      } as never);
+
+      await expect(
+        reportMutations.lockReport(
+          undefined as unknown,
+          { id: 'report-1' },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.report.update).not.toHaveBeenCalled();
+    });
+
     it('throws NOT_FOUND when the report does not exist or belongs to another user', async () => {
       vi.mocked(prisma.report.findFirst).mockResolvedValue(null);
 

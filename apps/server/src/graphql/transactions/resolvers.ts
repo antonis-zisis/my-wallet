@@ -2,6 +2,10 @@ import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
 import { parseInput } from '../../lib/validate';
+import {
+  reportAccessWhere,
+  resolveReportAccess,
+} from '../reports/lib/reportAccess';
 import { TransactionInput } from './inputSchemas';
 
 export const transactionResolvers = {
@@ -12,7 +16,7 @@ export const transactionResolvers = {
       { userId }: { userId: string }
     ) => {
       return prisma.transaction.findMany({
-        where: { report: { userId } },
+        where: { report: reportAccessWhere(userId) },
         orderBy: { date: 'desc' },
       });
     },
@@ -22,7 +26,7 @@ export const transactionResolvers = {
       { userId }: { userId: string }
     ) => {
       return prisma.transaction.findFirst({
-        where: { id, report: { userId } },
+        where: { id, report: reportAccessWhere(userId) },
       });
     },
   },
@@ -33,17 +37,21 @@ export const transactionResolvers = {
       { userId }: { userId: string }
     ) => {
       const { reportId } = input as { reportId: string };
-      const report = await prisma.report.findFirst({
-        where: { id: reportId, userId },
-      });
+      const access = await resolveReportAccess(reportId, userId);
 
-      if (!report) {
+      if (!access) {
         throw new GraphQLError('Report not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
 
-      if (report.isLocked) {
+      if (access.role === 'VIEWER') {
+        throw new GraphQLError('Viewers cannot modify transactions', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
+      if (access.report.isLocked) {
         throw new GraphQLError('Report is locked', {
           extensions: { code: 'FORBIDDEN' },
         });
@@ -59,6 +67,7 @@ export const transactionResolvers = {
           description: data.description,
           category: data.category,
           date: data.date,
+          createdById: userId,
         },
       });
 
@@ -76,8 +85,7 @@ export const transactionResolvers = {
     ) => {
       const { id } = input as { id: string };
       const existing = await prisma.transaction.findFirst({
-        where: { id, report: { userId } },
-        include: { report: true },
+        where: { id, report: reportAccessWhere(userId) },
       });
 
       if (!existing) {
@@ -86,7 +94,15 @@ export const transactionResolvers = {
         });
       }
 
-      if (existing.report.isLocked) {
+      const access = await resolveReportAccess(existing.reportId, userId);
+
+      if (!access || access.role === 'VIEWER') {
+        throw new GraphQLError('Viewers cannot modify transactions', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
+      if (access.report.isLocked) {
         throw new GraphQLError('Report is locked', {
           extensions: { code: 'FORBIDDEN' },
         });
@@ -118,8 +134,7 @@ export const transactionResolvers = {
       { userId }: { userId: string }
     ) => {
       const existing = await prisma.transaction.findFirst({
-        where: { id, report: { userId } },
-        include: { report: true },
+        where: { id, report: reportAccessWhere(userId) },
       });
 
       if (!existing) {
@@ -128,7 +143,15 @@ export const transactionResolvers = {
         });
       }
 
-      if (existing.report.isLocked) {
+      const access = await resolveReportAccess(existing.reportId, userId);
+
+      if (!access || access.role === 'VIEWER') {
+        throw new GraphQLError('Viewers cannot modify transactions', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
+      if (access.report.isLocked) {
         throw new GraphQLError('Report is locked', {
           extensions: { code: 'FORBIDDEN' },
         });

@@ -12,6 +12,7 @@ export const transactionTypeDefs = `#graphql
     description: String!
     category: String!
     date: String!
+    createdById: String
     createdAt: String!
     updatedAt: String!
   }

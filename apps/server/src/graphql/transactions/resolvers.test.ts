@@ -1,6 +1,12 @@
+import { GraphQLError } from 'graphql';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { makeReport, makeTransaction } from '../../test/fixtures/reports';
+import {
+  makeReport,
+  makeReportShare,
+  makeTransaction,
+} from '../../test/fixtures/reports';
+import { reportAccessWhere } from '../reports/lib/reportAccess';
 import { transactionResolvers } from './resolvers';
 
 const USER_ID = 'user-1';
@@ -13,11 +19,6 @@ const mockTransaction = makeTransaction({
 });
 
 const mockReport = makeReport();
-
-const mockTransactionWithReport = {
-  ...mockTransaction,
-  report: mockReport,
-};
 
 vi.mock('../../lib/prisma', () => ({
   default: {
@@ -56,7 +57,7 @@ describe('transactionResolvers', () => {
       );
 
       expect(prisma.transaction.findMany).toHaveBeenCalledWith({
-        where: { report: { userId: USER_ID } },
+        where: { report: reportAccessWhere(USER_ID) },
         orderBy: { date: 'desc' },
       });
       expect(result).toEqual([mockTransaction]);
@@ -76,7 +77,7 @@ describe('transactionResolvers', () => {
       );
 
       expect(prisma.transaction.findFirst).toHaveBeenCalledWith({
-        where: { id: 'tx-1', report: { userId: USER_ID } },
+        where: { id: 'tx-1', report: reportAccessWhere(USER_ID) },
       });
       expect(result).toEqual(mockTransaction);
     });
@@ -105,7 +106,10 @@ describe('transactionResolvers', () => {
         date: '2024-01-15',
       };
 
-      vi.mocked(prisma.report.findFirst).mockResolvedValue(mockReport);
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...mockReport,
+        shares: [],
+      } as never);
       vi.mocked(prisma.report.update).mockResolvedValue(mockReport);
       vi.mocked(prisma.transaction.create).mockResolvedValue(mockTransaction);
 
@@ -116,7 +120,8 @@ describe('transactionResolvers', () => {
       );
 
       expect(prisma.report.findFirst).toHaveBeenCalledWith({
-        where: { id: 'report-1', userId: USER_ID },
+        where: { id: 'report-1' },
+        include: { shares: true },
       });
       expect(prisma.transaction.create).toHaveBeenCalledWith({
         data: {
@@ -126,6 +131,7 @@ describe('transactionResolvers', () => {
           description: 'Grocery shopping',
           category: 'Food',
           date: new Date('2024-01-15'),
+          createdById: USER_ID,
         },
       });
       expect(prisma.report.update).toHaveBeenCalledWith({
@@ -133,6 +139,66 @@ describe('transactionResolvers', () => {
         data: { updatedAt: expect.any(Date) },
       });
       expect(result).toEqual(mockTransaction);
+    });
+
+    it('allows a shared editor to create a transaction with attribution', async () => {
+      const input = {
+        reportId: 'report-1',
+        type: 'EXPENSE' as const,
+        amount: 50.25,
+        description: 'Grocery shopping',
+        category: 'Food',
+        date: '2024-01-15',
+      };
+
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ userId: 'other-owner' }),
+        shares: [makeReportShare({ userId: USER_ID, role: 'EDITOR' })],
+      } as never);
+      vi.mocked(prisma.report.update).mockResolvedValue(mockReport);
+      vi.mocked(prisma.transaction.create).mockResolvedValue(mockTransaction);
+
+      await transactionResolvers.Mutation.createTransaction(
+        undefined as unknown,
+        { input },
+        CTX
+      );
+
+      expect(prisma.transaction.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ createdById: USER_ID }),
+      });
+    });
+
+    it('throws FORBIDDEN for a shared viewer', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ userId: 'other-owner' }),
+        shares: [makeReportShare({ userId: USER_ID, role: 'VIEWER' })],
+      } as never);
+
+      await expect(
+        transactionResolvers.Mutation.createTransaction(
+          undefined as unknown,
+          { input: { reportId: 'report-1' } },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.transaction.create).not.toHaveBeenCalled();
+    });
+
+    it('throws NOT_FOUND for a user with no access to the report', async () => {
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport({ userId: 'other-owner' }),
+        shares: [],
+      } as never);
+
+      await expect(
+        transactionResolvers.Mutation.createTransaction(
+          undefined as unknown,
+          { input: { reportId: 'report-1' } },
+          CTX
+        )
+      ).rejects.toThrow(GraphQLError);
+      expect(prisma.transaction.create).not.toHaveBeenCalled();
     });
   });
 
@@ -154,8 +220,12 @@ describe('transactionResolvers', () => {
       };
 
       vi.mocked(prisma.transaction.findFirst).mockResolvedValue(
-        mockTransactionWithReport as never
+        mockTransaction
       );
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...mockReport,
+        shares: [],
+      } as never);
       vi.mocked(prisma.transaction.update).mockResolvedValue(
         updatedTransaction
       );
@@ -168,8 +238,7 @@ describe('transactionResolvers', () => {
       );
 
       expect(prisma.transaction.findFirst).toHaveBeenCalledWith({
-        where: { id: 'tx-1', report: { userId: USER_ID } },
-        include: { report: true },
+        where: { id: 'tx-1', report: reportAccessWhere(USER_ID) },
       });
       expect(prisma.transaction.update).toHaveBeenCalledWith({
         where: { id: 'tx-1' },
@@ -192,8 +261,12 @@ describe('transactionResolvers', () => {
   describe('Mutation.deleteTransaction', () => {
     it('deletes a transaction and returns true', async () => {
       vi.mocked(prisma.transaction.findFirst).mockResolvedValue(
-        mockTransactionWithReport as never
+        mockTransaction
       );
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...mockReport,
+        shares: [],
+      } as never);
       vi.mocked(prisma.transaction.delete).mockResolvedValue(mockTransaction);
       vi.mocked(prisma.report.update).mockResolvedValue(mockReport);
 
@@ -204,8 +277,7 @@ describe('transactionResolvers', () => {
       );
 
       expect(prisma.transaction.findFirst).toHaveBeenCalledWith({
-        where: { id: 'tx-1', report: { userId: USER_ID } },
-        include: { report: true },
+        where: { id: 'tx-1', report: reportAccessWhere(USER_ID) },
       });
       expect(prisma.transaction.delete).toHaveBeenCalledWith({
         where: { id: 'tx-1' },

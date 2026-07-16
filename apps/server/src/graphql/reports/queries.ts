@@ -2,6 +2,7 @@ import prisma from '../../lib/prisma';
 import { clampPage } from '../../lib/validate';
 import { attachReportMembers } from './lib/attachReportMembers';
 import { buildNetBalanceMap } from './lib/buildNetBalanceMap';
+import { reportAccessWhere } from './lib/reportAccess';
 
 type ReportsArgs = {
   page?: number;
@@ -27,7 +28,7 @@ export const reportQueries = {
     const skip = (clampedPage - 1) * clampedPageSize;
     const trimmedSearch = search?.trim();
     const where = {
-      userId,
+      ...reportAccessWhere(userId),
       ...(trimmedSearch
         ? { title: { contains: trimmedSearch, mode: 'insensitive' as const } }
         : {}),
@@ -76,7 +77,7 @@ export const reportQueries = {
     { userId }: { userId: string }
   ) => {
     return prisma.report.findFirst({
-      where: { id, userId },
+      where: { id, ...reportAccessWhere(userId) },
       include: { transactions: { orderBy: { date: 'desc' } } },
     });
   },

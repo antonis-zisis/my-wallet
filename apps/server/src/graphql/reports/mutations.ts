@@ -25,17 +25,21 @@ export const reportMutations = {
     { userId }: { userId: string }
   ) => {
     const { id } = input as { id: string };
-    const existing = await prisma.report.findFirst({
-      where: { id, userId },
-    });
+    const access = await resolveReportAccess(id, userId);
 
-    if (!existing) {
+    if (!access) {
       throw new GraphQLError('Report not found', {
         extensions: { code: 'NOT_FOUND' },
       });
     }
 
-    if (existing.isLocked) {
+    if (access.role === 'VIEWER') {
+      throw new GraphQLError('Viewers cannot modify a report', {
+        extensions: { code: 'FORBIDDEN' },
+      });
+    }
+
+    if (access.report.isLocked) {
       throw new GraphQLError('Report is locked', {
         extensions: { code: 'FORBIDDEN' },
       });
@@ -53,15 +57,21 @@ export const reportMutations = {
     { id }: { id: string },
     { userId }: { userId: string }
   ) => {
-    const existing = await prisma.report.findFirst({ where: { id, userId } });
+    const access = await resolveReportAccess(id, userId);
 
-    if (!existing) {
+    if (!access) {
       throw new GraphQLError('Report not found', {
         extensions: { code: 'NOT_FOUND' },
       });
     }
 
-    if (existing.isLocked) {
+    if (access.role !== 'OWNER') {
+      throw new GraphQLError('Only the report owner can delete a report', {
+        extensions: { code: 'FORBIDDEN' },
+      });
+    }
+
+    if (access.report.isLocked) {
       throw new GraphQLError('Report is locked', {
         extensions: { code: 'FORBIDDEN' },
       });
@@ -76,11 +86,17 @@ export const reportMutations = {
     { id }: { id: string },
     { userId }: { userId: string }
   ) => {
-    const existing = await prisma.report.findFirst({ where: { id, userId } });
+    const access = await resolveReportAccess(id, userId);
 
-    if (!existing) {
+    if (!access) {
       throw new GraphQLError('Report not found', {
         extensions: { code: 'NOT_FOUND' },
+      });
+    }
+
+    if (access.role !== 'OWNER') {
+      throw new GraphQLError('Only the report owner can lock a report', {
+        extensions: { code: 'FORBIDDEN' },
       });
     }
 
@@ -91,11 +107,17 @@ export const reportMutations = {
     { id }: { id: string },
     { userId }: { userId: string }
   ) => {
-    const existing = await prisma.report.findFirst({ where: { id, userId } });
+    const access = await resolveReportAccess(id, userId);
 
-    if (!existing) {
+    if (!access) {
       throw new GraphQLError('Report not found', {
         extensions: { code: 'NOT_FOUND' },
+      });
+    }
+
+    if (access.role !== 'OWNER') {
+      throw new GraphQLError('Only the report owner can unlock a report', {
+        extensions: { code: 'FORBIDDEN' },
       });
     }
 
