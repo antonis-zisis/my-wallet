@@ -23,6 +23,13 @@ export function enumField<
   });
 }
 
+export const email = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .max(320, 'Email must be 320 characters or fewer')
+  .pipe(z.email({ error: 'Invalid email address' }));
+
 export const httpUrl = z
   .url({ protocol: /^https?$/, error: 'Invalid URL format' })
   .max(2048, 'URL must be 2048 characters or fewer');

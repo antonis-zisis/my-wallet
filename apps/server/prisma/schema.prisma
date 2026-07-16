@@ -14,13 +14,14 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  supabaseId String    @unique @map("supabase_id")
-  email      String
-  fullName   String?   @map("full_name")
-  lastSeenAt DateTime? @map("last_seen_at")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
+  id           String        @id @default(uuid())
+  supabaseId   String        @unique @map("supabase_id")
+  email        String
+  fullName     String?       @map("full_name")
+  lastSeenAt   DateTime?     @map("last_seen_at")
+  reportShares ReportShare[]
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
 
   @@map("users")
 }
@@ -31,10 +32,25 @@ model Report {
   isLocked     Boolean       @default(false) @map("is_locked")
   userId       String        @map("user_id")
   transactions Transaction[]
+  shares       ReportShare[]
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 
   @@map("reports")
+}
+
+model ReportShare {
+  id        String   @id @default(uuid())
+  reportId  String   @map("report_id")
+  report    Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [supabaseId], onDelete: Cascade)
+  role      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([reportId, userId])
+  @@map("report_shares")
 }
 
 model Transaction {
@@ -46,6 +62,7 @@ model Transaction {
   date        DateTime
   reportId    String   @map("report_id")
   report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  createdById String?  @map("created_by_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -80,22 +97,22 @@ model NetWorthEntry {
 }
 
 model Subscription {
-  id           String    @id @default(uuid())
-  name         String
-  amount       Float
-  billingCycle String    @map("billing_cycle")
-  isActive     Boolean   @default(true) @map("is_active")
-  startDate    DateTime  @map("start_date")
-  endDate      DateTime? @map("end_date")
-  cancelledAt  DateTime? @map("cancelled_at")
-  trialEndsAt    DateTime? @map("trial_ends_at")
-  category       String?
-  notes          String?
-  paymentMethod  String?   @map("payment_method")
-  url            String?
-  userId         String    @map("user_id")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  id            String    @id @default(uuid())
+  name          String
+  amount        Float
+  billingCycle  String    @map("billing_cycle")
+  isActive      Boolean   @default(true) @map("is_active")
+  startDate     DateTime  @map("start_date")
+  endDate       DateTime? @map("end_date")
+  cancelledAt   DateTime? @map("cancelled_at")
+  trialEndsAt   DateTime? @map("trial_ends_at")
+  category      String?
+  notes         String?
+  paymentMethod String?   @map("payment_method")
+  url           String?
+  userId        String    @map("user_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
   @@map("subscriptions")
 }

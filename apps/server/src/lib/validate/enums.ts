@@ -20,4 +20,6 @@ export const SUBSCRIPTION_CATEGORIES = [
 
 export const TRANSACTION_TYPES = ['INCOME', 'EXPENSE'] as const;
 
+export const SHARE_ROLES = ['VIEWER', 'EDITOR'] as const;
+
 export const NET_WORTH_ENTRY_TYPES = ['ASSET', 'LIABILITY'] as const;
