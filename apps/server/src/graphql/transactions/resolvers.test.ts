@@ -1,43 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { makeReport, makeTransaction } from '../../test/fixtures/reports';
 import { transactionResolvers } from './resolvers';
 
 const USER_ID = 'user-1';
 const CTX = { userId: USER_ID };
 
-const mockTransaction = {
+const mockTransaction = makeTransaction({
   id: 'tx-1',
-  reportId: 'report-1',
-  type: 'EXPENSE',
   amount: 50.25,
   description: 'Grocery shopping',
-  category: 'Food',
-  date: new Date('2024-01-15'),
-  createdAt: new Date('2024-01-15T10:00:00Z'),
-  updatedAt: new Date('2024-01-15T10:00:00Z'),
-};
+});
 
-const mockReport = {
-  id: 'report-1',
-  isLocked: false,
-  title: 'January Budget',
-  userId: USER_ID,
-  createdAt: new Date('2024-01-01T10:00:00Z'),
-  updatedAt: new Date('2024-01-01T10:00:00Z'),
-};
+const mockReport = makeReport();
 
 const mockTransactionWithReport = {
-  ...{
-    id: 'tx-1',
-    reportId: 'report-1',
-    type: 'EXPENSE',
-    amount: 50.25,
-    description: 'Grocery shopping',
-    category: 'Food',
-    date: new Date('2024-01-15'),
-    createdAt: new Date('2024-01-15T10:00:00Z'),
-    updatedAt: new Date('2024-01-15T10:00:00Z'),
-  },
+  ...mockTransaction,
   report: mockReport,
 };
 
