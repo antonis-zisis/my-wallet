@@ -1,10 +1,26 @@
+import { GraphQLError } from 'graphql';
+
 import { Transaction } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
+import { attachReportMembers } from './lib/attachReportMembers';
+import { ReportMemberRecord } from './lib/buildMembersByReport';
 
 type ReportParent = {
   id: string;
+  userId: string;
   transactions?: Array<Transaction>;
+  members?: Array<ReportMemberRecord>;
 };
+
+async function loadMembers(parent: ReportParent) {
+  if (parent.members !== undefined) {
+    return parent.members;
+  }
+
+  const [reportWithMembers] = await attachReportMembers([parent]);
+
+  return reportWithMembers.members;
+}
 
 export const reportFields = {
   createdAt: (parent: { createdAt: Date }) => parent.createdAt.toISOString(),
@@ -47,5 +63,26 @@ export const reportFields = {
       where: { reportId: parent.id },
       orderBy: { date: 'desc' },
     });
+  },
+  members: (parent: ReportParent) => loadMembers(parent),
+  myRole: async (
+    parent: ReportParent,
+    _args: unknown,
+    { userId }: { userId: string }
+  ) => {
+    if (parent.userId === userId) {
+      return 'OWNER';
+    }
+
+    const members = await loadMembers(parent);
+    const member = members.find((candidate) => candidate.userId === userId);
+
+    if (!member) {
+      throw new GraphQLError('Report not found', {
+        extensions: { code: 'NOT_FOUND' },
+      });
+    }
+
+    return member.role;
   },
 };

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeReport, makeTransaction } from '../../test/fixtures/reports';
+import { makeUser } from '../../test/fixtures/users';
 import { reportQueries } from './queries';
 
 const USER_ID = 'user-1';
@@ -13,8 +14,14 @@ vi.mock('../../lib/prisma', () => ({
       findFirst: vi.fn(),
       count: vi.fn(),
     },
+    reportShare: {
+      findMany: vi.fn(),
+    },
     transaction: {
       groupBy: vi.fn(),
+    },
+    user: {
+      findMany: vi.fn(),
     },
   },
 }));
@@ -24,14 +31,18 @@ let prisma: typeof import('../../lib/prisma').default;
 beforeEach(async () => {
   vi.clearAllMocks();
   prisma = (await import('../../lib/prisma')).default;
+  vi.mocked(prisma.reportShare.findMany).mockResolvedValue([]);
+  vi.mocked(prisma.user.findMany).mockResolvedValue([]);
 });
 
 describe('reportQueries', () => {
   describe('reports', () => {
-    it('returns items and totalCount for page 1', async () => {
+    it('returns items with members and totalCount for page 1', async () => {
       const report = makeReport();
+      const owner = makeUser();
       vi.mocked(prisma.report.findMany).mockResolvedValue([report]);
       vi.mocked(prisma.report.count).mockResolvedValue(1);
+      vi.mocked(prisma.user.findMany).mockResolvedValue([owner]);
 
       const result = await reportQueries.reports(
         undefined as unknown,
@@ -48,7 +59,23 @@ describe('reportQueries', () => {
       expect(prisma.report.count).toHaveBeenCalledWith({
         where: { userId: USER_ID },
       });
-      expect(result).toEqual({ items: [report], totalCount: 1 });
+      expect(result).toEqual({
+        items: [
+          {
+            ...report,
+            members: [
+              {
+                id: report.userId,
+                userId: report.userId,
+                email: owner.email,
+                fullName: owner.fullName,
+                role: 'OWNER',
+              },
+            ],
+          },
+        ],
+        totalCount: 1,
+      });
     });
 
     it('skips 10 items for page 2', async () => {

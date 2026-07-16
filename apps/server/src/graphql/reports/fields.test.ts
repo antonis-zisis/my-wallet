@@ -1,14 +1,26 @@
+import { GraphQLError } from 'graphql';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { makeReport, makeTransaction } from '../../test/fixtures/reports';
+import {
+  makeReport,
+  makeReportShare,
+  makeTransaction,
+} from '../../test/fixtures/reports';
+import { makeUser } from '../../test/fixtures/users';
 import { reportFields } from './fields';
 
 vi.mock('../../lib/prisma', () => ({
   default: {
+    reportShare: {
+      findMany: vi.fn(),
+    },
     transaction: {
       findMany: vi.fn(),
       count: vi.fn(),
       aggregate: vi.fn(),
+    },
+    user: {
+      findMany: vi.fn(),
     },
   },
 }));
@@ -107,6 +119,86 @@ describe('reportFields', () => {
       const result = await reportFields.netBalance(makeReport());
 
       expect(result).toBe(0);
+    });
+  });
+
+  describe('members', () => {
+    it('returns pre-loaded members from the parent without querying the DB', async () => {
+      const members = [
+        {
+          id: 'user-1',
+          userId: 'user-1',
+          email: 'owner@example.com',
+          fullName: 'Report Owner',
+          role: 'OWNER' as const,
+        },
+      ];
+      const parent = { ...makeReport(), members };
+
+      const result = await reportFields.members(parent);
+
+      expect(prisma.reportShare.findMany).not.toHaveBeenCalled();
+      expect(result).toEqual(members);
+    });
+
+    it('fetches owner and share members when parent has none loaded', async () => {
+      const partner = makeUser({
+        supabaseId: 'user-2',
+        email: 'partner@example.com',
+      });
+      vi.mocked(prisma.reportShare.findMany).mockResolvedValue([
+        { ...makeReportShare({ userId: 'user-2' }), user: partner },
+      ] as never);
+      vi.mocked(prisma.user.findMany).mockResolvedValue([makeUser()]);
+
+      const result = await reportFields.members(makeReport());
+
+      expect(result).toEqual([
+        expect.objectContaining({ userId: 'user-1', role: 'OWNER' }),
+        expect.objectContaining({ userId: 'user-2', role: 'EDITOR' }),
+      ]);
+    });
+  });
+
+  describe('myRole', () => {
+    it('returns OWNER for the report creator without loading members', async () => {
+      const result = await reportFields.myRole(
+        makeReport({ userId: 'user-1' }),
+        undefined,
+        { userId: 'user-1' }
+      );
+
+      expect(prisma.reportShare.findMany).not.toHaveBeenCalled();
+      expect(result).toBe('OWNER');
+    });
+
+    it('returns the share role for a shared user', async () => {
+      const parent = {
+        ...makeReport(),
+        members: [
+          {
+            id: 'share-1',
+            userId: 'user-2',
+            email: 'partner@example.com',
+            fullName: null,
+            role: 'VIEWER' as const,
+          },
+        ],
+      };
+
+      const result = await reportFields.myRole(parent, undefined, {
+        userId: 'user-2',
+      });
+
+      expect(result).toBe('VIEWER');
+    });
+
+    it('throws NOT_FOUND for a user who is not a member', async () => {
+      const parent = { ...makeReport(), members: [] };
+
+      await expect(
+        reportFields.myRole(parent, undefined, { userId: 'user-3' })
+      ).rejects.toThrow(GraphQLError);
     });
   });
 });

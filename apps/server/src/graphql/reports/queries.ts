@@ -1,5 +1,6 @@
 import prisma from '../../lib/prisma';
 import { clampPage } from '../../lib/validate';
+import { attachReportMembers } from './lib/attachReportMembers';
 import { buildNetBalanceMap } from './lib/buildNetBalanceMap';
 
 type ReportsArgs = {
@@ -50,7 +51,9 @@ export const reportQueries = {
       });
 
       return {
-        items: allReports.slice(skip, skip + clampedPageSize),
+        items: await attachReportMembers(
+          allReports.slice(skip, skip + clampedPageSize)
+        ),
         totalCount: allReports.length,
       };
     }
@@ -65,7 +68,7 @@ export const reportQueries = {
       prisma.report.count({ where }),
     ]);
 
-    return { items, totalCount };
+    return { items: await attachReportMembers(items), totalCount };
   },
   report: async (
     _parent: unknown,
