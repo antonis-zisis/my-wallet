@@ -18,6 +18,14 @@ export const GET_REPORTS = gql`
       items {
         id
         isLocked
+        members {
+          email
+          fullName
+          id
+          role
+          userId
+        }
+        myRole
         netBalance
         title
         transactionCount
@@ -34,6 +42,14 @@ export const GET_REPORT = gql`
     report(id: $id) {
       id
       isLocked
+      members {
+        email
+        fullName
+        id
+        role
+        userId
+      }
+      myRole
       title
       createdAt
       updatedAt
@@ -45,6 +61,7 @@ export const GET_REPORT = gql`
         description
         category
         date
+        createdById
         createdAt
         updatedAt
       }
@@ -64,51 +81,6 @@ export const GET_REPORTS_SUMMARY = gql`
         }
       }
       totalCount
-    }
-  }
-`;
-
-export const CREATE_REPORT = gql`
-  mutation CreateReport($input: CreateReportInput!) {
-    createReport(input: $input) {
-      id
-      title
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-export const UPDATE_REPORT = gql`
-  mutation UpdateReport($input: UpdateReportInput!) {
-    updateReport(input: $input) {
-      id
-      title
-      updatedAt
-    }
-  }
-`;
-
-export const DELETE_REPORT = gql`
-  mutation DeleteReport($id: ID!) {
-    deleteReport(id: $id)
-  }
-`;
-
-export const LOCK_REPORT = gql`
-  mutation LockReport($id: ID!) {
-    lockReport(id: $id) {
-      id
-      isLocked
-    }
-  }
-`;
-
-export const UNLOCK_REPORT = gql`
-  mutation UnlockReport($id: ID!) {
-    unlockReport(id: $id) {
-      id
-      isLocked
     }
   }
 `;

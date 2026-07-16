@@ -1,29 +1,38 @@
 import { useState } from 'react';
 
+import { ReportMember, ReportRole } from '../../types/report';
 import { formatDate } from '../../utils/formatDate';
 import { LockClosedIcon } from '../icons';
-import { Button, Dropdown, Input } from '../ui';
+import { AvatarGroup, Button, Dropdown, Input } from '../ui';
 
 type ReportHeaderProps = {
   createdAt: string;
+  currentUserId: string;
   isLocked: boolean;
+  members: Array<ReportMember>;
+  myRole: ReportRole;
   title: string;
   updatedAt: string;
   onAddTransaction: () => void;
   onDeleteReport: () => void;
   onExportCsv: () => void;
   onLockReport: () => void;
+  onOpenShareModal: () => void;
   onSaveTitle: (title: string) => void;
   onUnlockReport: () => void;
 };
 
 export function ReportHeader({
   createdAt,
+  currentUserId,
   isLocked,
+  members,
+  myRole,
   onAddTransaction,
   onDeleteReport,
   onExportCsv,
   onLockReport,
+  onOpenShareModal,
   onSaveTitle,
   onUnlockReport,
   title,
@@ -31,6 +40,12 @@ export function ReportHeader({
 }: ReportHeaderProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editTitle, setEditTitle] = useState('');
+
+  const isOwner = myRole === 'OWNER';
+  const canEdit = myRole !== 'VIEWER';
+  const otherMembers = members.filter(
+    (member) => member.userId !== currentUserId
+  );
 
   const handleStartEditing = () => {
     setEditTitle(title);
@@ -90,6 +105,8 @@ export function ReportHeader({
             {isLocked && (
               <LockClosedIcon className="text-text-tertiary size-4" />
             )}
+
+            {otherMembers.length > 0 && <AvatarGroup people={otherMembers} />}
           </div>
 
           <p className="text-text-tertiary mt-1 text-xs">
@@ -99,14 +116,14 @@ export function ReportHeader({
       )}
 
       <div className="flex items-center gap-2">
-        {!isLocked && (
+        {!isLocked && canEdit && (
           <Button onClick={onAddTransaction}>Add Transaction</Button>
         )}
 
         <Dropdown
           className="relative flex"
           items={[
-            ...(!isLocked
+            ...(!isLocked && canEdit
               ? [
                   {
                     label: 'Rename Report',
@@ -114,15 +131,23 @@ export function ReportHeader({
                   },
                 ]
               : []),
+            ...(isOwner
+              ? [
+                  {
+                    label: isLocked ? 'Unlock Report' : 'Lock Report',
+                    onClick: isLocked ? onUnlockReport : onLockReport,
+                  },
+                ]
+              : []),
             {
-              label: isLocked ? 'Unlock Report' : 'Lock Report',
-              onClick: isLocked ? onUnlockReport : onLockReport,
+              label: isOwner ? 'Share Report' : 'Members',
+              onClick: onOpenShareModal,
             },
             {
               label: 'Export CSV',
               onClick: onExportCsv,
             },
-            ...(!isLocked
+            ...(!isLocked && isOwner
               ? [
                   {
                     label: 'Delete Report',

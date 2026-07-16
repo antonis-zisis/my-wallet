@@ -22,5 +22,6 @@ export { SparklesIcon } from './SparklesIcon';
 export { SunIcon } from './SunIcon';
 export { TrendingChartIcon } from './TrendingChartIcon';
 export { UserIcon } from './UserIcon';
+export { UserPlusIcon } from './UserPlusIcon';
 export { WalletIcon } from './WalletIcon';
 export { XMarkIcon } from './XMarkIcon';

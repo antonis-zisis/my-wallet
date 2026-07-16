@@ -2,14 +2,21 @@ import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
-import { ChevronRightIcon, DocumentTextIcon, LockClosedIcon } from '../icons';
-import { Card, MoneyAmount, Skeleton } from '../ui';
+import {
+  ChevronRightIcon,
+  DocumentTextIcon,
+  LockClosedIcon,
+  UserPlusIcon,
+} from '../icons';
+import { AvatarGroup, Card, MoneyAmount, Skeleton } from '../ui';
 
 type ReportListProps = {
+  currentUserId?: string;
   error: boolean;
   isSearching?: boolean;
   loading: boolean;
   onCreateReport?: () => void;
+  onOpenShareModal?: (report: Report) => void;
   reports: Array<Report>;
 };
 
@@ -61,10 +68,12 @@ function EmptyState({ onCreateReport }: { onCreateReport?: () => void }) {
 }
 
 export function ReportList({
+  currentUserId,
   error,
   isSearching,
   loading,
   onCreateReport,
+  onOpenShareModal,
   reports,
 }: ReportListProps) {
   if (loading) {
@@ -100,6 +109,9 @@ export function ReportList({
         {reports.map((report) => {
           const netBalance = report.netBalance ?? 0;
           const transactionCount = report.transactionCount ?? 0;
+          const otherMembers = (report.members ?? []).filter(
+            (member) => member.userId !== currentUserId
+          );
 
           return (
             <li key={report.id}>
@@ -119,6 +131,24 @@ export function ReportList({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-3">
+                  {otherMembers.length > 0 && (
+                    <AvatarGroup people={otherMembers} size="xs" />
+                  )}
+
+                  {onOpenShareModal && (
+                    <button
+                      aria-label={`Share ${report.title}`}
+                      className="text-text-tertiary hover:text-brand-500 cursor-pointer rounded p-1"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        onOpenShareModal(report);
+                      }}
+                    >
+                      <UserPlusIcon className="size-4" />
+                    </button>
+                  )}
+
                   <MoneyAmount
                     amount={netBalance}
                     currency=""

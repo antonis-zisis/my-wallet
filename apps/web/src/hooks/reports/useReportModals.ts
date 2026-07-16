@@ -8,6 +8,7 @@ export function useReportModals() {
   const [isAddTransactionModalOpen, setIsAddTransactionModalOpen] =
     useState(false);
   const [isDeleteReportModalOpen, setIsDeleteReportModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [deletingTransaction, setDeletingTransaction] =
@@ -20,12 +21,15 @@ export function useReportModals() {
     isBudgetChartOpen,
     isChartOpen,
     isDeleteReportModalOpen,
+    isShareModalOpen,
     onCloseAddTransactionModal: () => setIsAddTransactionModalOpen(false),
     onCloseDeleteReportModal: () => setIsDeleteReportModalOpen(false),
     onCloseDeleteTransactionModal: () => setDeletingTransaction(null),
     onCloseEditTransactionModal: () => setEditingTransaction(null),
+    onCloseShareModal: () => setIsShareModalOpen(false),
     onOpenAddTransactionModal: () => setIsAddTransactionModalOpen(true),
     onOpenDeleteReportModal: () => setIsDeleteReportModalOpen(true),
+    onOpenShareModal: () => setIsShareModalOpen(true),
     onSelectTransactionForDelete: setDeletingTransaction,
     onSelectTransactionForEdit: setEditingTransaction,
     onToggleBudgetChart: () => setIsBudgetChartOpen((previous) => !previous),

@@ -8,6 +8,7 @@ type FilterItem = {
 
 type TransactionTableHeaderProps = {
   categoryFilterItems: Array<FilterItem>;
+  hasAuthorColumn?: boolean;
   hasMultipleTypes: boolean;
   presentCategoriesCount: number;
   selectedCategoryFilter: string;
@@ -17,6 +18,7 @@ type TransactionTableHeaderProps = {
 
 export function TransactionTableHeader({
   categoryFilterItems,
+  hasAuthorColumn = false,
   hasMultipleTypes,
   presentCategoriesCount,
   selectedCategoryFilter,
@@ -69,6 +71,7 @@ export function TransactionTableHeader({
           </div>
         </th>
         <th className="pr-4 pb-3">Description</th>
+        {hasAuthorColumn && <th className="pr-4 pb-3">By</th>}
         <th className="pb-3 text-right">Amount</th>
         <th className="pb-3"></th>
       </tr>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useToast } from '../../contexts/ToastContext';
+import { useUser } from '../../contexts/UserContext';
 import {
   DELETE_REPORT,
   GET_REPORT,
@@ -29,6 +30,7 @@ import {
 } from './selectors/getFilteredTransactions';
 import { getPresentCategories } from './selectors/getPresentCategories';
 import { useReportModals } from './useReportModals';
+import { useReportSharing } from './useReportSharing';
 
 type ReportData = {
   report: ReportType & { transactions: Array<Transaction> };
@@ -36,8 +38,14 @@ type ReportData = {
 
 export function useReportData() {
   const { showError, showSuccess } = useToast();
+  const { user } = useUser();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const sharing = useReportSharing({
+    onLeft: () => navigate('/reports'),
+    reportId: id,
+  });
 
   const { data, error, loading } = useQuery<ReportData>(GET_REPORT, {
     variables: { id },
@@ -159,8 +167,12 @@ export function useReportData() {
 
   return {
     ...modals,
+    ...sharing,
+    currentUserId: user?.supabaseId ?? '',
     error: !!error,
     filteredTransactions,
+    members: report?.members ?? [],
+    myRole: report?.myRole ?? 'OWNER',
     isDeleting,
     isDeletingTransaction,
     isLocked,

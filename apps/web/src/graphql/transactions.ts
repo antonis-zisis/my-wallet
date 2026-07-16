@@ -10,6 +10,7 @@ export const GET_TRANSACTIONS = gql`
       description
       category
       date
+      createdById
       createdAt
       updatedAt
     }
@@ -26,6 +27,7 @@ export const GET_TRANSACTION = gql`
       description
       category
       date
+      createdById
       createdAt
       updatedAt
     }
@@ -41,6 +43,7 @@ export const CREATE_TRANSACTION = gql`
       description
       category
       date
+      createdById
       createdAt
       updatedAt
     }
@@ -56,6 +59,7 @@ export const UPDATE_TRANSACTION = gql`
       description
       category
       date
+      createdById
       createdAt
       updatedAt
     }

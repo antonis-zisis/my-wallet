@@ -6,6 +6,7 @@ export const GET_ME = gql`
       id
       email
       fullName
+      supabaseId
     }
   }
 `;
@@ -16,6 +17,7 @@ export const UPDATE_ME = gql`
       id
       email
       fullName
+      supabaseId
     }
   }
 `;

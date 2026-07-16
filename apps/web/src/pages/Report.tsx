@@ -9,12 +9,14 @@ import { ReportHeader } from '../components/reports/ReportHeader';
 import { ReportModals } from '../components/reports/ReportModals';
 import { ReportSkeleton } from '../components/reports/ReportSkeleton';
 import { ReportSummary } from '../components/reports/ReportSummary';
+import { ShareReportModal } from '../components/reports/ShareReportModal';
 import { TransactionTable } from '../components/reports/TransactionTable';
 import { PageLayout } from '../components/ui';
 import { useReportData } from '../hooks/reports/useReportData';
 
 export function Report() {
   const {
+    currentUserId,
     deletingTransaction,
     editingTransaction,
     error,
@@ -25,27 +27,38 @@ export function Report() {
     isDeleteReportModalOpen,
     isDeleting,
     isDeletingTransaction,
+    isLeaving,
     isLocked,
+    isShareModalOpen,
+    isSharing,
     loading,
+    members,
+    myRole,
     onCloseAddTransactionModal,
     onCloseDeleteReportModal,
     onCloseDeleteTransactionModal,
     onCloseEditTransactionModal,
+    onCloseShareModal,
     onConfirmDeleteReport,
     onConfirmDeleteTransaction,
     onCreateTransaction,
     onExportCsv,
+    onLeaveReport,
     onLockReport,
     onOpenAddTransactionModal,
     onOpenDeleteReportModal,
+    onOpenShareModal,
     onSaveTitle,
     onSelectCategoryFilter,
     onSelectTransactionForDelete,
     onSelectTransactionForEdit,
     onSelectTypeFilter,
+    onShareReport,
     onToggleBudgetChart,
     onToggleChart,
     onUnlockReport,
+    onUnshareMember,
+    onUpdateMemberRole,
     onUpdateTransaction,
     presentExpenseCategories,
     presentIncomeCategories,
@@ -54,6 +67,8 @@ export function Report() {
     selectedTypeFilter,
     transactions,
   } = useReportData();
+
+  const canModify = !isLocked && myRole !== 'VIEWER';
 
   if (loading) {
     return <ReportSkeleton />;
@@ -78,13 +93,17 @@ export function Report() {
 
         <ReportHeader
           createdAt={report.createdAt}
+          currentUserId={currentUserId}
           isLocked={isLocked}
+          members={members}
+          myRole={myRole}
           title={report.title}
           updatedAt={report.updatedAt}
           onAddTransaction={onOpenAddTransactionModal}
           onDeleteReport={onOpenDeleteReportModal}
           onExportCsv={onExportCsv}
           onLockReport={onLockReport}
+          onOpenShareModal={onOpenShareModal}
           onSaveTitle={onSaveTitle}
           onUnlockReport={onUnlockReport}
         />
@@ -112,13 +131,14 @@ export function Report() {
         </ReportChartSection>
 
         <TransactionTable
-          isLocked={isLocked}
+          isLocked={!canModify}
+          members={members}
           presentExpenseCategories={presentExpenseCategories}
           presentIncomeCategories={presentIncomeCategories}
           selectedCategoryFilter={selectedCategoryFilter}
           selectedTypeFilter={selectedTypeFilter}
           transactions={filteredTransactions}
-          onAddTransaction={isLocked ? undefined : onOpenAddTransactionModal}
+          onAddTransaction={canModify ? onOpenAddTransactionModal : undefined}
           onDelete={onSelectTransactionForDelete}
           onEdit={onSelectTransactionForEdit}
           onSelectCategoryFilter={onSelectCategoryFilter}
@@ -142,6 +162,20 @@ export function Report() {
         onConfirmDeleteTransaction={onConfirmDeleteTransaction}
         onCreateTransaction={onCreateTransaction}
         onUpdateTransaction={onUpdateTransaction}
+      />
+
+      <ShareReportModal
+        currentUserId={currentUserId}
+        isLeaving={isLeaving}
+        isOpen={isShareModalOpen}
+        isSharing={isSharing}
+        members={members}
+        myRole={myRole}
+        onClose={onCloseShareModal}
+        onLeaveReport={onLeaveReport}
+        onShareReport={onShareReport}
+        onUnshareMember={onUnshareMember}
+        onUpdateMemberRole={onUpdateMemberRole}
       />
     </>
   );

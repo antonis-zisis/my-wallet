@@ -1,10 +1,12 @@
+import { ReportMember } from '../../types/report';
 import { Transaction } from '../../types/transaction';
 import { formatDate } from '../../utils/formatDate';
-import { Badge, Button, Card, Dropdown, MoneyAmount } from '../ui';
+import { Avatar, Badge, Button, Card, Dropdown, MoneyAmount } from '../ui';
 import { TransactionTableHeader } from './TransactionTableHeader';
 
 type TransactionTableProps = {
   isLocked?: boolean;
+  members?: Array<ReportMember>;
   presentExpenseCategories?: ReadonlyArray<string>;
   presentIncomeCategories?: ReadonlyArray<string>;
   selectedCategoryFilter?: string;
@@ -19,6 +21,7 @@ type TransactionTableProps = {
 
 export function TransactionTable({
   isLocked = false,
+  members = [],
   onAddTransaction,
   onDelete,
   onEdit,
@@ -30,6 +33,8 @@ export function TransactionTable({
   selectedTypeFilter = 'All',
   transactions,
 }: TransactionTableProps) {
+  const isShared = members.length > 1;
+  const ownerMember = members.find((member) => member.role === 'OWNER');
   const hasMultipleTypes =
     presentExpenseCategories.length > 0 && presentIncomeCategories.length > 0;
 
@@ -119,6 +124,7 @@ export function TransactionTable({
           <table className="w-full">
             <TransactionTableHeader
               categoryFilterItems={categoryFilterItems}
+              hasAuthorColumn={isShared}
               hasMultipleTypes={hasMultipleTypes}
               presentCategoriesCount={presentCategoriesForType.length}
               selectedCategoryFilter={selectedCategoryFilter}
@@ -127,67 +133,87 @@ export function TransactionTable({
             />
 
             <tbody>
-              {transactions.map((transaction, index) => (
-                <tr
-                  key={transaction.id}
-                  className={`border-border border-b ${
-                    index % 2 === 0 ? 'bg-bg-app' : 'bg-bg-surface'
-                  }`}
-                >
-                  <td className="text-text-secondary py-3 pr-4 pl-1 text-sm">
-                    {formatDate(transaction.date)}
-                  </td>
+              {transactions.map((transaction, index) => {
+                const author = transaction.createdById
+                  ? members.find(
+                      (member) => member.userId === transaction.createdById
+                    )
+                  : ownerMember;
 
-                  <td className="py-3 pr-4">
-                    <Badge
-                      variant={
-                        transaction.type === 'INCOME' ? 'success' : 'danger'
-                      }
-                    >
-                      {transaction.type === 'INCOME' ? 'Income' : 'Expense'}
-                    </Badge>
-                  </td>
-
-                  <td className="py-3 pr-4">
-                    <Badge variant="default">{transaction.category}</Badge>
-                  </td>
-
-                  <td className="text-text-primary py-3 pr-4 text-sm">
-                    {transaction.description}
-                  </td>
-
-                  <td
-                    className={`py-3 pr-1 text-right text-sm font-medium ${
-                      transaction.type === 'INCOME'
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
+                return (
+                  <tr
+                    key={transaction.id}
+                    className={`border-border border-b ${
+                      index % 2 === 0 ? 'bg-bg-app' : 'bg-bg-surface'
                     }`}
                   >
-                    <MoneyAmount
-                      amount={transaction.amount}
-                      sign={transaction.type === 'INCOME' ? '+' : '-'}
-                    />
-                  </td>
+                    <td className="text-text-secondary py-3 pr-4 pl-1 text-sm">
+                      {formatDate(transaction.date)}
+                    </td>
 
-                  <td className="py-3 pl-2">
-                    {!isLocked && (
-                      <Dropdown
-                        items={[
-                          {
-                            label: 'Edit',
-                            onClick: () => onEdit?.(transaction),
-                          },
-                          {
-                            label: 'Delete',
-                            variant: 'danger' as const,
-                            onClick: () => onDelete?.(transaction),
-                          },
-                        ]}
-                      />
+                    <td className="py-3 pr-4">
+                      <Badge
+                        variant={
+                          transaction.type === 'INCOME' ? 'success' : 'danger'
+                        }
+                      >
+                        {transaction.type === 'INCOME' ? 'Income' : 'Expense'}
+                      </Badge>
+                    </td>
+
+                    <td className="py-3 pr-4">
+                      <Badge variant="default">{transaction.category}</Badge>
+                    </td>
+
+                    <td className="text-text-primary py-3 pr-4 text-sm">
+                      {transaction.description}
+                    </td>
+
+                    {isShared && (
+                      <td className="py-3 pr-4">
+                        {author && (
+                          <Avatar
+                            email={author.email}
+                            fullName={author.fullName}
+                            size="xs"
+                          />
+                        )}
+                      </td>
                     )}
-                  </td>
-                </tr>
-              ))}
+
+                    <td
+                      className={`py-3 pr-1 text-right text-sm font-medium ${
+                        transaction.type === 'INCOME'
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-red-600 dark:text-red-400'
+                      }`}
+                    >
+                      <MoneyAmount
+                        amount={transaction.amount}
+                        sign={transaction.type === 'INCOME' ? '+' : '-'}
+                      />
+                    </td>
+
+                    <td className="py-3 pl-2">
+                      {!isLocked && (
+                        <Dropdown
+                          items={[
+                            {
+                              label: 'Edit',
+                              onClick: () => onEdit?.(transaction),
+                            },
+                            {
+                              label: 'Delete',
+                              variant: 'danger' as const,
+                              onClick: () => onDelete?.(transaction),
+                            },
+                          ]}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </>
