@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { ExpiringContract } from '../../hooks/contracts/selectors/computeExpiringSoon';
 import { useLocalStorage } from '../../hooks/useLocalStorage';

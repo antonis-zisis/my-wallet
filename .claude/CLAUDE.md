@@ -51,7 +51,7 @@ pnpm run env:encrypt      # Encrypt before committing
 **Web** (React 19 + Vite 8 + Tailwind CSS 4):
 
 - Entry: `main.tsx` → `ThemeProvider` → `PrivacyProvider` → `ToastProvider` → `AuthProvider` → `ApolloProvider` → `UserProvider` → `RouterProvider`
-- Routing: React Router 7, `createBrowserRouter` in `router.tsx`. Root layout in `App.tsx` (NavBar + `<Outlet />`). Protected routes via `ProtectedRoute`
+- Routing: React Router 8 — `react-router-dom` is gone; `createBrowserRouter` and route components come from `react-router`, `RouterProvider` comes from `react-router/dom` (used in `main.tsx`). `createBrowserRouter` call lives in `router.tsx`. Root layout in `App.tsx` (NavBar + `<Outlet />`). Protected routes via `ProtectedRoute`
 - GraphQL: Apollo Client 4 in `lib/apollo.ts`. Queries/mutations per domain in `graphql/` (reports is split into `graphql/reports/{queries,mutations,index}.ts`). Uses relative `/graphql` URI — Vite proxies to server in dev
 - Auth: `contexts/AuthContext.tsx` (`useAuth`) backed by Supabase Auth. User record in `contexts/UserContext.tsx` (`useUser`), lazily created via upsert on first `me` query
 - Privacy: `contexts/PrivacyContext.tsx` (`usePrivacy`) — toggles visibility of money amounts, persisted to localStorage

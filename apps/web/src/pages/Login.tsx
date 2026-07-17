@@ -1,5 +1,5 @@
 import { type SyntheticEvent, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 
 import { AppLogoIcon, CircleAlertIcon } from '../components/icons';
 import { ThemeToggle } from '../components/ThemeToggle';

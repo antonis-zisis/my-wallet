@@ -1,7 +1,7 @@
 import { MockLink } from '@apollo/client/testing';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const showSuccess = vi.fn();

@@ -12,7 +12,7 @@ A personal budgeting app built with React and Express.
 
 |             |                                                                                |
 | ----------- | ------------------------------------------------------------------------------ |
-| **Web**     | React 19 · React Router 7 · Vite 8 · Tailwind CSS 4 · Apollo Client · Recharts |
+| **Web**     | React 19 · React Router 8 · Vite 8 · Tailwind CSS 4 · Apollo Client · Recharts |
 | **Server**  | Express 5 · Apollo Server · Prisma · PostgreSQL                                |
 | **Shared**  | TypeScript · Supabase · Vitest                                                 |
 | **Tooling** | pnpm workspaces · ESLint 10 · Prettier · Husky · Commitlint · Lint-staged      |
