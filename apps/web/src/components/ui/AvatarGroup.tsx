@@ -1,16 +1,10 @@
-import {
-  Avatar,
-  avatarLabel,
-  AvatarPerson,
-  AvatarSize,
-  sizeStyles,
-} from './Avatar';
+import { Avatar, AvatarDisplayData, AvatarSize, sizeStyles } from './Avatar';
 import { Tooltip } from './Tooltip';
 
 const MAX_VISIBLE_AVATARS = 3;
 
 type AvatarGroupProps = {
-  people: Array<AvatarPerson>;
+  people: Array<AvatarDisplayData>;
   size?: AvatarSize;
 };
 
@@ -24,17 +18,17 @@ export function AvatarGroup({ people, size = 'sm' }: AvatarGroupProps) {
 
   return (
     <span className="flex items-center -space-x-2">
-      {visible.map((person) => (
+      {visible.map((person, index) => (
         <Avatar
-          key={person.email}
-          email={person.email}
-          fullName={person.fullName}
+          key={`${person.label}-${index}`}
+          initials={person.initials}
+          label={person.label}
           size={size}
         />
       ))}
 
       {overflow.length > 0 && (
-        <Tooltip content={overflow.map(avatarLabel).join(', ')}>
+        <Tooltip content={overflow.map((person) => person.label).join(', ')}>
           <span
             className={`bg-bg-muted text-text-secondary dark:ring-bg-surface flex items-center justify-center rounded-full font-medium ring-2 ring-white ${sizeStyles[size]}`}
           >

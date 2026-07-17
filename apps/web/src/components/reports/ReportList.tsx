@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
+import { getAvatarData } from '../../utils/getAvatarData';
 import { ChevronRightIcon, DocumentTextIcon, LockClosedIcon } from '../icons';
 import { AvatarGroup, Card, MoneyAmount, Skeleton } from '../ui';
 
@@ -125,7 +126,10 @@ export function ReportList({
 
                 <div className="flex shrink-0 items-center gap-3">
                   {otherMembers.length > 0 && (
-                    <AvatarGroup people={otherMembers} size="xs" />
+                    <AvatarGroup
+                      people={otherMembers.map(getAvatarData)}
+                      size="xs"
+                    />
                   )}
 
                   <MoneyAmount

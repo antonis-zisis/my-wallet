@@ -1,14 +1,13 @@
-import { getInitials } from '../../utils/getInitials';
 import { Tooltip } from './Tooltip';
-
-export type AvatarPerson = {
-  email: string;
-  fullName?: string | null;
-};
 
 export type AvatarSize = 'xs' | 'sm';
 
-type AvatarProps = AvatarPerson & {
+export type AvatarDisplayData = {
+  initials: string;
+  label: string;
+};
+
+type AvatarProps = AvatarDisplayData & {
   size?: AvatarSize;
 };
 
@@ -17,17 +16,13 @@ export const sizeStyles: Record<AvatarSize, string> = {
   sm: 'h-7 w-7 text-xs',
 };
 
-export function avatarLabel({ email, fullName }: AvatarPerson): string {
-  return fullName ?? email;
-}
-
-export function Avatar({ email, fullName, size = 'sm' }: AvatarProps) {
+export function Avatar({ initials, label, size = 'sm' }: AvatarProps) {
   return (
-    <Tooltip content={avatarLabel({ email, fullName })}>
+    <Tooltip content={label}>
       <span
         className={`bg-brand-500 dark:ring-bg-surface flex items-center justify-center rounded-full font-medium text-white ring-2 ring-white ${sizeStyles[size]}`}
       >
-        {getInitials(fullName ?? email)}
+        {initials}
       </span>
     </Tooltip>
   );

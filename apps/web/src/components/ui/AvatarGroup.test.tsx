@@ -8,8 +8,8 @@ describe('AvatarGroup', () => {
     render(
       <AvatarGroup
         people={[
-          { email: 'a@example.com', fullName: 'Alice Adams' },
-          { email: 'b@example.com', fullName: 'Bob Brown' },
+          { initials: 'AA', label: 'Alice Adams' },
+          { initials: 'BB', label: 'Bob Brown' },
         ]}
       />
     );
@@ -23,11 +23,11 @@ describe('AvatarGroup', () => {
     render(
       <AvatarGroup
         people={[
-          { email: 'a@example.com', fullName: 'Alice Adams' },
-          { email: 'b@example.com', fullName: 'Bob Brown' },
-          { email: 'c@example.com', fullName: 'Carol Clark' },
-          { email: 'd@example.com', fullName: 'Dan Davis' },
-          { email: 'e@example.com', fullName: 'Eve Evans' },
+          { initials: 'AA', label: 'Alice Adams' },
+          { initials: 'BB', label: 'Bob Brown' },
+          { initials: 'CC', label: 'Carol Clark' },
+          { initials: 'DD', label: 'Dan Davis' },
+          { initials: 'EE', label: 'Eve Evans' },
         ]}
       />
     );

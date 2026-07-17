@@ -1,6 +1,7 @@
 import { ReportMember } from '../../types/report';
 import { Transaction } from '../../types/transaction';
 import { formatDate } from '../../utils/formatDate';
+import { getAvatarData } from '../../utils/getAvatarData';
 import { Avatar, Badge, Button, Card, Dropdown, MoneyAmount } from '../ui';
 import { TransactionTableHeader } from './TransactionTableHeader';
 
@@ -172,11 +173,7 @@ export function TransactionTable({
                     {isShared && (
                       <td className="py-3 pr-4">
                         {author && (
-                          <Avatar
-                            email={author.email}
-                            fullName={author.fullName}
-                            size="xs"
-                          />
+                          <Avatar {...getAvatarData(author)} size="xs" />
                         )}
                       </td>
                     )}

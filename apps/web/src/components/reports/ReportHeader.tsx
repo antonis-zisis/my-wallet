@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { ReportMember, ReportRole } from '../../types/report';
 import { formatDate } from '../../utils/formatDate';
+import { getAvatarData } from '../../utils/getAvatarData';
 import { LockClosedIcon } from '../icons';
 import { AvatarGroup, Button, Dropdown, Input } from '../ui';
 
@@ -106,7 +107,9 @@ export function ReportHeader({
               <LockClosedIcon className="text-text-tertiary size-4" />
             )}
 
-            {otherMembers.length > 0 && <AvatarGroup people={otherMembers} />}
+            {otherMembers.length > 0 && (
+              <AvatarGroup people={otherMembers.map(getAvatarData)} />
+            )}
           </div>
 
           <p className="text-text-tertiary mt-1 text-xs">
