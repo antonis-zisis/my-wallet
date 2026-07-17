@@ -2,12 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
-import {
-  ChevronRightIcon,
-  DocumentTextIcon,
-  LockClosedIcon,
-  UserPlusIcon,
-} from '../icons';
+import { ChevronRightIcon, DocumentTextIcon, LockClosedIcon } from '../icons';
 import { AvatarGroup, Card, MoneyAmount, Skeleton } from '../ui';
 
 type ReportListProps = {
@@ -16,7 +11,6 @@ type ReportListProps = {
   isSearching?: boolean;
   loading: boolean;
   onCreateReport?: () => void;
-  onOpenShareModal?: (report: Report) => void;
   reports: Array<Report>;
 };
 
@@ -73,7 +67,6 @@ export function ReportList({
   isSearching,
   loading,
   onCreateReport,
-  onOpenShareModal,
   reports,
 }: ReportListProps) {
   if (loading) {
@@ -135,25 +128,11 @@ export function ReportList({
                     <AvatarGroup people={otherMembers} size="xs" />
                   )}
 
-                  {onOpenShareModal && (
-                    <button
-                      aria-label={`Share ${report.title}`}
-                      className="text-text-tertiary hover:text-brand-500 cursor-pointer rounded p-1"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        onOpenShareModal(report);
-                      }}
-                    >
-                      <UserPlusIcon className="size-4" />
-                    </button>
-                  )}
-
                   <MoneyAmount
                     amount={netBalance}
                     currency=""
                     sign={netBalance >= 0 ? '+' : ''}
-                    className={`text-sm font-medium tabular-nums ${
+                    className={`inline-block min-w-20 text-right text-sm font-medium tabular-nums ${
                       netBalance >= 0
                         ? 'text-green-600 dark:text-green-400'
                         : 'text-red-500 dark:text-red-400'

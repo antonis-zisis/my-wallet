@@ -5,14 +5,12 @@ import { useToast } from '../../contexts/ToastContext';
 import { useUser } from '../../contexts/UserContext';
 import { CREATE_REPORT, GET_REPORTS } from '../../graphql/reports';
 import {
-  Report,
   REPORT_SORT_CONFIG,
   ReportsData,
   ReportSortOption,
 } from '../../types/report';
 import { useDebouncedValue } from '../useDebouncedValue';
 import { useLocalStorage } from '../useLocalStorage';
-import { useReportSharing } from './useReportSharing';
 
 export const PAGE_SIZE = 10;
 
@@ -26,12 +24,6 @@ export function useReportsData() {
     'NEWEST'
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sharingReportId, setSharingReportId] = useState<string | null>(null);
-
-  const sharing = useReportSharing({
-    onLeft: () => setSharingReportId(null),
-    reportId: sharingReportId ?? undefined,
-  });
 
   const debouncedSearch = useDebouncedValue(search);
   const { sortBy, sortOrder } = REPORT_SORT_CONFIG[sortOption];
@@ -61,9 +53,6 @@ export function useReportsData() {
   const totalCount = resolvedData?.reports.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-  const sharingReport =
-    reports.find((report) => report.id === sharingReportId) ?? null;
-
   const handleCreateReport = async (title: string) => {
     try {
       await createReport({ variables: { input: { title } } });
@@ -78,16 +67,13 @@ export function useReportsData() {
   };
 
   return {
-    ...sharing,
     currentUserId: user?.supabaseId ?? '',
     error: !!error,
     isModalOpen,
     loading: loading && !resolvedData,
     onCloseModal: () => setIsModalOpen(false),
-    onCloseShareModal: () => setSharingReportId(null),
     onCreateReport: handleCreateReport,
     onOpenModal: () => setIsModalOpen(true),
-    onOpenShareModal: (report: Report) => setSharingReportId(report.id),
     onPageChange: setPage,
     onSearchChange: (value: string) => {
       setSearch(value);
@@ -100,7 +86,6 @@ export function useReportsData() {
     page,
     reports,
     search,
-    sharingReport,
     sortOption,
     totalCount,
     totalPages,

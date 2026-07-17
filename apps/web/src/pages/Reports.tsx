@@ -1,6 +1,5 @@
 import { CreateReportModal } from '../components/reports/CreateReportModal';
 import { ReportList } from '../components/reports/ReportList';
-import { ShareReportModal } from '../components/reports/ShareReportModal';
 import {
   Button,
   PageLayout,
@@ -15,26 +14,17 @@ export function Reports() {
   const {
     currentUserId,
     error,
-    isLeaving,
     isModalOpen,
-    isSharing,
     loading,
     onCloseModal,
-    onCloseShareModal,
     onCreateReport,
-    onLeaveReport,
     onOpenModal,
-    onOpenShareModal,
     onPageChange,
     onSearchChange,
-    onShareReport,
     onSortChange,
-    onUnshareMember,
-    onUpdateMemberRole,
     page,
     reports,
     search,
-    sharingReport,
     sortOption,
     totalCount,
     totalPages,
@@ -73,7 +63,6 @@ export function Reports() {
           isSearching={!!search}
           loading={loading}
           onCreateReport={onOpenModal}
-          onOpenShareModal={onOpenShareModal}
           reports={reports}
         />
 
@@ -94,22 +83,6 @@ export function Reports() {
         onClose={onCloseModal}
         onSubmit={onCreateReport}
       />
-
-      {sharingReport && (
-        <ShareReportModal
-          currentUserId={currentUserId}
-          isLeaving={isLeaving}
-          isOpen
-          isSharing={isSharing}
-          members={sharingReport.members ?? []}
-          myRole={sharingReport.myRole ?? 'OWNER'}
-          onClose={onCloseShareModal}
-          onLeaveReport={onLeaveReport}
-          onShareReport={onShareReport}
-          onUnshareMember={onUnshareMember}
-          onUpdateMemberRole={onUpdateMemberRole}
-        />
-      )}
     </>
   );
 }

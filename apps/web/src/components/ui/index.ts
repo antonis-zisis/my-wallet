@@ -1,4 +1,5 @@
-export { Avatar, AvatarGroup } from './Avatar';
+export { Avatar } from './Avatar';
+export { AvatarGroup } from './AvatarGroup';
 export { Badge } from './Badge';
 export { Button } from './Button';
 export { Card } from './Card';

@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -32,7 +31,6 @@ const renderReportList = (props: {
   isSearching?: boolean;
   loading: boolean;
   onCreateReport?: () => void;
-  onOpenShareModal?: (report: Report) => void;
   reports: Array<Report>;
 }) => {
   return render(
@@ -146,23 +144,6 @@ describe('ReportList', () => {
 
       expect(screen.getByText('JS')).toBeInTheDocument();
       expect(screen.queryByText('JD')).not.toBeInTheDocument();
-    });
-
-    it('opens the share modal from the row share button', async () => {
-      const onOpenShareModal = vi.fn();
-      renderReportList({
-        currentUserId: 'supabase-user-1',
-        error: false,
-        loading: false,
-        onOpenShareModal,
-        reports: [sharedReport],
-      });
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Share Shared Budget' })
-      );
-
-      expect(onOpenShareModal).toHaveBeenCalledWith(sharedReport);
     });
   });
 });
