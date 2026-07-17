@@ -19,8 +19,8 @@ A personal budgeting app built with React and Express.
 
 ## Prerequisites
 
-- Node.js 24.14.1
-- pnpm 10.33.0
+- Node.js 24.18.0
+- pnpm 11.13.1
 - PostgreSQL — either via [Docker Desktop](https://www.docker.com/products/docker-desktop/) / [OrbStack](https://orbstack.dev), or installed locally
 
 ## Getting Started
