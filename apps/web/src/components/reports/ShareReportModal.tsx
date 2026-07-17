@@ -66,7 +66,7 @@ function MemberRow({
         <div className="flex shrink-0 items-center gap-1">
           <Select
             aria-label={`Role of ${displayName}`}
-            className="w-28 py-1 text-sm"
+            className="w-28 py-1! text-sm"
             options={ROLE_OPTIONS}
             value={member.role}
             onChange={(event) =>
@@ -135,6 +135,7 @@ export function ShareReportModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      size="lg"
       title={isOwnerView ? 'Share Report' : 'Report Members'}
       footer={
         isOwnerView ? undefined : (
@@ -153,6 +154,7 @@ export function ShareReportModal({
           <div className="flex-1">
             <Input
               id="share-email"
+              className="py-1! text-sm"
               label="Email"
               placeholder="name@example.com"
               type="email"
@@ -164,7 +166,7 @@ export function ShareReportModal({
 
           <Select
             aria-label="Role"
-            className="w-28 py-2 text-sm"
+            className="w-28 py-1! text-sm"
             options={ROLE_OPTIONS}
             value={role}
             onChange={(event) => setRole(event.target.value as ReportRole)}
@@ -173,6 +175,7 @@ export function ShareReportModal({
           <Button
             disabled={!isEmailValid}
             isLoading={isSharing}
+            size="xs"
             onClick={handleShare}
           >
             Share
