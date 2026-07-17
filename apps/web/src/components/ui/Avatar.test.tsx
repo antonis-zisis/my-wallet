@@ -9,4 +9,10 @@ describe('Avatar', () => {
 
     expect(screen.getByText('JS')).toBeInTheDocument();
   });
+
+  it('exposes the label as an accessible name', () => {
+    render(<Avatar initials="JS" label="Jane Smith" />);
+
+    expect(screen.getByLabelText('Jane Smith')).toBeInTheDocument();
+  });
 });

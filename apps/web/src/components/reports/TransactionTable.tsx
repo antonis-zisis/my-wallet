@@ -2,7 +2,15 @@ import { ReportMember } from '../../types/report';
 import { Transaction } from '../../types/transaction';
 import { formatDate } from '../../utils/formatDate';
 import { getAvatarData } from '../../utils/getAvatarData';
-import { Avatar, Badge, Button, Card, Dropdown, MoneyAmount } from '../ui';
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Dropdown,
+  MoneyAmount,
+  Tooltip,
+} from '../ui';
 import { TransactionTableHeader } from './TransactionTableHeader';
 
 type TransactionTableProps = {
@@ -140,6 +148,7 @@ export function TransactionTable({
                       (member) => member.userId === transaction.createdById
                     )
                   : ownerMember;
+                const authorAvatarData = author ? getAvatarData(author) : null;
 
                 return (
                   <tr
@@ -172,8 +181,10 @@ export function TransactionTable({
 
                     {isShared && (
                       <td className="py-3 pr-4">
-                        {author && (
-                          <Avatar {...getAvatarData(author)} size="xs" />
+                        {authorAvatarData && (
+                          <Tooltip content={authorAvatarData.label}>
+                            <Avatar {...authorAvatarData} size="xs" />
+                          </Tooltip>
                         )}
                       </td>
                     )}

@@ -2,6 +2,7 @@ import { Avatar, AvatarDisplayData, AvatarSize, sizeStyles } from './Avatar';
 import { Tooltip } from './Tooltip';
 
 const MAX_VISIBLE_AVATARS = 3;
+const RING_CLASS_NAME = 'ring-2 ring-white dark:ring-bg-surface';
 
 type AvatarGroupProps = {
   people: Array<AvatarDisplayData>;
@@ -19,18 +20,20 @@ export function AvatarGroup({ people, size = 'sm' }: AvatarGroupProps) {
   return (
     <span className="flex items-center -space-x-2">
       {visible.map((person, index) => (
-        <Avatar
-          key={`${person.label}-${index}`}
-          initials={person.initials}
-          label={person.label}
-          size={size}
-        />
+        <Tooltip key={`${person.label}-${index}`} content={person.label}>
+          <Avatar
+            className={RING_CLASS_NAME}
+            initials={person.initials}
+            label={person.label}
+            size={size}
+          />
+        </Tooltip>
       ))}
 
       {overflow.length > 0 && (
         <Tooltip content={overflow.map((person) => person.label).join(', ')}>
           <span
-            className={`bg-bg-muted text-text-secondary dark:ring-bg-surface flex items-center justify-center rounded-full font-medium ring-2 ring-white ${sizeStyles[size]}`}
+            className={`bg-bg-muted text-text-secondary dark:ring-bg-surface flex items-center justify-center rounded-full font-medium tracking-wider ring-2 ring-white ${sizeStyles[size]}`}
           >
             +{overflow.length}
           </span>

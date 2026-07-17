@@ -106,15 +106,18 @@ export function ReportHeader({
             {isLocked && (
               <LockClosedIcon className="text-text-tertiary size-4" />
             )}
-
-            {otherMembers.length > 0 && (
-              <AvatarGroup people={otherMembers.map(getAvatarData)} />
-            )}
           </div>
 
           <p className="text-text-tertiary mt-1 text-xs">
             Created {formatDate(createdAt)} · Updated {formatDate(updatedAt)}
           </p>
+
+          {otherMembers.length > 0 && (
+            <p className="text-text-tertiary mt-1 flex items-center gap-2 text-xs">
+              Shared with:
+              <AvatarGroup people={otherMembers.map(getAvatarData)} size="xs" />
+            </p>
+          )}
         </div>
       )}
 

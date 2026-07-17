@@ -6,11 +6,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { HEALTH_QUERY } from '../graphql/health';
-import { getInitials } from '../utils/getInitials';
+import { getAvatarData } from '../utils/getAvatarData';
 import { AppLogoIcon, LogOutIcon, SparklesIcon, UserIcon } from './icons';
 import { PrivacyToggle } from './PrivacyToggle';
 import { ThemeToggle } from './ThemeToggle';
-import { Dropdown } from './ui';
+import { Avatar, Dropdown } from './ui';
 import { WhatsNewModal } from './WhatsNewModal';
 
 const navLinks = [
@@ -128,11 +128,12 @@ export function NavBar() {
                     ]}
                     trigger={
                       <div className="relative">
-                        <button
-                          aria-label="User menu"
-                          className="bg-brand-500 hover:bg-brand-600 dark:ring-bg-surface flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-medium tracking-wider text-white ring-2 ring-white transition-colors"
-                        >
-                          {getInitials(user.fullName ?? user.email)}
+                        <button aria-label="User menu" className="rounded-full">
+                          <Avatar
+                            {...getAvatarData(user)}
+                            className="hover:bg-brand-600 cursor-pointer transition-colors"
+                            size="md"
+                          />
                         </button>
                         <span
                           className={`dark:border-bg-surface absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${healthDotClass}`}
