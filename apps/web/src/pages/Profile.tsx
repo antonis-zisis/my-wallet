@@ -43,8 +43,8 @@ export function Profile() {
 
       <Card className="p-6">
         <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">
-          <div className="bg-brand-50 dark:bg-brand-800/30 flex h-8 w-8 shrink-0 items-center justify-center rounded">
-            <span className="text-brand-600 dark:text-brand-400 h-4 w-4">
+          <div className="bg-bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded">
+            <span className="text-text-secondary h-4 w-4">
               <UserIcon />
             </span>
           </div>
