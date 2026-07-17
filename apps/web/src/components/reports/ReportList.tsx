@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { Report } from '../../types/report';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';

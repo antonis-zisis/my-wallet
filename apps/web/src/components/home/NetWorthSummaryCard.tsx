@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { NetWorthSnapshot } from '../../types/netWorth';

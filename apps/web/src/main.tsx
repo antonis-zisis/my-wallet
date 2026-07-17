@@ -3,7 +3,7 @@ import './index.css';
 import { ApolloProvider } from '@apollo/client/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider } from 'react-router/dom';
 
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivacyProvider } from './contexts/PrivacyContext';

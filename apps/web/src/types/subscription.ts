@@ -3,10 +3,7 @@ import { SortOrder } from './sort';
 export type SubscriptionSortField = 'NAME' | 'MONTHLY_COST' | 'NEXT_RENEWAL';
 
 export type SubscriptionSortOption =
-  | 'NAME'
-  | 'COST_HIGH_LOW'
-  | 'COST_LOW_HIGH'
-  | 'NEXT_RENEWAL';
+  'NAME' | 'COST_HIGH_LOW' | 'COST_LOW_HIGH' | 'NEXT_RENEWAL';
 
 export const SUBSCRIPTION_SORT_CONFIG: Record<
   SubscriptionSortOption,
@@ -29,11 +26,7 @@ export const SUBSCRIPTION_SORT_OPTIONS: Array<{
 ];
 
 export type BillingCycle =
-  | 'WEEKLY'
-  | 'MONTHLY'
-  | 'QUARTERLY'
-  | 'BI_ANNUAL'
-  | 'YEARLY';
+  'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'BI_ANNUAL' | 'YEARLY';
 
 export const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
   WEEKLY: 'Weekly',

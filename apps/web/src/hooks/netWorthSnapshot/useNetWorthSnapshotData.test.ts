@@ -2,7 +2,7 @@ import { MockLink } from '@apollo/client/testing';
 import { renderHook, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { createElement } from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it } from 'vitest';
 
 import { GET_NET_WORTH_SNAPSHOT } from '../../graphql/netWorth';
