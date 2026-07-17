@@ -5,6 +5,7 @@ export function makeUser(overrides: Partial<User> = {}): User {
     id: 'user-1',
     email: 'user@example.com',
     fullName: 'John Doe',
+    supabaseId: 'supabase-user-1',
     ...overrides,
   };
 }

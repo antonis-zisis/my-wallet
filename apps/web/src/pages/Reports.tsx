@@ -12,6 +12,7 @@ import { REPORT_SORT_OPTIONS, ReportSortOption } from '../types/report';
 
 export function Reports() {
   const {
+    currentUserId,
     error,
     isModalOpen,
     loading,
@@ -57,6 +58,7 @@ export function Reports() {
         )}
 
         <ReportList
+          currentUserId={currentUserId}
           error={error}
           isSearching={!!search}
           loading={loading}

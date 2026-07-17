@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 
 import { Report } from '../../types/report';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
+import { getAvatarData } from '../../utils/getAvatarData';
 import { ChevronRightIcon, DocumentTextIcon, LockClosedIcon } from '../icons';
-import { Card, MoneyAmount, Skeleton } from '../ui';
+import { AvatarGroup, Card, MoneyAmount, Skeleton } from '../ui';
 
 type ReportListProps = {
+  currentUserId?: string;
   error: boolean;
   isSearching?: boolean;
   loading: boolean;
@@ -61,6 +63,7 @@ function EmptyState({ onCreateReport }: { onCreateReport?: () => void }) {
 }
 
 export function ReportList({
+  currentUserId,
   error,
   isSearching,
   loading,
@@ -100,6 +103,9 @@ export function ReportList({
         {reports.map((report) => {
           const netBalance = report.netBalance ?? 0;
           const transactionCount = report.transactionCount ?? 0;
+          const otherMembers = (report.members ?? []).filter(
+            (member) => member.userId !== currentUserId
+          );
 
           return (
             <li key={report.id}>
@@ -119,11 +125,18 @@ export function ReportList({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-3">
+                  {otherMembers.length > 0 && (
+                    <AvatarGroup
+                      people={otherMembers.map(getAvatarData)}
+                      size="xs"
+                    />
+                  )}
+
                   <MoneyAmount
                     amount={netBalance}
                     currency=""
                     sign={netBalance >= 0 ? '+' : ''}
-                    className={`text-sm font-medium tabular-nums ${
+                    className={`inline-block min-w-20 text-right text-sm font-medium tabular-nums ${
                       netBalance >= 0
                         ? 'text-green-600 dark:text-green-400'
                         : 'text-red-500 dark:text-red-400'

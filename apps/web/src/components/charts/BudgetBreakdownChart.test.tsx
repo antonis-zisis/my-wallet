@@ -20,6 +20,7 @@ const makeTransaction = (
   type: 'EXPENSE',
   description: 'Test',
   date: '2026-01-15',
+  createdById: null,
   createdAt: '2026-01-15T00:00:00Z',
   updatedAt: '2026-01-15T00:00:00Z',
   ...overrides,

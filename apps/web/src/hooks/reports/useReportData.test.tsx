@@ -12,6 +12,19 @@ vi.mock('../../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
+vi.mock('../../contexts/UserContext', () => ({
+  useUser: () => ({
+    user: {
+      id: 'user-1',
+      email: 'user@example.com',
+      fullName: 'John Doe',
+      supabaseId: 'supabase-user-1',
+    },
+    loading: false,
+    updateUser: vi.fn(),
+  }),
+}));
+
 import { GET_REPORT } from '../../graphql/reports';
 import {
   CREATE_TRANSACTION,
@@ -28,6 +41,7 @@ const mockTransaction = (
   amount: 100,
   category: 'Test',
   createdAt: '2024-01-15T00:00:00.000Z',
+  createdById: null,
   date: '2024-01-15T00:00:00.000Z',
   description: `Transaction ${id}`,
   id,

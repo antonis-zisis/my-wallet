@@ -143,6 +143,7 @@ pnpm typecheck
 
 - **Reports**: Create and manage budget reports, each containing its own set of transactions
 - **Transaction Management**: Add income and expense transactions with categories within a report
+- **Report Sharing**: Share a report with another registered user as "Can view" or "Can edit" — shared reports appear in the recipient's list with member avatars, editors can add transactions (attributed with an author avatar), the owner manages roles and removal, and members can leave at any time
 - **Subscriptions**: Track recurring payments (Netflix, Spotify, etc.) with monthly/yearly billing cycles, next renewal date calculation, cost equivalents (yearly for monthly, monthly for yearly), per-service logos, categories, search and sorting, cancel or delete subscriptions, and view total monthly cost
 - **Contracts**: Track real-world service contracts (electricity, internet, insurance, etc.) by provider, plan, and category, with an optional cost and an expiration date — contracts are flagged as expiring soon or expired, and surfaced on the Home dashboard before they lapse
 - **Net Worth**: Track your financial position by creating snapshots of assets and liabilities, with automatic net worth calculation and paginated snapshot history

@@ -8,6 +8,7 @@ export type Transaction = {
   description: string;
   category: string;
   date: string;
+  createdById: string | null;
   createdAt: string;
   updatedAt: string;
 };

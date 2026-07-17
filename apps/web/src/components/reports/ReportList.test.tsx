@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
-import { makeReport } from '../../test/fixtures/report';
+import { makeReport, makeReportMember } from '../../test/fixtures/report';
 import { Report } from '../../types/report';
 import { ReportList } from './ReportList';
 
@@ -26,6 +26,7 @@ const mockReports: Array<Report> = [
 ];
 
 const renderReportList = (props: {
+  currentUserId?: string;
   error: boolean;
   isSearching?: boolean;
   loading: boolean;
@@ -115,5 +116,34 @@ describe('ReportList', () => {
   it('displays negative net balance with a minus sign', () => {
     renderReportList({ error: false, loading: false, reports: mockReports });
     expect(screen.getByText(/-100/)).toBeInTheDocument();
+  });
+
+  describe('when a report is shared', () => {
+    const sharedReport = makeReport({
+      id: '3',
+      title: 'Shared Budget',
+      members: [
+        makeReportMember(),
+        makeReportMember({
+          id: 'share-1',
+          userId: 'supabase-user-2',
+          email: 'jane@example.com',
+          fullName: 'Jane Smith',
+          role: 'EDITOR',
+        }),
+      ],
+    });
+
+    it('shows member avatars, excluding the current user', () => {
+      renderReportList({
+        currentUserId: 'supabase-user-1',
+        error: false,
+        loading: false,
+        reports: [sharedReport],
+      });
+
+      expect(screen.getByText('JS')).toBeInTheDocument();
+      expect(screen.queryByText('JD')).not.toBeInTheDocument();
+    });
   });
 });

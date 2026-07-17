@@ -18,7 +18,12 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('../contexts/UserContext', () => ({
   useUser: vi.fn().mockReturnValue({
-    user: { id: '1', email: 'test@example.com', fullName: 'John Doe' },
+    user: {
+      id: '1',
+      email: 'test@example.com',
+      fullName: 'John Doe',
+      supabaseId: 'supabase-1',
+    },
     loading: false,
     updateUser: vi.fn(),
   }),
@@ -68,7 +73,12 @@ describe('NavBar', () => {
   beforeEach(() => {
     mockNavigate.mockReset();
     vi.mocked(useUser).mockReturnValue({
-      user: { id: '1', email: 'test@example.com', fullName: 'John Doe' },
+      user: {
+        id: '1',
+        email: 'test@example.com',
+        fullName: 'John Doe',
+        supabaseId: 'supabase-1',
+      },
       loading: false,
       updateUser: vi.fn(),
     });
@@ -111,7 +121,12 @@ describe('NavBar', () => {
 
   it('shows avatar with email initials when fullName is null', async () => {
     vi.mocked(useUser).mockReturnValue({
-      user: { id: '1', email: 'test@example.com', fullName: null },
+      user: {
+        id: '1',
+        email: 'test@example.com',
+        fullName: null,
+        supabaseId: 'supabase-1',
+      },
       loading: false,
       updateUser: vi.fn(),
     });
@@ -178,7 +193,12 @@ describe('NavBar', () => {
 
   it('shows only email in dropdown header when fullName is null', async () => {
     vi.mocked(useUser).mockReturnValue({
-      user: { id: '1', email: 'test@example.com', fullName: null },
+      user: {
+        id: '1',
+        email: 'test@example.com',
+        fullName: null,
+        supabaseId: 'supabase-1',
+      },
       loading: false,
       updateUser: vi.fn(),
     });

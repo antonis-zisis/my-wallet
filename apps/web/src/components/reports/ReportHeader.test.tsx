@@ -2,17 +2,22 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
+import { makeReportMember } from '../../test/fixtures';
 import { ReportHeader } from './ReportHeader';
 
 const defaultProps = {
   createdAt: '2024-01-01T00:00:00.000Z',
+  currentUserId: 'supabase-user-1',
   isLocked: false,
+  members: [makeReportMember()],
+  myRole: 'OWNER' as const,
   title: 'Test Report',
   updatedAt: '2024-03-15T00:00:00.000Z',
   onAddTransaction: vi.fn(),
   onDeleteReport: vi.fn(),
   onExportCsv: vi.fn(),
   onLockReport: vi.fn(),
+  onOpenShareModal: vi.fn(),
   onSaveTitle: vi.fn(),
   onUnlockReport: vi.fn(),
 };

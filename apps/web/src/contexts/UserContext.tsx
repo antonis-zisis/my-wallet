@@ -8,6 +8,7 @@ export type User = {
   id: string;
   email: string;
   fullName: string | null;
+  supabaseId: string;
 };
 
 type UpdateUserInput = {

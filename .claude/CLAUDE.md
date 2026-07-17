@@ -52,11 +52,11 @@ pnpm run env:encrypt      # Encrypt before committing
 
 - Entry: `main.tsx` → `ThemeProvider` → `PrivacyProvider` → `ToastProvider` → `AuthProvider` → `ApolloProvider` → `UserProvider` → `RouterProvider`
 - Routing: React Router 7, `createBrowserRouter` in `router.tsx`. Root layout in `App.tsx` (NavBar + `<Outlet />`). Protected routes via `ProtectedRoute`
-- GraphQL: Apollo Client 4 in `lib/apollo.ts`. Queries/mutations per domain in `graphql/`. Uses relative `/graphql` URI — Vite proxies to server in dev
+- GraphQL: Apollo Client 4 in `lib/apollo.ts`. Queries/mutations per domain in `graphql/` (reports is split into `graphql/reports/{queries,mutations,index}.ts`). Uses relative `/graphql` URI — Vite proxies to server in dev
 - Auth: `contexts/AuthContext.tsx` (`useAuth`) backed by Supabase Auth. User record in `contexts/UserContext.tsx` (`useUser`), lazily created via upsert on first `me` query
 - Privacy: `contexts/PrivacyContext.tsx` (`usePrivacy`) — toggles visibility of money amounts, persisted to localStorage
 - Toasts: `contexts/ToastContext.tsx` (`useToast`) — global toast notification system (`showSuccess`, `showError`, `showInfo`)
-- UI primitives: `components/ui/` (Badge, Button, Card, Divider, Dropdown, Input, Modal, MoneyAmount, PageLayout, Pagination, SearchInput, Select, Skeleton, Spinner, Toast, Tooltip)
+- UI primitives: `components/ui/` (Avatar/AvatarGroup, Badge, Button, Card, Divider, Dropdown, Input, Modal, MoneyAmount, PageLayout, Pagination, SearchInput, Select, Skeleton, Spinner, Toast, Tooltip)
 - Feature components: `components/contracts/`, `components/home/`, `components/netWorth/`, `components/reports/`, `components/subscriptions/` — domain-specific composed components. `components/icons/` holds the SVG icon set (barrel-exported from `icons/index.ts`)
 - Charts: Recharts in `components/charts/` — `BudgetBreakdownChart`, `ExpenseBreakdownChart`, `IncomeExpensesChart`, `NetWorthCategoryBreakdownChart`, `NetWorthSparkline`, `NetWorthTrendChart`, `SubscriptionCategoryBreakdownChart`
 - Types: `types/` — shared TypeScript types per domain (`report.ts`, `subscription.ts`, `contract.ts`, `netWorth.ts`, `transaction.ts`) plus `sort.ts` (shared sort-direction type)
@@ -83,7 +83,7 @@ Each domain lives in mirrored directories on both sides:
 
 | Domain            | Server                                   | Web graphql                | Web hook                                      | Web page                           |
 | ----------------- | ---------------------------------------- | -------------------------- | --------------------------------------------- | ---------------------------------- |
-| **reports**       | `apps/server/src/graphql/reports/`       | `graphql/reports.ts`       | `useReportsData` / `useReportData`            | `Reports`, `Report`                |
+| **reports**       | `apps/server/src/graphql/reports/`       | `graphql/reports/`         | `useReportsData` / `useReportData`            | `Reports`, `Report`                |
 | **transactions**  | `apps/server/src/graphql/transactions/`  | `graphql/transactions.ts`  | _(used inside report hook)_                   | _(inside Report page)_             |
 | **subscriptions** | `apps/server/src/graphql/subscriptions/` | `graphql/subscriptions.ts` | `useSubscriptionsData`                        | `Subscriptions`                    |
 | **contracts**     | `apps/server/src/graphql/contracts/`     | `graphql/contracts.ts`     | `useContractsData`                            | `Contracts`                        |
@@ -104,6 +104,8 @@ Each domain lives in mirrored directories on both sides:
 All domains are merged in `apps/server/src/graphql/index.ts`.
 
 **Web data hook pattern:** hooks own all query/mutation logic and return a flat object of state + `on<Action>` handlers. Pages are thin — they just destructure the hook and render.
+
+**Report sharing model:** a report can be shared with other registered users (looked up by lowercase-normalized email; the target `users` row must exist). The owner is implicit (`Report.userId`, Supabase id) — `ReportShare` rows carry `VIEWER` or `EDITOR` roles (`SHARE_ROLES` in `lib/validate/enums.ts`). One access predicate (`reportAccessWhere` in `reports/lib/reportAccess.ts`, owner OR shared) drives the `reports`/`report`/`transactions` queries; `resolveReportAccess` gates mutations (`NOT_FOUND` for strangers, `FORBIDDEN` for insufficient role). Editors add/edit/delete transactions and rename; share/unshare/role-change/lock/delete are owner-only; members leave via `leaveSharedReport`. `Report.members`/`myRole` are field resolvers (batch-preloaded for the list query); `Transaction.createdById` attributes authorship (null = owner). Web side: `useReportSharing` (composed by both report hooks), `ShareReportModal`, `Avatar`/`AvatarGroup` member indicators, and `myRole`-gated affordances on the Report page. The reports server resolvers are split into `queries.ts`/`mutations.ts`/`fields.ts`, merged in `resolvers.ts`.
 
 **Subscription cancellation model:** `cancelledAt` marks when cancelled, `endDate` is the last active date (set to next renewal on cancellation). `isActive` is a computed field — it checks `cancelledAt` + `endDate` rather than the stored `isActive` column when a subscription has been cancelled.
 

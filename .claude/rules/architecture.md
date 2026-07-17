@@ -63,6 +63,16 @@ Sibling rules: [rules.md](./rules.md) for naming/workflow/design, [security.md](
 
 - **Money displayed in JSX → use `<MoneyAmount />`.** Never format with `formatMoney` inline — that bypasses privacy mode.
 
+## Web — ui primitives
+
+- **Writing or editing a component in `components/ui/` → it must stay domain-agnostic.** No imports from `types/<domain>.ts`, `graphql/`, or `hooks/<domain>/`, and no domain-shaped props (`email`, `fullName`, `report`, `subscription`, …). Props describe already-computed display data (`label`, `initials`, `amount`, `items`) that any domain could supply — never a business-specific shape. A `ui/` primitive must be usable by a domain nobody has written yet.
+
+  Trigger for catching this in review: a `ui/` component importing from `utils/` to compute a display value itself (e.g. deriving initials from a name inside the primitive) is the tell — that derivation belongs in the domain component or a `utils/<name>.ts` helper the domain component calls, passing the primitive the finished value.
+
+  Example: `Avatar` takes `{ initials, label }`, not `{ email, fullName }`. The `fullName ?? email` fallback and initials derivation live in `utils/getAvatarData.ts`; the domain component (`ReportList`, `ShareReportModal`, …) calls it and spreads the result into `<Avatar />`.
+
+  Exception: contexts that exist purely as app-wide UI infrastructure — not business domains — may be used directly by the primitive built around them (`ToastContext` in `Toast`, `PrivacyContext` in `MoneyAmount`). These aren't a leak because the primitive _is_ the display layer for that infrastructure.
+
 ## Web — GraphQL operation files
 
 - **`graphql/<domain>.ts` exceeds ~150 LOC → split into `graphql/<domain>/queries.ts` and `graphql/<domain>/mutations.ts`,** re-exported from `graphql/<domain>/index.ts`. Keep field selections alphabetically sorted within each selection set.

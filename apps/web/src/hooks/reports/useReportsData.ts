@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
 import { useToast } from '../../contexts/ToastContext';
+import { useUser } from '../../contexts/UserContext';
 import { CREATE_REPORT, GET_REPORTS } from '../../graphql/reports';
 import {
   REPORT_SORT_CONFIG,
@@ -15,6 +16,7 @@ export const PAGE_SIZE = 10;
 
 export function useReportsData() {
   const { showError, showSuccess } = useToast();
+  const { user } = useUser();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [sortOption, setSortOption] = useLocalStorage<ReportSortOption>(
@@ -65,6 +67,7 @@ export function useReportsData() {
   };
 
   return {
+    currentUserId: user?.supabaseId ?? '',
     error: !!error,
     isModalOpen,
     loading: loading && !resolvedData,

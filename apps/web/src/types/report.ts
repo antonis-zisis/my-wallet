@@ -23,9 +23,21 @@ export const REPORT_SORT_OPTIONS: Array<{
   { value: 'NET_LOW_HIGH', label: 'Net (Low–High)' },
 ];
 
+export type ReportRole = 'OWNER' | 'EDITOR' | 'VIEWER';
+
+export type ReportMember = {
+  id: string;
+  userId: string;
+  email: string;
+  fullName: string | null;
+  role: ReportRole;
+};
+
 export type Report = {
   id: string;
   isLocked: boolean;
+  members?: Array<ReportMember>;
+  myRole?: ReportRole;
   netBalance?: number;
   title: string;
   transactionCount?: number;

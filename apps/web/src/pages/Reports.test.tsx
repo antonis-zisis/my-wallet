@@ -12,6 +12,19 @@ vi.mock('../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
+vi.mock('../contexts/UserContext', () => ({
+  useUser: () => ({
+    user: {
+      id: 'user-1',
+      email: 'user@example.com',
+      fullName: 'John Doe',
+      supabaseId: 'supabase-user-1',
+    },
+    loading: false,
+    updateUser: vi.fn(),
+  }),
+}));
+
 import { GET_REPORTS } from '../graphql/reports';
 import { PAGE_SIZE } from '../hooks/reports/useReportsData';
 import { MockedProvider } from '../test/apollo-test-utils';

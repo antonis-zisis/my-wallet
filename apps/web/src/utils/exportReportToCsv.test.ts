@@ -13,6 +13,7 @@ const makeTransaction = (
   description: 'Salary',
   category: 'Salary',
   date: '2024-01-15T00:00:00.000Z',
+  createdById: null,
   createdAt: '2024-01-15T00:00:00.000Z',
   updatedAt: '2024-01-15T00:00:00.000Z',
   ...overrides,
