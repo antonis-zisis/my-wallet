@@ -14,6 +14,24 @@ export type WhatsNewRelease = {
 
 export const whatsNew: Array<WhatsNewRelease> = [
   {
+    version: '0.8.0',
+    date: '2026-07-18',
+    highlights: [
+      {
+        title: 'Share reports with others',
+        description:
+          'Invite other My Wallet users to view or edit a report by email. Editors can add, edit, and delete transactions; owners keep control of who has access and can change roles or remove people at any time. Shared reports show everyone with access at a glance.',
+      },
+    ],
+    improvements: [
+      {
+        title: 'Clearer report menu icons',
+        description:
+          'The report header menu now shows icons next to Export, Rename, and Delete so actions are easier to spot.',
+      },
+    ],
+  },
+  {
     version: '0.7.0',
     date: '2026-06-27',
     highlights: [
