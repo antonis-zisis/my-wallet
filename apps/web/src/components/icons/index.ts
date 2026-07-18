@@ -1,5 +1,6 @@
 export { AppLogoIcon } from './AppLogoIcon';
 export { ArrowDownIcon } from './ArrowDownIcon';
+export { ArrowDownTrayIcon } from './ArrowDownTrayIcon';
 export { ArrowUpIcon } from './ArrowUpIcon';
 export { ChevronDownIcon } from './ChevronDownIcon';
 export { ChevronLeftIcon } from './ChevronLeftIcon';
@@ -17,9 +18,11 @@ export { LockOpenIcon } from './LockOpenIcon';
 export { LogOutIcon } from './LogOutIcon';
 export { MonitorIcon } from './MonitorIcon';
 export { MoonIcon } from './MoonIcon';
+export { PencilIcon } from './PencilIcon';
 export { SearchIcon } from './SearchIcon';
 export { SparklesIcon } from './SparklesIcon';
 export { SunIcon } from './SunIcon';
+export { TrashIcon } from './TrashIcon';
 export { TrendingChartIcon } from './TrendingChartIcon';
 export { UserIcon } from './UserIcon';
 export { UserPlusIcon } from './UserPlusIcon';
