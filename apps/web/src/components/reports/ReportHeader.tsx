@@ -3,7 +3,14 @@ import { useState } from 'react';
 import { ReportMember, ReportRole } from '../../types/report';
 import { formatDate } from '../../utils/formatDate';
 import { getAvatarData } from '../../utils/getAvatarData';
-import { LockClosedIcon } from '../icons';
+import {
+  ArrowDownTrayIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+  PencilIcon,
+  TrashIcon,
+  UserPlusIcon,
+} from '../icons';
 import { AvatarGroup, Button, Dropdown, Input } from '../ui';
 
 type ReportHeaderProps = {
@@ -132,6 +139,7 @@ export function ReportHeader({
             ...(!isLocked && canEdit
               ? [
                   {
+                    icon: <PencilIcon />,
                     label: 'Rename Report',
                     onClick: handleStartEditing,
                   },
@@ -140,22 +148,26 @@ export function ReportHeader({
             ...(isOwner
               ? [
                   {
+                    icon: isLocked ? <LockOpenIcon /> : <LockClosedIcon />,
                     label: isLocked ? 'Unlock Report' : 'Lock Report',
                     onClick: isLocked ? onUnlockReport : onLockReport,
                   },
                 ]
               : []),
             {
+              icon: <UserPlusIcon />,
               label: isOwner ? 'Share Report' : 'Members',
               onClick: onOpenShareModal,
             },
             {
+              icon: <ArrowDownTrayIcon />,
               label: 'Export CSV',
               onClick: onExportCsv,
             },
             ...(!isLocked && isOwner
               ? [
                   {
+                    icon: <TrashIcon />,
                     label: 'Delete Report',
                     onClick: onDeleteReport,
                     variant: 'danger' as const,
