@@ -35,8 +35,8 @@ const previousReport = makeReport({
 });
 
 const twoReports = [
-  makeReport({ id: '1', title: 'February 2026' }),
-  makeReport({ id: '2', title: 'January 2026' }),
+  makeReport({ id: '1', title: 'February 2026', transactionCount: 1 }),
+  makeReport({ id: '2', title: 'January 2026', transactionCount: 1 }),
 ];
 
 describe('Home', () => {

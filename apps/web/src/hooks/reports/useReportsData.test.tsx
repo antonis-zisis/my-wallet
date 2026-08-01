@@ -30,6 +30,8 @@ import { PAGE_SIZE, useReportsData } from './useReportsData';
 const mockReport = (id: string, title: string) => ({
   id,
   isLocked: false,
+  members: [],
+  myRole: 'OWNER',
   title,
   netBalance: 0,
   transactionCount: 0,
