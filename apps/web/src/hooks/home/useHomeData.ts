@@ -37,9 +37,11 @@ export function useHomeData() {
       },
     });
 
-  const reportItems = reportsData?.reports.items ?? [];
-  const currentId = reportItems[0]?.id;
-  const previousId = reportItems[1]?.id;
+  const nonEmptyReportItems = (reportsData?.reports.items ?? []).filter(
+    (report) => (report.transactionCount ?? 0) > 0
+  );
+  const currentId = nonEmptyReportItems[0]?.id;
+  const previousId = nonEmptyReportItems[1]?.id;
 
   const { data: currentData, loading: currentLoading } = useQuery<{
     report: Report;
@@ -65,7 +67,9 @@ export function useHomeData() {
     activeSubscriptions,
     contractsLoading,
     expiringContracts,
-    chartReports: summaryData?.reports.items ?? [],
+    chartReports: (summaryData?.reports.items ?? []).filter(
+      (report) => (report.transactions?.length ?? 0) > 0
+    ),
     currentIncome,
     currentLoading,
     currentReport: currentData?.report,
