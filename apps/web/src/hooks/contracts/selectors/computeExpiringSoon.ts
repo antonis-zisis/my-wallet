@@ -1,7 +1,7 @@
 import { Contract } from '../../../types/contract';
 import { getDaysUntilExpiration } from './getDaysUntilExpiration';
 
-export const EXPIRING_SOON_DAYS = 30;
+export const EXPIRING_SOON_DAYS = 90;
 
 export type ExpiringContract = Contract & { daysUntilExpiration: number };
 

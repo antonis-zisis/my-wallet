@@ -13,7 +13,7 @@ describe('computeExpiringSoon', () => {
     vi.useRealTimers();
   });
 
-  it('includes contracts expiring within 30 days, soonest first', () => {
+  it('includes contracts expiring within 90 days, soonest first', () => {
     const soon = makeContract({ id: 'soon', endDate: '2026-07-01T00:00:00Z' });
     const sooner = makeContract({
       id: 'sooner',
