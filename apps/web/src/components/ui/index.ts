@@ -10,6 +10,7 @@ export { Modal } from './Modal';
 export { MoneyAmount } from './MoneyAmount';
 export { PageLayout } from './PageLayout';
 export { Pagination } from './Pagination';
+export { ScrollToTopButton } from './ScrollToTopButton';
 export { SearchInput } from './SearchInput';
 export { Select } from './Select';
 export { Skeleton } from './Skeleton';
