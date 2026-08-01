@@ -60,6 +60,8 @@ const mockReportQuery: MockLink.MockedResponse = {
       report: {
         id: '1',
         isLocked: false,
+        members: [],
+        myRole: 'OWNER',
         title: 'January Budget',
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',
@@ -110,6 +112,8 @@ const refetchAfterMutationMock: MockLink.MockedResponse = {
       report: {
         id: '1',
         isLocked: false,
+        members: [],
+        myRole: 'OWNER',
         title: 'January Budget',
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',

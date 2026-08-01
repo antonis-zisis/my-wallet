@@ -46,6 +46,8 @@ const mockReportsQuery: MockLink.MockedResponse = {
           {
             id: '1',
             isLocked: false,
+            members: [],
+            myRole: 'OWNER',
             netBalance: 500,
             title: 'January Budget',
             transactionCount: 3,
@@ -55,6 +57,8 @@ const mockReportsQuery: MockLink.MockedResponse = {
           {
             id: '2',
             isLocked: false,
+            members: [],
+            myRole: 'OWNER',
             netBalance: -100,
             title: 'February Budget',
             transactionCount: 1,
@@ -83,6 +87,8 @@ const mockPage1: MockLink.MockedResponse = {
         items: Array.from({ length: 10 }, (_, index) => ({
           id: String(index + 1),
           isLocked: false,
+          members: [],
+          myRole: 'OWNER',
           netBalance: 0,
           title: `Report ${index + 1}`,
           transactionCount: 0,
@@ -103,6 +109,8 @@ const mockPage2: MockLink.MockedResponse = {
         items: Array.from({ length: 5 }, (_, index) => ({
           id: String(index + 11),
           isLocked: false,
+          members: [],
+          myRole: 'OWNER',
           netBalance: 0,
           title: `Report ${index + 11}`,
           transactionCount: 0,

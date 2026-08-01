@@ -33,8 +33,8 @@ const previousReport = makeReport({
 });
 
 const twoReportsList = [
-  makeReport({ id: 'r1', title: 'February 2026' }),
-  makeReport({ id: 'r2', title: 'January 2026' }),
+  makeReport({ id: 'r1', title: 'February 2026', transactionCount: 3 }),
+  makeReport({ id: 'r2', title: 'January 2026', transactionCount: 2 }),
 ];
 
 describe('useHomeData', () => {
@@ -87,5 +87,47 @@ describe('useHomeData', () => {
 
     expect(result.current.currentReport?.id).toBe('r1');
     expect(result.current.previousReport?.id).toBe('r2');
+  });
+
+  it('skips empty reports when assigning current and previous', async () => {
+    const { result } = renderWithMocks(
+      homeMocks({
+        reports: [
+          makeReport({ id: 'r0', title: 'March 2026', transactionCount: 0 }),
+          ...twoReportsList,
+        ],
+        reportDetails: [
+          { id: 'r1', report: currentReport },
+          { id: 'r2', report: previousReport },
+        ],
+      })
+    );
+
+    await waitFor(() => {
+      expect(result.current.currentReport).toBeDefined();
+      expect(result.current.previousReport).toBeDefined();
+    });
+
+    expect(result.current.currentReport?.id).toBe('r1');
+    expect(result.current.previousReport?.id).toBe('r2');
+  });
+
+  it('excludes reports with no transactions from chartReports', async () => {
+    const { result } = renderWithMocks(
+      homeMocks({
+        summaryReports: [
+          makeReport({ id: 'r1', transactions: [makeTransaction()] }),
+          makeReport({ id: 'r2', transactions: [] }),
+        ],
+      })
+    );
+
+    await waitFor(() => {
+      expect(result.current.summaryLoading).toBe(false);
+    });
+
+    expect(result.current.chartReports.map((report) => report.id)).toEqual([
+      'r1',
+    ]);
   });
 });
