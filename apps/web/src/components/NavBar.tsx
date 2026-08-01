@@ -58,7 +58,7 @@ export function NavBar() {
 
   return (
     <>
-      <nav className="border-border bg-bg-surface border-b">
+      <nav className="border-border bg-bg-surface sticky top-0 z-20 border-b">
         <div className="mx-auto max-w-5xl px-4">
           <div className="flex h-14 items-stretch justify-between">
             <div className="flex items-stretch">
