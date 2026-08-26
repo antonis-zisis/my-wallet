@@ -4,6 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeSubscription } from '../../test/fixtures/subscription';
+import {
+  installMatchMedia,
+  MOBILE_VIEWPORT_QUERY,
+} from '../../test/matchMedia-test-utils';
 import { SubscriptionList } from './SubscriptionList';
 
 vi.mock('../../contexts/ThemeContext', () => ({
@@ -471,5 +475,31 @@ describe('SubscriptionList', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Options' }));
     await userEvent.click(screen.getByRole('button', { name: 'Resume' }));
     expect(onResume).toHaveBeenCalledWith(subscription);
+  });
+
+  describe('on a mobile viewport', () => {
+    let matchMedia: ReturnType<typeof installMatchMedia>;
+
+    afterEach(() => {
+      matchMedia?.restore();
+    });
+
+    it('still shows the name, amount and badges for each subscription', () => {
+      matchMedia = installMatchMedia([MOBILE_VIEWPORT_QUERY]);
+      const subscription = makeSubscription({
+        name: 'Netflix',
+        amount: 15.99,
+        category: 'Entertainment',
+      });
+
+      render(
+        <SubscriptionList {...defaultProps} subscriptions={[subscription]} />
+      );
+
+      expect(screen.getByText('Netflix')).toBeInTheDocument();
+      expect(screen.getByText(/15,99/)).toBeInTheDocument();
+      expect(screen.getByText('Monthly')).toBeInTheDocument();
+      expect(screen.getByText('Entertainment')).toBeInTheDocument();
+    });
   });
 });

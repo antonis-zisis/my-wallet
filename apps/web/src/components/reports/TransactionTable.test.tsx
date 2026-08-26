@@ -1,8 +1,12 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { makeTransaction } from '../../test/fixtures/report';
+import {
+  installMatchMedia,
+  MOBILE_VIEWPORT_QUERY,
+} from '../../test/matchMedia-test-utils';
 import { Transaction } from '../../types/transaction';
 import { TransactionTable } from './TransactionTable';
 
@@ -264,5 +268,71 @@ describe('TransactionTable', () => {
     await userEvent.click(screen.getByText('Delete'));
 
     expect(onDelete).toHaveBeenCalledWith(mockTransactions[1]);
+  });
+
+  describe('on a mobile viewport', () => {
+    let matchMedia: ReturnType<typeof installMatchMedia>;
+
+    afterEach(() => {
+      matchMedia?.restore();
+    });
+
+    const renderMobile = (
+      props: Partial<Parameters<typeof TransactionTable>[0]> = {}
+    ) => {
+      matchMedia = installMatchMedia([MOBILE_VIEWPORT_QUERY]);
+
+      return render(
+        <TransactionTable transactions={mockTransactions} {...props} />
+      );
+    };
+
+    it('renders transactions as cards instead of a table', () => {
+      const { container } = renderMobile();
+
+      expect(container.querySelector('table')).not.toBeInTheDocument();
+      expect(screen.getByText('Monthly salary')).toBeInTheDocument();
+      expect(screen.getByText('Groceries')).toBeInTheDocument();
+    });
+
+    it('offers the type and category filters outside the table header', () => {
+      renderMobile({
+        presentExpenseCategories: ['Food'],
+        presentIncomeCategories: ['Salary'],
+      });
+
+      expect(
+        screen.getByRole('button', { name: 'Type: All' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Category: All' })
+      ).toBeInTheDocument();
+    });
+
+    it('filters by type through the mobile filter chip', async () => {
+      const onSelectTypeFilter = vi.fn();
+      renderMobile({
+        presentExpenseCategories: ['Food'],
+        presentIncomeCategories: ['Salary'],
+        onSelectTypeFilter,
+      });
+
+      await userEvent.click(screen.getByRole('button', { name: 'Type: All' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Income' }));
+
+      expect(onSelectTypeFilter).toHaveBeenCalledWith('Income');
+    });
+
+    it('shows the active filter in the chip label', () => {
+      renderMobile({
+        presentExpenseCategories: ['Food'],
+        presentIncomeCategories: ['Salary'],
+        selectedTypeFilter: 'Expense',
+      });
+
+      expect(
+        screen.getByRole('button', { name: 'Type: Expense' })
+      ).toBeInTheDocument();
+    });
   });
 });

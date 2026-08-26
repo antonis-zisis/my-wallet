@@ -44,23 +44,26 @@ export function Modal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="fixed inset-0 bg-black/50 transition-opacity"
         onClick={closeOnBackdropClick ? onClose : undefined}
       />
 
       <div
-        className={`bg-bg-surface relative z-50 w-full rounded p-6 shadow-xl ${size === 'lg' ? 'max-w-2xl' : 'max-w-md'}`}
+        className={`bg-bg-surface relative z-50 flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded p-4 shadow-xl sm:p-6 ${size === 'lg' ? 'max-w-2xl' : 'max-w-md'}`}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-text-primary text-xl font-semibold">{title}</h2>
+        <div className="mb-4 flex shrink-0 items-center justify-between gap-2">
+          <h2 className="text-text-primary min-w-0 text-lg font-semibold sm:text-xl">
+            {title}
+          </h2>
 
           <Button
             variant="ghost"
             size="sm"
             onClick={onClose}
             aria-label="Close modal"
+            className="shrink-0"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -77,9 +80,15 @@ export function Modal({
           </Button>
         </div>
 
-        <div>{children}</div>
+        <div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1">
+          {children}
+        </div>
 
-        {footer && <div className="mt-6 flex justify-end gap-2">{footer}</div>}
+        {footer && (
+          <div className="mt-6 flex shrink-0 flex-wrap justify-end gap-2">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
+import {
+  installMatchMedia,
+  MOBILE_VIEWPORT_QUERY,
+} from '../../test/matchMedia-test-utils';
 import { type NetWorthSnapshot } from '../../types/netWorth';
 import { NetWorthList } from './NetWorthList';
 
@@ -74,5 +78,33 @@ describe('NetWorthList', () => {
     const snapshot = makeSnapshot({ title: 'January 2026', netWorth: -2000 });
     renderList({ ...defaultProps, snapshots: [snapshot] });
     expect(screen.getByText(/^-/)).toBeInTheDocument();
+  });
+
+  describe('on a mobile viewport', () => {
+    let matchMedia: ReturnType<typeof installMatchMedia>;
+
+    afterEach(() => {
+      matchMedia?.restore();
+    });
+
+    it('still shows the title, net worth and change for each snapshot', () => {
+      matchMedia = installMatchMedia([MOBILE_VIEWPORT_QUERY]);
+      const snapshot = makeSnapshot({
+        title: 'January 2026',
+        netWorth: 8000,
+        previousSnapshot: makeSnapshot({
+          title: 'December 2025',
+          netWorth: 7000,
+        }),
+      });
+
+      renderList({ ...defaultProps, snapshots: [snapshot] });
+
+      expect(
+        screen.getByRole('link', { name: /January 2026/ })
+      ).toBeInTheDocument();
+      expect(screen.getByText(/8\.000,00/)).toBeInTheDocument();
+      expect(screen.getByText(/1\.000,00/)).toBeInTheDocument();
+    });
   });
 });

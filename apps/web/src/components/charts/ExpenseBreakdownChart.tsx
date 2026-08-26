@@ -1,141 +1,19 @@
 import { useMemo } from 'react';
-import {
-  Legend,
-  Pie,
-  PieChart,
-  type PieSectorShapeProps,
-  Sector,
-  Tooltip,
-} from 'recharts';
+import { Legend, Pie, PieChart, Tooltip } from 'recharts';
 
 import { usePrivacy } from '../../contexts/PrivacyContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useIsMobileViewport } from '../../hooks/useIsMobileViewport';
 import { EXPENSE_CATEGORIES, type Transaction } from '../../types/transaction';
-import { formatMoneyOrMask } from '../../utils/formatMoney';
 import {
   EXPENSE_CATEGORY_COLORS,
   FALLBACK_CATEGORY_COLOR,
 } from './categoryColors';
+import { makeBreakdownPieShape } from './makeBreakdownPieShape';
 
 type ExpenseBreakdownChartProps = {
   transactions: Array<Transaction>;
 };
-
-const RADIAN = Math.PI / 180;
-
-type ChartDataItem = {
-  name: string;
-  value: number;
-  fill: string;
-};
-
-function makeRenderShape(isAmountsHidden: boolean, labelColor: string) {
-  return function renderShape({
-    cx,
-    cy,
-    endAngle,
-    fill,
-    innerRadius,
-    isActive,
-    midAngle,
-    outerRadius,
-    payload,
-    percent,
-    startAngle,
-    value,
-  }: PieSectorShapeProps) {
-    if (!isActive) {
-      return (
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-        />
-      );
-    }
-
-    const sin = Math.sin(-RADIAN * (midAngle ?? 0));
-    const cos = Math.cos(-RADIAN * (midAngle ?? 0));
-    const sx = (cx ?? 0) + ((outerRadius ?? 0) + 10) * cos;
-    const sy = (cy ?? 0) + ((outerRadius ?? 0) + 10) * sin;
-    const mx = (cx ?? 0) + ((outerRadius ?? 0) + 30) * cos;
-    const my = (cy ?? 0) + ((outerRadius ?? 0) + 30) * sin;
-    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-    const ey = my;
-    const textAnchor = cos >= 0 ? 'start' : 'end';
-    const item = payload as unknown as ChartDataItem;
-
-    return (
-      <g>
-        <text
-          x={cx}
-          y={cy}
-          dy={8}
-          textAnchor="middle"
-          fill={fill}
-          fontSize={13}
-          fontWeight={500}
-        >
-          {item.name}
-        </text>
-
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-        />
-
-        <Sector
-          cx={cx}
-          cy={cy}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          innerRadius={(outerRadius ?? 0) + 6}
-          outerRadius={(outerRadius ?? 0) + 10}
-          fill={fill}
-        />
-
-        <path
-          d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
-          stroke={fill}
-          fill="none"
-        />
-
-        <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-
-        <text
-          x={ex + (cos >= 0 ? 1 : -1) * 12}
-          y={ey}
-          textAnchor={textAnchor}
-          fill={labelColor}
-          fontSize={13}
-          fontWeight={600}
-        >
-          {`${formatMoneyOrMask(value ?? 0, isAmountsHidden)} €`}
-        </text>
-
-        <text
-          x={ex + (cos >= 0 ? 1 : -1) * 12}
-          y={ey}
-          dy={18}
-          textAnchor={textAnchor}
-          fill="#6b7280"
-          fontSize={12}
-        >
-          {`(${((percent ?? 0) * 100).toFixed(1)}%)`}
-        </text>
-      </g>
-    );
-  };
-}
 
 export function ExpenseBreakdownChart({
   transactions,
@@ -143,9 +21,15 @@ export function ExpenseBreakdownChart({
   const { resolvedTheme } = useTheme();
   const { isAmountsHidden } = usePrivacy();
   const labelColor = resolvedTheme === 'dark' ? '#9ca3af' : '#4b5563';
+  const isMobile = useIsMobileViewport();
   const renderShape = useMemo(
-    () => makeRenderShape(isAmountsHidden, labelColor),
-    [isAmountsHidden, labelColor]
+    () =>
+      makeBreakdownPieShape({
+        isAmountsHidden,
+        isCompact: isMobile,
+        labelColor,
+      }),
+    [isAmountsHidden, isMobile, labelColor]
   );
 
   const chartData = useMemo(() => {
@@ -181,16 +65,24 @@ export function ExpenseBreakdownChart({
   return (
     <PieChart
       responsive
-      style={{ width: '100%', aspectRatio: '4/3', maxHeight: '360px' }}
-      margin={{ top: 20, right: 140, bottom: 20, left: 140 }}
+      style={{
+        width: '100%',
+        aspectRatio: isMobile ? '1/1' : '4/3',
+        maxHeight: '360px',
+      }}
+      margin={
+        isMobile
+          ? { top: 8, right: 8, bottom: 8, left: 8 }
+          : { top: 20, right: 140, bottom: 20, left: 140 }
+      }
     >
       <Pie
         shape={renderShape}
         data={chartData}
         cx="50%"
         cy="50%"
-        innerRadius="45%"
-        outerRadius="65%"
+        innerRadius={isMobile ? '52%' : '45%'}
+        outerRadius={isMobile ? '70%' : '65%'}
         dataKey="value"
         stroke="none"
       />
@@ -198,15 +90,21 @@ export function ExpenseBreakdownChart({
       <Tooltip content={() => null} defaultIndex={0} active />
 
       <Legend
-        layout="vertical"
-        align="left"
-        verticalAlign="middle"
+        layout={isMobile ? 'horizontal' : 'vertical'}
+        align={isMobile ? 'center' : 'left'}
+        verticalAlign={isMobile ? 'bottom' : 'middle'}
         content={() => (
-          <ul className="flex w-30 flex-col gap-2 pl-2 text-sm">
+          <ul
+            className={
+              isMobile
+                ? 'flex flex-wrap justify-center gap-x-3 gap-y-1.5 pt-2 text-xs'
+                : 'flex w-30 flex-col gap-2 pl-2 text-sm'
+            }
+          >
             {chartData.map((item) => (
               <li key={item.name} className="flex items-center gap-2">
                 <span
-                  className="inline-block h-3 w-3"
+                  className="inline-block h-3 w-3 shrink-0"
                   style={{ backgroundColor: item.fill }}
                 />
                 <span style={{ color: item.fill }}>{item.name}</span>

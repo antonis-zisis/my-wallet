@@ -110,7 +110,7 @@ export function NetWorthSummaryCard({
             </div>
 
             <div>
-              <p className={`text-3xl font-bold ${netWorthColor}`}>
+              <p className={`text-2xl font-bold sm:text-3xl ${netWorthColor}`}>
                 <MoneyAmount amount={Math.abs(snapshot.netWorth)} sign={sign} />
               </p>
 
@@ -124,7 +124,7 @@ export function NetWorthSummaryCard({
                     <ArrowDownIcon className="h-4 w-4" />
                   )}
 
-                  <span>
+                  <span className="min-w-0">
                     <MoneyAmount
                       amount={Math.abs(delta)}
                       sign={deltaIsPositive ? '+' : '-'}

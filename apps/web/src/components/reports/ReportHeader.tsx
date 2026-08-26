@@ -86,19 +86,22 @@ export function ReportHeader({
   };
 
   return (
-    <div className="mb-4 flex items-center justify-between">
+    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {isEditingTitle ? (
         <div className="flex items-center gap-2">
-          <Input
-            id="edit-title"
-            value={editTitle}
-            onChange={(event) => setEditTitle(event.target.value)}
-            onKeyDown={handleTitleKeyDown}
-            onBlur={handleCancelEditing}
-            autoFocus
-          />
+          <div className="min-w-0 flex-1">
+            <Input
+              id="edit-title"
+              value={editTitle}
+              onChange={(event) => setEditTitle(event.target.value)}
+              onKeyDown={handleTitleKeyDown}
+              onBlur={handleCancelEditing}
+              autoFocus
+            />
+          </div>
 
           <Button
+            className="shrink-0"
             onMouseDown={(event) => event.preventDefault()}
             onClick={handleSaveTitle}
           >
@@ -106,9 +109,11 @@ export function ReportHeader({
           </Button>
         </div>
       ) : (
-        <div>
+        <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-text-primary text-2xl font-bold">{title}</h1>
+            <h1 className="text-text-primary text-xl font-bold break-words sm:text-2xl">
+              {title}
+            </h1>
 
             {isLocked && (
               <LockClosedIcon className="text-text-tertiary size-4" />
@@ -128,7 +133,7 @@ export function ReportHeader({
         </div>
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         {!isLocked && canEdit && (
           <Button onClick={onAddTransaction}>Add Transaction</Button>
         )}

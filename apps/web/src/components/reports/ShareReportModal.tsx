@@ -150,7 +150,7 @@ export function ShareReportModal({
       }
     >
       {isOwnerView && (
-        <div className="mb-4 flex items-end gap-2">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end">
           <div className="flex-1">
             <Input
               id="share-email"
@@ -164,22 +164,25 @@ export function ShareReportModal({
             />
           </div>
 
-          <Select
-            aria-label="Role"
-            className="w-28 py-1! text-sm"
-            options={ROLE_OPTIONS}
-            value={role}
-            onChange={(event) => setRole(event.target.value as ReportRole)}
-          />
+          <div className="flex items-end gap-2">
+            <Select
+              aria-label="Role"
+              className="w-28 py-1! text-sm"
+              options={ROLE_OPTIONS}
+              value={role}
+              onChange={(event) => setRole(event.target.value as ReportRole)}
+            />
 
-          <Button
-            disabled={!isEmailValid}
-            isLoading={isSharing}
-            size="xs"
-            onClick={handleShare}
-          >
-            Share
-          </Button>
+            <Button
+              className="shrink-0"
+              disabled={!isEmailValid}
+              isLoading={isSharing}
+              size="xs"
+              onClick={handleShare}
+            >
+              Share
+            </Button>
+          </div>
         </div>
       )}
 

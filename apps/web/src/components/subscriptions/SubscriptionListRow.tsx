@@ -1,11 +1,6 @@
+import { useIsMobileViewport } from '../../hooks/useIsMobileViewport';
 import { BILLING_CYCLE_LABELS, Subscription } from '../../types/subscription';
-import { formatDate } from '../../utils/formatDate';
-import {
-  formatCancellationCountdown,
-  formatTrialCountdown,
-} from '../../utils/formatSubscriptionCountdown';
 import { getDaysUntil } from '../../utils/getDaysUntil';
-import { getNextRenewalDate } from '../../utils/getNextRenewalDate';
 import { isSafeUrl } from '../../utils/isSafeUrl';
 import {
   FALLBACK_CATEGORY_COLOR,
@@ -14,6 +9,7 @@ import {
 import { Badge, Dropdown, MoneyAmount } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
 import { SubscriptionAvatar } from './SubscriptionAvatar';
+import { SubscriptionListRowMeta } from './SubscriptionListRowMeta';
 
 type SubscriptionListRowProps = {
   subscription: Subscription;
@@ -37,81 +33,11 @@ function CategoryBadge({ category }: { category: string }) {
   );
 }
 
-function TertiaryLine({ subscription }: { subscription: Subscription }) {
-  const parts: Array<string> = [];
-
-  if (subscription.paymentMethod) {
-    parts.push(`via ${subscription.paymentMethod}`);
-  }
-
-  if (subscription.notes) {
-    parts.push(subscription.notes);
-  }
-
-  if (parts.length === 0) {
-    return null;
-  }
-
-  return (
-    <p className="text-text-tertiary mt-0.5 truncate text-xs italic">
-      {parts.join(' · ')}
-    </p>
-  );
-}
-
-function SecondaryLine({ subscription }: { subscription: Subscription }) {
-  if (subscription.cancelledAt && subscription.endDate) {
-    return (
-      <p className="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
-        {formatCancellationCountdown(subscription.endDate)}
-      </p>
-    );
-  }
-
-  if (subscription.trialEndsAt) {
-    const daysLeft = getDaysUntil(subscription.trialEndsAt);
-
-    if (daysLeft >= 0) {
-      return (
-        <p className="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
-          {formatTrialCountdown(subscription.trialEndsAt)}
-        </p>
-      );
-    }
-  }
-
-  if (!subscription.isActive) {
-    return null;
-  }
-
-  const renewalDate = getNextRenewalDate(
-    subscription.startDate,
-    subscription.billingCycle
-  );
-  const daysUntil = getDaysUntil(renewalDate);
-  const relativeLabel =
-    daysUntil === 0
-      ? 'today'
-      : daysUntil === 1
-        ? 'tomorrow'
-        : daysUntil < 30
-          ? `in ${daysUntil}d`
-          : null;
-
-  return (
-    <p className="text-text-secondary mt-0.5 text-xs">
-      next renewal at{' '}
-      <span className="font-semibold">{formatDate(renewalDate)}</span>
-      {relativeLabel && ` · ${relativeLabel}`}
-    </p>
-  );
-}
-
 function AmountCell({ subscription }: { subscription: Subscription }) {
   const showMonthlyEquivalent = subscription.billingCycle !== 'MONTHLY';
 
   return (
-    <div className="text-right">
+    <div className="shrink-0 text-right">
       <p className="text-text-primary text-sm font-semibold">
         <MoneyAmount amount={subscription.amount} />
       </p>
@@ -156,60 +82,81 @@ function buildDropdownItems({
 
 export function SubscriptionListRow(props: SubscriptionListRowProps) {
   const { subscription } = props;
+  const isMobile = useIsMobileViewport();
   const dropdownItems = buildDropdownItems(props);
 
+  const name =
+    subscription.url && isSafeUrl(subscription.url) ? (
+      <a
+        className="text-text-primary truncate font-medium hover:underline"
+        href={subscription.url}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        {subscription.name}
+      </a>
+    ) : (
+      <span className="text-text-primary truncate font-medium">
+        {subscription.name}
+      </span>
+    );
+
+  const badges = (
+    <>
+      <Badge variant="default" size="sm">
+        {BILLING_CYCLE_LABELS[subscription.billingCycle]}
+      </Badge>
+
+      {subscription.category && (
+        <CategoryBadge category={subscription.category} />
+      )}
+
+      {subscription.trialEndsAt &&
+        getDaysUntil(subscription.trialEndsAt) >= 0 && (
+          <Badge variant="warning" size="sm">
+            Trial
+          </Badge>
+        )}
+
+      {subscription.cancelledAt && (
+        <Badge variant="danger" size="sm">
+          Cancelled
+        </Badge>
+      )}
+    </>
+  );
+
   return (
-    <li className="flex items-center gap-3">
-      <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
+    <li className="flex items-center gap-1 sm:gap-3">
+      <div className="flex min-w-0 flex-1 items-start gap-3 px-1 py-3 sm:items-center">
         <SubscriptionAvatar subscription={subscription} />
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            {subscription.url && isSafeUrl(subscription.url) ? (
-              <a
-                className="text-text-primary truncate font-medium hover:underline"
-                href={subscription.url}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {subscription.name}
-              </a>
-            ) : (
-              <span className="text-text-primary truncate font-medium">
-                {subscription.name}
-              </span>
-            )}
+          {isMobile ? (
+            <>
+              <div className="flex items-baseline justify-between gap-3">
+                {name}
+                <AmountCell subscription={subscription} />
+              </div>
 
-            <Badge variant="default" size="sm">
-              {BILLING_CYCLE_LABELS[subscription.billingCycle]}
-            </Badge>
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                {badges}
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              {name}
+              {badges}
+            </div>
+          )}
 
-            {subscription.category && (
-              <CategoryBadge category={subscription.category} />
-            )}
-
-            {subscription.trialEndsAt &&
-              getDaysUntil(subscription.trialEndsAt) >= 0 && (
-                <Badge variant="warning" size="sm">
-                  Trial
-                </Badge>
-              )}
-
-            {subscription.cancelledAt && (
-              <Badge variant="danger" size="sm">
-                Cancelled
-              </Badge>
-            )}
-          </div>
-
-          <SecondaryLine subscription={subscription} />
-          <TertiaryLine subscription={subscription} />
+          <SubscriptionListRowMeta subscription={subscription} />
         </div>
 
-        <AmountCell subscription={subscription} />
+        {!isMobile && <AmountCell subscription={subscription} />}
       </div>
 
-      <Dropdown items={dropdownItems} />
+      <Dropdown className="relative shrink-0" items={dropdownItems} />
     </li>
   );
 }

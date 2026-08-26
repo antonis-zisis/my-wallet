@@ -44,7 +44,7 @@ export function Contracts() {
   return (
     <>
       <PageLayout>
-        <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
             <h1 className="text-text-primary text-2xl font-semibold">
               Contracts
@@ -53,20 +53,22 @@ export function Contracts() {
               Track your service contracts and when they expire.
             </p>
           </div>
-          <Button onClick={onOpenCreate}>New Contract</Button>
+          <Button className="self-start" onClick={onOpenCreate}>
+            New Contract
+          </Button>
         </div>
 
         {(loading || (!error && (totalCount > 0 || !!search))) && (
-          <div className="mb-2 flex items-center justify-between gap-3">
+          <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <SearchInput
-              className="max-w-xs flex-1"
+              className="w-full sm:max-w-xs sm:flex-1"
               placeholder="Search by provider…"
               value={search}
               onChange={onSearchChange}
             />
 
             <Select
-              className="w-40 py-1 text-sm"
+              className="w-full py-1 text-sm sm:w-40"
               options={CONTRACT_SORT_OPTIONS}
               value={sortBy}
               onChange={(event) =>

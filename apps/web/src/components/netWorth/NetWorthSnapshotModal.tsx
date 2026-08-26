@@ -78,7 +78,7 @@ export function NetWorthSnapshotModal({
       }
     >
       <div className="space-y-3">
-        <div className="grid grid-cols-[1fr_160px] gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_160px]">
           <Input
             label="Snapshot Title"
             id="snapshot-title"
@@ -102,7 +102,7 @@ export function NetWorthSnapshotModal({
         <div>
           <div
             ref={form.entriesContainerRef}
-            className="max-h-96 overflow-y-auto pr-1"
+            className="max-h-64 overflow-y-auto pr-1 sm:max-h-96"
           >
             <NetWorthSnapshotModalSectionHeader
               label="Assets"

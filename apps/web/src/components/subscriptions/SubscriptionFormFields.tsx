@@ -45,7 +45,7 @@ export function SubscriptionFormFields({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Input
           id="subscription-amount"
           label="Amount"
@@ -69,7 +69,7 @@ export function SubscriptionFormFields({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Input
           id="subscription-start-date"
           label="Start Date"

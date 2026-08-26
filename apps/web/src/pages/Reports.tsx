@@ -38,16 +38,16 @@ export function Reports() {
         </div>
 
         {(loading || !error) && (totalCount > 0 || !!search) && (
-          <div className="mb-2 flex items-center justify-between gap-3">
+          <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <SearchInput
-              className="max-w-xs flex-1"
+              className="w-full sm:max-w-xs sm:flex-1"
               placeholder="Search reports…"
               value={search}
               onChange={onSearchChange}
             />
 
             <Select
-              className="w-44 py-1 text-sm"
+              className="w-full py-1 text-sm sm:w-44"
               options={REPORT_SORT_OPTIONS}
               value={sortOption}
               onChange={(event) =>

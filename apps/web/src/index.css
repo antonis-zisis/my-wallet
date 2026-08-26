@@ -49,3 +49,20 @@
   --color-expense: #f87171;
   --color-warning: #fbbf24;
 }
+
+/*
+ * Unlayered, so it outranks Tailwind's `@layer utilities` text-size classes:
+ * iOS Safari zooms the viewport when a focused field renders below 16px, which
+ * leaves the app scrolled sideways with no way back.
+ */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}

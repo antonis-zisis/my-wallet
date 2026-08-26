@@ -1,17 +1,12 @@
+import { useIsMobileViewport } from '../../hooks/useIsMobileViewport';
 import { ReportMember } from '../../types/report';
 import { Transaction } from '../../types/transaction';
-import { formatDate } from '../../utils/formatDate';
 import { getAvatarData } from '../../utils/getAvatarData';
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  Dropdown,
-  MoneyAmount,
-  Tooltip,
-} from '../ui';
+import { Button, Card, MoneyAmount } from '../ui';
+import { TransactionCard } from './TransactionCard';
+import { TransactionFilterBar } from './TransactionFilterBar';
 import { TransactionTableHeader } from './TransactionTableHeader';
+import { TransactionTableRow } from './TransactionTableRow';
 
 type TransactionTableProps = {
   isLocked?: boolean;
@@ -42,6 +37,8 @@ export function TransactionTable({
   selectedTypeFilter = 'All',
   transactions,
 }: TransactionTableProps) {
+  const isMobile = useIsMobileViewport();
+
   const isShared = members.length > 1;
   const ownerMember = members.find((member) => member.role === 'OWNER');
   const hasMultipleTypes =
@@ -78,6 +75,14 @@ export function TransactionTable({
     0
   );
 
+  const authorAvatarDataFor = (transaction: Transaction) => {
+    const author = transaction.createdById
+      ? members.find((member) => member.userId === transaction.createdById)
+      : ownerMember;
+
+    return author ? getAvatarData(author) : null;
+  };
+
   if (
     transactions.length === 0 &&
     selectedTypeFilter === 'All' &&
@@ -101,13 +106,24 @@ export function TransactionTable({
 
   return (
     <Card className="mt-4">
+      {isMobile && (
+        <TransactionFilterBar
+          categoryFilterItems={categoryFilterItems}
+          hasMultipleTypes={hasMultipleTypes}
+          presentCategoriesCount={presentCategoriesForType.length}
+          selectedCategoryFilter={selectedCategoryFilter}
+          selectedTypeFilter={selectedTypeFilter}
+          typeFilterItems={typeFilterItems}
+        />
+      )}
+
       {transactions.length === 0 ? (
         <p className="text-text-secondary py-6 text-center text-sm">
           No transactions match the selected filters
         </p>
       ) : (
         <>
-          <div className="text-text-secondary mb-3 flex justify-between text-sm">
+          <div className="text-text-secondary mb-3 flex justify-between gap-3 text-sm">
             <span>
               {transactions.length}{' '}
               {transactions.length === 1 ? 'transaction' : 'transactions'}
@@ -130,100 +146,48 @@ export function TransactionTable({
             )}
           </div>
 
-          <table className="w-full">
-            <TransactionTableHeader
-              categoryFilterItems={categoryFilterItems}
-              hasAuthorColumn={isShared}
-              hasMultipleTypes={hasMultipleTypes}
-              presentCategoriesCount={presentCategoriesForType.length}
-              selectedCategoryFilter={selectedCategoryFilter}
-              selectedTypeFilter={selectedTypeFilter}
-              typeFilterItems={typeFilterItems}
-            />
+          {isMobile ? (
+            <ul className="divide-border divide-y">
+              {transactions.map((transaction) => (
+                <TransactionCard
+                  key={transaction.id}
+                  authorAvatarData={authorAvatarDataFor(transaction)}
+                  isLocked={isLocked}
+                  showAuthor={isShared}
+                  transaction={transaction}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                />
+              ))}
+            </ul>
+          ) : (
+            <table className="w-full">
+              <TransactionTableHeader
+                categoryFilterItems={categoryFilterItems}
+                hasAuthorColumn={isShared}
+                hasMultipleTypes={hasMultipleTypes}
+                presentCategoriesCount={presentCategoriesForType.length}
+                selectedCategoryFilter={selectedCategoryFilter}
+                selectedTypeFilter={selectedTypeFilter}
+                typeFilterItems={typeFilterItems}
+              />
 
-            <tbody>
-              {transactions.map((transaction, index) => {
-                const author = transaction.createdById
-                  ? members.find(
-                      (member) => member.userId === transaction.createdById
-                    )
-                  : ownerMember;
-                const authorAvatarData = author ? getAvatarData(author) : null;
-
-                return (
-                  <tr
+              <tbody>
+                {transactions.map((transaction, index) => (
+                  <TransactionTableRow
                     key={transaction.id}
-                    className={`border-border border-b ${
-                      index % 2 === 0 ? 'bg-bg-app' : 'bg-bg-surface'
-                    }`}
-                  >
-                    <td className="text-text-secondary py-3 pr-4 pl-1 text-sm">
-                      {formatDate(transaction.date)}
-                    </td>
-
-                    <td className="py-3 pr-4">
-                      <Badge
-                        variant={
-                          transaction.type === 'INCOME' ? 'success' : 'danger'
-                        }
-                      >
-                        {transaction.type === 'INCOME' ? 'Income' : 'Expense'}
-                      </Badge>
-                    </td>
-
-                    <td className="py-3 pr-4">
-                      <Badge variant="default">{transaction.category}</Badge>
-                    </td>
-
-                    <td className="text-text-primary py-3 pr-4 text-sm">
-                      {transaction.description}
-                    </td>
-
-                    {isShared && (
-                      <td className="py-3 pr-4">
-                        {authorAvatarData && (
-                          <Tooltip content={authorAvatarData.label}>
-                            <Avatar {...authorAvatarData} size="xs" />
-                          </Tooltip>
-                        )}
-                      </td>
-                    )}
-
-                    <td
-                      className={`py-3 pr-1 text-right text-sm font-medium ${
-                        transaction.type === 'INCOME'
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
-                      }`}
-                    >
-                      <MoneyAmount
-                        amount={transaction.amount}
-                        sign={transaction.type === 'INCOME' ? '+' : '-'}
-                      />
-                    </td>
-
-                    <td className="py-3 pl-2">
-                      {!isLocked && (
-                        <Dropdown
-                          items={[
-                            {
-                              label: 'Edit',
-                              onClick: () => onEdit?.(transaction),
-                            },
-                            {
-                              label: 'Delete',
-                              variant: 'danger' as const,
-                              onClick: () => onDelete?.(transaction),
-                            },
-                          ]}
-                        />
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    authorAvatarData={authorAvatarDataFor(transaction)}
+                    hasAuthorColumn={isShared}
+                    isEven={index % 2 === 0}
+                    isLocked={isLocked}
+                    transaction={transaction}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
+                  />
+                ))}
+              </tbody>
+            </table>
+          )}
         </>
       )}
     </Card>

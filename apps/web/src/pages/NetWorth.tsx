@@ -67,8 +67,8 @@ export function NetWorth() {
         ) : trendSnapshots.length >= 2 ? (
           <Card className="mb-4">
             {isChartOpen ? (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="order-1 flex flex-1 items-center gap-1.5">
                   <h2 className="text-text-primary text-lg font-semibold">
                     Net Worth Over Time
                   </h2>
@@ -78,43 +78,41 @@ export function NetWorth() {
                   </Tooltip>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="border-border flex overflow-hidden rounded border text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setChartView('netWorth')}
-                      className={`cursor-pointer px-3 py-1.5 font-medium transition-colors ${
-                        chartView === 'netWorth'
-                          ? 'bg-brand-500 text-white'
-                          : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
-                      }`}
-                    >
-                      Net Worth
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setChartView('breakdown')}
-                      className={`border-border cursor-pointer border-l px-3 py-1.5 font-medium transition-colors ${
-                        chartView === 'breakdown'
-                          ? 'bg-brand-500 text-white'
-                          : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
-                      }`}
-                    >
-                      Assets & Liabilities
-                    </button>
-                  </div>
+                <div className="border-border order-3 flex w-full overflow-hidden rounded border text-xs sm:order-2 sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setChartView('netWorth')}
+                    className={`flex-1 cursor-pointer px-3 py-1.5 font-medium transition-colors sm:flex-none ${
+                      chartView === 'netWorth'
+                        ? 'bg-brand-500 text-white'
+                        : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
+                    }`}
+                  >
+                    Net Worth
+                  </button>
 
                   <button
-                    aria-expanded={true}
-                    aria-label="Net Worth Over Time"
                     type="button"
-                    onClick={() => setIsChartOpen((previous) => !previous)}
-                    className="cursor-pointer"
+                    onClick={() => setChartView('breakdown')}
+                    className={`border-border flex-1 cursor-pointer border-l px-3 py-1.5 font-medium transition-colors sm:flex-none ${
+                      chartView === 'breakdown'
+                        ? 'bg-brand-500 text-white'
+                        : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
+                    }`}
                   >
-                    <ChevronDownIcon className="text-text-secondary h-5 w-5 rotate-180 transition-transform duration-300" />
+                    Assets &amp; Liabilities
                   </button>
                 </div>
+
+                <button
+                  aria-expanded={true}
+                  aria-label="Net Worth Over Time"
+                  type="button"
+                  onClick={() => setIsChartOpen((previous) => !previous)}
+                  className="order-2 cursor-pointer sm:order-3"
+                >
+                  <ChevronDownIcon className="text-text-secondary h-5 w-5 rotate-180 transition-transform duration-300" />
+                </button>
               </div>
             ) : (
               <div className="flex w-full cursor-pointer items-center gap-3">
@@ -153,16 +151,16 @@ export function NetWorth() {
         ) : null}
 
         {(loading || (!error && (totalCount > 0 || !!search))) && (
-          <div className="mb-2 flex items-center justify-between gap-3">
+          <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <SearchInput
-              className="max-w-xs flex-1"
+              className="w-full sm:max-w-xs sm:flex-1"
               placeholder="Search snapshots…"
               value={search}
               onChange={onSearchChange}
             />
 
             <Select
-              className="w-44 py-1 text-sm"
+              className="w-full py-1 text-sm sm:w-44"
               options={NET_WORTH_SORT_OPTIONS}
               value={sortOption}
               onChange={(event) =>
