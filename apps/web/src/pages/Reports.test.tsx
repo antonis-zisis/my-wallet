@@ -145,6 +145,13 @@ describe('Reports', () => {
     expect(screen.getByTestId('report-list-skeleton')).toBeInTheDocument();
   });
 
+  it('keeps the search and sort controls mounted while loading', () => {
+    renderReports([mockReportsQuery]);
+
+    expect(screen.getByPlaceholderText('Search reports…')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+  });
+
   it('renders report list after loading', async () => {
     renderReports([mockReportsQuery]);
     expect(await screen.findByText('January Budget')).toBeInTheDocument();

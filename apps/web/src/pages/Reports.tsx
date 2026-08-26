@@ -48,7 +48,7 @@ export function Reports() {
           <Button onClick={onOpenModal}>Create Report</Button>
         </div>
 
-        {(loading || !error) && (totalCount > 0 || !!search) && (
+        {(loading || (!error && (totalCount > 0 || !!search))) && (
           <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <SearchInput
               className="w-full sm:max-w-xs sm:flex-1"
