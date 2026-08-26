@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   makeReport,
@@ -92,6 +92,64 @@ describe('transactionResolvers', () => {
       );
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('Query.expenseCategoryTotalsByMonth', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-08-26T00:00:00.000Z'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('aggregates accessible expense transactions by category and month', async () => {
+      vi.mocked(prisma.transaction.findMany).mockResolvedValue([
+        { amount: 40, category: 'Groceries', date: new Date('2026-08-02') },
+        { amount: 12, category: 'Groceries', date: new Date('2026-08-19') },
+        { amount: 800, category: 'Rent', date: new Date('2026-07-01') },
+      ] as never);
+
+      const result =
+        await transactionResolvers.Query.expenseCategoryTotalsByMonth(
+          undefined as unknown,
+          { months: 3 },
+          CTX
+        );
+
+      expect(prisma.transaction.findMany).toHaveBeenCalledWith({
+        where: {
+          type: 'EXPENSE',
+          date: { gte: new Date('2026-06-01T00:00:00.000Z') },
+          report: reportAccessWhere(USER_ID),
+        },
+        select: { amount: true, category: true, date: true },
+        take: 10000,
+      });
+      expect(result).toEqual([
+        { category: 'Groceries', month: '2026-08', total: 52 },
+        { category: 'Rent', month: '2026-07', total: 800 },
+      ]);
+    });
+
+    it('clamps a months argument beyond the supported range', async () => {
+      vi.mocked(prisma.transaction.findMany).mockResolvedValue([]);
+
+      await transactionResolvers.Query.expenseCategoryTotalsByMonth(
+        undefined as unknown,
+        { months: 999 },
+        CTX
+      );
+
+      expect(prisma.transaction.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            date: { gte: new Date('2024-09-01T00:00:00.000Z') },
+          }),
+        })
+      );
     });
   });
 

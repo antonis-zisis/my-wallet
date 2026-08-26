@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router';
 
 import { App } from './App';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { CategoryTrends } from './pages/CategoryTrends';
 import { Contracts } from './pages/Contracts';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { Home } from './pages/Home';
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Home /> },
           { path: 'reports', element: <Reports /> },
+          { path: 'reports/trends', element: <CategoryTrends /> },
           { path: 'reports/:id', element: <Report /> },
           { path: 'subscriptions', element: <Subscriptions /> },
           { path: 'contracts', element: <Contracts /> },

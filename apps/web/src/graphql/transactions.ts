@@ -71,3 +71,13 @@ export const DELETE_TRANSACTION = gql`
     deleteTransaction(id: $id)
   }
 `;
+
+export const GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH = gql`
+  query GetExpenseCategoryTotalsByMonth($months: Int) {
+    expenseCategoryTotalsByMonth(months: $months) {
+      category
+      month
+      total
+    }
+  }
+`;
