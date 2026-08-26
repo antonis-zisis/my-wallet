@@ -5,10 +5,6 @@ type ControllableMatchMedia = {
   setMatchingQueries: (queries: Array<string>) => void;
 };
 
-/*
- * The global setup installs a static `matchMedia` stub; tests that exercise a
- * responsive branch need one whose result they can change and re-emit.
- */
 export function installMatchMedia(
   matchingQueries: Array<string> = []
 ): ControllableMatchMedia {
