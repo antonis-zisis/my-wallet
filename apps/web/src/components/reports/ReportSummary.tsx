@@ -18,7 +18,7 @@ export function ReportSummary({ transactions }: ReportSummaryProps) {
   const isPositiveBalance = netBalance >= 0;
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Card>
         <p className="text-text-secondary text-sm">Total Income</p>
 

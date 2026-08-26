@@ -36,7 +36,7 @@ export function NetWorthSnapshotSkeleton() {
         <Skeleton className="h-6 w-6 rounded-full" />
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-4">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[0, 1, 2].map((index) => (
           <Card key={index}>
             <Skeleton className="h-4 w-20" />

@@ -21,7 +21,7 @@ export function ContractFormFields({
 }: ContractFormFieldsProps) {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Input
           autoFocus
           id="contract-provider"
@@ -63,7 +63,7 @@ export function ContractFormFields({
         onChange={(event) => onChange({ plan: event.target.value })}
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Input
           id="contract-start-date"
           label="Start Date"

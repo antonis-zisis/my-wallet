@@ -17,7 +17,7 @@ export function NetWorthSnapshotModalSummary({
       : 'text-red-700 dark:text-red-300';
 
   return (
-    <div className="border-border flex justify-between border-t pt-2 text-xs">
+    <div className="border-border flex flex-wrap justify-between gap-x-3 gap-y-1 border-t pt-2 text-xs">
       <span className="text-green-600 dark:text-green-400">
         Assets: <MoneyAmount amount={totalAssets} />
       </span>

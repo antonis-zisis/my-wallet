@@ -26,7 +26,7 @@ export function NetWorthEntriesSection({
 
   if (entries.length === 0) {
     return (
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
           <h2 className={`text-lg font-semibold ${colorClass}`}>{title}</h2>
           <MoneyAmount
@@ -47,7 +47,7 @@ export function NetWorthEntriesSection({
   const entryType = entries[0].type;
 
   return (
-    <Card className="p-6">
+    <Card className="p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <h2 className={`text-lg font-semibold ${colorClass}`}>{title}</h2>
         <div className="flex items-center gap-3">
@@ -104,7 +104,7 @@ export function NetWorthEntriesSection({
                   return (
                     <div
                       key={entry.id}
-                      className={`grid grid-cols-[1fr_152px_136px] items-center px-4 py-2 ${
+                      className={`flex flex-col gap-1 px-3 py-2 sm:grid sm:grid-cols-[1fr_152px_136px] sm:items-center sm:gap-0 sm:px-4 ${
                         index < categoryEntries.length - 1
                           ? 'border-border border-b'
                           : ''
@@ -119,22 +119,24 @@ export function NetWorthEntriesSection({
                         )}
                       </span>
 
-                      <span className="text-text-primary text-right text-sm font-medium">
-                        <MoneyAmount amount={entry.amount} />
-                        {percentOfTotal != null && (
-                          <span className="text-text-tertiary ml-1.5 font-normal">
-                            ({percentOfTotal}%)
-                          </span>
-                        )}
-                      </span>
+                      <div className="flex items-center justify-between gap-2 sm:contents">
+                        <span className="text-text-primary text-sm font-medium sm:text-right">
+                          <MoneyAmount amount={entry.amount} />
+                          {percentOfTotal != null && (
+                            <span className="text-text-tertiary ml-1.5 font-normal">
+                              ({percentOfTotal}%)
+                            </span>
+                          )}
+                        </span>
 
-                      <div className="flex justify-end">
-                        {entryDelta && (
-                          <EntryDeltaLabel
-                            currentAmount={entry.amount}
-                            entryDelta={entryDelta}
-                          />
-                        )}
+                        <div className="flex justify-end">
+                          {entryDelta && (
+                            <EntryDeltaLabel
+                              currentAmount={entry.amount}
+                              entryDelta={entryDelta}
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
                   );

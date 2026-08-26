@@ -34,12 +34,12 @@ export function Login() {
   const isFormEmpty = !email.trim() || !password;
 
   return (
-    <div className="bg-bg-app flex min-h-screen items-center justify-center">
+    <div className="bg-bg-app flex min-h-screen items-center justify-center p-4">
       <div className="fixed top-4 right-4">
         <ThemeToggle />
       </div>
 
-      <Card className="w-full max-w-md p-8">
+      <Card className="w-full max-w-md p-6 sm:p-8">
         <div className="mb-6 flex flex-col items-center gap-2">
           <AppLogoIcon className="text-brand-500 h-16 w-16" />
 

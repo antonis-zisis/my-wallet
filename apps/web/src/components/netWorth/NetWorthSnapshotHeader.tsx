@@ -73,9 +73,11 @@ export function NetWorthSnapshotHeader({
 
   return (
     <>
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-text-primary text-2xl font-bold">{title}</h1>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h1 className="text-text-primary text-xl font-bold break-words sm:text-2xl">
+            {title}
+          </h1>
 
           <p className="text-text-tertiary mt-1 text-xs">
             Created {formatDate(createdAt)} · Updated {formatDate(updatedAt)}
@@ -91,7 +93,7 @@ export function NetWorthSnapshotHeader({
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
           <p className="text-text-secondary text-sm">Net Worth</p>
 

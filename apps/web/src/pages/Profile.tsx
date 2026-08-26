@@ -33,15 +33,17 @@ export function Profile() {
           size="lg"
         />
 
-        <div>
-          <h1 className="text-text-primary text-xl font-semibold">
+        <div className="min-w-0">
+          <h1 className="text-text-primary truncate text-xl font-semibold">
             {fullName || email}
           </h1>
-          {fullName && <p className="text-text-secondary text-sm">{email}</p>}
+          {fullName && (
+            <p className="text-text-secondary truncate text-sm">{email}</p>
+          )}
         </div>
       </div>
 
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">
           <div className="bg-bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded">
             <span className="text-text-secondary h-4 w-4">
@@ -91,7 +93,7 @@ export function Profile() {
         </form>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">
           <div className="bg-bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded">
             <span className="text-text-secondary h-4 w-4">
@@ -139,7 +141,7 @@ export function Profile() {
         </form>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">
           <div className="bg-bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded">
             <span className="text-text-secondary h-4 w-4">
@@ -154,12 +156,16 @@ export function Profile() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-text-secondary text-sm font-medium">Version</p>
             <p className="text-text-tertiary text-xs">v{APP_VERSION}</p>
           </div>
-          <Button variant="secondary" onClick={() => setIsWhatsNewOpen(true)}>
+          <Button
+            className="shrink-0"
+            variant="secondary"
+            onClick={() => setIsWhatsNewOpen(true)}
+          >
             What's New
           </Button>
         </div>

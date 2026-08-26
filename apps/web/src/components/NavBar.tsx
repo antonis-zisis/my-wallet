@@ -1,25 +1,13 @@
-import { useQuery } from '@apollo/client/react';
-import { useEffect, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router';
+import { useState } from 'react';
+import { Link, NavLink } from 'react-router';
 
-import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../contexts/ToastContext';
-import { useUser } from '../contexts/UserContext';
-import { HEALTH_QUERY } from '../graphql/health';
-import { getAvatarData } from '../utils/getAvatarData';
-import { AppLogoIcon, LogOutIcon, SparklesIcon, UserIcon } from './icons';
+import { AppLogoIcon } from './icons';
+import { NavBarMobileMenu } from './navbar/NavBarMobileMenu';
+import { NavBarUserMenu } from './navbar/NavBarUserMenu';
+import { navLinks } from './navbar/navLinks';
 import { PrivacyToggle } from './PrivacyToggle';
 import { ThemeToggle } from './ThemeToggle';
-import { Avatar, Dropdown } from './ui';
 import { WhatsNewModal } from './WhatsNewModal';
-
-const navLinks = [
-  { end: true, label: 'Overview', to: '/' },
-  { label: 'Reports', to: '/reports' },
-  { label: 'Subscriptions', to: '/subscriptions' },
-  { label: 'Contracts', to: '/contracts' },
-  { label: 'Net Worth', to: '/net-worth' },
-];
 
 const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
   `flex items-center px-3 text-sm font-medium transition-colors border-b-2 ${
@@ -29,121 +17,46 @@ const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
   }`;
 
 export function NavBar() {
-  const { signOut } = useAuth();
-  const { loading, user } = useUser();
-  const { showError } = useToast();
-  const navigate = useNavigate();
   const [isWhatsNewOpen, setIsWhatsNewOpen] = useState(false);
-  const { error: healthError, loading: healthLoading } = useQuery<{
-    health: string;
-  }>(HEALTH_QUERY);
-
-  useEffect(() => {
-    if (healthError) {
-      showError('Unable to connect to server.');
-    }
-  }, [healthError, showError]);
-
-  const healthDotClass = healthLoading
-    ? 'bg-gray-400 dark:bg-gray-500'
-    : healthError
-      ? 'bg-red-500'
-      : 'bg-emerald-500';
-
-  const healthTitle = healthLoading
-    ? 'Connecting...'
-    : healthError
-      ? 'Server offline'
-      : 'Server connected';
 
   return (
     <>
       <nav className="border-border bg-bg-surface sticky top-0 z-20 border-b">
         <div className="mx-auto max-w-5xl px-4">
-          <div className="flex h-14 items-stretch justify-between">
-            <div className="flex items-stretch">
+          <div className="flex h-14 items-stretch justify-between gap-2">
+            <div className="flex min-w-0 items-stretch gap-2 md:gap-0">
+              <NavBarMobileMenu />
+
               <Link
                 to="/"
-                className="text-text-primary mr-4 flex items-center gap-2"
+                className="text-text-primary flex items-center gap-2 md:mr-4"
               >
-                <AppLogoIcon className="text-brand-500 h-6 w-6" />
-                <span className="text-sm font-semibold">My Wallet</span>
+                <AppLogoIcon className="text-brand-500 h-6 w-6 shrink-0" />
+                <span className="truncate text-sm font-semibold">
+                  My Wallet
+                </span>
               </Link>
 
-              <div className="bg-border my-3 w-px" />
+              <div className="bg-border my-3 hidden w-px md:block" />
 
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  end={link.end}
-                  className={getLinkClassName}
-                >
-                  {link.label}
-                </NavLink>
-              ))}
+              <div className="hidden items-stretch md:flex">
+                {navLinks.map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    end={link.end}
+                    className={getLinkClassName}
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1 sm:gap-2">
               <PrivacyToggle />
               <ThemeToggle />
-
-              {loading ? (
-                <div className="h-9 w-9 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600" />
-              ) : (
-                user && (
-                  <Dropdown
-                    items={[
-                      {
-                        type: 'custom',
-                        content: (
-                          <div className="border-border border-b px-4 py-3">
-                            {user.fullName && (
-                              <p className="text-text-primary truncate text-sm font-medium">
-                                {user.fullName}
-                              </p>
-                            )}
-                            <p className="text-text-secondary truncate text-xs">
-                              {user.email}
-                            </p>
-                          </div>
-                        ),
-                      },
-                      {
-                        icon: <UserIcon />,
-                        label: 'Profile',
-                        onClick: () => navigate('/profile'),
-                      },
-                      {
-                        icon: <SparklesIcon />,
-                        label: "What's New",
-                        onClick: () => setIsWhatsNewOpen(true),
-                      },
-                      {
-                        icon: <LogOutIcon />,
-                        label: 'Log out',
-                        variant: 'danger',
-                        onClick: signOut,
-                      },
-                    ]}
-                    trigger={
-                      <div className="relative">
-                        <button aria-label="User menu" className="rounded-full">
-                          <Avatar
-                            {...getAvatarData(user)}
-                            className="hover:bg-brand-600 cursor-pointer transition-colors"
-                            size="md"
-                          />
-                        </button>
-                        <span
-                          className={`dark:border-bg-surface absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${healthDotClass}`}
-                          title={healthTitle}
-                        />
-                      </div>
-                    }
-                  />
-                )
-              )}
+              <NavBarUserMenu onOpenWhatsNew={() => setIsWhatsNewOpen(true)} />
             </div>
           </div>
         </div>

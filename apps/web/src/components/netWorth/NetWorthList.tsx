@@ -1,14 +1,7 @@
-import { Link } from 'react-router';
-
 import { NetWorthSnapshot } from '../../types/netWorth';
-import { formatDate } from '../../utils/formatDate';
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronRightIcon,
-  TrendingChartIcon,
-} from '../icons';
-import { Card, MoneyAmount, Skeleton } from '../ui';
+import { ChevronRightIcon, TrendingChartIcon } from '../icons';
+import { Card, Skeleton } from '../ui';
+import { NetWorthListRow } from './NetWorthListRow';
 
 type NetWorthListProps = {
   error: boolean;
@@ -31,7 +24,7 @@ function NoMatchesState() {
 
 function ColumnHeaders() {
   return (
-    <div className="border-border grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 border-b px-3 py-2">
+    <div className="border-border hidden grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 border-b px-3 py-2 md:grid">
       <span className="text-text-secondary text-xs font-medium">Snapshot</span>
       <span className="text-text-secondary w-28 text-right text-xs font-medium">
         Change
@@ -49,12 +42,12 @@ function ColumnHeaders() {
 
 function SkeletonRow() {
   return (
-    <li className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-3 py-3">
-      <Skeleton className="h-6 w-48" />
-      <Skeleton className="h-4 w-28" />
-      <Skeleton className="h-4 w-28" />
-      <Skeleton className="h-3 w-20" />
-      <ChevronRightIcon className="text-border size-4" />
+    <li className="flex items-center gap-3 px-1 py-3 md:grid md:grid-cols-[1fr_auto_auto_auto_auto] md:gap-4 md:px-3">
+      <Skeleton className="h-6 flex-1 md:w-48 md:flex-none" />
+      <Skeleton className="hidden h-4 w-28 md:block" />
+      <Skeleton className="h-4 w-20 shrink-0 md:w-28" />
+      <Skeleton className="hidden h-3 w-20 md:block" />
+      <ChevronRightIcon className="text-border size-4 shrink-0" />
     </li>
   );
 }
@@ -81,42 +74,6 @@ function EmptyState({ onAdd }: { onAdd?: () => void }) {
         </button>
       )}
     </div>
-  );
-}
-
-function DeltaBadge({ delta }: { delta: number | null }) {
-  if (delta === null) {
-    return (
-      <span className="text-border-strong w-28 text-right text-xs">—</span>
-    );
-  }
-
-  const isPositive = delta > 0;
-  const isZero = delta === 0;
-
-  if (isZero) {
-    return (
-      <span className="text-text-tertiary w-28 text-right text-xs">
-        No change
-      </span>
-    );
-  }
-
-  return (
-    <span
-      className={`flex w-28 items-center justify-end gap-1 text-xs font-medium ${
-        isPositive
-          ? 'text-green-600 dark:text-green-400'
-          : 'text-red-600 dark:text-red-400'
-      }`}
-    >
-      {isPositive ? (
-        <ArrowUpIcon className="size-3 shrink-0" />
-      ) : (
-        <ArrowDownIcon className="size-3 shrink-0" />
-      )}
-      <MoneyAmount amount={Math.abs(delta)} sign={isPositive ? '+' : '-'} />
-    </span>
   );
 }
 
@@ -156,44 +113,9 @@ export function NetWorthList({
     <Card>
       <ColumnHeaders />
       <ul className="divide-border divide-y">
-        {snapshots.map((snapshot) => {
-          const isPositiveNetWorth = snapshot.netWorth >= 0;
-          const delta =
-            snapshot.previousSnapshot != null
-              ? snapshot.netWorth - snapshot.previousSnapshot.netWorth
-              : null;
-
-          return (
-            <li key={snapshot.id}>
-              <Link
-                className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-3 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                to={`/net-worth/${snapshot.id}`}
-              >
-                <span className="text-text-primary font-medium">
-                  {snapshot.title}
-                </span>
-
-                <DeltaBadge delta={delta} />
-
-                <MoneyAmount
-                  amount={Math.abs(snapshot.netWorth)}
-                  sign={isPositiveNetWorth ? '+' : '-'}
-                  className={`w-28 text-right text-sm font-semibold ${
-                    isPositiveNetWorth
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
-                  }`}
-                />
-
-                <span className="text-text-tertiary w-20 text-right text-xs">
-                  {formatDate(snapshot.snapshotDate)}
-                </span>
-
-                <ChevronRightIcon className="text-text-tertiary size-4" />
-              </Link>
-            </li>
-          );
-        })}
+        {snapshots.map((snapshot) => (
+          <NetWorthListRow key={snapshot.id} snapshot={snapshot} />
+        ))}
       </ul>
     </Card>
   );

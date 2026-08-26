@@ -25,6 +25,7 @@ type SubscriptionCostSummaryProps = {
 };
 
 type TileProps = {
+  className?: string;
   label: string;
   loading?: boolean;
   primary: string;
@@ -32,9 +33,16 @@ type TileProps = {
   tooltip?: string;
 };
 
-function Tile({ label, loading, primary, secondary, tooltip }: TileProps) {
+function Tile({
+  className = '',
+  label,
+  loading,
+  primary,
+  secondary,
+  tooltip,
+}: TileProps) {
   return (
-    <Card>
+    <Card className={className}>
       {loading ? (
         <>
           <Skeleton className="h-4 w-20" />
@@ -95,6 +103,7 @@ export function SubscriptionCostSummary({
         />
 
         <Tile
+          className="col-span-2 sm:col-span-1"
           label={
             mostExpensive
               ? `Most expensive · ${formatMoneyOrMask(mostExpensive.monthlyCost, isAmountsHidden)} € / mo`
@@ -110,7 +119,7 @@ export function SubscriptionCostSummary({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Tile
           label={
             nextRenewal

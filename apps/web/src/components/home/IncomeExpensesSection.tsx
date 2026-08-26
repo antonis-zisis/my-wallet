@@ -68,43 +68,41 @@ export function IncomeExpensesSection({
 
   return (
     <Card className="mt-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-text-primary text-lg font-semibold">
+      <div className="flex flex-wrap items-center gap-2">
+        <h2 className="text-text-primary order-1 flex-1 text-lg font-semibold">
           Monthly Summary
         </h2>
 
-        <div className="flex items-center gap-2">
-          {isOpen && (
-            <div className="border-border flex overflow-hidden rounded border">
-              {LIMIT_OPTIONS.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setLimit(option)}
-                  className={`border-border cursor-pointer border-l px-2.5 py-1 text-xs font-medium transition-colors first:border-l-0 ${
-                    limit === option
-                      ? 'bg-brand-600 text-white'
-                      : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
+        {isOpen && (
+          <div className="border-border order-3 flex w-full overflow-hidden rounded border sm:order-2 sm:w-auto">
+            {LIMIT_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setLimit(option)}
+                className={`border-border flex-1 cursor-pointer border-l px-2.5 py-1 text-xs font-medium transition-colors first:border-l-0 sm:flex-none ${
+                  limit === option
+                    ? 'bg-brand-600 text-white'
+                    : 'bg-bg-surface text-text-secondary hover:bg-bg-muted'
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
 
-          <button
-            aria-expanded={isOpen}
-            aria-label="Monthly Summary"
-            type="button"
-            onClick={() => setIsOpen((prev) => !prev)}
-            className="cursor-pointer"
-          >
-            <ChevronDownIcon
-              className={`text-text-secondary h-5 w-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-            />
-          </button>
-        </div>
+        <button
+          aria-expanded={isOpen}
+          aria-label="Monthly Summary"
+          type="button"
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="order-2 cursor-pointer sm:order-3"
+        >
+          <ChevronDownIcon
+            className={`text-text-secondary h-5 w-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
       </div>
 
       <div

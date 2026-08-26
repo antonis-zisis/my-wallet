@@ -83,14 +83,16 @@ export function Subscriptions() {
   return (
     <>
       <PageLayout>
-        <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
             <h1 className="text-text-primary text-2xl font-semibold">
               Subscriptions
             </h1>
             <p className="text-text-secondary mt-1 text-sm">{subtitle}</p>
           </div>
-          <Button onClick={onOpenCreate}>New Subscription</Button>
+          <Button className="self-start" onClick={onOpenCreate}>
+            New Subscription
+          </Button>
         </div>
 
         {(activeLoading || (!activeError && activeTotalCount > 0)) && (
@@ -122,7 +124,7 @@ export function Subscriptions() {
         {!activeError && (
           <div className="mb-2 flex items-center justify-end">
             <Select
-              className="w-40 py-1 text-sm"
+              className="w-full py-1 text-sm sm:w-40"
               options={SUBSCRIPTION_SORT_OPTIONS}
               value={activeSortOption}
               onChange={(event) =>

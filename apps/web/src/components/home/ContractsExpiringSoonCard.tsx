@@ -97,7 +97,7 @@ export function ContractsExpiringSoonCard({
                       key={contract.id}
                       className="flex items-center justify-between gap-3 py-2"
                     >
-                      <div className="flex min-w-0 items-center gap-2">
+                      <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="text-text-primary truncate text-sm font-medium">
                           {contract.provider}
                         </span>

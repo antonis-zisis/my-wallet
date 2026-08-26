@@ -75,11 +75,11 @@ export function ContractListRow({
 
   return (
     <li
-      className={`flex items-center gap-3 ${contract.isExpired ? 'opacity-60' : ''}`}
+      className={`flex items-center gap-1 sm:gap-3 ${contract.isExpired ? 'opacity-60' : ''}`}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-text-primary min-w-0 truncate font-medium">
               {contract.provider}
             </span>
@@ -91,7 +91,7 @@ export function ContractListRow({
             <ExpiryBadge contract={contract} />
           </div>
 
-          <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs">
+          <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-1.5 text-xs">
             {contract.plan && (
               <>
                 <span className="text-text-tertiary min-w-0 truncate">
@@ -112,7 +112,7 @@ export function ContractListRow({
         </div>
 
         {contract.cost !== null && (
-          <div className="text-right">
+          <div className="shrink-0 text-right">
             <p className="text-text-primary text-sm font-semibold">
               <MoneyAmount amount={contract.cost} />
             </p>

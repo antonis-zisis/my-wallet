@@ -16,6 +16,7 @@ export { InfoIcon } from './InfoIcon';
 export { LockClosedIcon } from './LockClosedIcon';
 export { LockOpenIcon } from './LockOpenIcon';
 export { LogOutIcon } from './LogOutIcon';
+export { MenuIcon } from './MenuIcon';
 export { MonitorIcon } from './MonitorIcon';
 export { MoonIcon } from './MoonIcon';
 export { PencilIcon } from './PencilIcon';

@@ -98,14 +98,14 @@ export function UpcomingRenewalsCard({
                 return (
                   <div
                     key={subscription.id}
-                    className="flex items-center justify-between py-2"
+                    className="flex items-center justify-between gap-3 py-2"
                   >
-                    <div>
-                      <p className="text-text-primary text-sm font-medium">
+                    <div className="min-w-0">
+                      <p className="text-text-primary truncate text-sm font-medium">
                         {subscription.name}
                       </p>
 
-                      <div className="mt-0.5 flex items-center gap-1.5">
+                      <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5">
                         <p className="text-text-secondary text-xs">
                           {billingCycleLabel(subscription.billingCycle)}
                         </p>
@@ -126,7 +126,7 @@ export function UpcomingRenewalsCard({
                       </div>
                     </div>
 
-                    <p className="text-text-primary text-sm font-semibold">
+                    <p className="text-text-primary shrink-0 text-sm font-semibold">
                       <MoneyAmount amount={subscription.amount} />
                     </p>
                   </div>
