@@ -1,3 +1,4 @@
+export { clampMonths } from './clampMonths';
 export { clampPage } from './clampPage';
 export {
   BILLING_CYCLES,

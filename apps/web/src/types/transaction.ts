@@ -21,6 +21,16 @@ export type TransactionFormInput = {
   date: string;
 };
 
+export type CategoryMonthlyTotal = {
+  category: string;
+  month: string;
+  total: number;
+};
+
+export type ExpenseCategoryTotalsData = {
+  expenseCategoryTotalsByMonth: Array<CategoryMonthlyTotal>;
+};
+
 export const EXPENSE_CATEGORIES = [
   'Rent',
   'Utilities',

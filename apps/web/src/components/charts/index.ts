@@ -10,6 +10,8 @@ export {
   LIABILITY_CATEGORY_COLORS,
   SUBSCRIPTION_CATEGORY_COLORS,
 } from './categoryColors';
+export { CategoryTrendChart } from './CategoryTrendChart';
+export { CategoryTrendTile } from './CategoryTrendTile';
 export { ExpenseBreakdownChart } from './ExpenseBreakdownChart';
 export { IncomeExpensesChart } from './IncomeExpensesChart';
 export { NetWorthCategoryBreakdownChart } from './NetWorthCategoryBreakdownChart';

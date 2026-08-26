@@ -1,12 +1,16 @@
 import { GraphQLError } from 'graphql';
 
 import prisma from '../../lib/prisma';
-import { parseInput } from '../../lib/validate';
+import { clampMonths, parseInput } from '../../lib/validate';
 import {
   reportAccessWhere,
   resolveReportAccess,
 } from '../reports/lib/reportAccess';
 import { TransactionInput } from './inputSchemas';
+import { buildCategoryMonthlyTotals } from './lib/buildCategoryMonthlyTotals';
+import { startOfMonthWindow } from './lib/startOfMonthWindow';
+
+const MAX_WINDOW_TRANSACTIONS = 10000;
 
 export const transactionResolvers = {
   Query: {
@@ -28,6 +32,23 @@ export const transactionResolvers = {
       return prisma.transaction.findFirst({
         where: { id, report: reportAccessWhere(userId) },
       });
+    },
+    expenseCategoryTotalsByMonth: async (
+      _parent: unknown,
+      { months = 12 }: { months?: number },
+      { userId }: { userId: string }
+    ) => {
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          type: 'EXPENSE',
+          date: { gte: startOfMonthWindow(new Date(), clampMonths(months)) },
+          report: reportAccessWhere(userId),
+        },
+        select: { amount: true, category: true, date: true },
+        take: MAX_WINDOW_TRANSACTIONS,
+      });
+
+      return buildCategoryMonthlyTotals(transactions);
     },
   },
   Mutation: {

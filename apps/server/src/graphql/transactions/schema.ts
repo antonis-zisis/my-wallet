@@ -17,6 +17,12 @@ export const transactionTypeDefs = `#graphql
     updatedAt: String!
   }
 
+  type CategoryMonthlyTotal {
+    category: String!
+    month: String!
+    total: Float!
+  }
+
   input CreateTransactionInput {
     reportId: ID!
     type: TransactionType!
@@ -38,6 +44,7 @@ export const transactionTypeDefs = `#graphql
   extend type Query {
     transactions: [Transaction!]!
     transaction(id: ID!): Transaction
+    expenseCategoryTotalsByMonth(months: Int): [CategoryMonthlyTotal!]!
   }
 
   type Mutation {
