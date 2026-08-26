@@ -14,8 +14,7 @@ export function useForgotPasswordForm() {
 
     setSubmitting(true);
 
-    // the result is deliberately ignored: reporting it would tell an attacker
-    // whether the address has an account
+    // the result is deliberately ignored: reporting it would tell an attacker whether the address has an account
     await sendPasswordResetEmail(email.trim());
 
     setSubmitting(false);
