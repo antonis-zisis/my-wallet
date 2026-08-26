@@ -14,6 +14,49 @@ export type WhatsNewRelease = {
 
 export const whatsNew: Array<WhatsNewRelease> = [
   {
+    version: '0.9.0',
+    date: '2026-08-26',
+    highlights: [
+      {
+        title: 'See how your spending moves, category by category',
+        description:
+          'A new Trends page charts what you spend per category, month by month, across every report you can see - including ones shared with you. Scan the grid of sparklines to spot what is climbing, then click any category for a full monthly breakdown. Pick a 3, 6, 9 or 12 month window.',
+      },
+      {
+        title: 'My Wallet on your phone',
+        description:
+          'The whole app now works on a phone screen - a collapsible menu, transactions as readable cards instead of a squeezed table, and forms and charts that fit the viewport. You can also install it to your home screen and open it like a native app.',
+      },
+      {
+        title: 'Reset a forgotten password',
+        description:
+          'Locked out? Request a reset link from the login page and set a new password without needing anyone to help.',
+      },
+    ],
+    improvements: [
+      {
+        title: 'More warning before a contract expires',
+        description:
+          'The Overview now flags contracts ending within 90 days instead of 30, giving you time to actually do something about it.',
+      },
+      {
+        title: 'A tidier Overview',
+        description:
+          'Reports with no transactions yet are hidden from the Overview, so the page shows only what you are actually tracking.',
+      },
+      {
+        title: 'Easier navigation on long pages',
+        description:
+          'The navigation bar stays with you as you scroll, and a scroll-to-top button appears once you have moved down the page.',
+      },
+      {
+        title: 'Lists no longer jump while loading',
+        description:
+          'The reports search and sort controls and the trends grid now hold their place as data loads, instead of shifting the page once it arrives.',
+      },
+    ],
+  },
+  {
     version: '0.8.0',
     date: '2026-07-18',
     highlights: [
