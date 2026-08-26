@@ -16,6 +16,8 @@ describe('ProtectedRoute', () => {
     vi.mocked(useAuth).mockReturnValue({
       session: null,
       loading: true,
+      isRecoveringPassword: false,
+      sendPasswordResetEmail: vi.fn(),
       signIn: vi.fn(),
       signOut: vi.fn(),
       updatePassword: vi.fn(),
@@ -34,6 +36,8 @@ describe('ProtectedRoute', () => {
     vi.mocked(useAuth).mockReturnValue({
       session: null,
       loading: false,
+      isRecoveringPassword: false,
+      sendPasswordResetEmail: vi.fn(),
       signIn: vi.fn(),
       signOut: vi.fn(),
       updatePassword: vi.fn(),
@@ -54,12 +58,42 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 
+  it('redirects to /reset-password while recovering a password', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      session: { user: { id: 'user-1' } } as ReturnType<
+        typeof useAuth
+      >['session'],
+      loading: false,
+      isRecoveringPassword: true,
+      sendPasswordResetEmail: vi.fn(),
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updatePassword: vi.fn(),
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route element={<ProtectedRoute />}>
+            <Route index element={<div>Protected Content</div>} />
+          </Route>
+          <Route path="/reset-password" element={<div>Reset Password</div>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Reset Password')).toBeInTheDocument();
+    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+  });
+
   it('renders child route when session exists', () => {
     vi.mocked(useAuth).mockReturnValue({
       session: { user: { id: 'user-1' } } as ReturnType<
         typeof useAuth
       >['session'],
       loading: false,
+      isRecoveringPassword: false,
+      sendPasswordResetEmail: vi.fn(),
       signIn: vi.fn(),
       signOut: vi.fn(),
       updatePassword: vi.fn(),

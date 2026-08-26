@@ -1,17 +1,21 @@
 import { type SyntheticEvent, useState } from 'react';
-import { Navigate } from 'react-router';
+import { Link, Navigate } from 'react-router';
 
-import { AppLogoIcon, CircleAlertIcon } from '../components/icons';
-import { ThemeToggle } from '../components/ThemeToggle';
-import { Button, Card, Input } from '../components/ui';
+import { AuthCardLayout } from '../components/auth/AuthCardLayout';
+import { AuthFormError } from '../components/auth/AuthFormError';
+import { Button, Input } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 
 export function Login() {
-  const { session, signIn } = useAuth();
+  const { isRecoveringPassword, session, signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  if (isRecoveringPassword) {
+    return <Navigate to="/reset-password" replace />;
+  }
 
   if (session) {
     return <Navigate to="/" replace />;
@@ -34,60 +38,50 @@ export function Login() {
   const isFormEmpty = !email.trim() || !password;
 
   return (
-    <div className="bg-bg-app flex min-h-screen items-center justify-center p-4">
-      <div className="fixed top-4 right-4">
-        <ThemeToggle />
-      </div>
+    <AuthCardLayout subtitle="Sign in to your account">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          id="email"
+          type="email"
+          label="Email"
+          value={email}
+          autoComplete="email"
+          placeholder="you@example.com"
+          onChange={(event) => setEmail(event.target.value)}
+        />
 
-      <Card className="w-full max-w-md p-6 sm:p-8">
-        <div className="mb-6 flex flex-col items-center gap-2">
-          <AppLogoIcon className="text-brand-500 h-16 w-16" />
+        <Input
+          id="password"
+          type="password"
+          label="Password"
+          value={password}
+          autoComplete="current-password"
+          placeholder="••••••••"
+          onChange={(event) => setPassword(event.target.value)}
+        />
 
-          <h1 className="text-text-primary text-2xl font-bold">My Wallet</h1>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="mt-2 w-full"
+          disabled={isFormEmpty}
+          isLoading={submitting}
+        >
+          Sign in
+        </Button>
 
-          <p className="text-text-secondary text-sm">Sign in to your account</p>
+        <div className="text-center">
+          <Link
+            to="/forgot-password"
+            className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 text-sm"
+          >
+            Forgot your password?
+          </Link>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            id="email"
-            type="email"
-            label="Email"
-            value={email}
-            autoComplete="email"
-            placeholder="you@example.com"
-            onChange={(event) => setEmail(event.target.value)}
-          />
-
-          <Input
-            id="password"
-            type="password"
-            label="Password"
-            value={password}
-            autoComplete="current-password"
-            placeholder="••••••••"
-            onChange={(event) => setPassword(event.target.value)}
-          />
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="mt-2 w-full"
-            disabled={isFormEmpty}
-            isLoading={submitting}
-          >
-            Sign in
-          </Button>
-
-          {error && (
-            <div className="flex items-center gap-2 rounded bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-400">
-              <CircleAlertIcon className="mt-0.5 h-4 w-4 shrink-0" />
-              {error}
-            </div>
-          )}
-        </form>
-      </Card>
-    </div>
+        {error && <AuthFormError message={error} />}
+      </form>
+    </AuthCardLayout>
   );
 }
