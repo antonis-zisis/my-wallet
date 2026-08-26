@@ -205,6 +205,25 @@ describe('NetWorthEntriesSection', () => {
     });
   });
 
+  it('shows the summed amount of each category next to its heading', () => {
+    const entries = [
+      makeEntry({ label: 'Emergency Fund', amount: 2000, category: 'Savings' }),
+      makeEntry({ label: 'Index Fund', amount: 5000, category: 'Investments' }),
+      makeEntry({ label: 'Pension', amount: 3000, category: 'Investments' }),
+    ];
+
+    render(
+      <NetWorthEntriesSection
+        {...defaultProps}
+        entries={entries}
+        total={10000}
+      />
+    );
+
+    expect(screen.getAllByText(/8\.000,00 €/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/2\.000,00 €/).length).toBeGreaterThan(0);
+  });
+
   it('groups entries under their category headings', () => {
     const entries = [
       makeEntry({ label: 'Emergency Fund', amount: 2000, category: 'Savings' }),

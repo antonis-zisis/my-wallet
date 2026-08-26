@@ -87,62 +87,73 @@ export function NetWorthEntriesSection({
           <div
             className={`border-border overflow-hidden rounded border ${categoryCount >= 1 ? '' : 'mt-4'}`}
           >
-            {groupedCategories.map(([category, categoryEntries]) => (
-              <div key={category}>
-                <div className="bg-bg-app text-text-secondary px-4 py-2 text-xs font-medium tracking-wider uppercase dark:bg-gray-700/50">
-                  {category}
-                </div>
+            {groupedCategories.map(([category, categoryEntries]) => {
+              const categoryTotal = categoryEntries.reduce(
+                (sum, entry) => sum + entry.amount,
+                0
+              );
 
-                {categoryEntries.map((entry, index) => {
-                  const deltaKey = `${entry.category}:${entry.label}`;
-                  const entryDelta = entryDeltas?.[deltaKey];
-                  const percentOfTotal =
-                    total > 0
-                      ? ((entry.amount / total) * 100).toFixed(1)
-                      : null;
+              return (
+                <div key={category}>
+                  <div className="bg-bg-app text-text-secondary flex items-center justify-between gap-2 px-4 py-2 text-xs font-medium tracking-wider uppercase dark:bg-gray-700/50">
+                    <span className="min-w-0 truncate">{category}</span>
+                    <MoneyAmount
+                      amount={categoryTotal}
+                      className="shrink-0 tabular-nums"
+                    />
+                  </div>
 
-                  return (
-                    <div
-                      key={entry.id}
-                      className={`flex flex-col gap-1 px-3 py-2 sm:grid sm:grid-cols-[1fr_152px_136px] sm:items-center sm:gap-0 sm:px-4 ${
-                        index < categoryEntries.length - 1
-                          ? 'border-border border-b'
-                          : ''
-                      }`}
-                    >
-                      <span className="text-text-primary min-w-0 truncate text-sm">
-                        {entry.label}
-                        {entry.notes && (
-                          <span className="text-text-tertiary ml-1.5">
-                            — {entry.notes}
-                          </span>
-                        )}
-                      </span>
+                  {categoryEntries.map((entry, index) => {
+                    const deltaKey = `${entry.category}:${entry.label}`;
+                    const entryDelta = entryDeltas?.[deltaKey];
+                    const percentOfTotal =
+                      total > 0
+                        ? ((entry.amount / total) * 100).toFixed(1)
+                        : null;
 
-                      <div className="flex items-center justify-between gap-2 sm:contents">
-                        <span className="text-text-primary text-sm font-medium sm:text-right">
-                          <MoneyAmount amount={entry.amount} />
-                          {percentOfTotal != null && (
-                            <span className="text-text-tertiary ml-1.5 font-normal">
-                              ({percentOfTotal}%)
+                    return (
+                      <div
+                        key={entry.id}
+                        className={`flex flex-col gap-1 px-3 py-2 sm:grid sm:grid-cols-[1fr_152px_136px] sm:items-center sm:gap-0 sm:px-4 ${
+                          index < categoryEntries.length - 1
+                            ? 'border-border border-b'
+                            : ''
+                        }`}
+                      >
+                        <span className="text-text-primary min-w-0 truncate text-sm">
+                          {entry.label}
+                          {entry.notes && (
+                            <span className="text-text-tertiary ml-1.5">
+                              — {entry.notes}
                             </span>
                           )}
                         </span>
 
-                        <div className="flex justify-end">
-                          {entryDelta && (
-                            <EntryDeltaLabel
-                              currentAmount={entry.amount}
-                              entryDelta={entryDelta}
-                            />
-                          )}
+                        <div className="flex items-center justify-between gap-2 sm:contents">
+                          <span className="text-text-primary text-sm font-medium sm:text-right">
+                            <MoneyAmount amount={entry.amount} />
+                            {percentOfTotal != null && (
+                              <span className="text-text-tertiary ml-1.5 font-normal">
+                                ({percentOfTotal}%)
+                              </span>
+                            )}
+                          </span>
+
+                          <div className="flex justify-end">
+                            {entryDelta && (
+                              <EntryDeltaLabel
+                                currentAmount={entry.amount}
+                                entryDelta={entryDelta}
+                              />
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
