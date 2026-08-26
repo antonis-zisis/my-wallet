@@ -4,22 +4,14 @@ import { CircleAlertIcon, DocumentTextIcon } from '../components/icons';
 import { ReportBackLink } from '../components/reports/ReportBackLink';
 import { CategoryTrendDetail } from '../components/transactions/CategoryTrendDetail';
 import { CategoryTrendsGrid } from '../components/transactions/CategoryTrendsGrid';
-import { CategoryTrendsWindowPicker } from '../components/transactions/CategoryTrendsWindowPicker';
-import { PageLayout, Skeleton } from '../components/ui';
+import { CategoryTrendsSkeleton } from '../components/transactions/CategoryTrendsSkeleton';
+import {
+  CategoryTrendsWindowPicker,
+  CategoryTrendsWindowPickerSkeleton,
+} from '../components/transactions/CategoryTrendsWindowPicker';
+import { PageLayout } from '../components/ui';
 import { useCategoryTrendsData } from '../hooks/transactions/useCategoryTrendsData';
 import { formatMonth } from '../utils/formatMonth';
-
-const SKELETON_TILE_COUNT = 8;
-
-function TrendsSkeleton() {
-  return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      {Array.from({ length: SKELETON_TILE_COUNT }, (_, index) => (
-        <Skeleton key={index} className="h-52 w-full" />
-      ))}
-    </div>
-  );
-}
 
 function ErrorState() {
   return (
@@ -92,6 +84,8 @@ export function CategoryTrends() {
           <p className="text-text-secondary mt-1 text-sm">{scope}</p>
         </div>
 
+        {loading && <CategoryTrendsWindowPickerSkeleton />}
+
         {!loading && !error && hasEnoughHistory && (
           <CategoryTrendsWindowPicker
             value={windowMonths}
@@ -100,7 +94,7 @@ export function CategoryTrends() {
         )}
       </div>
 
-      {loading && <TrendsSkeleton />}
+      {loading && <CategoryTrendsSkeleton />}
 
       {!loading && error && <ErrorState />}
 

@@ -2,6 +2,7 @@ import {
   WINDOW_OPTIONS,
   WindowOption,
 } from '../../hooks/transactions/useCategoryTrendsData';
+import { Skeleton } from '../ui';
 
 type CategoryTrendsWindowPickerProps = {
   value: WindowOption;
@@ -30,4 +31,8 @@ export function CategoryTrendsWindowPicker({
       ))}
     </div>
   );
+}
+
+export function CategoryTrendsWindowPickerSkeleton() {
+  return <Skeleton className="h-[30px] w-full sm:w-80" />;
 }

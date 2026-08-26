@@ -13,6 +13,8 @@ import { formatMonth, formatMonthWithYear } from '../../utils/formatMonth';
 import { ArrowDownIcon, ArrowUpIcon } from '../icons';
 import { MoneyAmount } from '../ui';
 
+export const SPARKLINE_HEIGHT = 90;
+
 type TileTooltipProps = {
   active?: boolean;
   payload?: Array<{ payload: CategoryTrendPoint }>;
@@ -97,7 +99,7 @@ export function CategoryTrendTile({
       </div>
 
       <div className="mt-3 w-full">
-        <ResponsiveContainer width="100%" height={90}>
+        <ResponsiveContainer width="100%" height={SPARKLINE_HEIGHT}>
           <LineChart
             data={points}
             margin={{ top: 6, right: 8, bottom: 0, left: 8 }}
