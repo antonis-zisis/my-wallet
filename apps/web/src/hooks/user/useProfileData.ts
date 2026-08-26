@@ -3,8 +3,7 @@ import { type SubmitEvent, useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useUser } from '../../contexts/UserContext';
-
-const MIN_PASSWORD_LENGTH = 6;
+import { validateNewPassword } from '../../utils/validateNewPassword';
 
 export function useProfileData() {
   const { updateUser, user } = useUser();
@@ -43,14 +42,13 @@ export function useProfileData() {
   const handlePasswordSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
 
-    if (newPassword !== confirmPassword) {
-      showError('Passwords do not match.');
+    const validationError = validateNewPassword({
+      confirmPassword,
+      newPassword,
+    });
 
-      return;
-    }
-
-    if (newPassword.length < MIN_PASSWORD_LENGTH) {
-      showError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+    if (validationError) {
+      showError(validationError);
 
       return;
     }

@@ -12,6 +12,8 @@ import { supabase } from '../lib/supabase';
 type AuthContextType = {
   session: Session | null;
   loading: boolean;
+  isRecoveringPassword: boolean;
+  sendPasswordResetEmail: (email: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updatePassword: (newPassword: string) => Promise<{ error: Error | null }>;
@@ -22,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
@@ -31,8 +34,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession);
+
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecoveringPassword(true);
+      }
+
+      if (event === 'SIGNED_OUT') {
+        setIsRecoveringPassword(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -42,6 +53,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
+    });
+
+    return { error };
+  };
+
+  const sendPasswordResetEmail = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
 
     return { error };
@@ -59,7 +78,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ session, loading, signIn, signOut, updatePassword }}
+      value={{
+        session,
+        loading,
+        isRecoveringPassword,
+        sendPasswordResetEmail,
+        signIn,
+        signOut,
+        updatePassword,
+      }}
     >
       {children}
     </AuthContext.Provider>

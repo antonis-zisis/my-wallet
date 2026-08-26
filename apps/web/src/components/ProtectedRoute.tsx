@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Spinner } from './ui';
 
 export function ProtectedRoute() {
-  const { loading, session } = useAuth();
+  const { isRecoveringPassword, loading, session } = useAuth();
 
   if (loading) {
     return (
@@ -12,6 +12,10 @@ export function ProtectedRoute() {
         <Spinner className="text-text-tertiary h-8 w-8" />
       </div>
     );
+  }
+
+  if (isRecoveringPassword) {
+    return <Navigate to="/reset-password" replace />;
   }
 
   if (!session) {
