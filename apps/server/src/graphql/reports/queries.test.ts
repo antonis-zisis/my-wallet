@@ -34,6 +34,7 @@ beforeEach(async () => {
   prisma = (await import('../../lib/prisma')).default;
   vi.mocked(prisma.reportShare.findMany).mockResolvedValue([]);
   vi.mocked(prisma.user.findMany).mockResolvedValue([]);
+  vi.mocked(prisma.transaction.groupBy).mockResolvedValue([] as never);
 });
 
 describe('reportQueries', () => {
@@ -64,6 +65,8 @@ describe('reportQueries', () => {
         items: [
           {
             ...report,
+            netBalance: 0,
+            transactionCount: 0,
             members: [
               {
                 id: report.userId,
@@ -142,8 +145,18 @@ describe('reportQueries', () => {
       const high = makeReport({ id: 'high' });
       vi.mocked(prisma.report.findMany).mockResolvedValue([low, high]);
       vi.mocked(prisma.transaction.groupBy).mockResolvedValue([
-        { reportId: 'low', type: 'INCOME', _sum: { amount: 100 } },
-        { reportId: 'high', type: 'INCOME', _sum: { amount: 900 } },
+        {
+          reportId: 'low',
+          type: 'INCOME',
+          _sum: { amount: 100 },
+          _count: { _all: 1 },
+        },
+        {
+          reportId: 'high',
+          type: 'INCOME',
+          _sum: { amount: 900 },
+          _count: { _all: 1 },
+        },
       ] as never);
 
       const result = await reportQueries.reports(
@@ -162,8 +175,18 @@ describe('reportQueries', () => {
       const high = makeReport({ id: 'high' });
       vi.mocked(prisma.report.findMany).mockResolvedValue([high, low]);
       vi.mocked(prisma.transaction.groupBy).mockResolvedValue([
-        { reportId: 'low', type: 'EXPENSE', _sum: { amount: 100 } },
-        { reportId: 'high', type: 'INCOME', _sum: { amount: 900 } },
+        {
+          reportId: 'low',
+          type: 'EXPENSE',
+          _sum: { amount: 100 },
+          _count: { _all: 1 },
+        },
+        {
+          reportId: 'high',
+          type: 'INCOME',
+          _sum: { amount: 900 },
+          _count: { _all: 1 },
+        },
       ] as never);
 
       const result = await reportQueries.reports(

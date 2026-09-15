@@ -8,6 +8,8 @@ import { ReportMemberRecord } from './lib/buildMembersByReport';
 type ReportParent = {
   id: string;
   userId: string;
+  netBalance?: number;
+  transactionCount?: number;
   transactions?: Array<Transaction>;
   members?: Array<ReportMemberRecord>;
 };
@@ -26,6 +28,10 @@ export const reportFields = {
   createdAt: (parent: { createdAt: Date }) => parent.createdAt.toISOString(),
   updatedAt: (parent: { updatedAt: Date }) => parent.updatedAt.toISOString(),
   transactionCount: async (parent: ReportParent) => {
+    if (parent.transactionCount !== undefined) {
+      return parent.transactionCount;
+    }
+
     if (parent.transactions !== undefined) {
       return parent.transactions.length;
     }
@@ -33,6 +39,10 @@ export const reportFields = {
     return prisma.transaction.count({ where: { reportId: parent.id } });
   },
   netBalance: async (parent: ReportParent) => {
+    if (parent.netBalance !== undefined) {
+      return parent.netBalance;
+    }
+
     if (parent.transactions !== undefined) {
       return parent.transactions.reduce((balance, transaction) => {
         return transaction.type === 'INCOME'

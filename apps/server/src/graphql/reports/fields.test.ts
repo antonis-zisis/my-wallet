@@ -62,6 +62,15 @@ describe('reportFields', () => {
   });
 
   describe('transactionCount', () => {
+    it('returns the batch-preloaded count without querying the DB', async () => {
+      const parent = { ...makeReport(), transactionCount: 7 };
+
+      const result = await reportFields.transactionCount(parent);
+
+      expect(prisma.transaction.count).not.toHaveBeenCalled();
+      expect(result).toBe(7);
+    });
+
     it('returns the length of pre-loaded transactions without querying the DB', async () => {
       const parent = { ...makeReport(), transactions: [makeTransaction()] };
 
@@ -85,6 +94,15 @@ describe('reportFields', () => {
   });
 
   describe('netBalance', () => {
+    it('returns the batch-preloaded balance without querying the DB', async () => {
+      const parent = { ...makeReport(), netBalance: 1800 };
+
+      const result = await reportFields.netBalance(parent);
+
+      expect(prisma.transaction.aggregate).not.toHaveBeenCalled();
+      expect(result).toBe(1800);
+    });
+
     it('computes net balance from pre-loaded transactions without querying the DB', async () => {
       const parent = {
         ...makeReport(),
