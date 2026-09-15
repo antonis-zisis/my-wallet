@@ -66,18 +66,19 @@ pnpm run env:encrypt      # Encrypt before committing
 
 **Server** (Express 5 + Apollo Server 5):
 
-- Entry: `src/index.ts` — Apollo Server mounted at `/graphql` via `@as-integrations/express5`. Auth middleware validates Supabase JWT and extracts `userId` + `email` onto context
+- Entry: `src/index.ts` — Apollo Server mounted at `/graphql` via `@as-integrations/express5`. Auth middleware validates Supabase JWT and extracts `userId` + `email` onto context. `startServer()` connects to the database before listening and exits non-zero if it can't — a revision that can't reach Postgres would otherwise serve partial GraphQL errors that look like frontend bugs. `SIGTERM` closes the HTTP server and drains the pool
 - GraphQL schema: SDL strings and resolvers per domain in `graphql/` subdirectories, re-exported from `graphql/index.ts`
-- Database: PostgreSQL via Prisma 7 (`@prisma/adapter-pg`). Client generated to `src/generated/prisma/`. Connection built from the typed `env` in `lib/env.ts`
+- Database: PostgreSQL via Prisma 7 (`@prisma/adapter-pg`). Client generated to `src/generated/prisma/`. Connection built from the typed `env` in `lib/env.ts`. The pool is capped at `MAX_POOL_CONNECTIONS` (`lib/prisma.ts`) with connect, idle, and statement timeouts — Supabase's pooler runs in session mode with a per-project client cap, and several Cloud Run instances share it during a cold start, so excess queries must queue locally rather than be rejected. `connectDatabase` probes with `SELECT 1` through `lib/retryWithBackoff.ts` and throws once its attempts are spent
 - Config: `lib/env.ts` parses `process.env` against a Zod schema once at boot (fail-fast); `prisma.ts`, `middleware/auth.ts`, and `index.ts` read the typed `env` instead of `process.env`
 - Validation: mutation inputs are Zod schemas in `graphql/<domain>/inputSchemas.ts`, parsed via `parseInput` (`lib/validate`); the `zodErrorToGraphQLError` adapter preserves the `BAD_USER_INPUT` contract. Shared field builders in `lib/validate/fields.ts`
+- Batching: list resolvers preload per-item fields in one query via `graphql/<domain>/lib/attach*.ts` helpers (`attachReportMembers`, `attachReportTotals`, `attachReportTransactions`, `attachPreviousSnapshots`). The matching field resolver returns the preloaded value when the parent carries it and keeps its own query as the fallback for single-item paths. Expensive preloads are gated on the selection set with `selectsItemField` (`lib/selectsItemField.ts`) so they only run when the query actually asks for the field — `GET_NET_WORTH_TREND` requests 500 items and would otherwise preload 500 predecessors
 - Build: tsup bundles to `dist/` for production
 
 **Testing** (Vitest 4):
 
 - Web: jsdom environment, setup in `src/test/setup.ts` (jest-dom matchers + `matchMedia` mock + module-level Supabase mock). Custom `MockedProvider` in `src/test/apollo-test-utils.tsx` for GraphQL mocking
 - Server: node environment, no special setup
-- Fixtures: per-domain factory files in `apps/web/src/test/fixtures/` and `apps/server/src/test/fixtures/` (each exports a `make<Domain>(overrides)` function). Web factories return GraphQL response shapes (ISO strings); server factories return Prisma model shapes (`Date` objects). Import via the `fixtures/` barrel rather than declaring inline mock objects.
+- Fixtures: per-domain factory files in `apps/web/src/test/fixtures/` and `apps/server/src/test/fixtures/` (each exports a `make<Domain>(overrides)` function). Web factories return GraphQL response shapes (ISO strings); server factories return Prisma model shapes (`Date` objects). Web imports via the `fixtures/` barrel (`test/fixtures/index.ts`); the server has no barrel, so import the domain file directly. Either way, use the factory rather than declaring inline mock objects.
 
 ## GraphQL Domains
 
@@ -94,6 +95,7 @@ Each domain lives in mirrored directories on both sides:
 
 `Home` page (`hooks/home/useHomeData.ts`) is a dashboard that aggregates across reports, netWorth, subscriptions, and contracts (an "expiring soon" card) — it has no dedicated server domain.
 `NotFound` is a standalone 404 page with no data dependencies.
+`health` is a single-field domain (`apps/server/src/graphql/health/`, `graphql/health.ts` on the web) consumed by `NavBarUserMenu`'s status dot. The resolver runs `SELECT 1` and throws `SERVICE_UNAVAILABLE` on failure, so the dot reports database reachability rather than just process liveness — a constant-string health check reads "Server connected" straight through a pool outage.
 
 **Server domain structure**:
 
@@ -101,7 +103,7 @@ Each domain lives in mirrored directories on both sides:
 - `inputSchemas.ts` — Zod mutation input schemas with types derived via `z.infer`
 - `resolvers.ts` — resolvers exported as `<domain>Resolvers`; mutation resolvers call `parseInput(schema, input)`
 - `resolvers.test.ts` — Vitest unit tests, prisma mocked via `vi.mock`
-- `lib/<helper>.ts` (optional) — pure, reusable helpers > 10 LOC or with branchy logic worth testing on their own (e.g. `subscriptions/lib/computeMonthlyCost.ts`); each helper has its own `.test.ts` next to it
+- `lib/<helper>.ts` (optional) — reusable helpers > 10 LOC or with branchy logic worth testing on their own, either pure (e.g. `subscriptions/lib/computeMonthlyCost.ts`, `netWorth/lib/findPreviousSnapshotIds.ts`) or batch loaders that own their own query (the `attach*.ts` family); each helper has its own `.test.ts` next to it
 
 All domains are merged in `apps/server/src/graphql/index.ts`.
 
