@@ -1,9 +1,12 @@
+import type { GraphQLResolveInfo } from 'graphql';
 import { GraphQLError } from 'graphql';
 
-import { NetWorthEntry } from '../../generated/prisma/client';
+import { NetWorthEntry, NetWorthSnapshot } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
+import { selectsItemField } from '../../lib/selectsItemField';
 import { clampPage, parseInput } from '../../lib/validate';
 import { NetWorthSnapshotInput } from './inputSchemas';
+import { attachPreviousSnapshots } from './lib/attachPreviousSnapshots';
 import { sortSnapshotsByChange } from './lib/sortSnapshotsByChange';
 
 type NetWorthSnapshotsArgs = {
@@ -20,6 +23,8 @@ type SnapshotParent = {
   snapshotDate: Date;
   createdAt: Date;
   entries?: Array<NetWorthEntry>;
+  previousSnapshot?:
+    (NetWorthSnapshot & { entries: Array<NetWorthEntry> }) | null;
 };
 
 export const netWorthResolvers = {
@@ -65,6 +70,10 @@ export const netWorthResolvers = {
         .reduce((sum, entry) => sum + entry.amount, 0);
     },
     previousSnapshot: async (parent: SnapshotParent) => {
+      if (parent.previousSnapshot !== undefined) {
+        return parent.previousSnapshot;
+      }
+
       return prisma.netWorthSnapshot.findFirst({
         where: {
           userId: parent.userId,
@@ -102,9 +111,11 @@ export const netWorthResolvers = {
         sortBy = 'SNAPSHOT_DATE',
         sortOrder = 'DESC',
       }: NetWorthSnapshotsArgs,
-      { userId }: { userId: string }
+      { userId }: { userId: string },
+      info: GraphQLResolveInfo
     ) => {
       const { clampedPage, clampedPageSize } = clampPage(page, pageSize);
+      const withPrevious = selectsItemField(info, 'previousSnapshot');
       const skip = (clampedPage - 1) * clampedPageSize;
       const trimmedSearch = search?.trim();
       const where = {
@@ -122,8 +133,10 @@ export const netWorthResolvers = {
         });
         const ranked = sortSnapshotsByChange(oldestFirst, sortOrder);
 
+        const page = ranked.slice(skip, skip + clampedPageSize);
+
         return {
-          items: ranked.slice(skip, skip + clampedPageSize),
+          items: withPrevious ? await attachPreviousSnapshots(page) : page,
           totalCount: ranked.length,
         };
       }
@@ -140,7 +153,10 @@ export const netWorthResolvers = {
         prisma.netWorthSnapshot.count({ where }),
       ]);
 
-      return { items, totalCount };
+      return {
+        items: withPrevious ? await attachPreviousSnapshots(items) : items,
+        totalCount,
+      };
     },
     netWorthSnapshot: async (
       _parent: unknown,

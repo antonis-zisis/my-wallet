@@ -1,7 +1,11 @@
+import type { GraphQLResolveInfo } from 'graphql';
+
 import prisma from '../../lib/prisma';
+import { selectsItemField } from '../../lib/selectsItemField';
 import { clampPage } from '../../lib/validate';
 import { attachReportMembers } from './lib/attachReportMembers';
 import { attachReportTotals } from './lib/attachReportTotals';
+import { attachReportTransactions } from './lib/attachReportTransactions';
 import { buildNetBalanceMap } from './lib/buildNetBalanceMap';
 import { reportAccessWhere } from './lib/reportAccess';
 
@@ -13,6 +17,21 @@ type ReportsArgs = {
   sortOrder?: 'ASC' | 'DESC';
 };
 
+type ReportListItem = { id: string; userId: string };
+
+async function attachListFields<ReportItem extends ReportListItem>(
+  reports: Array<ReportItem>,
+  withTransactions: boolean
+) {
+  const withMembers = await attachReportMembers(reports);
+
+  if (withTransactions) {
+    return attachReportTransactions(withMembers);
+  }
+
+  return attachReportTotals(withMembers);
+}
+
 export const reportQueries = {
   reports: async (
     _parent: unknown,
@@ -23,9 +42,11 @@ export const reportQueries = {
       sortBy = 'NEWEST',
       sortOrder = 'DESC',
     }: ReportsArgs,
-    { userId }: { userId: string }
+    { userId }: { userId: string },
+    info: GraphQLResolveInfo
   ) => {
     const { clampedPage, clampedPageSize } = clampPage(page, pageSize);
+    const withTransactions = selectsItemField(info, 'transactions');
     const skip = (clampedPage - 1) * clampedPageSize;
     const trimmedSearch = search?.trim();
     const where = {
@@ -53,10 +74,9 @@ export const reportQueries = {
       });
 
       return {
-        items: await attachReportTotals(
-          await attachReportMembers(
-            allReports.slice(skip, skip + clampedPageSize)
-          )
+        items: await attachListFields(
+          allReports.slice(skip, skip + clampedPageSize),
+          withTransactions
         ),
         totalCount: allReports.length,
       };
@@ -73,7 +93,7 @@ export const reportQueries = {
     ]);
 
     return {
-      items: await attachReportTotals(await attachReportMembers(items)),
+      items: await attachListFields(items, withTransactions),
       totalCount,
     };
   },
