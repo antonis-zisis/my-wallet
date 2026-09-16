@@ -109,6 +109,8 @@ pnpm dev:web     # Starts web on http://localhost:3000
 pnpm dev:server  # Starts server on http://localhost:4000
 ```
 
+> **Note:** The server requires a reachable database. It retries the connection a few times on startup and then exits rather than serving requests it cannot fulfil, so start PostgreSQL (or `docker compose up -d`) first.
+
 ### Build
 
 ```bash

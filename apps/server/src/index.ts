@@ -8,7 +8,7 @@ import helmet from 'helmet';
 import { resolvers, typeDefs } from './graphql/index';
 import { createDepthLimitRule } from './lib/depthLimitRule';
 import { env } from './lib/env';
-import { connectDatabase } from './lib/prisma';
+import { connectDatabase, disconnectDatabase } from './lib/prisma';
 import { type AuthenticatedRequest, authMiddleware } from './middleware/auth';
 import { healthHandler } from './routes/health';
 import { statsHandler } from './routes/stats';
@@ -25,11 +25,7 @@ const graphqlRateLimiter = rateLimit({
 });
 
 async function startServer() {
-  const dbConnected = await connectDatabase();
-
-  if (!dbConnected) {
-    console.warn('Server starting without database connection');
-  }
+  await connectDatabase();
 
   const server = new ApolloServer({
     typeDefs,
@@ -79,12 +75,22 @@ async function startServer() {
     })
   );
 
-  app.listen(Number(PORT), '0.0.0.0', () => {
+  const httpServer = app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
     console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
   });
+
+  process.on('SIGTERM', () => {
+    httpServer.close(async () => {
+      await disconnectDatabase();
+      process.exit(0);
+    });
+  });
 }
 
-startServer();
+startServer().catch((error) => {
+  console.error('Server failed to start:', error);
+  process.exit(1);
+});
 
 export default app;

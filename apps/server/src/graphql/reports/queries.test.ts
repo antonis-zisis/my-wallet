@@ -1,3 +1,5 @@
+import type { GraphQLResolveInfo } from 'graphql';
+import { parse } from 'graphql';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeReport, makeTransaction } from '../../test/fixtures/reports';
@@ -7,6 +9,18 @@ import { reportQueries } from './queries';
 
 const USER_ID = 'user-1';
 const CTX = { userId: USER_ID };
+
+function makeInfo(query = '{ reports { items { id } totalCount } }') {
+  const document = parse(query);
+  const operation = document.definitions.find(
+    (definition) => definition.kind === 'OperationDefinition'
+  )!;
+
+  return {
+    fieldNodes: operation.selectionSet.selections,
+    fragments: {},
+  } as unknown as GraphQLResolveInfo;
+}
 
 vi.mock('../../lib/prisma', () => ({
   default: {
@@ -19,6 +33,7 @@ vi.mock('../../lib/prisma', () => ({
       findMany: vi.fn(),
     },
     transaction: {
+      findMany: vi.fn(),
       groupBy: vi.fn(),
     },
     user: {
@@ -34,6 +49,8 @@ beforeEach(async () => {
   prisma = (await import('../../lib/prisma')).default;
   vi.mocked(prisma.reportShare.findMany).mockResolvedValue([]);
   vi.mocked(prisma.user.findMany).mockResolvedValue([]);
+  vi.mocked(prisma.transaction.groupBy).mockResolvedValue([] as never);
+  vi.mocked(prisma.transaction.findMany).mockResolvedValue([]);
 });
 
 describe('reportQueries', () => {
@@ -48,7 +65,8 @@ describe('reportQueries', () => {
       const result = await reportQueries.reports(
         undefined as unknown,
         { page: 1 },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(prisma.report.findMany).toHaveBeenCalledWith({
@@ -64,6 +82,8 @@ describe('reportQueries', () => {
         items: [
           {
             ...report,
+            netBalance: 0,
+            transactionCount: 0,
             members: [
               {
                 id: report.userId,
@@ -79,11 +99,46 @@ describe('reportQueries', () => {
       });
     });
 
+    it('preloads transactions in one query when the selection asks for them', async () => {
+      vi.mocked(prisma.report.findMany).mockResolvedValue([makeReport()]);
+      vi.mocked(prisma.report.count).mockResolvedValue(1);
+
+      await reportQueries.reports(
+        undefined as unknown,
+        { page: 1 },
+        CTX,
+        makeInfo('{ reports { items { id transactions { type } } } }')
+      );
+
+      expect(prisma.transaction.findMany).toHaveBeenCalledTimes(1);
+      expect(prisma.transaction.groupBy).not.toHaveBeenCalled();
+    });
+
+    it('does not load transactions when the selection leaves them out', async () => {
+      vi.mocked(prisma.report.findMany).mockResolvedValue([makeReport()]);
+      vi.mocked(prisma.report.count).mockResolvedValue(1);
+
+      await reportQueries.reports(
+        undefined as unknown,
+        { page: 1 },
+        CTX,
+        makeInfo('{ reports { items { id netBalance } } }')
+      );
+
+      expect(prisma.transaction.findMany).not.toHaveBeenCalled();
+      expect(prisma.transaction.groupBy).toHaveBeenCalledTimes(1);
+    });
+
     it('skips 10 items for page 2', async () => {
       vi.mocked(prisma.report.findMany).mockResolvedValue([makeReport()]);
       vi.mocked(prisma.report.count).mockResolvedValue(11);
 
-      await reportQueries.reports(undefined as unknown, { page: 2 }, CTX);
+      await reportQueries.reports(
+        undefined as unknown,
+        { page: 2 },
+        CTX,
+        makeInfo()
+      );
 
       expect(prisma.report.findMany).toHaveBeenCalledWith({
         where: reportAccessWhere(USER_ID),
@@ -97,7 +152,7 @@ describe('reportQueries', () => {
       vi.mocked(prisma.report.findMany).mockResolvedValue([]);
       vi.mocked(prisma.report.count).mockResolvedValue(0);
 
-      await reportQueries.reports(undefined as unknown, {}, CTX);
+      await reportQueries.reports(undefined as unknown, {}, CTX, makeInfo());
 
       expect(prisma.report.findMany).toHaveBeenCalledWith(
         expect.objectContaining({ skip: 0, take: 10 })
@@ -111,7 +166,8 @@ describe('reportQueries', () => {
       const result = await reportQueries.reports(
         undefined as unknown,
         { page: 1 },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(result).toEqual({ items: [], totalCount: 0 });
@@ -124,7 +180,8 @@ describe('reportQueries', () => {
       await reportQueries.reports(
         undefined as unknown,
         { search: '  jan ' },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(prisma.report.findMany).toHaveBeenCalledWith(
@@ -142,14 +199,25 @@ describe('reportQueries', () => {
       const high = makeReport({ id: 'high' });
       vi.mocked(prisma.report.findMany).mockResolvedValue([low, high]);
       vi.mocked(prisma.transaction.groupBy).mockResolvedValue([
-        { reportId: 'low', type: 'INCOME', _sum: { amount: 100 } },
-        { reportId: 'high', type: 'INCOME', _sum: { amount: 900 } },
+        {
+          reportId: 'low',
+          type: 'INCOME',
+          _sum: { amount: 100 },
+          _count: { _all: 1 },
+        },
+        {
+          reportId: 'high',
+          type: 'INCOME',
+          _sum: { amount: 900 },
+          _count: { _all: 1 },
+        },
       ] as never);
 
       const result = await reportQueries.reports(
         undefined as unknown,
         { sortBy: 'NET_BALANCE', sortOrder: 'DESC' },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(prisma.report.count).not.toHaveBeenCalled();
@@ -162,14 +230,25 @@ describe('reportQueries', () => {
       const high = makeReport({ id: 'high' });
       vi.mocked(prisma.report.findMany).mockResolvedValue([high, low]);
       vi.mocked(prisma.transaction.groupBy).mockResolvedValue([
-        { reportId: 'low', type: 'EXPENSE', _sum: { amount: 100 } },
-        { reportId: 'high', type: 'INCOME', _sum: { amount: 900 } },
+        {
+          reportId: 'low',
+          type: 'EXPENSE',
+          _sum: { amount: 100 },
+          _count: { _all: 1 },
+        },
+        {
+          reportId: 'high',
+          type: 'INCOME',
+          _sum: { amount: 900 },
+          _count: { _all: 1 },
+        },
       ] as never);
 
       const result = await reportQueries.reports(
         undefined as unknown,
         { sortBy: 'NET_BALANCE', sortOrder: 'ASC' },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(result.items.map((report) => report.id)).toEqual(['low', 'high']);

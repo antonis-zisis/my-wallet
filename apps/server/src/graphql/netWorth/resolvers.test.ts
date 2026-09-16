@@ -1,9 +1,23 @@
+import type { GraphQLResolveInfo } from 'graphql';
+import { parse } from 'graphql';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { netWorthResolvers } from './resolvers';
 
 const USER_ID = 'user-1';
 const CTX = { userId: USER_ID };
+
+function makeInfo(query = '{ netWorthSnapshots { items { id } totalCount } }') {
+  const document = parse(query);
+  const operation = document.definitions.find(
+    (definition) => definition.kind === 'OperationDefinition'
+  )!;
+
+  return {
+    fieldNodes: operation.selectionSet.selections,
+    fragments: {},
+  } as unknown as GraphQLResolveInfo;
+}
 
 const mockEntries = [
   {
@@ -196,7 +210,8 @@ describe('netWorthResolvers', () => {
       const result = await netWorthResolvers.Query.netWorthSnapshots(
         undefined as unknown,
         { page: 1 },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith({
@@ -212,6 +227,40 @@ describe('netWorthResolvers', () => {
       });
     });
 
+    it('preloads previous snapshots when the selection asks for them', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findMany).mockResolvedValue([
+        mockSnapshotWithEntries,
+      ] as never);
+      vi.mocked(prisma.netWorthSnapshot.count).mockResolvedValue(1);
+
+      await netWorthResolvers.Query.netWorthSnapshots(
+        undefined as unknown,
+        { page: 1 },
+        CTX,
+        makeInfo(
+          '{ netWorthSnapshots { items { id previousSnapshot { netWorth } } } }'
+        )
+      );
+
+      expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not load previous snapshots when the selection leaves them out', async () => {
+      vi.mocked(prisma.netWorthSnapshot.findMany).mockResolvedValue([
+        mockSnapshotWithEntries,
+      ] as never);
+      vi.mocked(prisma.netWorthSnapshot.count).mockResolvedValue(1);
+
+      await netWorthResolvers.Query.netWorthSnapshots(
+        undefined as unknown,
+        { page: 1 },
+        CTX,
+        makeInfo('{ netWorthSnapshots { items { id netWorth } } }')
+      );
+
+      expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledTimes(1);
+    });
+
     it('skips 10 items for page 2', async () => {
       vi.mocked(prisma.netWorthSnapshot.findMany).mockResolvedValue([]);
       vi.mocked(prisma.netWorthSnapshot.count).mockResolvedValue(11);
@@ -219,7 +268,8 @@ describe('netWorthResolvers', () => {
       await netWorthResolvers.Query.netWorthSnapshots(
         undefined as unknown,
         { page: 2 },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith(
@@ -234,7 +284,8 @@ describe('netWorthResolvers', () => {
       await netWorthResolvers.Query.netWorthSnapshots(
         undefined as unknown,
         {},
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith(
@@ -249,7 +300,8 @@ describe('netWorthResolvers', () => {
       await netWorthResolvers.Query.netWorthSnapshots(
         undefined as unknown,
         { search: ' jan ' },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(prisma.netWorthSnapshot.findMany).toHaveBeenCalledWith(
@@ -281,7 +333,8 @@ describe('netWorthResolvers', () => {
       const result = await netWorthResolvers.Query.netWorthSnapshots(
         undefined as unknown,
         { sortBy: 'CHANGE', sortOrder: 'DESC' },
-        CTX
+        CTX,
+        makeInfo()
       );
 
       expect(prisma.netWorthSnapshot.count).not.toHaveBeenCalled();
