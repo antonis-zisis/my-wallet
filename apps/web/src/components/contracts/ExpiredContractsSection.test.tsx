@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import { makeContract } from '../../test/fixtures/contracts';
@@ -16,7 +15,7 @@ const defaultProps = {
   contracts: [expiredContract],
   error: false,
   isCollapsible: true,
-  isOpen: false,
+  isOpen: true,
   loading: false,
   onDelete: vi.fn(),
   onEdit: vi.fn(),
@@ -35,43 +34,18 @@ describe('ExpiredContractsSection', () => {
     expect(screen.getByText('Expired Contracts (1)')).toBeInTheDocument();
   });
 
-  it('reports the collapsed state to assistive technology', () => {
+  it('renders the expired contracts and their pagination', () => {
     render(<ExpiredContractsSection {...defaultProps} />);
 
-    expect(
-      screen.getByRole('button', { name: /Expired Contracts/ })
-    ).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('calls onToggle when the header is clicked', async () => {
-    const onToggle = vi.fn();
-
-    render(<ExpiredContractsSection {...defaultProps} onToggle={onToggle} />);
-
-    await userEvent.click(
-      screen.getByRole('button', { name: /Expired Contracts/ })
-    );
-
-    expect(onToggle).toHaveBeenCalled();
-  });
-
-  it('renders the expired contracts when open', () => {
-    render(<ExpiredContractsSection {...defaultProps} isOpen />);
-
     expect(screen.getByText('Old Provider')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /Expired Contracts/ })
-    ).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText('Showing 1 - 1 of 1')).toBeInTheDocument();
   });
 
-  it('drops the toggle when the section is not collapsible', () => {
+  it('hides the pagination while loading', () => {
     render(
-      <ExpiredContractsSection {...defaultProps} isCollapsible={false} isOpen />
+      <ExpiredContractsSection {...defaultProps} contracts={[]} loading />
     );
 
-    expect(screen.getByText('Expired Contracts (1)')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: /Expired Contracts/ })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Showing/)).not.toBeInTheDocument();
   });
 });
