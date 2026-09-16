@@ -12,14 +12,6 @@ type ContractListRowProps = {
 };
 
 function ExpiryBadge({ contract }: { contract: Contract }) {
-  if (contract.isExpired) {
-    return (
-      <Badge variant="danger" size="sm">
-        Expired
-      </Badge>
-    );
-  }
-
   const daysUntil = getDaysUntilExpiration(contract);
 
   if (daysUntil !== null && daysUntil >= 0 && daysUntil <= EXPIRING_SOON_DAYS) {
@@ -82,9 +74,7 @@ export function ContractListRow({
 
   return (
     <li className="flex items-center gap-1 sm:gap-3">
-      <div
-        className={`flex min-w-0 flex-1 items-center gap-3 px-1 py-3 ${contract.isExpired ? 'opacity-60' : ''}`}
-      >
+      <div className="flex min-w-0 flex-1 items-center gap-3 px-1 py-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-text-primary min-w-0 truncate font-medium">

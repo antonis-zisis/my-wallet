@@ -31,31 +31,39 @@ type ContractsQueryVariables = {
 type ContractsModals = ReturnType<typeof useContractsModals>;
 
 type UseContractsMutationsInput = {
+  expiredVariables: ContractsQueryVariables;
   modals: ContractsModals;
   onResetPage: () => void;
   variables: ContractsQueryVariables;
 };
 
 export function useContractsMutations({
+  expiredVariables,
   modals,
   onResetPage,
   variables,
 }: UseContractsMutationsInput) {
   const { showError, showSuccess } = useToast();
 
+  const refetchBothLists = [
+    { query: GET_CONTRACTS, variables },
+    { query: GET_CONTRACTS, variables: expiredVariables },
+  ];
+
   const [createContract] = useMutation(CREATE_CONTRACT, {
     refetchQueries: [
       { query: GET_CONTRACTS, variables: { ...variables, page: 1 } },
+      { query: GET_CONTRACTS, variables: expiredVariables },
     ],
   });
 
   const [updateContract] = useMutation(UPDATE_CONTRACT, {
-    refetchQueries: [{ query: GET_CONTRACTS, variables }],
+    refetchQueries: refetchBothLists,
   });
 
   const [deleteContract, { loading: isDeleting }] = useMutation(
     DELETE_CONTRACT,
-    { refetchQueries: [{ query: GET_CONTRACTS, variables }] }
+    { refetchQueries: refetchBothLists }
   );
 
   const handleCreate = async (input: ContractInput) => {
