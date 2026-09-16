@@ -72,8 +72,10 @@ export function Login() {
           Sign in
         </Button>
 
-        <div className="text-center">
+        <div className="flex flex-col items-center gap-2">
           <AuthLink to="/forgot-password">Forgot your password?</AuthLink>
+
+          <AuthLink to="/signup">Don't have an account? Create one</AuthLink>
         </div>
 
         {error && <AuthFormError message={error} />}
