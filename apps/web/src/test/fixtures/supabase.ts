@@ -6,10 +6,16 @@ type GetSessionResult = Awaited<ReturnType<typeof supabase.auth.getSession>>;
 type SignInResult = Awaited<
   ReturnType<typeof supabase.auth.signInWithPassword>
 >;
+type SignUpResult = Awaited<ReturnType<typeof supabase.auth.signUp>>;
 
 type SessionOverrides = {
   user?: { id: string };
   access_token?: string;
+};
+
+type SignUpOverrides = {
+  error?: { message: string } | null;
+  session?: Session | null;
 };
 
 export function makeSupabaseSession(overrides: SessionOverrides = {}): Session {
@@ -31,4 +37,11 @@ export function resolveSignIn(
     data: { user: null, session: null },
     error: result.error ?? null,
   } as SignInResult;
+}
+
+export function resolveSignUp(overrides: SignUpOverrides = {}): SignUpResult {
+  return {
+    data: { user: null, session: overrides.session ?? null },
+    error: overrides.error ?? null,
+  } as SignUpResult;
 }

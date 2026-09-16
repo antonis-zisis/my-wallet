@@ -14,12 +14,17 @@ import { Profile } from './pages/Profile';
 import { Report } from './pages/Report';
 import { Reports } from './pages/Reports';
 import { ResetPassword } from './pages/ResetPassword';
+import { SignUp } from './pages/SignUp';
 import { Subscriptions } from './pages/Subscriptions';
 
 export const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />,
+  },
+  {
+    path: '/signup',
+    element: <SignUp />,
   },
   {
     path: '/forgot-password',

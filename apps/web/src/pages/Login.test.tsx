@@ -25,6 +25,7 @@ const renderLogin = () => {
               path="/forgot-password"
               element={<div>Forgot Password Page</div>}
             />
+            <Route path="/signup" element={<div>Sign Up Page</div>} />
           </Routes>
         </MemoryRouter>
       </AuthProvider>
@@ -112,6 +113,22 @@ describe('Login', () => {
       .click(screen.getByRole('link', { name: 'Forgot your password?' }));
 
     expect(screen.getByText('Forgot Password Page')).toBeInTheDocument();
+  });
+
+  it('links to the sign up page', async () => {
+    renderLogin();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    });
+
+    await userEvent
+      .setup()
+      .click(
+        screen.getByRole('link', { name: "Don't have an account? Create one" })
+      );
+
+    expect(screen.getByText('Sign Up Page')).toBeInTheDocument();
   });
 
   it('redirects to / when user is already authenticated', async () => {

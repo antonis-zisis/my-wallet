@@ -1,11 +1,7 @@
-import { Link } from 'react-router';
-
 import { AuthCardLayout } from '../components/auth/AuthCardLayout';
+import { AuthLink } from '../components/auth/AuthLink';
 import { Button, Input } from '../components/ui';
 import { useForgotPasswordForm } from '../hooks/auth/useForgotPasswordForm';
-
-const BACK_LINK_CLASS =
-  'text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 text-sm';
 
 export function ForgotPassword() {
   const { email, isEmailEmpty, isSent, onEmailChange, onSubmit, submitting } =
@@ -25,9 +21,7 @@ export function ForgotPassword() {
             link.
           </p>
 
-          <Link to="/login" className={BACK_LINK_CLASS}>
-            Back to sign in
-          </Link>
+          <AuthLink to="/login">Back to sign in</AuthLink>
         </div>
       </AuthCardLayout>
     );
@@ -63,9 +57,7 @@ export function ForgotPassword() {
         </Button>
 
         <div className="text-center">
-          <Link to="/login" className={BACK_LINK_CLASS}>
-            Back to sign in
-          </Link>
+          <AuthLink to="/login">Back to sign in</AuthLink>
         </div>
       </form>
     </AuthCardLayout>

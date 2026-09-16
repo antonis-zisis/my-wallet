@@ -1,12 +1,8 @@
-import { Link } from 'react-router';
-
 import { AuthCardLayout } from '../components/auth/AuthCardLayout';
 import { AuthFormError } from '../components/auth/AuthFormError';
+import { AuthLink } from '../components/auth/AuthLink';
 import { Button, Input, Spinner } from '../components/ui';
 import { useResetPasswordForm } from '../hooks/auth/useResetPasswordForm';
-
-const BACK_LINK_CLASS =
-  'text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 text-sm';
 
 export function ResetPassword() {
   const {
@@ -41,9 +37,7 @@ export function ResetPassword() {
             links expire one hour after they're sent.
           </p>
 
-          <Link to="/forgot-password" className={BACK_LINK_CLASS}>
-            Request a new link
-          </Link>
+          <AuthLink to="/forgot-password">Request a new link</AuthLink>
         </div>
       </AuthCardLayout>
     );

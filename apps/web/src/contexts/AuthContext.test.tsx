@@ -13,6 +13,7 @@ function TestConsumer() {
     session,
     signIn,
     signOut,
+    signUp,
   } = useAuth();
 
   return (
@@ -25,6 +26,9 @@ function TestConsumer() {
       </button>
       <button onClick={() => sendPasswordResetEmail('test@example.com')}>
         Reset Password
+      </button>
+      <button onClick={() => signUp('new@example.com', 'password')}>
+        Sign Up
       </button>
       <button onClick={() => signOut()}>Sign Out</button>
     </div>
@@ -86,6 +90,28 @@ describe('AuthContext', () => {
     expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
       email: 'test@example.com',
       password: 'password',
+    });
+  });
+
+  it('signUp registers the address and points the confirmation link at sign in', async () => {
+    const { userEvent } = await import('@testing-library/user-event');
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    });
+
+    await userEvent.setup().click(screen.getByText('Sign Up'));
+
+    expect(supabase.auth.signUp).toHaveBeenCalledWith({
+      email: 'new@example.com',
+      password: 'password',
+      options: { emailRedirectTo: `${window.location.origin}/login` },
     });
   });
 

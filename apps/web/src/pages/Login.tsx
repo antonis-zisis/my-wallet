@@ -1,8 +1,9 @@
 import { type SyntheticEvent, useState } from 'react';
-import { Link, Navigate } from 'react-router';
+import { Navigate } from 'react-router';
 
 import { AuthCardLayout } from '../components/auth/AuthCardLayout';
 import { AuthFormError } from '../components/auth/AuthFormError';
+import { AuthLink } from '../components/auth/AuthLink';
 import { Button, Input } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -71,13 +72,10 @@ export function Login() {
           Sign in
         </Button>
 
-        <div className="text-center">
-          <Link
-            to="/forgot-password"
-            className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 text-sm"
-          >
-            Forgot your password?
-          </Link>
+        <div className="flex flex-col items-center gap-2">
+          <AuthLink to="/forgot-password">Forgot your password?</AuthLink>
+
+          <AuthLink to="/signup">Don't have an account? Create one</AuthLink>
         </div>
 
         {error && <AuthFormError message={error} />}
