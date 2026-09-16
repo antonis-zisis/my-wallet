@@ -72,6 +72,35 @@ describe('ContractList', () => {
     expect(screen.getByText('Expired')).toBeInTheDocument();
   });
 
+  it('shows when an expired contract expired rather than a future expiry', () => {
+    render(
+      <ContractList
+        {...defaultProps}
+        contracts={[
+          makeContract({ isExpired: true, endDate: '2026-09-04T00:00:00Z' }),
+        ]}
+      />
+    );
+
+    expect(screen.getByText(/expired on/)).toBeInTheDocument();
+    expect(screen.getByText('Sep 4, 2026')).toBeInTheDocument();
+  });
+
+  it('shows the upcoming expiry date for a contract that has not expired', () => {
+    render(
+      <ContractList
+        {...defaultProps}
+        contracts={[
+          makeContract({ isExpired: false, endDate: '2027-01-01T00:00:00Z' }),
+        ]}
+      />
+    );
+
+    expect(screen.getByText(/expires/)).toBeInTheDocument();
+    expect(screen.getByText('Jan 1, 2027')).toBeInTheDocument();
+    expect(screen.queryByText(/expired on/)).not.toBeInTheDocument();
+  });
+
   it('calls onDelete when Delete is selected from the dropdown', async () => {
     const onDelete = vi.fn();
     const contract = makeContract({ id: 'c1' });
