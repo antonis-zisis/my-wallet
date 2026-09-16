@@ -9,9 +9,10 @@ type ContractListProps = {
   loading: boolean;
   error: boolean;
   isSearching?: boolean;
+  emptyMessage?: string;
   onEdit: (contract: Contract) => void;
   onDelete: (contract: Contract) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
 };
 
 function NoMatchesState() {
@@ -26,27 +27,33 @@ function NoMatchesState() {
   );
 }
 
-function EmptyState({ onAdd }: { onAdd: () => void }) {
+type EmptyStateProps = {
+  message: string;
+  onAdd?: () => void;
+};
+
+function EmptyState({ message, onAdd }: EmptyStateProps) {
   return (
     <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
       <DocumentTextIcon className="text-border-strong size-10" />
 
-      <p className="text-text-secondary text-sm font-medium">
-        No contracts yet.
-      </p>
+      <p className="text-text-secondary text-sm font-medium">{message}</p>
 
-      <button
-        className="text-brand-600 dark:text-brand-400 cursor-pointer text-sm font-semibold hover:underline"
-        onClick={onAdd}
-      >
-        Add your first contract
-      </button>
+      {onAdd && (
+        <button
+          className="text-brand-600 dark:text-brand-400 cursor-pointer text-sm font-semibold hover:underline"
+          onClick={onAdd}
+        >
+          Add your first contract
+        </button>
+      )}
     </div>
   );
 }
 
 export function ContractList({
   contracts,
+  emptyMessage = 'No contracts yet.',
   error,
   isSearching,
   loading,
@@ -65,7 +72,11 @@ export function ContractList({
   }
 
   if (contracts.length === 0) {
-    return isSearching ? <NoMatchesState /> : <EmptyState onAdd={onAdd} />;
+    return isSearching ? (
+      <NoMatchesState />
+    ) : (
+      <EmptyState message={emptyMessage} onAdd={onAdd} />
+    );
   }
 
   return (

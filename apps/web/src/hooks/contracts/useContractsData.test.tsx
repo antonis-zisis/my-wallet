@@ -14,6 +14,7 @@ vi.mock('../../contexts/ToastContext', () => ({
 import { CREATE_CONTRACT, GET_CONTRACTS } from '../../graphql/contracts';
 import { MockedProvider } from '../../test/apollo-test-utils';
 import { makeContract } from '../../test/fixtures/contracts';
+import { Contract } from '../../types/contract';
 import { PAGE_SIZE, useContractsData } from './useContractsData';
 
 beforeEach(() => {
@@ -22,26 +23,54 @@ beforeEach(() => {
   showInfo.mockReset();
 });
 
-const baseVariables = {
+const activeVariables = {
+  expired: false,
   page: 1,
   pageSize: PAGE_SIZE,
   sortBy: 'END_DATE',
   sortOrder: 'ASC',
 };
 
-const mockQuery: MockLink.MockedResponse = {
-  request: { query: GET_CONTRACTS, variables: baseVariables },
-  result: {
-    data: {
-      contracts: { items: [makeContract()], totalCount: 1 },
-    },
-  },
+const expiredVariables = {
+  expired: true,
+  page: 1,
+  pageSize: PAGE_SIZE,
+  sortBy: 'END_DATE',
+  sortOrder: 'DESC',
 };
 
-const mockQueryEmpty: MockLink.MockedResponse = {
-  request: { query: GET_CONTRACTS, variables: baseVariables },
-  result: { data: { contracts: { items: [], totalCount: 0 } } },
+type ListMockOptions = {
+  contracts?: Array<Contract>;
+  search?: string;
 };
+
+const activeMock = ({
+  contracts = [],
+  search,
+}: ListMockOptions = {}): MockLink.MockedResponse => ({
+  maxUsageCount: Number.POSITIVE_INFINITY,
+  request: {
+    query: GET_CONTRACTS,
+    variables: search ? { ...activeVariables, search } : activeVariables,
+  },
+  result: {
+    data: { contracts: { items: contracts, totalCount: contracts.length } },
+  },
+});
+
+const expiredMock = ({
+  contracts = [],
+  search,
+}: ListMockOptions = {}): MockLink.MockedResponse => ({
+  maxUsageCount: Number.POSITIVE_INFINITY,
+  request: {
+    query: GET_CONTRACTS,
+    variables: search ? { ...expiredVariables, search } : expiredVariables,
+  },
+  result: {
+    data: { contracts: { items: contracts, totalCount: contracts.length } },
+  },
+});
 
 const createWrapper =
   (mocks: Array<MockLink.MockedResponse>) =>
@@ -52,7 +81,10 @@ const createWrapper =
 describe('useContractsData', () => {
   it('returns loading state initially', () => {
     const { result } = renderHook(() => useContractsData(), {
-      wrapper: createWrapper([mockQuery]),
+      wrapper: createWrapper([
+        activeMock({ contracts: [makeContract()] }),
+        expiredMock(),
+      ]),
     });
 
     expect(result.current.loading).toBe(true);
@@ -60,12 +92,12 @@ describe('useContractsData', () => {
 
   it('surfaces an error flag when the query fails', async () => {
     const errorMock: MockLink.MockedResponse = {
-      request: { query: GET_CONTRACTS, variables: baseVariables },
+      request: { query: GET_CONTRACTS, variables: activeVariables },
       error: new Error('network'),
     };
 
     const { result } = renderHook(() => useContractsData(), {
-      wrapper: createWrapper([errorMock]),
+      wrapper: createWrapper([errorMock, expiredMock()]),
     });
 
     await waitFor(() => expect(result.current.error).toBe(true));
@@ -73,7 +105,10 @@ describe('useContractsData', () => {
 
   it('returns the loaded contracts and counts', async () => {
     const { result } = renderHook(() => useContractsData(), {
-      wrapper: createWrapper([mockQuery]),
+      wrapper: createWrapper([
+        activeMock({ contracts: [makeContract()] }),
+        expiredMock(),
+      ]),
     });
 
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -81,6 +116,82 @@ describe('useContractsData', () => {
     expect(result.current.items).toHaveLength(1);
     expect(result.current.items[0].provider).toBe('DEI');
     expect(result.current.totalCount).toBe(1);
+  });
+
+  describe('expired contracts', () => {
+    const expiredContract = makeContract({
+      id: 'expired-1',
+      provider: 'Old Provider',
+      endDate: '2020-01-01T00:00:00Z',
+      isExpired: true,
+    });
+
+    it('keeps expired contracts out of the active list', async () => {
+      const { result } = renderHook(() => useContractsData(), {
+        wrapper: createWrapper([
+          activeMock({ contracts: [makeContract()] }),
+          expiredMock({ contracts: [expiredContract] }),
+        ]),
+      });
+
+      await waitFor(() => expect(result.current.expiredTotalCount).toBe(1));
+
+      expect(result.current.items.map((contract) => contract.id)).toEqual([
+        'contract-1',
+      ]);
+      expect(
+        result.current.expiredItems.map((contract) => contract.id)
+      ).toEqual(['expired-1']);
+    });
+
+    it('starts collapsed and opens when toggled', async () => {
+      const { result } = renderHook(() => useContractsData(), {
+        wrapper: createWrapper([
+          activeMock({ contracts: [makeContract()] }),
+          expiredMock({ contracts: [expiredContract] }),
+        ]),
+      });
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      expect(result.current.isExpiredOpen).toBe(false);
+
+      act(() => result.current.onToggleExpired());
+
+      expect(result.current.isExpiredOpen).toBe(true);
+    });
+
+    it('forces the section open and uncollapsible while searching', async () => {
+      const { result } = renderHook(() => useContractsData(), {
+        wrapper: createWrapper([
+          activeMock({ contracts: [makeContract()] }),
+          expiredMock({ contracts: [expiredContract] }),
+          activeMock({ search: 'old' }),
+          expiredMock({ contracts: [expiredContract], search: 'old' }),
+        ]),
+      });
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      act(() => result.current.onSearchChange('old'));
+
+      await waitFor(() => expect(result.current.isExpiredOpen).toBe(true));
+      expect(result.current.isExpiredCollapsible).toBe(false);
+      expect(result.current.expiredItems).toHaveLength(1);
+    });
+
+    it('reports when every contract has expired', async () => {
+      const { result } = renderHook(() => useContractsData(), {
+        wrapper: createWrapper([
+          activeMock(),
+          expiredMock({ contracts: [expiredContract] }),
+        ]),
+      });
+
+      await waitFor(() =>
+        expect(result.current.hasOnlyExpiredContracts).toBe(true)
+      );
+    });
   });
 
   it('shows a success toast after creating a contract', async () => {
@@ -101,7 +212,7 @@ describe('useContractsData', () => {
     };
 
     const { result } = renderHook(() => useContractsData(), {
-      wrapper: createWrapper([mockQueryEmpty, createMock, mockQueryEmpty]),
+      wrapper: createWrapper([activeMock(), expiredMock(), createMock]),
     });
 
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -119,23 +230,16 @@ describe('useContractsData', () => {
   });
 
   it('refetches with a provider search after the debounce', async () => {
-    const searchMock: MockLink.MockedResponse = {
-      request: {
-        query: GET_CONTRACTS,
-        variables: { ...baseVariables, search: 'cosmote' },
-      },
-      result: {
-        data: {
-          contracts: {
-            items: [makeContract({ id: '7', provider: 'Cosmote' })],
-            totalCount: 1,
-          },
-        },
-      },
-    };
-
     const { result } = renderHook(() => useContractsData(), {
-      wrapper: createWrapper([mockQuery, searchMock]),
+      wrapper: createWrapper([
+        activeMock({ contracts: [makeContract()] }),
+        expiredMock(),
+        activeMock({
+          contracts: [makeContract({ id: '7', provider: 'Cosmote' })],
+          search: 'cosmote',
+        }),
+        expiredMock({ search: 'cosmote' }),
+      ]),
     });
 
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -159,7 +263,7 @@ describe('useContractsData', () => {
     };
 
     const { result } = renderHook(() => useContractsData(), {
-      wrapper: createWrapper([mockQueryEmpty, createErrorMock]),
+      wrapper: createWrapper([activeMock(), expiredMock(), createErrorMock]),
     });
 
     await waitFor(() => expect(result.current.loading).toBe(false));

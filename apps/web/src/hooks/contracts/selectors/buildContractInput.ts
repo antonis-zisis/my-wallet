@@ -1,5 +1,5 @@
 import type { ContractFormValues } from '../useContractForm';
-import type { ContractInput } from '../useContractsData';
+import type { ContractInput } from '../useContractsMutations';
 
 export function resolveCategory(values: ContractFormValues): string {
   if (values.category === 'Other' && values.customCategory.trim()) {

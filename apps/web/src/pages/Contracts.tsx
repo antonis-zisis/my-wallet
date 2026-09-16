@@ -2,6 +2,7 @@ import { ContractList } from '../components/contracts/ContractList';
 import { CreateContractModal } from '../components/contracts/CreateContractModal';
 import { DeleteContractModal } from '../components/contracts/DeleteContractModal';
 import { EditContractModal } from '../components/contracts/EditContractModal';
+import { ExpiredContractsSection } from '../components/contracts/ExpiredContractsSection';
 import {
   Button,
   PageLayout,
@@ -20,19 +21,30 @@ export function Contracts() {
     contractToDelete,
     contractToEdit,
     error,
+    expiredError,
+    expiredItems,
+    expiredLoading,
+    expiredPage,
+    expiredTotalCount,
+    expiredTotalPages,
+    hasOnlyExpiredContracts,
     isCreateOpen,
     isDeleting,
+    isExpiredCollapsible,
+    isExpiredOpen,
     items,
     loading,
     onCloseCreate,
     onCreate,
     onDeleteConfirm,
+    onExpiredPaginate,
     onOpenCreate,
     onPaginate,
     onSearchChange,
     onSelectForDelete,
     onSelectForEdit,
     onSortChange,
+    onToggleExpired,
     onUpdate,
     page,
     search,
@@ -58,7 +70,9 @@ export function Contracts() {
           </Button>
         </div>
 
-        {(loading || (!error && (totalCount > 0 || !!search))) && (
+        {(loading ||
+          (!error &&
+            (totalCount > 0 || expiredTotalCount > 0 || !!search))) && (
           <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <SearchInput
               className="w-full sm:max-w-xs sm:flex-1"
@@ -80,10 +94,13 @@ export function Contracts() {
 
         <ContractList
           contracts={items}
+          emptyMessage={
+            hasOnlyExpiredContracts ? 'No active contracts.' : undefined
+          }
           error={error}
           isSearching={!!search}
           loading={loading}
-          onAdd={onOpenCreate}
+          onAdd={hasOnlyExpiredContracts ? undefined : onOpenCreate}
           onDelete={onSelectForDelete}
           onEdit={onSelectForEdit}
         />
@@ -96,6 +113,24 @@ export function Contracts() {
             totalCount={totalCount}
             totalPages={totalPages}
             onPageChange={onPaginate}
+          />
+        )}
+
+        {!expiredLoading && expiredTotalCount > 0 && (
+          <ExpiredContractsSection
+            contracts={expiredItems}
+            error={expiredError}
+            isCollapsible={isExpiredCollapsible}
+            isOpen={isExpiredOpen}
+            loading={expiredLoading}
+            page={expiredPage}
+            pageSize={PAGE_SIZE}
+            totalCount={expiredTotalCount}
+            totalPages={expiredTotalPages}
+            onDelete={onSelectForDelete}
+            onEdit={onSelectForEdit}
+            onPageChange={onExpiredPaginate}
+            onToggle={onToggleExpired}
           />
         )}
       </PageLayout>

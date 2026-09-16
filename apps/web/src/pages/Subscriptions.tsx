@@ -1,5 +1,5 @@
 import { SubscriptionCategoryBreakdownChart } from '../components/charts';
-import { ChevronDownIcon, InfoIcon } from '../components/icons';
+import { InfoIcon } from '../components/icons';
 import { CancelSubscriptionModal } from '../components/subscriptions/CancelSubscriptionModal';
 import { CreateSubscriptionModal } from '../components/subscriptions/CreateSubscriptionModal';
 import { DeleteSubscriptionModal } from '../components/subscriptions/DeleteSubscriptionModal';
@@ -10,6 +10,7 @@ import { SubscriptionList } from '../components/subscriptions/SubscriptionList';
 import {
   Button,
   Card,
+  CollapsibleSection,
   PageLayout,
   Pagination,
   Select,
@@ -24,8 +25,6 @@ import {
   SubscriptionSortOption,
 } from '../types/subscription';
 import { buildSubscriptionsSubtitle } from '../utils/buildSubscriptionsSubtitle';
-
-const INACTIVE_SECTION_ID = 'inactive-subscriptions-section';
 
 export function Subscriptions() {
   const {
@@ -158,50 +157,32 @@ export function Subscriptions() {
         )}
 
         {!inactiveLoading && inactiveTotalCount > 0 && (
-          <div className="mt-8">
-            <button
-              aria-controls={INACTIVE_SECTION_ID}
-              aria-expanded={showInactive}
-              className="text-text-secondary hover:text-text-primary mb-4 flex cursor-pointer items-center gap-2 text-sm font-medium"
-              type="button"
-              onClick={onToggleInactive}
-            >
-              <ChevronDownIcon
-                className={`h-4 w-4 transition-transform duration-200 ${showInactive ? 'rotate-180' : ''}`}
+          <CollapsibleSection
+            className="mt-8"
+            isOpen={showInactive}
+            label={`Inactive Subscriptions (${inactiveTotalCount})`}
+            onToggle={onToggleInactive}
+          >
+            <SubscriptionList
+              error={inactiveError}
+              loading={inactiveLoading}
+              subscriptions={inactiveItems}
+              emptyMessage="No inactive subscriptions."
+              onDelete={onSelectForDelete}
+              onResume={onSelectForResume}
+            />
+
+            {!inactiveLoading && !inactiveError && (
+              <Pagination
+                itemCount={inactiveItems.length}
+                page={inactivePage}
+                pageSize={PAGE_SIZE}
+                totalCount={inactiveTotalCount}
+                totalPages={inactiveTotalPages}
+                onPageChange={onInactivePaginate}
               />
-              Inactive Subscriptions ({inactiveTotalCount})
-            </button>
-
-            <div
-              id={INACTIVE_SECTION_ID}
-              aria-hidden={!showInactive}
-              className={`grid transition-all duration-300 ${showInactive ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
-            >
-              <div className="overflow-hidden">
-                <SubscriptionList
-                  error={inactiveError}
-                  loading={inactiveLoading}
-                  subscriptions={inactiveItems}
-                  emptyMessage="No inactive subscriptions."
-                  onDelete={onSelectForDelete}
-                  onResume={onSelectForResume}
-                />
-
-                {!inactiveLoading &&
-                  !inactiveError &&
-                  inactiveTotalCount > 0 && (
-                    <Pagination
-                      itemCount={inactiveItems.length}
-                      page={inactivePage}
-                      pageSize={PAGE_SIZE}
-                      totalCount={inactiveTotalCount}
-                      totalPages={inactiveTotalPages}
-                      onPageChange={onInactivePaginate}
-                    />
-                  )}
-              </div>
-            </div>
-          </div>
+            )}
+          </CollapsibleSection>
         )}
       </PageLayout>
 

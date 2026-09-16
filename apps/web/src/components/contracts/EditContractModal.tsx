@@ -5,7 +5,7 @@ import {
   isContractFormValid,
 } from '../../hooks/contracts/selectors/buildContractInput';
 import { useContractForm } from '../../hooks/contracts/useContractForm';
-import type { ContractInput } from '../../hooks/contracts/useContractsData';
+import type { ContractInput } from '../../hooks/contracts/useContractsMutations';
 import {
   Contract,
   CONTRACT_CATEGORIES,

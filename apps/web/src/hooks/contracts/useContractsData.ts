@@ -1,18 +1,13 @@
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
-import { useToast } from '../../contexts/ToastContext';
-import {
-  CREATE_CONTRACT,
-  DELETE_CONTRACT,
-  GET_CONTRACTS,
-  UPDATE_CONTRACT,
-} from '../../graphql/contracts';
+import { GET_CONTRACTS } from '../../graphql/contracts';
 import { ContractsData, ContractSortField } from '../../types/contract';
 import { useDebouncedValue } from '../useDebouncedValue';
 import { useLocalStorage } from '../useLocalStorage';
 import { getDaysUntilExpiration } from './selectors/getDaysUntilExpiration';
 import { useContractsModals } from './useContractsModals';
+import { useContractsMutations } from './useContractsMutations';
 
 export const PAGE_SIZE = 10;
 
@@ -21,18 +16,10 @@ const SORT_ORDER_BY_FIELD: Record<ContractSortField, 'ASC' | 'DESC'> = {
   PROVIDER: 'ASC',
 };
 
-export type ContractInput = {
-  category: string;
-  provider: string;
-  plan?: string;
-  startDate?: string;
-  endDate?: string;
-  cost?: number;
-};
-
 export function useContractsData() {
-  const { showError, showSuccess } = useToast();
   const [page, setPage] = useState(1);
+  const [expiredPage, setExpiredPage] = useState(1);
+  const [showExpired, setShowExpired] = useState(false);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useLocalStorage<ContractSortField>(
     'contracts.sortBy',
@@ -41,13 +28,24 @@ export function useContractsData() {
   const modals = useContractsModals();
 
   const debouncedSearch = useDebouncedValue(search);
+  const activeSearch = debouncedSearch.trim() || undefined;
 
   const variables = {
+    expired: false,
     page,
     pageSize: PAGE_SIZE,
-    search: debouncedSearch.trim() || undefined,
+    search: activeSearch,
     sortBy,
     sortOrder: SORT_ORDER_BY_FIELD[sortBy],
+  };
+
+  const expiredVariables = {
+    expired: true,
+    page: expiredPage,
+    pageSize: PAGE_SIZE,
+    search: activeSearch,
+    sortBy: 'END_DATE' as const,
+    sortOrder: 'DESC' as const,
   };
 
   const { data, error, loading, previousData } = useQuery<ContractsData>(
@@ -55,80 +53,61 @@ export function useContractsData() {
     { variables }
   );
 
-  const resolvedData = data ?? previousData;
+  const {
+    data: expiredData,
+    error: expiredError,
+    loading: expiredFetching,
+    previousData: expiredPreviousData,
+  } = useQuery<ContractsData>(GET_CONTRACTS, { variables: expiredVariables });
 
-  const [createContract] = useMutation(CREATE_CONTRACT, {
-    refetchQueries: [
-      { query: GET_CONTRACTS, variables: { ...variables, page: 1 } },
-    ],
+  const resolvedData = data ?? previousData;
+  const resolvedExpiredData = expiredData ?? expiredPreviousData;
+
+  const mutations = useContractsMutations({
+    expiredVariables,
+    modals,
+    variables,
+    onResetPage: () => setPage(1),
   });
-  const [updateContract] = useMutation(UPDATE_CONTRACT, {
-    refetchQueries: [{ query: GET_CONTRACTS, variables }],
-  });
-  const [deleteContract, { loading: isDeleting }] = useMutation(
-    DELETE_CONTRACT,
-    { refetchQueries: [{ query: GET_CONTRACTS, variables }] }
-  );
 
   const items = resolvedData?.contracts.items ?? [];
   const totalCount = resolvedData?.contracts.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-  const handleCreate = async (input: ContractInput) => {
-    try {
-      await createContract({ variables: { input } });
+  const expiredItems = resolvedExpiredData?.contracts.items ?? [];
+  const expiredTotalCount = resolvedExpiredData?.contracts.totalCount ?? 0;
+  const expiredTotalPages = Math.ceil(expiredTotalCount / PAGE_SIZE);
 
-      setPage(1);
-      modals.onCloseCreate();
-      showSuccess('Contract created.');
-    } catch {
-      showError('Failed to create contract.');
-    }
-  };
-
-  const handleUpdate = async (input: ContractInput & { id: string }) => {
-    try {
-      await updateContract({ variables: { input } });
-
-      modals.onSelectForEdit(null);
-      showSuccess('Contract updated.');
-    } catch {
-      showError('Failed to update contract.');
-    }
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!modals.contractToDelete) {
-      return;
-    }
-
-    try {
-      await deleteContract({ variables: { id: modals.contractToDelete.id } });
-
-      modals.onSelectForDelete(null);
-      showSuccess('Contract deleted.');
-    } catch {
-      showError('Failed to delete contract.');
-    }
-  };
+  const isSearching = !!activeSearch;
 
   return {
     contractToDelete: modals.contractToDelete,
     contractToEdit: modals.contractToEdit,
     error: !!error,
+    expiredError: !!expiredError,
+    expiredItems,
+    expiredLoading: expiredFetching && !resolvedExpiredData,
+    expiredPage,
+    expiredTotalCount,
+    expiredTotalPages,
     getDaysUntilExpiration,
+    hasOnlyExpiredContracts: totalCount === 0 && expiredTotalCount > 0,
     isCreateOpen: modals.isCreateOpen,
-    isDeleting,
+    isDeleting: mutations.isDeleting,
+    isExpiredCollapsible: !isSearching,
+    isExpiredOpen: isSearching || showExpired,
     items,
     loading: loading && !resolvedData,
     onCloseCreate: modals.onCloseCreate,
-    onCreate: handleCreate,
-    onDeleteConfirm: handleDeleteConfirm,
+    onCreate: mutations.onCreate,
+    onDeleteConfirm: mutations.onDeleteConfirm,
+    onExpiredPaginate: setExpiredPage,
     onOpenCreate: modals.onOpenCreate,
     onPaginate: setPage,
     onSearchChange: (value: string) => {
       setSearch(value);
       setPage(1);
+      setExpiredPage(1);
     },
     onSelectForDelete: modals.onSelectForDelete,
     onSelectForEdit: modals.onSelectForEdit,
@@ -136,7 +115,8 @@ export function useContractsData() {
       setSortBy(sortField);
       setPage(1);
     },
-    onUpdate: handleUpdate,
+    onToggleExpired: () => setShowExpired((previous) => !previous),
+    onUpdate: mutations.onUpdate,
     page,
     search,
     sortBy,
