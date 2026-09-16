@@ -9,6 +9,11 @@ import {
 
 import { supabase } from '../lib/supabase';
 
+type SignUpResult = {
+  error: Error | null;
+  needsEmailConfirmation: boolean;
+};
+
 type AuthContextType = {
   session: Session | null;
   loading: boolean;
@@ -16,6 +21,7 @@ type AuthContextType = {
   sendPasswordResetEmail: (email: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  signUp: (email: string, password: string) => Promise<SignUpResult>;
   updatePassword: (newPassword: string) => Promise<{ error: Error | null }>;
 };
 
@@ -70,6 +76,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const signUp = async (
+    email: string,
+    password: string
+  ): Promise<SignUpResult> => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/login` },
+    });
+
+    return { error, needsEmailConfirmation: !error && !data.session };
+  };
+
   const updatePassword = async (newPassword: string) => {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
 
@@ -85,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         sendPasswordResetEmail,
         signIn,
         signOut,
+        signUp,
         updatePassword,
       }}
     >

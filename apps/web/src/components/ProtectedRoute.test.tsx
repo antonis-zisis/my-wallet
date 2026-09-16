@@ -20,6 +20,7 @@ describe('ProtectedRoute', () => {
       sendPasswordResetEmail: vi.fn(),
       signIn: vi.fn(),
       signOut: vi.fn(),
+      signUp: vi.fn(),
       updatePassword: vi.fn(),
     });
 
@@ -40,6 +41,7 @@ describe('ProtectedRoute', () => {
       sendPasswordResetEmail: vi.fn(),
       signIn: vi.fn(),
       signOut: vi.fn(),
+      signUp: vi.fn(),
       updatePassword: vi.fn(),
     });
 
@@ -68,6 +70,7 @@ describe('ProtectedRoute', () => {
       sendPasswordResetEmail: vi.fn(),
       signIn: vi.fn(),
       signOut: vi.fn(),
+      signUp: vi.fn(),
       updatePassword: vi.fn(),
     });
 
@@ -96,6 +99,7 @@ describe('ProtectedRoute', () => {
       sendPasswordResetEmail: vi.fn(),
       signIn: vi.fn(),
       signOut: vi.fn(),
+      signUp: vi.fn(),
       updatePassword: vi.fn(),
     });
 

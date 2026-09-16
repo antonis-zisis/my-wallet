@@ -6,5 +6,6 @@ export {
   makeSupabaseSession,
   resolveGetSession,
   resolveSignIn,
+  resolveSignUp,
 } from './supabase';
 export { makeUser } from './user';
