@@ -14,6 +14,34 @@ export type WhatsNewRelease = {
 
 export const whatsNew: Array<WhatsNewRelease> = [
   {
+    version: '0.10.0',
+    date: '2026-09-17',
+    highlights: [
+      {
+        title: 'Create your own account',
+        description:
+          'Sign up straight from the login page with just an email and password - no more needing an invite from the Supabase dashboard.',
+      },
+      {
+        title: 'Category totals on your net worth snapshot',
+        description:
+          "Each Assets and Liabilities section now shows a subtotal for every category, so you can see what's driving the total at a glance.",
+      },
+    ],
+    improvements: [
+      {
+        title: 'Clearer contract expiry',
+        description:
+          'Expired contracts now read "expired on <date>" and sit in their own list, so they no longer crowd out the contracts you still hold.',
+      },
+      {
+        title: 'Faster, more reliable loading',
+        description:
+          'Cut the extra database queries behind the reports and net worth pages, so the dashboard loads faster and holds up better right after a cold start.',
+      },
+    ],
+  },
+  {
     version: '0.9.0',
     date: '2026-08-26',
     highlights: [
