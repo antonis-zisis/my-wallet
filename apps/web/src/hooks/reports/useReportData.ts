@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useUser } from '../../contexts/UserContext';
 import {
@@ -37,6 +38,7 @@ type ReportData = {
 };
 
 export function useReportData() {
+  const { currency } = useCurrency();
   const { showError, showSuccess } = useToast();
   const { user } = useUser();
   const { id } = useParams<{ id: string }>();
@@ -161,7 +163,7 @@ export function useReportData() {
 
   const onExportCsv = () => {
     if (report) {
-      exportReportToCsv(report.title, transactions);
+      exportReportToCsv(report.title, transactions, currency);
     }
   };
 

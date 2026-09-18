@@ -12,6 +12,7 @@ const mockUser = {
   supabaseId: USER_ID,
   email: EMAIL,
   fullName: null,
+  currency: 'EUR',
   lastSeenAt: null,
   createdAt: new Date('2024-01-01T10:00:00Z'),
   updatedAt: new Date('2024-01-01T10:00:00Z'),
@@ -70,6 +71,38 @@ describe('userResolvers', () => {
         data: { fullName: 'John Doe' },
       });
       expect(result).toEqual(updatedUser);
+    });
+
+    it('updates the user currency without touching the name', async () => {
+      const updatedUser = { ...mockUser, currency: 'USD' };
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser);
+      vi.mocked(prisma.user.update).mockResolvedValue(updatedUser);
+
+      const result = await userResolvers.Mutation.updateMe(
+        undefined,
+        { input: { currency: 'USD' } },
+        CTX
+      );
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { supabaseId: USER_ID },
+        data: { currency: 'USD' },
+      });
+      expect(result).toEqual(updatedUser);
+    });
+
+    it('rejects a currency outside the supported list', async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser);
+
+      await expect(
+        userResolvers.Mutation.updateMe(
+          undefined,
+          { input: { currency: 'XYZ' } },
+          CTX
+        )
+      ).rejects.toThrow('Currency must be one of');
+
+      expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
     it('throws NOT_FOUND if user does not exist', async () => {

@@ -1,3 +1,4 @@
+import { type Currency, DEFAULT_CURRENCY } from '../types/currency';
 import { Transaction } from '../types/transaction';
 
 function escapeCsvField(value: string): string {
@@ -8,8 +9,17 @@ function escapeCsvField(value: string): string {
   return value;
 }
 
-export function buildCsvContent(transactions: Array<Transaction>): string {
-  const headers = ['Date', 'Type', 'Category', 'Description', 'Amount'];
+export function buildCsvContent(
+  transactions: Array<Transaction>,
+  currency: Currency = DEFAULT_CURRENCY
+): string {
+  const headers = [
+    'Date',
+    'Type',
+    'Category',
+    'Description',
+    `Amount (${currency})`,
+  ];
   const rows = transactions.map((transaction) => [
     transaction.date.slice(0, 10),
     transaction.type === 'INCOME' ? 'Income' : 'Expense',
@@ -23,9 +33,10 @@ export function buildCsvContent(transactions: Array<Transaction>): string {
 
 export function exportReportToCsv(
   title: string,
-  transactions: Array<Transaction>
+  transactions: Array<Transaction>,
+  currency: Currency = DEFAULT_CURRENCY
 ): void {
-  const content = buildCsvContent(transactions);
+  const content = buildCsvContent(transactions, currency);
   const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

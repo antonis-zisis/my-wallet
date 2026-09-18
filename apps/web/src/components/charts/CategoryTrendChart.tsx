@@ -8,10 +8,9 @@ import {
   YAxis,
 } from 'recharts';
 
-import { usePrivacy } from '../../contexts/PrivacyContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { CategoryTrendPoint } from '../../hooks/transactions/selectors/buildCategoryTrends';
-import { formatMoneyOrMask } from '../../utils/formatMoney';
+import { useMoneyFormatter } from '../../hooks/useMoneyFormatter';
 import { formatMonthWithYear } from '../../utils/formatMonth';
 import { MoneyAmount } from '../ui';
 
@@ -44,7 +43,7 @@ type CategoryTrendChartProps = {
 
 export function CategoryTrendChart({ color, points }: CategoryTrendChartProps) {
   const { resolvedTheme } = useTheme();
-  const { isAmountsHidden } = usePrivacy();
+  const formatAmount = useMoneyFormatter();
   const tickColor = resolvedTheme === 'dark' ? '#d1d5db' : '#374151';
   const gridColor = resolvedTheme === 'dark' ? '#374151' : '#e5e7eb';
 
@@ -68,9 +67,7 @@ export function CategoryTrendChart({ color, points }: CategoryTrendChartProps) {
         <XAxis dataKey="name" tick={{ fontSize: 12, fill: tickColor }} />
 
         <YAxis
-          tickFormatter={(value: number) =>
-            `${formatMoneyOrMask(value, isAmountsHidden)}€`
-          }
+          tickFormatter={(value: number) => formatAmount(value)}
           tick={{ fontSize: 12, fill: tickColor }}
           width={64}
         />

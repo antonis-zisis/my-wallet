@@ -141,6 +141,25 @@ describe('Profile', () => {
     });
   });
 
+  describe('Preferences', () => {
+    it('shows the current currency', () => {
+      render(<Profile />);
+
+      expect(screen.getByLabelText('Currency')).toHaveValue('EUR');
+    });
+
+    it('saves the currency the user picks', async () => {
+      mockUpdateUser.mockResolvedValueOnce(undefined);
+      render(<Profile />);
+
+      await userEvent.selectOptions(screen.getByLabelText('Currency'), 'USD');
+
+      await waitFor(() => {
+        expect(mockUpdateUser).toHaveBeenCalledWith({ currency: 'USD' });
+      });
+    });
+  });
+
   it('invokes updatePassword when the password form is submitted', async () => {
     mockUpdatePassword.mockResolvedValueOnce({ error: null });
     render(<Profile />);

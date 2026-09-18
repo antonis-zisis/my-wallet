@@ -1,6 +1,5 @@
-import { usePrivacy } from '../../../contexts/PrivacyContext';
+import { useMoneyFormatter } from '../../../hooks/useMoneyFormatter';
 import { formatDate } from '../../../utils/formatDate';
-import { formatMoneyOrMask } from '../../../utils/formatMoney';
 
 type BreakdownTooltipPayloadEntry = {
   payload: {
@@ -21,7 +20,7 @@ export function BreakdownChartTooltip({
   active,
   payload,
 }: BreakdownChartTooltipProps) {
-  const { isAmountsHidden } = usePrivacy();
+  const formatAmount = useMoneyFormatter();
 
   if (!active || !payload?.length) {
     return null;
@@ -40,16 +39,14 @@ export function BreakdownChartTooltip({
         <p className="text-text-secondary flex items-center gap-1.5 text-xs">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
           Assets:{' '}
-          <span className="font-semibold">
-            {formatMoneyOrMask(totalAssets, isAmountsHidden)} €
-          </span>
+          <span className="font-semibold">{formatAmount(totalAssets)}</span>
         </p>
 
         <p className="text-text-secondary flex items-center gap-1.5 text-xs">
           <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
           Liabilities:{' '}
           <span className="font-semibold">
-            {formatMoneyOrMask(totalLiabilities, isAmountsHidden)} €
+            {formatAmount(totalLiabilities)}
           </span>
         </p>
       </div>

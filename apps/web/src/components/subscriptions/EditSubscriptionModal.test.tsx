@@ -30,7 +30,7 @@ describe('EditSubscriptionModal', () => {
   it('pre-fills form fields from the subscription prop', () => {
     render(<EditSubscriptionModal {...defaultProps} />);
     expect(screen.getByLabelText('Name')).toHaveValue('Netflix');
-    expect(screen.getByLabelText('Amount')).toHaveValue(15.99);
+    expect(screen.getByLabelText(/^Amount/)).toHaveValue(15.99);
   });
 
   it('pre-selects the category from the subscription prop', () => {

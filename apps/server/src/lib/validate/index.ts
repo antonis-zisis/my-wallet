@@ -2,6 +2,7 @@ export { clampMonths } from './clampMonths';
 export { clampPage } from './clampPage';
 export {
   BILLING_CYCLES,
+  CURRENCIES,
   NET_WORTH_ENTRY_TYPES,
   SHARE_ROLES,
   SUBSCRIPTION_CATEGORIES,

@@ -2,16 +2,19 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { createContext, type ReactNode, useContext } from 'react';
 
 import { GET_ME, UPDATE_ME } from '../graphql/user';
+import { type Currency } from '../types/currency';
 import { useAuth } from './AuthContext';
 
 export type User = {
   id: string;
+  currency: string;
   email: string;
   fullName: string | null;
   supabaseId: string;
 };
 
 type UpdateUserInput = {
+  currency?: Currency;
   fullName?: string;
 };
 

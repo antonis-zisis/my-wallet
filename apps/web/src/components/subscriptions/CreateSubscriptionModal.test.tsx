@@ -21,7 +21,7 @@ describe('CreateSubscriptionModal', () => {
   it('renders core form fields when open', () => {
     render(<CreateSubscriptionModal {...defaultProps} />);
     expect(screen.getByLabelText('Name')).toBeInTheDocument();
-    expect(screen.getByLabelText('Amount')).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Amount/)).toBeInTheDocument();
     expect(screen.getByLabelText('Billing Cycle')).toBeInTheDocument();
     expect(screen.getByLabelText('Start Date')).toBeInTheDocument();
   });
@@ -34,14 +34,14 @@ describe('CreateSubscriptionModal', () => {
   it('disables the Create button when start date is missing', async () => {
     render(<CreateSubscriptionModal {...defaultProps} />);
     await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
-    await userEvent.type(screen.getByLabelText('Amount'), '9.99');
+    await userEvent.type(screen.getByLabelText(/^Amount/), '9.99');
     expect(screen.getByRole('button', { name: 'Create' })).toBeDisabled();
   });
 
   it('enables the Create button when all required fields are filled', async () => {
     render(<CreateSubscriptionModal {...defaultProps} />);
     await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
-    await userEvent.type(screen.getByLabelText('Amount'), '9.99');
+    await userEvent.type(screen.getByLabelText(/^Amount/), '9.99');
     await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
     expect(screen.getByRole('button', { name: 'Create' })).toBeEnabled();
   });
@@ -50,7 +50,7 @@ describe('CreateSubscriptionModal', () => {
     const onSubmit = vi.fn();
     render(<CreateSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
     await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
-    await userEvent.type(screen.getByLabelText('Amount'), '15.99');
+    await userEvent.type(screen.getByLabelText(/^Amount/), '15.99');
     await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
     await userEvent.click(screen.getByRole('button', { name: 'Create' }));
     expect(onSubmit).toHaveBeenCalledWith({
@@ -66,7 +66,7 @@ describe('CreateSubscriptionModal', () => {
     const onSubmit = vi.fn();
     render(<CreateSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
     await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
-    await userEvent.type(screen.getByLabelText('Amount'), '15.99');
+    await userEvent.type(screen.getByLabelText(/^Amount/), '15.99');
     await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
     await userEvent.selectOptions(
       screen.getByLabelText('Category'),
@@ -102,7 +102,7 @@ describe('CreateSubscriptionModal', () => {
     const onSubmit = vi.fn();
     render(<CreateSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
     await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
-    await userEvent.type(screen.getByLabelText('Amount'), '15.99');
+    await userEvent.type(screen.getByLabelText(/^Amount/), '15.99');
     await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
     await userEvent.click(
       screen.getByRole('button', { name: /additional details/i })
@@ -140,7 +140,7 @@ describe('CreateSubscriptionModal', () => {
     it('disables Create when trial is checked but no trial end date is provided', async () => {
       render(<CreateSubscriptionModal {...defaultProps} />);
       await userEvent.type(screen.getByLabelText('Name'), 'Notion');
-      await userEvent.type(screen.getByLabelText('Amount'), '0');
+      await userEvent.type(screen.getByLabelText(/^Amount/), '0');
       await userEvent.type(screen.getByLabelText('Start Date'), '2026-04-01');
       await userEvent.click(screen.getByLabelText('Currently on a free trial'));
       expect(screen.getByRole('button', { name: 'Create' })).toBeDisabled();
@@ -150,7 +150,7 @@ describe('CreateSubscriptionModal', () => {
       const onSubmit = vi.fn();
       render(<CreateSubscriptionModal {...defaultProps} onSubmit={onSubmit} />);
       await userEvent.type(screen.getByLabelText('Name'), 'Notion');
-      await userEvent.type(screen.getByLabelText('Amount'), '0');
+      await userEvent.type(screen.getByLabelText(/^Amount/), '0');
       await userEvent.type(screen.getByLabelText('Start Date'), '2026-04-01');
       await userEvent.click(screen.getByLabelText('Currently on a free trial'));
       await userEvent.type(screen.getByLabelText('Trial ends'), '2026-05-03');
@@ -217,7 +217,7 @@ describe('CreateSubscriptionModal', () => {
         />
       );
       await userEvent.type(screen.getByLabelText('Name'), 'Netflix');
-      await userEvent.type(screen.getByLabelText('Amount'), '15.99');
+      await userEvent.type(screen.getByLabelText(/^Amount/), '15.99');
       await userEvent.type(screen.getByLabelText('Start Date'), '2026-01-01');
       expect(screen.getByRole('button', { name: 'Create' })).toBeDisabled();
     });

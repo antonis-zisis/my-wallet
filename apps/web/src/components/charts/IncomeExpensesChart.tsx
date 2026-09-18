@@ -11,11 +11,10 @@ import {
   YAxis,
 } from 'recharts';
 
-import { usePrivacy } from '../../contexts/PrivacyContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useMoneyFormatter } from '../../hooks/useMoneyFormatter';
 import { type Report } from '../../types/report';
 import { abbreviateReportTitle } from '../../utils/abbreviateReportTitle';
-import { formatMoneyOrMask } from '../../utils/formatMoney';
 
 type TooltipPayloadEntry = {
   name: string;
@@ -30,7 +29,7 @@ type ChartTooltipProps = {
 };
 
 function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
-  const { isAmountsHidden } = usePrivacy();
+  const formatAmount = useMoneyFormatter();
 
   if (!active || !payload?.length) {
     return null;
@@ -51,7 +50,7 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
               Income
             </span>
             <span className="text-text-primary text-xs font-semibold">
-              {formatMoneyOrMask(income.value, isAmountsHidden)} €
+              {formatAmount(income.value)}
             </span>
           </div>
         )}
@@ -63,7 +62,7 @@ function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
               Expenses
             </span>
             <span className="text-text-primary text-xs font-semibold">
-              {formatMoneyOrMask(expenses.value, isAmountsHidden)} €
+              {formatAmount(expenses.value)}
             </span>
           </div>
         )}
@@ -83,7 +82,7 @@ export function IncomeExpensesChart({
 }: IncomeExpensesChartProps) {
   const navigate = useNavigate();
   const { resolvedTheme } = useTheme();
-  const { isAmountsHidden } = usePrivacy();
+  const formatAmount = useMoneyFormatter();
   const tickColor = resolvedTheme === 'dark' ? '#d1d5db' : '#374151';
   const gridColor = resolvedTheme === 'dark' ? '#374151' : '#e5e7eb';
 
@@ -125,9 +124,7 @@ export function IncomeExpensesChart({
         <XAxis dataKey="name" tick={{ fontSize: 12, fill: tickColor }} />
 
         <YAxis
-          tickFormatter={(value: number) =>
-            `${formatMoneyOrMask(value, isAmountsHidden)}€`
-          }
+          tickFormatter={(value: number) => formatAmount(value)}
           tick={{ fontSize: 12, fill: tickColor }}
           width={64}
         />

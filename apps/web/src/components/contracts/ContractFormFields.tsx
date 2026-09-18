@@ -1,3 +1,4 @@
+import { useCurrency } from '../../contexts/CurrencyContext';
 import type { ContractFormValues } from '../../hooks/contracts/useContractForm';
 import {
   CONTRACT_CATEGORY_OPTIONS,
@@ -19,6 +20,8 @@ export function ContractFormFields({
   onChange,
   values,
 }: ContractFormFieldsProps) {
+  const { symbol } = useCurrency();
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -82,7 +85,7 @@ export function ContractFormFields({
 
       <Input
         id="contract-cost"
-        label="Cost (optional)"
+        label={`Cost (${symbol}, optional)`}
         min="0"
         placeholder="e.g. 29.90"
         step="0.01"

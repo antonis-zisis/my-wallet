@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router/dom';
 
 import { AuthProvider } from './contexts/AuthContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import { PrivacyProvider } from './contexts/PrivacyContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
@@ -21,7 +22,9 @@ createRoot(document.getElementById('root')!).render(
           <AuthProvider>
             <ApolloProvider client={apolloClient}>
               <UserProvider>
-                <RouterProvider router={router} />
+                <CurrencyProvider>
+                  <RouterProvider router={router} />
+                </CurrencyProvider>
               </UserProvider>
             </ApolloProvider>
           </AuthProvider>

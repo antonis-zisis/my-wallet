@@ -41,7 +41,7 @@ describe('ResumeSubscriptionModal', () => {
 
   it('pre-fills amount from the subscription', () => {
     render(<ResumeSubscriptionModal {...defaultProps} />);
-    expect(screen.getByLabelText('Amount')).toHaveValue(15.99);
+    expect(screen.getByLabelText(/^Amount/)).toHaveValue(15.99);
   });
 
   it('pre-fills billing cycle from the subscription', () => {

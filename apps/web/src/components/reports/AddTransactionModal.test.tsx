@@ -21,7 +21,7 @@ describe('AddTransactionModal', () => {
   it('renders form fields when open', () => {
     render(<AddTransactionModal {...defaultProps} />);
     expect(screen.getByText('Add Transaction')).toBeInTheDocument();
-    expect(screen.getByLabelText('Amount')).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Amount/)).toBeInTheDocument();
     expect(screen.getByLabelText('Description')).toBeInTheDocument();
     expect(screen.getByLabelText('Category')).toBeInTheDocument();
     expect(screen.getByLabelText('Date')).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe('AddTransactionModal', () => {
     const onSubmit = vi.fn();
     render(<AddTransactionModal {...defaultProps} onSubmit={onSubmit} />);
 
-    await userEvent.type(screen.getByLabelText('Amount'), '42.50');
+    await userEvent.type(screen.getByLabelText(/^Amount/), '42.50');
     await userEvent.type(screen.getByLabelText('Description'), 'Groceries');
     await userEvent.selectOptions(
       screen.getByLabelText('Category'),
