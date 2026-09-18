@@ -10,8 +10,10 @@ import {
 import { GET_SUBSCRIPTIONS } from '../../graphql/subscriptions';
 import { Contract } from '../../types/contract';
 import { NetWorthSnapshot } from '../../types/netWorth';
+import { OnboardingProgress } from '../../types/onboarding';
 import { Report } from '../../types/report';
 import { Subscription } from '../../types/subscription';
+import { onboardingResponse } from './onboarding';
 
 export function reportsResponse(
   reports: Array<Report> = []
@@ -102,12 +104,18 @@ type HomeMocksOverrides = {
   subscriptions?: Array<Subscription>;
   contracts?: Array<Contract>;
   reportDetails?: Array<{ id: string; report: Partial<Report> }>;
+  onboardingCompletedAt?: string | null;
+  onboardingProgress?: Partial<OnboardingProgress>;
 };
 
 export function homeMocks(
   overrides: HomeMocksOverrides = {}
 ): Array<MockLink.MockedResponse> {
   return [
+    onboardingResponse({
+      onboardingCompletedAt: overrides.onboardingCompletedAt ?? '2026-01-01',
+      progress: overrides.onboardingProgress,
+    }),
     reportsResponse(overrides.reports),
     reportsSummaryResponse(overrides.summaryReports),
     netWorthSnapshotsResponse(overrides.snapshots),

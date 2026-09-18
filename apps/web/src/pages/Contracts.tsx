@@ -14,6 +14,7 @@ import {
   PAGE_SIZE,
   useContractsData,
 } from '../hooks/contracts/useContractsData';
+import { useOpenOnParam } from '../hooks/useOpenOnParam';
 import { CONTRACT_SORT_OPTIONS, ContractSortField } from '../types/contract';
 
 export function Contracts() {
@@ -52,6 +53,8 @@ export function Contracts() {
     totalCount,
     totalPages,
   } = useContractsData();
+
+  useOpenOnParam(onOpenCreate);
 
   return (
     <>

@@ -20,6 +20,7 @@ model User {
   fullName     String?       @map("full_name")
   currency     String        @default("EUR")
   lastSeenAt   DateTime?     @map("last_seen_at")
+  onboardingCompletedAt DateTime? @map("onboarding_completed_at")
   reportShares ReportShare[]
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")

@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { MockedProvider } from '../test/apollo-test-utils';
 import { makeUser } from '../test/fixtures';
 import { Profile } from './Profile';
 
@@ -34,6 +35,14 @@ vi.mock('../contexts/ToastContext', () => ({
   }),
 }));
 
+function renderProfile() {
+  return render(
+    <MockedProvider>
+      <Profile />
+    </MockedProvider>
+  );
+}
+
 describe('Profile', () => {
   beforeEach(() => {
     mockUpdateUser.mockReset();
@@ -41,7 +50,7 @@ describe('Profile', () => {
   });
 
   it('renders email as non-editable display and fullName as editable input', () => {
-    render(<Profile />);
+    renderProfile();
 
     expect(screen.getAllByText('test@example.com').length).toBeGreaterThan(0);
     expect(screen.queryByLabelText('Email')).not.toBeInTheDocument();
@@ -52,7 +61,7 @@ describe('Profile', () => {
   });
 
   it('renders Personal info and Change password section headings', () => {
-    render(<Profile />);
+    renderProfile();
 
     expect(
       screen.getByRole('heading', { name: 'Personal info' })
@@ -64,13 +73,13 @@ describe('Profile', () => {
 
   describe('Save button', () => {
     it('is disabled when name has not changed', () => {
-      render(<Profile />);
+      renderProfile();
 
       expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
     });
 
     it('is enabled when name has changed', async () => {
-      render(<Profile />);
+      renderProfile();
 
       const nameInput = screen.getByLabelText('Full name');
       await userEvent.clear(nameInput);
@@ -82,7 +91,7 @@ describe('Profile', () => {
 
   describe('Change password button', () => {
     it('is disabled when password fields are empty', () => {
-      render(<Profile />);
+      renderProfile();
 
       expect(
         screen.getByRole('button', { name: 'Change password' })
@@ -90,7 +99,7 @@ describe('Profile', () => {
     });
 
     it('is enabled when new password is entered', async () => {
-      render(<Profile />);
+      renderProfile();
 
       await userEvent.type(screen.getByLabelText('New password'), 'secret123');
 
@@ -102,7 +111,7 @@ describe('Profile', () => {
 
   it('invokes updateUser when the profile form is submitted', async () => {
     mockUpdateUser.mockResolvedValueOnce(undefined);
-    render(<Profile />);
+    renderProfile();
 
     const nameInput = screen.getByLabelText('Full name');
     await userEvent.clear(nameInput);
@@ -116,13 +125,13 @@ describe('Profile', () => {
 
   describe('About section', () => {
     it('shows the app version', () => {
-      render(<Profile />);
+      renderProfile();
 
       expect(screen.getByText(/^v\d+\.\d+\.\d+$/)).toBeInTheDocument();
     });
 
     it("opens the What's New modal when the button is clicked", async () => {
-      render(<Profile />);
+      renderProfile();
 
       fireEvent.click(screen.getByRole('button', { name: "What's New" }));
 
@@ -132,7 +141,7 @@ describe('Profile', () => {
     });
 
     it('links to the Logo.dev attribution', () => {
-      render(<Profile />);
+      renderProfile();
 
       expect(screen.getByRole('link', { name: 'Logo.dev' })).toHaveAttribute(
         'href',
@@ -143,14 +152,14 @@ describe('Profile', () => {
 
   describe('Preferences', () => {
     it('shows the current currency', () => {
-      render(<Profile />);
+      renderProfile();
 
       expect(screen.getByLabelText('Currency')).toHaveValue('EUR');
     });
 
     it('saves the currency the user picks', async () => {
       mockUpdateUser.mockResolvedValueOnce(undefined);
-      render(<Profile />);
+      renderProfile();
 
       await userEvent.selectOptions(screen.getByLabelText('Currency'), 'USD');
 
@@ -162,7 +171,7 @@ describe('Profile', () => {
 
   it('invokes updatePassword when the password form is submitted', async () => {
     mockUpdatePassword.mockResolvedValueOnce({ error: null });
-    render(<Profile />);
+    renderProfile();
 
     await userEvent.type(screen.getByLabelText('New password'), 'newpass123');
     await userEvent.type(

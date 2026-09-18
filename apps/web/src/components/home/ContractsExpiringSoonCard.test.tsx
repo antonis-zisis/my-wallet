@@ -31,7 +31,7 @@ describe('ContractsExpiringSoonCard', () => {
   });
 
   it('renders the empty state when nothing is expiring', () => {
-    renderCard({ contracts: [], loading: false });
+    renderCard({ contracts: [], hasContracts: true, loading: false });
 
     expect(screen.getByText('No contracts expiring soon')).toBeInTheDocument();
     expect(
@@ -41,6 +41,7 @@ describe('ContractsExpiringSoonCard', () => {
 
   it('lists each expiring contract with its countdown', () => {
     renderCard({
+      hasContracts: true,
       contracts: [
         makeExpiring(5, { id: 'a', provider: 'DEI' }),
         makeExpiring(0, { id: 'b', provider: 'Cosmote' }),
@@ -56,6 +57,7 @@ describe('ContractsExpiringSoonCard', () => {
 
   it('shows only the first three and a "+N more" link on overflow', () => {
     renderCard({
+      hasContracts: true,
       contracts: [
         makeExpiring(1, { id: 'a', provider: 'A' }),
         makeExpiring(2, { id: 'b', provider: 'B' }),
@@ -74,6 +76,7 @@ describe('ContractsExpiringSoonCard', () => {
 
   it('collapses and expands when the toggle button is clicked', () => {
     renderCard({
+      hasContracts: true,
       contracts: [makeExpiring(5, { id: 'a', provider: 'DEI' })],
       loading: false,
     });
@@ -88,5 +91,14 @@ describe('ContractsExpiringSoonCard', () => {
 
     fireEvent.click(button);
     expect(button).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('invites a user with no contracts at all to add one', () => {
+    renderCard({ contracts: [], hasContracts: false, loading: false });
+
+    expect(screen.getByText('No contracts yet')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Add a contract' })
+    ).toHaveAttribute('href', '/contracts?new=1');
   });
 });

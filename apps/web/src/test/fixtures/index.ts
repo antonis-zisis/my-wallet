@@ -1,5 +1,6 @@
 export { makeContract } from './contracts';
 export { makeNetWorthEntry, makeNetWorthSnapshot } from './netWorth';
+export { makeOnboardingProgress, onboardingResponse } from './onboarding';
 export { makeReport, makeReportMember, makeTransaction } from './report';
 export { makeSubscription } from './subscription';
 export {

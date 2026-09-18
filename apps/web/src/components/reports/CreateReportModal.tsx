@@ -93,7 +93,7 @@ export function CreateReportModal({
 
         <Input
           id="report-title"
-          placeholder="Enter report title"
+          placeholder="e.g. September 2026"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           onKeyDown={handleKeyDown}

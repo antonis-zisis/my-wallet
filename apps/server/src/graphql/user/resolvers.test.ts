@@ -13,6 +13,7 @@ const mockUser = {
   email: EMAIL,
   fullName: null,
   currency: 'EUR',
+  onboardingCompletedAt: null,
   lastSeenAt: null,
   createdAt: new Date('2024-01-01T10:00:00Z'),
   updatedAt: new Date('2024-01-01T10:00:00Z'),
@@ -123,6 +124,37 @@ describe('userResolvers', () => {
           CTX
         )
       ).rejects.toThrow('User not found');
+    });
+  });
+
+  describe('Mutation.completeOnboarding', () => {
+    it('stamps the completion time on the user', async () => {
+      const completedUser = { ...mockUser, onboardingCompletedAt: new Date() };
+      vi.mocked(prisma.user.update).mockResolvedValue(completedUser);
+
+      const result = await userResolvers.Mutation.completeOnboarding(
+        undefined,
+        undefined,
+        CTX
+      );
+
+      const { data, where } = vi.mocked(prisma.user.update).mock.calls[0][0];
+      expect(where).toEqual({ supabaseId: USER_ID });
+      expect(data.onboardingCompletedAt).toBeInstanceOf(Date);
+      expect(result).toEqual(completedUser);
+    });
+  });
+
+  describe('Mutation.resetOnboarding', () => {
+    it('clears the completion time so onboarding shows again', async () => {
+      vi.mocked(prisma.user.update).mockResolvedValue(mockUser);
+
+      await userResolvers.Mutation.resetOnboarding(undefined, undefined, CTX);
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { supabaseId: USER_ID },
+        data: { onboardingCompletedAt: null },
+      });
     });
   });
 });

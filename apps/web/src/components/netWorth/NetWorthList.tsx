@@ -7,6 +7,7 @@ type NetWorthListProps = {
   error: boolean;
   isSearching?: boolean;
   loading: boolean;
+  onAdd?: () => void;
   snapshots: Array<NetWorthSnapshot>;
 };
 
@@ -81,6 +82,7 @@ export function NetWorthList({
   error,
   isSearching,
   loading,
+  onAdd,
   snapshots,
 }: NetWorthListProps) {
   if (loading) {
@@ -106,7 +108,7 @@ export function NetWorthList({
   }
 
   if (snapshots.length === 0) {
-    return isSearching ? <NoMatchesState /> : <EmptyState />;
+    return isSearching ? <NoMatchesState /> : <EmptyState onAdd={onAdd} />;
   }
 
   return (

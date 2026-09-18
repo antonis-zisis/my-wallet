@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { useToast } from '../../contexts/ToastContext';
 import { useUser } from '../../contexts/UserContext';
@@ -15,6 +16,7 @@ import { useLocalStorage } from '../useLocalStorage';
 export const PAGE_SIZE = 10;
 
 export function useReportsData() {
+  const navigate = useNavigate();
   const { showError, showSuccess } = useToast();
   const { user } = useUser();
   const [page, setPage] = useState(1);
@@ -43,11 +45,14 @@ export function useReportsData() {
 
   const resolvedData = data ?? previousData;
 
-  const [createReport] = useMutation(CREATE_REPORT, {
-    refetchQueries: [
-      { query: GET_REPORTS, variables: { ...variables, page: 1 } },
-    ],
-  });
+  const [createReport] = useMutation<{ createReport: { id: string } }>(
+    CREATE_REPORT,
+    {
+      refetchQueries: [
+        { query: GET_REPORTS, variables: { ...variables, page: 1 } },
+      ],
+    }
+  );
 
   const reports = resolvedData?.reports.items ?? [];
   const totalCount = resolvedData?.reports.totalCount ?? 0;
@@ -55,11 +60,17 @@ export function useReportsData() {
 
   const handleCreateReport = async (title: string) => {
     try {
-      await createReport({ variables: { input: { title } } });
+      const { data: created } = await createReport({
+        variables: { input: { title } },
+      });
 
       setPage(1);
       setIsModalOpen(false);
       showSuccess('Report created.');
+
+      if (created?.createReport.id) {
+        navigate(`/reports/${created.createReport.id}`);
+      }
     } catch {
       showError('Failed to create report.');
       throw new Error('Failed to create report.');
