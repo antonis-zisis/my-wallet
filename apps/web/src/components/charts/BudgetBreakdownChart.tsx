@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { Legend, Pie, PieChart, Tooltip } from 'recharts';
 
-import { usePrivacy } from '../../contexts/PrivacyContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useIsMobileViewport } from '../../hooks/useIsMobileViewport';
+import { useMoneyFormatter } from '../../hooks/useMoneyFormatter';
 import { type Transaction } from '../../types/transaction';
 import { BUDGET_BUCKET_COLORS } from './categoryColors';
 import { makeBreakdownPieShape } from './makeBreakdownPieShape';
@@ -31,17 +31,17 @@ export function BudgetBreakdownChart({
   transactions,
 }: BudgetBreakdownChartProps) {
   const { resolvedTheme } = useTheme();
-  const { isAmountsHidden } = usePrivacy();
+  const formatAmount = useMoneyFormatter();
   const labelColor = resolvedTheme === 'dark' ? '#9ca3af' : '#4b5563';
   const isMobile = useIsMobileViewport();
   const renderShape = useMemo(
     () =>
       makeBreakdownPieShape({
-        isAmountsHidden,
+        formatAmount,
         isCompact: isMobile,
         labelColor,
       }),
-    [isAmountsHidden, isMobile, labelColor]
+    [formatAmount, isMobile, labelColor]
   );
 
   const chartData = useMemo(() => {

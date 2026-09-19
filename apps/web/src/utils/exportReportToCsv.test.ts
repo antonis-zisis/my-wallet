@@ -24,7 +24,7 @@ describe('buildCsvContent', () => {
     const transactions = [makeTransaction(), makeTransaction({ id: '2' })];
     const lines = buildCsvContent(transactions).split('\n');
     expect(lines).toHaveLength(3);
-    expect(lines[0]).toBe('Date,Type,Category,Description,Amount');
+    expect(lines[0]).toBe('Date,Type,Category,Description,Amount (EUR)');
   });
 
   it('formats an income transaction correctly', () => {
@@ -69,7 +69,7 @@ describe('buildCsvContent', () => {
 
   it('returns only the header row for an empty transaction list', () => {
     const content = buildCsvContent([]);
-    expect(content).toBe('Date,Type,Category,Description,Amount');
+    expect(content).toBe('Date,Type,Category,Description,Amount (EUR)');
   });
 
   it('uses only the date portion of an ISO datetime string', () => {

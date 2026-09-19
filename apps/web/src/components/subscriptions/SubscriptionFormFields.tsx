@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useCurrency } from '../../contexts/CurrencyContext';
 import type { SubscriptionFormValues } from '../../hooks/subscriptions/useSubscriptionForm';
 import {
   BILLING_CYCLE_OPTIONS,
@@ -22,6 +23,7 @@ export function SubscriptionFormFields({
   onChange,
   values,
 }: SubscriptionFormFieldsProps) {
+  const { symbol } = useCurrency();
   const [isAdditionalExpanded, setIsAdditionalExpanded] = useState(
     defaultExpandAdditional
   );
@@ -48,7 +50,7 @@ export function SubscriptionFormFields({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Input
           id="subscription-amount"
-          label="Amount"
+          label={`Amount (${symbol})`}
           min="0"
           placeholder="9.99"
           required

@@ -42,7 +42,12 @@ export const userResolvers = {
 
       return prisma.user.update({
         where: { supabaseId: context.userId },
-        data: { fullName: data.fullName || null },
+        data: {
+          ...(data.fullName !== undefined && {
+            fullName: data.fullName || null,
+          }),
+          ...(data.currency !== undefined && { currency: data.currency }),
+        },
       });
     },
   },

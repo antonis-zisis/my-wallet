@@ -4,12 +4,14 @@ export const userTypeDefs = `#graphql
     supabaseId: String!
     email: String!
     fullName: String
+    currency: String!
     createdAt: String!
     updatedAt: String!
   }
 
   input UpdateUserInput {
     fullName: String
+    currency: String
   }
 
   extend type Query {

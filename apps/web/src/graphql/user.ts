@@ -6,6 +6,7 @@ export const GET_ME = gql`
       id
       email
       fullName
+      currency
       supabaseId
     }
   }
@@ -17,6 +18,7 @@ export const UPDATE_ME = gql`
       id
       email
       fullName
+      currency
       supabaseId
     }
   }

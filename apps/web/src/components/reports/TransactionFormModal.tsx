@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useCurrency } from '../../contexts/CurrencyContext';
 import {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
@@ -42,6 +43,7 @@ export function TransactionFormModal({
   onSubmit,
   transaction,
 }: TransactionFormModalProps) {
+  const { symbol } = useCurrency();
   const [form, setForm] = useState(INITIAL_FORM);
 
   useEffect(() => {
@@ -124,7 +126,7 @@ export function TransactionFormModal({
         </div>
 
         <Input
-          label="Amount"
+          label={`Amount (${symbol})`}
           id="amount"
           type="number"
           step="0.01"

@@ -48,7 +48,7 @@ describe('TransactionFormModal', () => {
         />
       );
 
-      expect(screen.getByLabelText('Amount')).toHaveValue(42.5);
+      expect(screen.getByLabelText(/^Amount/)).toHaveValue(42.5);
       expect(screen.getByLabelText('Description')).toHaveValue('Groceries');
       expect(screen.getByLabelText('Category')).toHaveValue('Groceries');
     });

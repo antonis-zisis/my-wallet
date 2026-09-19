@@ -1,14 +1,17 @@
 import { type SubmitEvent, useEffect, useState } from 'react';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useUser } from '../../contexts/UserContext';
+import { type Currency } from '../../types/currency';
 import { validateNewPassword } from '../../utils/validateNewPassword';
 
 export function useProfileData() {
   const { updateUser, user } = useUser();
   const { updatePassword } = useAuth();
   const { showError, showSuccess } = useToast();
+  const { currency } = useCurrency();
 
   const [fullName, setFullName] = useState(user?.fullName ?? '');
   useEffect(() => {
@@ -18,6 +21,8 @@ export function useProfileData() {
   }, [user?.fullName]);
 
   const [profileSaving, setProfileSaving] = useState(false);
+
+  const [currencySaving, setCurrencySaving] = useState(false);
 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -36,6 +41,23 @@ export function useProfileData() {
       showError('Failed to update profile.');
     } finally {
       setProfileSaving(false);
+    }
+  };
+
+  const handleCurrencyChange = async (nextCurrency: Currency) => {
+    if (nextCurrency === currency) {
+      return;
+    }
+
+    setCurrencySaving(true);
+
+    try {
+      await updateUser({ currency: nextCurrency });
+      showSuccess('Currency updated.');
+    } catch {
+      showError('Failed to update currency.');
+    } finally {
+      setCurrencySaving(false);
     }
   };
 
@@ -74,10 +96,13 @@ export function useProfileData() {
 
   return {
     confirmPassword,
+    currency,
+    currencySaving,
     email: user?.email ?? '',
     fullName,
     isNameUnchanged,
     newPassword,
+    onCurrencyChange: handleCurrencyChange,
     onConfirmPasswordChange: (event: React.ChangeEvent<HTMLInputElement>) =>
       setConfirmPassword(event.target.value),
     onFullNameChange: (event: React.ChangeEvent<HTMLInputElement>) =>

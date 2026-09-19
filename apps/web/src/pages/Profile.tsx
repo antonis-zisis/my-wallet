@@ -1,9 +1,22 @@
 import { useState } from 'react';
 
-import { InfoIcon, LockClosedIcon, UserIcon } from '../components/icons';
-import { Avatar, Button, Card, Input, PageLayout } from '../components/ui';
+import {
+  InfoIcon,
+  LockClosedIcon,
+  UserIcon,
+  WalletIcon,
+} from '../components/icons';
+import {
+  Avatar,
+  Button,
+  Card,
+  Input,
+  PageLayout,
+  Select,
+} from '../components/ui';
 import { WhatsNewModal } from '../components/WhatsNewModal';
 import { useProfileData } from '../hooks/user/useProfileData';
+import { type Currency, CURRENCY_OPTIONS } from '../types/currency';
 import { APP_VERSION } from '../utils/appVersion';
 import { getAvatarData } from '../utils/getAvatarData';
 
@@ -11,11 +24,14 @@ export function Profile() {
   const [isWhatsNewOpen, setIsWhatsNewOpen] = useState(false);
   const {
     confirmPassword,
+    currency,
+    currencySaving,
     email,
     fullName,
     isNameUnchanged,
     newPassword,
     onConfirmPasswordChange,
+    onCurrencyChange,
     onFullNameChange,
     onNewPasswordChange,
     onPasswordSubmit,
@@ -91,6 +107,38 @@ export function Profile() {
             </Button>
           </div>
         </form>
+      </Card>
+
+      <Card className="p-4 sm:p-6">
+        <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">
+          <div className="bg-bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded">
+            <span className="text-text-secondary h-4 w-4">
+              <WalletIcon />
+            </span>
+          </div>
+          <div>
+            <h2 className="text-text-primary text-sm font-semibold">
+              Preferences
+            </h2>
+            <p className="text-text-secondary text-xs">
+              How amounts are shown across the app
+            </p>
+          </div>
+        </div>
+
+        <Select
+          id="currency"
+          label="Currency"
+          options={CURRENCY_OPTIONS}
+          value={currency}
+          disabled={currencySaving}
+          onChange={(event) => onCurrencyChange(event.target.value as Currency)}
+        />
+
+        <p className="text-text-tertiary mt-1 text-xs">
+          This changes how amounts are displayed. It does not convert existing
+          amounts.
+        </p>
       </Card>
 
       <Card className="p-4 sm:p-6">

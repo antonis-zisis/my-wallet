@@ -134,7 +134,7 @@ export function ReportList({
 
                   <MoneyAmount
                     amount={netBalance}
-                    currency=""
+                    showCurrency={false}
                     sign={netBalance >= 0 ? '+' : ''}
                     className={`inline-block min-w-20 text-right text-sm font-medium tabular-nums ${
                       netBalance >= 0

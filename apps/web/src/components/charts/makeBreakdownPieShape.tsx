@@ -1,6 +1,6 @@
 import { type PieSectorShapeProps, Sector } from 'recharts';
 
-import { formatMoneyOrMask } from '../../utils/formatMoney';
+import { type MoneyFormatter } from '../../hooks/useMoneyFormatter';
 
 const RADIAN = Math.PI / 180;
 
@@ -11,13 +11,13 @@ type ChartDataItem = {
 };
 
 type BreakdownPieShapeOptions = {
-  isAmountsHidden: boolean;
+  formatAmount: MoneyFormatter;
   isCompact: boolean;
   labelColor: string;
 };
 
 export function makeBreakdownPieShape({
-  isAmountsHidden,
+  formatAmount,
   isCompact,
   labelColor,
 }: BreakdownPieShapeOptions) {
@@ -50,7 +50,7 @@ export function makeBreakdownPieShape({
     }
 
     const item = payload as unknown as ChartDataItem;
-    const formattedValue = `${formatMoneyOrMask(value ?? 0, isAmountsHidden)} €`;
+    const formattedValue = formatAmount(value ?? 0);
     const formattedPercent = `(${((percent ?? 0) * 100).toFixed(1)}%)`;
 
     const activeSectors = (

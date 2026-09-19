@@ -1,6 +1,5 @@
-import { usePrivacy } from '../../contexts/PrivacyContext';
+import { useMoneyFormatter } from '../../hooks/useMoneyFormatter';
 import { formatDate } from '../../utils/formatDate';
-import { formatMoneyOrMask } from '../../utils/formatMoney';
 import { InfoIcon } from '../icons';
 import { Card, Skeleton, Tooltip } from '../ui';
 
@@ -82,7 +81,7 @@ export function SubscriptionCostSummary({
   totalMonthlyCost,
   totalYearlyCost,
 }: SubscriptionCostSummaryProps) {
-  const { isAmountsHidden } = usePrivacy();
+  const formatAmount = useMoneyFormatter();
   const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
     new Date()
   );
@@ -93,27 +92,27 @@ export function SubscriptionCostSummary({
         <Tile
           label="Monthly cost"
           loading={loading}
-          primary={`${formatMoneyOrMask(totalMonthlyCost, isAmountsHidden)} €`}
+          primary={formatAmount(totalMonthlyCost)}
         />
 
         <Tile
           label="Yearly cost"
           loading={loading}
-          primary={`${formatMoneyOrMask(totalYearlyCost, isAmountsHidden)} €`}
+          primary={formatAmount(totalYearlyCost)}
         />
 
         <Tile
           className="col-span-2 sm:col-span-1"
           label={
             mostExpensive
-              ? `Most expensive · ${formatMoneyOrMask(mostExpensive.monthlyCost, isAmountsHidden)} € / mo`
+              ? `Most expensive · ${formatAmount(mostExpensive.monthlyCost)} / mo`
               : 'Most expensive'
           }
           loading={loading}
           primary={mostExpensive ? mostExpensive.name : '—'}
           tooltip={
             mostExpensive
-              ? `Yearly cost: ${formatMoneyOrMask(mostExpensive.monthlyCost * 12, isAmountsHidden)} €`
+              ? `Yearly cost: ${formatAmount(mostExpensive.monthlyCost * 12)}`
               : undefined
           }
         />
@@ -129,7 +128,7 @@ export function SubscriptionCostSummary({
           loading={loading}
           primary={
             nextRenewal
-              ? `${nextRenewal.name} · ${formatMoneyOrMask(nextRenewal.amount, isAmountsHidden)} €`
+              ? `${nextRenewal.name} · ${formatAmount(nextRenewal.amount)}`
               : '—'
           }
           secondary={nextRenewal ? undefined : 'No upcoming renewals'}
@@ -140,7 +139,7 @@ export function SubscriptionCostSummary({
           loading={loading}
           primary={
             renewingThisMonthTotal > 0
-              ? `${formatMoneyOrMask(renewingThisMonthTotal, isAmountsHidden)} €`
+              ? formatAmount(renewingThisMonthTotal)
               : '—'
           }
           secondary={renewingThisMonthTotal > 0 ? undefined : 'Nothing due'}

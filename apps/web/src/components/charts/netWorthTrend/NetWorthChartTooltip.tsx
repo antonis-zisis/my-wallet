@@ -1,6 +1,5 @@
-import { usePrivacy } from '../../../contexts/PrivacyContext';
+import { useMoneyFormatter } from '../../../hooks/useMoneyFormatter';
 import { formatDate } from '../../../utils/formatDate';
-import { formatMoneyOrMask } from '../../../utils/formatMoney';
 
 type NetWorthTooltipPayloadEntry = {
   payload: {
@@ -20,7 +19,7 @@ export function NetWorthChartTooltip({
   active,
   payload,
 }: NetWorthChartTooltipProps) {
-  const { isAmountsHidden } = usePrivacy();
+  const formatAmount = useMoneyFormatter();
 
   if (!active || !payload?.length) {
     return null;
@@ -36,8 +35,7 @@ export function NetWorthChartTooltip({
       <p className="text-text-secondary text-xs">{formatDate(snapshotDate)}</p>
 
       <p className="text-text-primary mt-1 text-xs font-semibold">
-        {sign}
-        {formatMoneyOrMask(Math.abs(netWorth), isAmountsHidden)} €
+        {formatAmount(Math.abs(netWorth), { sign })}
       </p>
     </div>
   );

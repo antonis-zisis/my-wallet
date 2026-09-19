@@ -1,25 +1,21 @@
-import { usePrivacy } from '../../contexts/PrivacyContext';
-import { formatMoney } from '../../utils/formatMoney';
+import { useMoneyFormatter } from '../../hooks/useMoneyFormatter';
 
 type MoneyAmountProps = {
   amount: number;
   className?: string;
-  currency?: string;
+  showCurrency?: boolean;
   sign?: string;
 };
 
 export function MoneyAmount({
   amount,
   className,
-  currency = '€',
+  showCurrency = true,
   sign = '',
 }: MoneyAmountProps) {
-  const { isAmountsHidden } = usePrivacy();
+  const formatAmount = useMoneyFormatter();
 
-  const suffix = currency ? ` ${currency}` : '';
-  const text = isAmountsHidden
-    ? `***${suffix}`
-    : `${sign}${formatMoney(amount)}${suffix}`;
+  const text = formatAmount(amount, { showCurrency, sign });
 
   if (className) {
     return <span className={className}>{text}</span>;

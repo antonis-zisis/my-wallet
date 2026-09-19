@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useCurrency } from '../../contexts/CurrencyContext';
 import {
   BILLING_CYCLE_OPTIONS,
   BillingCycle,
@@ -27,6 +28,7 @@ export function ResumeSubscriptionModal({
   onSubmit,
   subscription,
 }: ResumeSubscriptionModalProps) {
+  const { symbol } = useCurrency();
   const [amount, setAmount] = useState('');
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('MONTHLY');
   const [startDate, setStartDate] = useState('');
@@ -82,7 +84,7 @@ export function ResumeSubscriptionModal({
 
       <div className="space-y-4">
         <Input
-          label="Amount"
+          label={`Amount (${symbol})`}
           id="resume-subscription-amount"
           type="number"
           placeholder="9.99"
