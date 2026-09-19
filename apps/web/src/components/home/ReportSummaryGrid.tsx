@@ -1,3 +1,5 @@
+import { Link } from 'react-router';
+
 import { Report } from '../../types/report';
 import { Card, Skeleton } from '../ui';
 import { ReportCard } from './ReportCard';
@@ -50,9 +52,12 @@ export function ReportSummaryGrid({
         <Card>
           <p className="text-text-secondary text-sm font-medium">Current</p>
 
-          <p className="text-text-tertiary mt-2 text-sm">
-            Add a report to view summary
-          </p>
+          <Link
+            to="/reports?new=1"
+            className="text-brand-600 dark:text-brand-400 mt-2 inline-block text-sm font-medium hover:underline"
+          >
+            Add a report
+          </Link>
         </Card>
       )}
 
@@ -64,9 +69,12 @@ export function ReportSummaryGrid({
         <Card>
           <p className="text-text-secondary text-sm font-medium">Previous</p>
 
-          <p className="text-text-tertiary mt-2 text-sm">
-            Add a report to view summary
-          </p>
+          <Link
+            to="/reports?new=1"
+            className="text-brand-600 dark:text-brand-400 mt-2 inline-block text-sm font-medium hover:underline"
+          >
+            Add a report
+          </Link>
         </Card>
       )}
     </div>

@@ -20,6 +20,7 @@ import {
   PAGE_SIZE,
   useSubscriptionsData,
 } from '../hooks/subscriptions/useSubscriptionsData';
+import { useOpenOnParam } from '../hooks/useOpenOnParam';
 import {
   SUBSCRIPTION_SORT_OPTIONS,
   SubscriptionSortOption,
@@ -74,6 +75,8 @@ export function Subscriptions() {
     totalMonthlyCost,
     totalYearlyCost,
   } = useSubscriptionsData();
+
+  useOpenOnParam(onOpenCreate);
 
   const subtitle = activeLoading
     ? 'Track recurring payments in one place.'

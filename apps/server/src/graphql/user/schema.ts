@@ -5,8 +5,18 @@ export const userTypeDefs = `#graphql
     email: String!
     fullName: String
     currency: String!
+    onboardingCompletedAt: String
+    onboardingProgress: OnboardingProgress!
     createdAt: String!
     updatedAt: String!
+  }
+
+  type OnboardingProgress {
+    hasFullName: Boolean!
+    hasTransaction: Boolean!
+    hasSubscription: Boolean!
+    hasContract: Boolean!
+    hasNetWorthSnapshot: Boolean!
   }
 
   input UpdateUserInput {
@@ -20,5 +30,7 @@ export const userTypeDefs = `#graphql
 
   extend type Mutation {
     updateMe(input: UpdateUserInput!): User!
+    completeOnboarding: User!
+    resetOnboarding: User!
   }
 `;

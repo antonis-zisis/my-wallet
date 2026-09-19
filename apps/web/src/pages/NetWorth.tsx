@@ -14,6 +14,7 @@ import {
 } from '../components/ui';
 import { PAGE_SIZE, useNetWorthData } from '../hooks/netWorth/useNetWorthData';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useOpenOnParam } from '../hooks/useOpenOnParam';
 import { NET_WORTH_SORT_OPTIONS, NetWorthSortOption } from '../types/netWorth';
 
 export function NetWorth() {
@@ -45,6 +46,8 @@ export function NetWorth() {
     trendLoading,
     trendSnapshots,
   } = useNetWorthData();
+
+  useOpenOnParam(onOpenCreate);
 
   return (
     <>
@@ -175,6 +178,7 @@ export function NetWorth() {
           isSearching={!!search}
           loading={loading}
           snapshots={snapshots}
+          onAdd={onOpenCreate}
         />
 
         {!loading && !error && totalCount > 0 && (

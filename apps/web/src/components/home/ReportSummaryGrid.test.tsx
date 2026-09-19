@@ -67,7 +67,9 @@ describe('ReportSummaryGrid', () => {
 
   it('shows placeholder text when no current report and not loading', () => {
     renderGrid({ currentLoading: false, currentReport: undefined });
-    expect(screen.getAllByText('Add a report to view summary')).toHaveLength(2);
+    const links = screen.getAllByRole('link', { name: 'Add a report' });
+    expect(links).toHaveLength(2);
+    expect(links[0]).toHaveAttribute('href', '/reports?new=1');
   });
 
   it('shows report card when current report is provided', () => {

@@ -3,8 +3,18 @@ import { GraphQLError } from 'graphql';
 import prisma from '../../lib/prisma';
 import { parseInput } from '../../lib/validate';
 import { UpdateUserInput } from './inputSchemas';
+import { getOnboardingProgress } from './lib/getOnboardingProgress';
+
+type UserParent = {
+  fullName: string | null;
+  supabaseId: string;
+};
 
 export const userResolvers = {
+  User: {
+    onboardingProgress: (parent: UserParent) => getOnboardingProgress(parent),
+  },
+
   Query: {
     me: async (
       _parent: unknown,
@@ -48,6 +58,28 @@ export const userResolvers = {
           }),
           ...(data.currency !== undefined && { currency: data.currency }),
         },
+      });
+    },
+
+    completeOnboarding: async (
+      _parent: unknown,
+      _args: unknown,
+      context: { userId: string }
+    ) => {
+      return prisma.user.update({
+        where: { supabaseId: context.userId },
+        data: { onboardingCompletedAt: new Date() },
+      });
+    },
+
+    resetOnboarding: async (
+      _parent: unknown,
+      _args: unknown,
+      context: { userId: string }
+    ) => {
+      return prisma.user.update({
+        where: { supabaseId: context.userId },
+        data: { onboardingCompletedAt: null },
       });
     },
   },

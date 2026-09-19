@@ -1,14 +1,31 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { MockedProvider } from '../test/apollo-test-utils';
+import { makeUser } from '../test/fixtures';
 import { homeMocks } from '../test/fixtures/home';
 import { makeNetWorthSnapshot } from '../test/fixtures/netWorth';
 import { makeReport, makeTransaction } from '../test/fixtures/report';
 import { makeSubscription } from '../test/fixtures/subscription';
 import { Home } from './Home';
+
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: () => ({
+    showSuccess: vi.fn(),
+    showError: vi.fn(),
+    showInfo: vi.fn(),
+  }),
+}));
+
+vi.mock('../contexts/UserContext', () => ({
+  useUser: () => ({
+    user: makeUser(),
+    loading: false,
+    updateUser: vi.fn(),
+  }),
+}));
 
 function renderHome(mocks: ReturnType<typeof homeMocks>) {
   return render(
