@@ -2,8 +2,13 @@ import { act, renderHook } from '@testing-library/react';
 import type { SubmitEvent } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { MockedProvider } from '../../test/apollo-test-utils';
 import { makeUser } from '../../test/fixtures';
 import { useProfileData } from './useProfileData';
+
+function renderProfileHook() {
+  return renderHook(() => useProfileData(), { wrapper: MockedProvider });
+}
 
 const mockUpdateUser = vi.fn();
 const mockUpdatePassword = vi.fn();
@@ -46,27 +51,27 @@ beforeEach(() => {
 describe('useProfileData', () => {
   describe('initial state', () => {
     it('populates fullName and email from user context', () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       expect(result.current.fullName).toBe('John Doe');
       expect(result.current.email).toBe('test@example.com');
     });
 
     it('sets isNameUnchanged to true initially', () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       expect(result.current.isNameUnchanged).toBe(true);
     });
 
     it('starts not saving', () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       expect(result.current.profileSaving).toBe(false);
       expect(result.current.passwordSaving).toBe(false);
     });
 
     it('starts with empty password fields', () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       expect(result.current.newPassword).toBe('');
       expect(result.current.confirmPassword).toBe('');
@@ -75,7 +80,7 @@ describe('useProfileData', () => {
 
   describe('onFullNameChange', () => {
     it('updates fullName', () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onFullNameChange({
@@ -87,7 +92,7 @@ describe('useProfileData', () => {
     });
 
     it('sets isNameUnchanged false when name differs', () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onFullNameChange({
@@ -99,7 +104,7 @@ describe('useProfileData', () => {
     });
 
     it('sets isNameUnchanged true when name is restored to original', () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onFullNameChange({
@@ -117,7 +122,7 @@ describe('useProfileData', () => {
     });
 
     it('treats whitespace-only difference as unchanged', () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onFullNameChange({
@@ -132,7 +137,7 @@ describe('useProfileData', () => {
   describe('onProfileSubmit', () => {
     it('calls updateUser with trimmed fullName on success', async () => {
       mockUpdateUser.mockResolvedValueOnce(undefined);
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onFullNameChange({
@@ -150,7 +155,7 @@ describe('useProfileData', () => {
 
     it('shows success toast after successful update', async () => {
       mockUpdateUser.mockResolvedValueOnce(undefined);
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onFullNameChange({
@@ -168,7 +173,7 @@ describe('useProfileData', () => {
 
     it('shows error toast when updateUser throws', async () => {
       mockUpdateUser.mockRejectedValueOnce(new Error('network error'));
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onFullNameChange({
@@ -187,7 +192,7 @@ describe('useProfileData', () => {
 
   describe('onPasswordSubmit', () => {
     it('shows error toast when passwords do not match', async () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onNewPasswordChange({
@@ -207,7 +212,7 @@ describe('useProfileData', () => {
     });
 
     it('shows error toast when password is too short', async () => {
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onNewPasswordChange({
@@ -230,7 +235,7 @@ describe('useProfileData', () => {
 
     it('calls updatePassword and shows success toast on valid input', async () => {
       mockUpdatePassword.mockResolvedValueOnce({ error: null });
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onNewPasswordChange({
@@ -251,7 +256,7 @@ describe('useProfileData', () => {
 
     it('clears password fields after successful change', async () => {
       mockUpdatePassword.mockResolvedValueOnce({ error: null });
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onNewPasswordChange({
@@ -275,7 +280,7 @@ describe('useProfileData', () => {
       mockUpdatePassword.mockResolvedValueOnce({
         error: { message: 'Invalid password' },
       });
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onNewPasswordChange({
@@ -296,7 +301,7 @@ describe('useProfileData', () => {
 
     it('shows error toast when updatePassword throws', async () => {
       mockUpdatePassword.mockRejectedValueOnce(new Error('network error'));
-      const { result } = renderHook(() => useProfileData());
+      const { result } = renderProfileHook();
 
       act(() => {
         result.current.onNewPasswordChange({

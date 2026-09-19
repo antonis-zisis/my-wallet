@@ -1,6 +1,7 @@
 import { MockLink } from '@apollo/client/testing';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
+import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const showSuccess = vi.fn();
@@ -106,7 +107,9 @@ const refetchAfterCreateMock: MockLink.MockedResponse = {
 const createWrapper =
   (mocks: Array<MockLink.MockedResponse>) =>
   ({ children }: { children: ReactNode }) => (
-    <MockedProvider mocks={mocks}>{children}</MockedProvider>
+    <MockedProvider mocks={mocks}>
+      <MemoryRouter>{children}</MemoryRouter>
+    </MockedProvider>
   );
 
 describe('useReportsData', () => {

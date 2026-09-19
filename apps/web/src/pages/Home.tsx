@@ -4,8 +4,11 @@ import { IncomeExpensesSection } from '../components/home/IncomeExpensesSection'
 import { NetWorthSummaryCard } from '../components/home/NetWorthSummaryCard';
 import { ReportSummaryGrid } from '../components/home/ReportSummaryGrid';
 import { SubscriptionsSection } from '../components/home/SubscriptionsSection';
+import { GettingStartedCard } from '../components/onboarding/GettingStartedCard';
+import { WelcomeModal } from '../components/onboarding/WelcomeModal';
 import { Divider, PageLayout } from '../components/ui';
 import { useHomeData } from '../hooks/home/useHomeData';
+import { useOnboardingData } from '../hooks/onboarding/useOnboardingData';
 
 export function Home() {
   const {
@@ -16,6 +19,7 @@ export function Home() {
     currentLoading,
     currentReport,
     expiringContracts,
+    hasContracts,
     lastSnapshot,
     netWorthLoading,
     previousLoading,
@@ -28,55 +32,92 @@ export function Home() {
     totalReportsCount,
   } = useHomeData();
 
+  const {
+    completedCount,
+    initialCurrency,
+    initialFullName,
+    isChecklistVisible,
+    isSavingWelcome,
+    isWelcomeOpen,
+    onCloseWelcome,
+    onDismiss,
+    onSaveWelcome,
+    steps,
+    totalCount,
+  } = useOnboardingData();
+
   return (
-    <PageLayout className="space-y-10">
-      <section>
-        <ReportSummaryGrid
-          currentLoading={currentLoading}
-          currentReport={currentReport}
-          previousLoading={previousLoading}
-          previousReport={previousReport}
-          reportsLoading={reportsLoading}
-          totalCount={totalReportsCount}
-        />
+    <>
+      <PageLayout className="space-y-10">
+        {isChecklistVisible && (
+          <section>
+            <GettingStartedCard
+              completedCount={completedCount}
+              steps={steps}
+              totalCount={totalCount}
+              onDismiss={onDismiss}
+            />
+          </section>
+        )}
 
-        <ErrorBoundary compact>
-          <IncomeExpensesSection
-            loading={summaryLoading}
-            reports={chartReports}
+        <section>
+          <ReportSummaryGrid
+            currentLoading={currentLoading}
+            currentReport={currentReport}
+            previousLoading={previousLoading}
+            previousReport={previousReport}
+            reportsLoading={reportsLoading}
+            totalCount={totalReportsCount}
           />
-        </ErrorBoundary>
-      </section>
 
-      <Divider />
+          <ErrorBoundary compact>
+            <IncomeExpensesSection
+              loading={summaryLoading}
+              reports={chartReports}
+            />
+          </ErrorBoundary>
+        </section>
 
-      <section>
-        <SubscriptionsSection
-          currentIncome={currentIncome}
-          loading={subscriptionsLoading}
-          subscriptions={activeSubscriptions}
-        />
-      </section>
+        <Divider />
 
-      <Divider />
+        <section>
+          <SubscriptionsSection
+            currentIncome={currentIncome}
+            loading={subscriptionsLoading}
+            subscriptions={activeSubscriptions}
+          />
+        </section>
 
-      <section>
-        <ContractsExpiringSoonCard
-          contracts={expiringContracts}
-          loading={contractsLoading}
-        />
-      </section>
+        <Divider />
 
-      <Divider />
+        <section>
+          <ContractsExpiringSoonCard
+            contracts={expiringContracts}
+            hasContracts={hasContracts}
+            loading={contractsLoading}
+          />
+        </section>
 
-      <section>
-        <NetWorthSummaryCard
-          loading={netWorthLoading}
-          previousSnapshot={previousSnapshot}
-          recentSnapshots={recentSnapshots}
-          snapshot={lastSnapshot}
-        />
-      </section>
-    </PageLayout>
+        <Divider />
+
+        <section>
+          <NetWorthSummaryCard
+            loading={netWorthLoading}
+            previousSnapshot={previousSnapshot}
+            recentSnapshots={recentSnapshots}
+            snapshot={lastSnapshot}
+          />
+        </section>
+      </PageLayout>
+
+      <WelcomeModal
+        initialCurrency={initialCurrency}
+        initialFullName={initialFullName}
+        isOpen={isWelcomeOpen}
+        isSaving={isSavingWelcome}
+        onClose={onCloseWelcome}
+        onSubmit={onSaveWelcome}
+      />
+    </>
   );
 }

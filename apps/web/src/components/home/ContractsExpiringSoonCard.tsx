@@ -6,6 +6,7 @@ import { ChevronDownIcon } from '../icons';
 import { Badge, Card, Skeleton } from '../ui';
 
 type ContractsExpiringSoonCardProps = {
+  hasContracts: boolean;
   loading: boolean;
   contracts: Array<ExpiringContract>;
 };
@@ -24,18 +25,24 @@ function formatCountdown(days: number): string {
   return `expires in ${days} days`;
 }
 
-function EmptyState() {
+function EmptyState({ hasContracts }: { hasContracts: boolean }) {
   return (
     <div className="border-border flex flex-col items-center justify-center gap-3 rounded border-2 border-dashed py-10 text-center">
       <p className="text-text-secondary text-sm font-medium">
-        No contracts expiring soon
+        {hasContracts ? 'No contracts expiring soon' : 'No contracts yet'}
       </p>
 
+      {!hasContracts && (
+        <p className="text-text-tertiary text-xs">
+          Track a contract to hear about it before it expires.
+        </p>
+      )}
+
       <Link
-        to="/contracts"
+        to={hasContracts ? '/contracts' : '/contracts?new=1'}
         className="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:underline"
       >
-        Manage contracts
+        {hasContracts ? 'Manage contracts' : 'Add a contract'}
       </Link>
     </div>
   );
@@ -43,6 +50,7 @@ function EmptyState() {
 
 export function ContractsExpiringSoonCard({
   contracts,
+  hasContracts,
   loading,
 }: ContractsExpiringSoonCardProps) {
   const [isOpen, setIsOpen] = useLocalStorage(
@@ -88,7 +96,7 @@ export function ContractsExpiringSoonCard({
                 <Skeleton className="mt-2 h-4 w-2/3" />
               </>
             ) : contracts.length === 0 ? (
-              <EmptyState />
+              <EmptyState hasContracts={hasContracts} />
             ) : (
               <>
                 <ul className="divide-border divide-y">

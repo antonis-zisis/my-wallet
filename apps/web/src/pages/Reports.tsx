@@ -11,6 +11,7 @@ import {
   Select,
 } from '../components/ui';
 import { PAGE_SIZE, useReportsData } from '../hooks/reports/useReportsData';
+import { useOpenOnParam } from '../hooks/useOpenOnParam';
 import { REPORT_SORT_OPTIONS, ReportSortOption } from '../types/report';
 
 export function Reports() {
@@ -32,6 +33,8 @@ export function Reports() {
     totalCount,
     totalPages,
   } = useReportsData();
+
+  useOpenOnParam(onOpenModal);
 
   return (
     <>

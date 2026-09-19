@@ -66,6 +66,7 @@ export function useHomeData() {
   return {
     activeSubscriptions,
     contractsLoading,
+    hasContracts: (contractsData?.contracts.totalCount ?? 0) > 0,
     expiringContracts,
     chartReports: (summaryData?.reports.items ?? []).filter(
       (report) => (report.transactions?.length ?? 0) > 0

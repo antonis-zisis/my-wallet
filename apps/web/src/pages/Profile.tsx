@@ -36,6 +36,8 @@ export function Profile() {
     onNewPasswordChange,
     onPasswordSubmit,
     onProfileSubmit,
+    onReplayOnboarding,
+    onboardingResetting,
     passwordSaving,
     profileSaving,
   } = useProfileData();
@@ -209,13 +211,19 @@ export function Profile() {
             <p className="text-text-secondary text-sm font-medium">Version</p>
             <p className="text-text-tertiary text-xs">v{APP_VERSION}</p>
           </div>
-          <Button
-            className="shrink-0"
-            variant="secondary"
-            onClick={() => setIsWhatsNewOpen(true)}
-          >
-            What's New
-          </Button>
+          <div className="flex shrink-0 flex-wrap justify-end gap-2">
+            <Button
+              variant="secondary"
+              isLoading={onboardingResetting}
+              onClick={onReplayOnboarding}
+            >
+              Replay onboarding
+            </Button>
+
+            <Button variant="secondary" onClick={() => setIsWhatsNewOpen(true)}>
+              What's New
+            </Button>
+          </div>
         </div>
 
         <p className="text-text-tertiary border-border mt-5 border-t pt-4 text-xs">
