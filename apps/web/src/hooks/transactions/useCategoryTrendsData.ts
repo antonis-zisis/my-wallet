@@ -5,6 +5,7 @@ import { GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH } from '../../graphql/transactions
 import { ExpenseCategoryTotalsData } from '../../types/transaction';
 import { useLocalStorage } from '../useLocalStorage';
 import { buildCategoryTrends } from './selectors/buildCategoryTrends';
+import { buildSpendingInsights } from './selectors/buildSpendingInsights';
 
 export const WINDOW_OPTIONS = [3, 6, 9, 12] as const;
 
@@ -35,10 +36,22 @@ export function useCategoryTrendsData() {
     [totals, windowMonths]
   );
 
+  const {
+    baselineMonthCount,
+    insights,
+    month: insightsMonth,
+  } = useMemo(
+    () => buildSpendingInsights({ now: new Date(), totals }),
+    [totals]
+  );
+
   return {
     currentMonth: months[months.length - 1] ?? null,
     error: !!error,
     hasEnoughHistory,
+    insights,
+    insightsBaselineMonths: baselineMonthCount,
+    insightsMonth,
     loading,
     onClearCategory: () => setSelectedCategory(null),
     onSelectCategory: setSelectedCategory,

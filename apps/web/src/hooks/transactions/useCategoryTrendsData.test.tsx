@@ -28,6 +28,28 @@ const success: MockLink.MockedResponse = {
   result: { data: { expenseCategoryTotalsByMonth: totals } },
 };
 
+const withHistory: MockLink.MockedResponse = {
+  request,
+  result: {
+    data: {
+      expenseCategoryTotalsByMonth: [
+        ...['2026-02', '2026-03', '2026-04', '2026-05', '2026-06'].map(
+          (month) => ({ category: 'Dining Out', month, total: 180 })
+        ),
+        ...[
+          '2026-02',
+          '2026-03',
+          '2026-04',
+          '2026-05',
+          '2026-06',
+          '2026-07',
+        ].map((month) => ({ category: 'Rent', month, total: 800 })),
+        { category: 'Dining Out', month: '2026-07', total: 310 },
+      ],
+    },
+  },
+};
+
 const renderTrends = (mocks: Array<MockLink.MockedResponse>) =>
   renderHook(() => useCategoryTrendsData(), {
     wrapper: ({ children }: { children: ReactNode }) => (
@@ -96,5 +118,21 @@ describe('useCategoryTrendsData', () => {
     act(() => result.current.onWindowChange(3));
 
     expect(result.current.trends[1].points).toHaveLength(3);
+  });
+
+  it('surfaces what changed in the last complete month', async () => {
+    const { result } = renderTrends([withHistory]);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.insightsMonth).toBe('2026-07');
+    expect(result.current.insightsBaselineMonths).toBe(5);
+    expect(result.current.insights).toHaveLength(1);
+    expect(result.current.insights[0]).toMatchObject({
+      baselineAverage: 180,
+      category: 'Dining Out',
+      direction: 'INCREASE',
+      total: 310,
+    });
   });
 });
