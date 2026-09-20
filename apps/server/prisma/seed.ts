@@ -69,7 +69,7 @@ async function main() {
               type: 'EXPENSE',
               amount: 1200,
               description: 'Monthly rent',
-              category: 'Housing',
+              category: 'Household',
               date: new Date('2026-03-01'),
             },
             {
@@ -77,7 +77,7 @@ async function main() {
               type: 'EXPENSE',
               amount: 180,
               description: 'Weekly groceries',
-              category: 'Food',
+              category: 'Groceries',
               date: new Date('2026-03-05'),
             },
             {
@@ -143,7 +143,7 @@ async function main() {
               type: 'EXPENSE',
               amount: 1200,
               description: 'Monthly rent',
-              category: 'Housing',
+              category: 'Household',
               date: new Date('2026-02-01'),
             },
             {
@@ -151,7 +151,7 @@ async function main() {
               type: 'EXPENSE',
               amount: 220,
               description: 'Weekly groceries',
-              category: 'Food',
+              category: 'Groceries',
               date: new Date('2026-02-07'),
             },
             {
@@ -167,7 +167,7 @@ async function main() {
               type: 'EXPENSE',
               amount: 120,
               description: 'Flight booking',
-              category: 'Travel',
+              category: 'Transport',
               date: new Date('2026-02-20'),
             },
           ],
