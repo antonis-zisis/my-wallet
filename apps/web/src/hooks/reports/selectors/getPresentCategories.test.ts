@@ -7,16 +7,16 @@ describe('getPresentCategories', () => {
   it('returns categories that are present in transactions of the given type', () => {
     const transactions = [
       makeTransaction({ type: 'EXPENSE', category: 'Groceries' }),
-      makeTransaction({ type: 'EXPENSE', category: 'Rent' }),
+      makeTransaction({ type: 'EXPENSE', category: 'Household' }),
     ];
 
     const result = getPresentCategories(
-      ['Groceries', 'Rent', 'Utilities'],
+      ['Groceries', 'Household', 'Utilities'],
       transactions,
       'EXPENSE'
     );
 
-    expect(result).toEqual(['Groceries', 'Rent']);
+    expect(result).toEqual(['Groceries', 'Household']);
   });
 
   it('ignores transactions of the wrong type', () => {
@@ -31,7 +31,7 @@ describe('getPresentCategories', () => {
   });
 
   it('returns an empty array when no transactions match', () => {
-    const result = getPresentCategories(['Rent'], [], 'EXPENSE');
+    const result = getPresentCategories(['Household'], [], 'EXPENSE');
 
     expect(result).toEqual([]);
   });

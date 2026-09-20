@@ -9,7 +9,7 @@ function makeInsight(
 ): SpendingInsight {
   return {
     baselineAverage: 180,
-    category: 'Dining Out',
+    category: 'Dining & Takeaway',
     difference: 130,
     direction: 'INCREASE',
     percentageChange: 130 / 180,
@@ -39,7 +39,7 @@ describe('SpendingInsights', () => {
   it('describes a category that rose above its average', () => {
     renderInsights([makeInsight()]);
 
-    expect(screen.getByText('Dining Out')).toBeInTheDocument();
+    expect(screen.getByText('Dining & Takeaway')).toBeInTheDocument();
     expect(screen.getByText(/72% above your average of/)).toBeInTheDocument();
   });
 
@@ -60,7 +60,7 @@ describe('SpendingInsights', () => {
     renderInsights([
       makeInsight({
         baselineAverage: 0,
-        category: 'Insurance',
+        category: 'Kids',
         difference: 300,
         percentageChange: null,
         total: 300,

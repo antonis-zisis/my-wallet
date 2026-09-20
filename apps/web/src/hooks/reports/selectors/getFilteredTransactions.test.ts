@@ -7,7 +7,7 @@ describe('getFilteredTransactions', () => {
   const transactions = [
     makeTransaction({ id: '1', type: 'INCOME', category: 'Salary' }),
     makeTransaction({ id: '2', type: 'EXPENSE', category: 'Groceries' }),
-    makeTransaction({ id: '3', type: 'EXPENSE', category: 'Rent' }),
+    makeTransaction({ id: '3', type: 'EXPENSE', category: 'Household' }),
   ];
 
   it('returns all transactions when type=All and category=All', () => {

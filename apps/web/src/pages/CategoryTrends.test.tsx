@@ -49,8 +49,8 @@ const success: MockLink.MockedResponse = {
       expenseCategoryTotalsByMonth: [
         { category: 'Groceries', month: '2026-07', total: 380 },
         { category: 'Groceries', month: '2026-08', total: 412 },
-        { category: 'Rent', month: '2026-07', total: 800 },
-        { category: 'Rent', month: '2026-08', total: 800 },
+        { category: 'Household', month: '2026-07', total: 800 },
+        { category: 'Household', month: '2026-08', total: 800 },
       ],
     },
   },
@@ -62,7 +62,7 @@ const withHistory: MockLink.MockedResponse = {
     data: {
       expenseCategoryTotalsByMonth: [
         ...['2026-02', '2026-03', '2026-04', '2026-05', '2026-06'].map(
-          (month) => ({ category: 'Dining Out', month, total: 180 })
+          (month) => ({ category: 'Dining & Takeaway', month, total: 180 })
         ),
         ...[
           '2026-02',
@@ -71,8 +71,8 @@ const withHistory: MockLink.MockedResponse = {
           '2026-05',
           '2026-06',
           '2026-07',
-        ].map((month) => ({ category: 'Rent', month, total: 800 })),
-        { category: 'Dining Out', month: '2026-07', total: 310 },
+        ].map((month) => ({ category: 'Household', month, total: 800 })),
+        { category: 'Dining & Takeaway', month: '2026-07', total: 310 },
       ],
     },
   },
@@ -128,7 +128,7 @@ describe('CategoryTrends', () => {
         result: {
           data: {
             expenseCategoryTotalsByMonth: [
-              { category: 'Rent', month: '2026-08', total: 800 },
+              { category: 'Household', month: '2026-08', total: 800 },
             ],
           },
         },
@@ -144,7 +144,7 @@ describe('CategoryTrends', () => {
     renderPage([success]);
 
     expect(await screen.findByText('Groceries')).toBeInTheDocument();
-    expect(screen.getByText('Rent')).toBeInTheDocument();
+    expect(screen.getByText('Household')).toBeInTheDocument();
     expect(screen.getByText('412,00 €')).toBeInTheDocument();
     expect(
       screen.getByText('Across all reports · Aug so far vs Jul')
@@ -162,7 +162,7 @@ describe('CategoryTrends', () => {
         screen.getByRole('button', { name: /All categories/ })
       ).toBeInTheDocument()
     );
-    expect(screen.queryByText('Rent')).not.toBeInTheDocument();
+    expect(screen.queryByText('Household')).not.toBeInTheDocument();
   });
 
   it('highlights what changed against the previous months', async () => {
@@ -181,7 +181,9 @@ describe('CategoryTrends', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     renderPage([withHistory]);
 
-    await user.click(await screen.findByRole('button', { name: /Dining Out/ }));
+    await user.click(
+      await screen.findByRole('button', { name: /Dining & Takeaway/ })
+    );
 
     await waitFor(() =>
       expect(

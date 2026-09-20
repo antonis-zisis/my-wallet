@@ -39,7 +39,7 @@ export function makeTransaction(
     type: 'EXPENSE',
     amount: 50,
     description: 'Coffee',
-    category: 'Dining Out',
+    category: 'Dining & Takeaway',
     date: '2025-06-15T00:00:00.000Z',
     createdById: null,
     createdAt: '2025-06-15T00:00:00.000Z',

@@ -53,13 +53,13 @@ describe('buildCategoryTrends', () => {
       totals: [
         { category: 'Vet bills', month: '2026-07', total: 10 },
         { category: 'Groceries', month: '2026-07', total: 40 },
-        { category: 'Rent', month: '2026-08', total: 800 },
+        { category: 'Household', month: '2026-08', total: 800 },
       ],
       windowMonths: 3,
     });
 
     expect(result.trends.map((tile) => tile.category)).toEqual([
-      'Rent',
+      'Household',
       'Groceries',
       'Vet bills',
     ]);
@@ -69,8 +69,8 @@ describe('buildCategoryTrends', () => {
     const result = buildCategoryTrends({
       now: NOW,
       totals: [
-        { category: 'Dining Out', month: '2026-07', total: 120 },
-        { category: 'Dining Out', month: '2026-08', total: 210 },
+        { category: 'Dining & Takeaway', month: '2026-07', total: 120 },
+        { category: 'Dining & Takeaway', month: '2026-08', total: 210 },
       ],
       windowMonths: 3,
     });
@@ -96,7 +96,7 @@ describe('buildCategoryTrends', () => {
     const result = buildCategoryTrends({
       now: NOW,
       totals: [
-        { category: 'Rent', month: '2026-01', total: 800 },
+        { category: 'Household', month: '2026-01', total: 800 },
         { category: 'Groceries', month: '2026-08', total: 55 },
       ],
       windowMonths: 2,
