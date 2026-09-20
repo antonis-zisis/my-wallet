@@ -9,6 +9,7 @@ import {
   CategoryTrendsWindowPicker,
   CategoryTrendsWindowPickerSkeleton,
 } from '../components/transactions/CategoryTrendsWindowPicker';
+import { SpendingInsights } from '../components/transactions/SpendingInsights';
 import { PageLayout } from '../components/ui';
 import { useCategoryTrendsData } from '../hooks/transactions/useCategoryTrendsData';
 import { formatMonth } from '../utils/formatMonth';
@@ -56,6 +57,9 @@ export function CategoryTrends() {
     currentMonth,
     error,
     hasEnoughHistory,
+    insights,
+    insightsBaselineMonths,
+    insightsMonth,
     loading,
     onClearCategory,
     onSelectCategory,
@@ -93,6 +97,18 @@ export function CategoryTrends() {
           />
         )}
       </div>
+
+      {!loading &&
+        !error &&
+        !selectedTrend &&
+        insightsMonth !== null &&
+        insights.length > 0 && (
+          <SpendingInsights
+            baselineMonths={insightsBaselineMonths}
+            insights={insights}
+            month={insightsMonth}
+          />
+        )}
 
       {loading && <CategoryTrendsSkeleton />}
 

@@ -56,6 +56,28 @@ const success: MockLink.MockedResponse = {
   },
 };
 
+const withHistory: MockLink.MockedResponse = {
+  request,
+  result: {
+    data: {
+      expenseCategoryTotalsByMonth: [
+        ...['2026-02', '2026-03', '2026-04', '2026-05', '2026-06'].map(
+          (month) => ({ category: 'Dining Out', month, total: 180 })
+        ),
+        ...[
+          '2026-02',
+          '2026-03',
+          '2026-04',
+          '2026-05',
+          '2026-06',
+          '2026-07',
+        ].map((month) => ({ category: 'Rent', month, total: 800 })),
+        { category: 'Dining Out', month: '2026-07', total: 310 },
+      ],
+    },
+  },
+};
+
 const renderPage = (mocks: Array<MockLink.MockedResponse>) =>
   render(
     <MemoryRouter>
@@ -141,5 +163,30 @@ describe('CategoryTrends', () => {
       ).toBeInTheDocument()
     );
     expect(screen.queryByText('Rent')).not.toBeInTheDocument();
+  });
+
+  it('highlights what changed against the previous months', async () => {
+    renderPage([withHistory]);
+
+    expect(
+      await screen.findByRole('heading', { name: /what changed in jul '26/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Against your previous 5 months')
+    ).toBeInTheDocument();
+    expect(screen.getByText(/72% above your average of/)).toBeInTheDocument();
+  });
+
+  it('hides the highlights while a single category is open', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    renderPage([withHistory]);
+
+    await user.click(await screen.findByRole('button', { name: /Dining Out/ }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('heading', { name: /what changed in/i })
+      ).not.toBeInTheDocument()
+    );
   });
 });
