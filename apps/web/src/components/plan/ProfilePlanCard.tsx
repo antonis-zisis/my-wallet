@@ -1,5 +1,7 @@
 import { Link } from 'react-router';
 
+import { useBillingPortal } from '../../hooks/billing/useBillingPortal';
+import { useBillingStatus } from '../../hooks/billing/useBillingStatus';
 import { usePlan } from '../../hooks/plan/usePlan';
 import { usePlanUsage } from '../../hooks/plan/usePlanUsage';
 import {
@@ -7,8 +9,9 @@ import {
   PLAN_USAGE_KEYS,
   type PlanLimitKey,
 } from '../../types/plan';
+import { formatDate } from '../../utils/formatDate';
 import { CreditCardIcon } from '../icons';
-import { Card } from '../ui';
+import { Button, Card } from '../ui';
 import { PlanBadge } from './PlanBadge';
 
 const USAGE_ROWS: Array<PlanLimitKey> = [
@@ -21,6 +24,9 @@ const USAGE_ROWS: Array<PlanLimitKey> = [
 export function ProfilePlanCard() {
   const { isPro, limitFor, plan } = usePlan();
   const { usage } = usePlanUsage();
+  const { canManageBilling, planCancelAtPeriodEnd, planRenewsAt } =
+    useBillingStatus();
+  const { isOpeningPortal, onManageBilling } = useBillingPortal();
 
   if (!plan) {
     return null;
@@ -78,12 +84,33 @@ export function ProfilePlanCard() {
         </dl>
       )}
 
-      <Link
-        to="/select-plan"
-        className="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:underline"
-      >
-        {isPro ? 'View plans' : 'Compare plans'}
-      </Link>
+      {isPro && planRenewsAt && (
+        <p className="text-text-secondary mb-4 text-sm">
+          {planCancelAtPeriodEnd
+            ? `Pro ends on ${formatDate(planRenewsAt)}. You keep every feature until then.`
+            : `Renews on ${formatDate(planRenewsAt)}.`}
+        </p>
+      )}
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Link
+          to="/select-plan"
+          className="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:underline"
+        >
+          {isPro ? 'View plans' : 'Compare plans'}
+        </Link>
+
+        {canManageBilling && (
+          <Button
+            variant="secondary"
+            size="sm"
+            isLoading={isOpeningPortal}
+            onClick={onManageBilling}
+          >
+            Manage billing
+          </Button>
+        )}
+      </div>
     </Card>
   );
 }

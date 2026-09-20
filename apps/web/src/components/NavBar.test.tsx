@@ -72,6 +72,7 @@ describe('NavBar', () => {
         supabaseId: 'supabase-1',
       }),
       loading: false,
+      refetchUser: vi.fn(),
       updateUser: vi.fn(),
     });
   });
@@ -120,6 +121,7 @@ describe('NavBar', () => {
         supabaseId: 'supabase-1',
       }),
       loading: false,
+      refetchUser: vi.fn(),
       updateUser: vi.fn(),
     });
 
@@ -132,6 +134,7 @@ describe('NavBar', () => {
     vi.mocked(useUser).mockReturnValue({
       user: null,
       loading: false,
+      refetchUser: vi.fn(),
       updateUser: vi.fn(),
     });
 
@@ -192,6 +195,7 @@ describe('NavBar', () => {
         supabaseId: 'supabase-1',
       }),
       loading: false,
+      refetchUser: vi.fn(),
       updateUser: vi.fn(),
     });
     await renderNavBar();

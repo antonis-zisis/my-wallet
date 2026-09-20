@@ -20,6 +20,11 @@ model User {
   fullName     String?       @map("full_name")
   currency     String        @default("EUR")
   plan         String?
+  planStatus   String?       @map("plan_status")
+  planRenewsAt DateTime?     @map("plan_renews_at")
+  planCancelAtPeriodEnd Boolean @default(false) @map("plan_cancel_at_period_end")
+  stripeCustomerId     String? @unique @map("stripe_customer_id")
+  stripeSubscriptionId String? @map("stripe_subscription_id")
   lastSeenAt   DateTime?     @map("last_seen_at")
   onboardingCompletedAt DateTime? @map("onboarding_completed_at")
   reportShares ReportShare[]
@@ -133,4 +138,12 @@ model Contract {
   updatedAt DateTime  @updatedAt @map("updated_at")
 
   @@map("contracts")
+}
+
+model StripeEvent {
+  id        String   @id
+  type      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("stripe_events")
 }

@@ -188,7 +188,15 @@ Environment files (`.env`) are encrypted using GPG for secure storage in the rep
 
 ### Optional variables
 
-- `ENABLE_SELF_SERVE_PLAN_SWITCH` (server): lets a user pick the Pro plan without paying. Defaults to on outside production and off in production, since there is no billing layer yet.
+- **Billing** (`apps/server/.env`): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID_MONTHLY`, `STRIPE_PRICE_ID_YEARLY`, `APP_URL`. Leave them unset and the app runs on the Free plan with the upgrade path hidden — nothing else breaks.
+
+### Stripe in local development
+
+```bash
+stripe listen --forward-to localhost:4000/webhooks/stripe
+```
+
+Copy the `whsec_…` secret it prints into `STRIPE_WEBHOOK_SECRET`, then use test card `4242 4242 4242 4242` at checkout. The webhook is the only thing that grants Pro, so without `stripe listen` running an upgrade never completes.
 
 ### Encrypt before committing (repo maintainer only)
 

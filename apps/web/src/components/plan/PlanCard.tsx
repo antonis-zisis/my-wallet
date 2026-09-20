@@ -9,20 +9,24 @@ type PlanCardRow = {
 type PlanCardProps = {
   ctaLabel: string;
   isCurrent: boolean;
+  isDisabled?: boolean;
   isRecommended?: boolean;
   isSelecting: boolean;
   onSelect: () => void;
   plan: Plan;
+  priceLabel?: string;
   rows: Array<PlanCardRow>;
 };
 
 export function PlanCard({
   ctaLabel,
   isCurrent,
+  isDisabled = false,
   isRecommended = false,
   isSelecting,
   onSelect,
   plan,
+  priceLabel,
   rows,
 }: PlanCardProps) {
   return (
@@ -37,7 +41,13 @@ export function PlanCard({
         {isCurrent && <Badge variant="success">Current plan</Badge>}
       </div>
 
-      <p className="text-text-secondary mb-4 text-sm">{PLAN_TAGLINES[plan]}</p>
+      <p className="text-text-secondary mb-2 text-sm">{PLAN_TAGLINES[plan]}</p>
+
+      {priceLabel && (
+        <p className="text-text-primary mb-4 text-lg font-semibold">
+          {priceLabel}
+        </p>
+      )}
 
       <dl className="mb-6 flex flex-col gap-2">
         {rows.map((row) => (
@@ -55,7 +65,7 @@ export function PlanCard({
 
       <Button
         className="mt-auto w-full"
-        disabled={isCurrent}
+        disabled={isCurrent || isDisabled}
         isLoading={isSelecting}
         variant={plan === 'PRO' ? 'primary' : 'secondary'}
         onClick={onSelect}

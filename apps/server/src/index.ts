@@ -12,6 +12,7 @@ import { connectDatabase, disconnectDatabase } from './lib/prisma';
 import { type AuthenticatedRequest, authMiddleware } from './middleware/auth';
 import { healthHandler } from './routes/health';
 import { statsHandler } from './routes/stats';
+import { stripeWebhookHandler } from './routes/stripeWebhook';
 
 const app: Express = express();
 const PORT = env.PORT;
@@ -58,6 +59,15 @@ async function startServer() {
 
   app.use(helmet());
   app.use(cors({ origin: allowedOrigins }));
+
+  // Stripe signs the raw body, so this route must parse before express.json()
+  // and stay outside authMiddleware — it is authenticated by that signature
+  app.post(
+    '/webhooks/stripe',
+    express.raw({ type: 'application/json' }),
+    stripeWebhookHandler
+  );
+
   app.use(express.json());
 
   app.get('/health', healthHandler);

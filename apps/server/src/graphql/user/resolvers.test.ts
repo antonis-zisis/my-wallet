@@ -4,10 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { makeUser } from '../../test/fixtures/users';
 import { userResolvers } from './resolvers';
 
-const envFlags = vi.hoisted(() => ({ ENABLE_SELF_SERVE_PLAN_SWITCH: true }));
-
-vi.mock('../../lib/env', () => ({ env: envFlags }));
-
 const USER_ID = 'supabase-user-1';
 const EMAIL = 'test@example.com';
 const CTX = { userId: USER_ID, email: EMAIL };
@@ -34,7 +30,6 @@ let prisma: typeof import('../../lib/prisma').default;
 beforeEach(async () => {
   vi.clearAllMocks();
   prisma = (await import('../../lib/prisma')).default;
-  envFlags.ENABLE_SELF_SERVE_PLAN_SWITCH = true;
 });
 
 describe('userResolvers', () => {
@@ -148,6 +143,19 @@ describe('userResolvers', () => {
       expect(entitlements.canShareReports).toBe(false);
     });
 
+    it('knows when the user has a billing account to manage', () => {
+      expect(
+        userResolvers.User.canManageBilling(
+          makeUser({ stripeCustomerId: null })
+        )
+      ).toBe(false);
+      expect(
+        userResolvers.User.canManageBilling(
+          makeUser({ stripeCustomerId: 'cus_123' })
+        )
+      ).toBe(true);
+    });
+
     it('resolves unlimited entitlements on Pro', () => {
       const entitlements = userResolvers.User.entitlements(
         makeUser({ plan: 'PRO' })
@@ -159,7 +167,8 @@ describe('userResolvers', () => {
   });
 
   describe('Mutation.selectPlan', () => {
-    it('stores the chosen plan', async () => {
+    it('stores Free for someone who has not subscribed', async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser);
       vi.mocked(prisma.user.update).mockResolvedValue(
         makeUser({ plan: 'FREE' })
       );
@@ -177,16 +186,33 @@ describe('userResolvers', () => {
       expect(result.plan).toBe('FREE');
     });
 
-    it('refuses Pro while the self-serve switch is off', async () => {
-      envFlags.ENABLE_SELF_SERVE_PLAN_SWITCH = false;
-
+    it('sends anyone asking for Pro through checkout instead', async () => {
       const mutation = userResolvers.Mutation.selectPlan(
         undefined,
         { input: { plan: 'PRO' } },
         CTX
       );
 
-      await expect(mutation).rejects.toThrow('Pro is not available yet');
+      await expect(mutation).rejects.toThrow(
+        'Start a Pro subscription from checkout'
+      );
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('refuses to downgrade while a paid subscription is live', async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(
+        makeUser({ plan: 'PRO', stripeSubscriptionId: 'sub_123' })
+      );
+
+      const mutation = userResolvers.Mutation.selectPlan(
+        undefined,
+        { input: { plan: 'FREE' } },
+        CTX
+      );
+
+      await expect(mutation).rejects.toThrow(
+        'Cancel your Pro subscription in the billing portal first'
+      );
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
