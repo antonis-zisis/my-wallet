@@ -1,3 +1,5 @@
+import { billingResolvers } from './billing/resolvers';
+import { billingTypeDefs } from './billing/schema';
 import { contractResolvers } from './contracts/resolvers';
 import { contractTypeDefs } from './contracts/schema';
 import { healthResolvers } from './health/resolvers';
@@ -21,6 +23,7 @@ export const typeDefs = [
   subscriptionTypeDefs,
   contractTypeDefs,
   userTypeDefs,
+  billingTypeDefs,
 ];
 
 export const resolvers = {
@@ -47,6 +50,7 @@ export const resolvers = {
     ...subscriptionResolvers.Query,
     ...contractResolvers.Query,
     ...userResolvers.Query,
+    ...billingResolvers.Query,
   },
   Mutation: {
     ...transactionResolvers.Mutation,
@@ -55,5 +59,6 @@ export const resolvers = {
     ...subscriptionResolvers.Mutation,
     ...contractResolvers.Mutation,
     ...userResolvers.Mutation,
+    ...billingResolvers.Mutation,
   },
 };

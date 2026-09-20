@@ -2,17 +2,22 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { createContext, type ReactNode, useContext } from 'react';
 
 import { GET_ME, UPDATE_ME } from '../graphql/user';
+import { type PlanStatus } from '../types/billing';
 import { type Currency } from '../types/currency';
 import { type Plan, type PlanEntitlements } from '../types/plan';
 import { useAuth } from './AuthContext';
 
 export type User = {
   id: string;
+  canManageBilling: boolean;
   currency: string;
   email: string;
   entitlements: PlanEntitlements;
   fullName: string | null;
   plan: Plan | null;
+  planCancelAtPeriodEnd: boolean;
+  planRenewsAt: string | null;
+  planStatus: PlanStatus | null;
   supabaseId: string;
 };
 
@@ -28,6 +33,7 @@ type MeData = {
 type UserContextType = {
   user: User | null;
   loading: boolean;
+  refetchUser: () => void;
   updateUser: (input: UpdateUserInput) => Promise<void>;
 };
 
@@ -36,7 +42,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: ReactNode }) {
   const { session } = useAuth();
 
-  const { data, loading } = useQuery<MeData>(GET_ME, {
+  const { data, loading, refetch } = useQuery<MeData>(GET_ME, {
     skip: !session,
   });
 
@@ -51,7 +57,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ user: data?.me ?? null, loading, updateUser }}
+      value={{
+        user: data?.me ?? null,
+        loading,
+        refetchUser: () => {
+          refetch();
+        },
+        updateUser,
+      }}
     >
       {children}
     </UserContext.Provider>

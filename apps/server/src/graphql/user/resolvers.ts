@@ -1,6 +1,5 @@
 import { GraphQLError } from 'graphql';
 
-import { env } from '../../lib/env';
 import { entitlementsForPlan } from '../../lib/plans';
 import prisma from '../../lib/prisma';
 import { parseInput, PLANS } from '../../lib/validate';
@@ -11,12 +10,14 @@ import { getPlanUsage } from './lib/getPlanUsage';
 type UserParent = {
   fullName: string | null;
   plan: string | null;
+  stripeCustomerId: string | null;
   supabaseId: string;
 };
 
 export const userResolvers = {
   User: {
     entitlements: (parent: UserParent) => entitlementsForPlan(parent.plan),
+    canManageBilling: (parent: UserParent) => !!parent.stripeCustomerId,
     onboardingProgress: (parent: UserParent) => getOnboardingProgress(parent),
   },
 
@@ -82,15 +83,32 @@ export const userResolvers = {
     ) => {
       const data = parseInput(SelectPlanInput, input);
 
-      if (data.plan === 'PRO' && !env.ENABLE_SELF_SERVE_PLAN_SWITCH) {
-        throw new GraphQLError('Pro is not available yet', {
-          extensions: { code: 'FORBIDDEN' },
+      if (data.plan === 'PRO') {
+        throw new GraphQLError('Start a Pro subscription from checkout', {
+          extensions: { code: 'BAD_USER_INPUT' },
         });
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { supabaseId: context.userId },
+      });
+
+      if (!user) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      if (user.stripeSubscriptionId) {
+        throw new GraphQLError(
+          'Cancel your Pro subscription in the billing portal first',
+          { extensions: { code: 'FORBIDDEN' } }
+        );
       }
 
       return prisma.user.update({
         where: { supabaseId: context.userId },
-        data: { plan: data.plan },
+        data: { plan: 'FREE' },
       });
     },
 

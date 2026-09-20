@@ -6,6 +6,10 @@ export const userTypeDefs = `#graphql
     fullName: String
     currency: String!
     plan: Plan
+    planStatus: PlanStatus
+    planRenewsAt: String
+    planCancelAtPeriodEnd: Boolean!
+    canManageBilling: Boolean!
     entitlements: PlanEntitlements!
     onboardingCompletedAt: String
     onboardingProgress: OnboardingProgress!
@@ -16,6 +20,13 @@ export const userTypeDefs = `#graphql
   enum Plan {
     FREE
     PRO
+  }
+
+  enum PlanStatus {
+    ACTIVE
+    TRIALING
+    PAST_DUE
+    CANCELED
   }
 
   type PlanEntitlements {

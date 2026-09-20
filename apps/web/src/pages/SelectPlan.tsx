@@ -1,24 +1,25 @@
-import { Link, useNavigate } from 'react-router';
+import { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 
+import { CheckoutStatusPanel } from '../components/plan/CheckoutStatusPanel';
 import { PlanCard } from '../components/plan/PlanCard';
+import { PlanIntervalToggle } from '../components/plan/PlanIntervalToggle';
 import { PageLayout, Skeleton } from '../components/ui';
+import { useBillingData } from '../hooks/billing/useBillingData';
+import { useBillingPortal } from '../hooks/billing/useBillingPortal';
+import { useCheckoutCompletion } from '../hooks/billing/useCheckoutCompletion';
+import {
+  buildPlanCta,
+  type PlanCtaAction,
+} from '../hooks/plan/selectors/buildPlanCta';
 import { usePlanData } from '../hooks/plan/usePlanData';
-import { type Plan } from '../types/plan';
-
-function ctaLabelFor(plan: Plan, currentPlan: Plan | null): string {
-  if (currentPlan === plan) {
-    return 'Current plan';
-  }
-
-  if (currentPlan === null) {
-    return plan === 'PRO' ? 'Start with Pro' : 'Start with Free';
-  }
-
-  return plan === 'PRO' ? 'Upgrade to Pro' : 'Switch to Free';
-}
+import { type BillingInterval } from '../types/billing';
 
 export function SelectPlan() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [interval, setInterval] = useState<BillingInterval>('MONTH');
+
   const {
     comparison,
     currentPlan,
@@ -27,14 +28,62 @@ export function SelectPlan() {
     onSelectPlan,
     selectingPlan,
   } = usePlanData();
+  const {
+    intervalOptions,
+    isCheckoutAvailable,
+    isStartingCheckout,
+    onUpgrade,
+  } = useBillingData();
+  const { isOpeningPortal, onManageBilling } = useBillingPortal();
 
-  const handleSelect = async (plan: Plan) => {
-    const hasChanged = await onSelectPlan(plan);
+  const isReturningFromCheckout = searchParams.get('checkout') === 'success';
+  const { hasTimedOut, isFinalizing } = useCheckoutCompletion({
+    isReturningFromCheckout,
+  });
+
+  const selectedOption =
+    intervalOptions.find((option) => option.interval === interval) ??
+    intervalOptions[0];
+
+  const handleSelectFree = async () => {
+    const hasChanged = await onSelectPlan('FREE');
 
     if (hasChanged) {
       navigate('/');
     }
   };
+
+  const handlers: Record<PlanCtaAction, () => void> = {
+    CHECKOUT: () => onUpgrade(selectedOption?.interval ?? 'MONTH'),
+    CURRENT: () => undefined,
+    PORTAL: onManageBilling,
+    SELECT_FREE: handleSelectFree,
+    UNAVAILABLE: () => undefined,
+  };
+
+  const freeCta = buildPlanCta({
+    currentPlan,
+    isCheckoutAvailable,
+    plan: 'FREE',
+  });
+  const proCta = buildPlanCta({
+    currentPlan,
+    isCheckoutAvailable,
+    plan: 'PRO',
+  });
+
+  if (isReturningFromCheckout) {
+    return (
+      <PageLayout className="max-w-xl">
+        <CheckoutStatusPanel
+          state={
+            isFinalizing ? 'FINALIZING' : hasTimedOut ? 'TIMED_OUT' : 'UPGRADED'
+          }
+          onRefresh={() => navigate(0)}
+        />
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout className="max-w-3xl">
@@ -48,6 +97,22 @@ export function SelectPlan() {
           or deleted if you switch back.
         </p>
       </header>
+
+      {searchParams.get('checkout') === 'cancelled' && (
+        <p className="text-text-secondary mb-6 text-center text-sm">
+          Checkout cancelled — nothing was charged.
+        </p>
+      )}
+
+      {intervalOptions.length > 1 && (
+        <div className="mb-6 flex justify-center">
+          <PlanIntervalToggle
+            options={intervalOptions}
+            value={selectedOption?.interval ?? 'MONTH'}
+            onChange={setInterval}
+          />
+        </div>
+      )}
 
       {error && (
         <p className="text-text-secondary text-center text-sm">
@@ -65,28 +130,31 @@ export function SelectPlan() {
       {!loading && !error && (
         <div className="grid gap-4 sm:grid-cols-2">
           <PlanCard
-            ctaLabel={ctaLabelFor('FREE', currentPlan)}
-            isCurrent={currentPlan === 'FREE'}
-            isSelecting={selectingPlan === 'FREE'}
+            ctaLabel={freeCta.label}
+            isCurrent={freeCta.action === 'CURRENT'}
+            isSelecting={selectingPlan === 'FREE' || isOpeningPortal}
             plan="FREE"
+            priceLabel="Free forever"
             rows={comparison.map((row) => ({
               label: row.label,
               value: row.free,
             }))}
-            onSelect={() => handleSelect('FREE')}
+            onSelect={handlers[freeCta.action]}
           />
 
           <PlanCard
-            ctaLabel={ctaLabelFor('PRO', currentPlan)}
-            isCurrent={currentPlan === 'PRO'}
+            ctaLabel={proCta.label}
+            isCurrent={proCta.action === 'CURRENT'}
+            isDisabled={proCta.action === 'UNAVAILABLE'}
             isRecommended
-            isSelecting={selectingPlan === 'PRO'}
+            isSelecting={isStartingCheckout}
             plan="PRO"
+            priceLabel={selectedOption?.priceLabel}
             rows={comparison.map((row) => ({
               label: row.label,
               value: row.pro,
             }))}
-            onSelect={() => handleSelect('PRO')}
+            onSelect={handlers[proCta.action]}
           />
         </div>
       )}

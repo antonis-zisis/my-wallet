@@ -1,10 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../lib/env', () => ({
-  env: { ENABLE_SELF_SERVE_PLAN_SWITCH: true },
-}));
-
 vi.mock('../lib/prisma', () => ({
   default: {
     user: { upsert: vi.fn() },

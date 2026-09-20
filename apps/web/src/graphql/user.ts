@@ -8,6 +8,10 @@ export const GET_ME = gql`
       fullName
       currency
       plan
+      planStatus
+      planRenewsAt
+      planCancelAtPeriodEnd
+      canManageBilling
       entitlements {
         canExportCsv
         canShareReports
@@ -26,6 +30,10 @@ export const GET_PLANS = gql`
   query GetPlans {
     plans {
       plan
+      planStatus
+      planRenewsAt
+      planCancelAtPeriodEnd
+      canManageBilling
       entitlements {
         canExportCsv
         canShareReports
@@ -55,6 +63,10 @@ export const SELECT_PLAN = gql`
     selectPlan(input: $input) {
       id
       plan
+      planStatus
+      planRenewsAt
+      planCancelAtPeriodEnd
+      canManageBilling
       entitlements {
         canExportCsv
         canShareReports

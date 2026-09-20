@@ -27,3 +27,12 @@ export const NET_WORTH_ENTRY_TYPES = ['ASSET', 'LIABILITY'] as const;
 export const CURRENCIES = ['EUR', 'USD', 'GBP'] as const;
 
 export const PLANS = ['FREE', 'PRO'] as const;
+
+export const BILLING_INTERVALS = ['MONTH', 'YEAR'] as const;
+
+export const PLAN_STATUSES = [
+  'ACTIVE',
+  'TRIALING',
+  'PAST_DUE',
+  'CANCELED',
+] as const;
