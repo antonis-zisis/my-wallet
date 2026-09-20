@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql';
 
+import { assertWithinPlanLimit } from '../../lib/plans';
 import prisma from '../../lib/prisma';
 import { parseInput } from '../../lib/validate';
 import { CreateContractInput, UpdateContractInput } from './inputSchemas';
@@ -10,6 +11,12 @@ export const contractMutationResolvers = {
     { input }: { input: unknown },
     { userId }: { userId: string }
   ) => {
+    await assertWithinPlanLimit({
+      userId,
+      limit: 'maxContracts',
+      countCurrent: () => prisma.contract.count({ where: { userId } }),
+    });
+
     const data = parseInput(CreateContractInput, input);
 
     return prisma.contract.create({

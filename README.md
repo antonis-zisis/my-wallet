@@ -186,6 +186,10 @@ Environment files (`.env`) are encrypted using GPG for secure storage in the rep
 - **Server** (`apps/server/.env`): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `PG_*` database connection variables
 - **Web** (`apps/web/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`, `VITE_GRAPHQL_URL`
 
+### Optional variables
+
+- `ENABLE_SELF_SERVE_PLAN_SWITCH` (server): lets a user pick the Pro plan without paying. Defaults to on outside production and off in production, since there is no billing layer yet.
+
 ### Encrypt before committing (repo maintainer only)
 
 ```bash

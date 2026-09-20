@@ -2,6 +2,7 @@ import type { GraphQLResolveInfo } from 'graphql';
 import { parse } from 'graphql';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { makeUser } from '../../test/fixtures/users';
 import { netWorthResolvers } from './resolvers';
 
 const USER_ID = 'user-1';
@@ -71,6 +72,9 @@ vi.mock('../../lib/prisma', () => ({
     netWorthEntry: {
       findMany: vi.fn(),
     },
+    user: {
+      findUnique: vi.fn(),
+    },
   },
 }));
 
@@ -79,6 +83,9 @@ let prisma: typeof import('../../lib/prisma').default;
 beforeEach(async () => {
   vi.clearAllMocks();
   prisma = (await import('../../lib/prisma')).default;
+  vi.mocked(prisma.user.findUnique).mockResolvedValue(
+    makeUser({ plan: 'PRO' })
+  );
 });
 
 describe('netWorthResolvers', () => {

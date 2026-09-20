@@ -15,6 +15,7 @@ import {
   SubscriptionCategory,
   SubscriptionSortField,
 } from '../../types/subscription';
+import { getPlanLimitMessage } from '../../utils/getPlanLimitMessage';
 import { useSubscriptionsModals } from './useSubscriptionsModals';
 
 type CreateInput = {
@@ -117,8 +118,8 @@ export function useSubscriptionsMutations({
       onResetActivePage();
       modals.onCloseCreate();
       showSuccess('Subscription created.');
-    } catch {
-      showError('Failed to create subscription.');
+    } catch (error) {
+      showError(getPlanLimitMessage(error) ?? 'Failed to create subscription.');
     }
   };
 
@@ -144,8 +145,8 @@ export function useSubscriptionsMutations({
         variables: { input: { id: subscription.id } },
       });
       showSuccess('Subscription resumed.');
-    } catch {
-      showError('Failed to resume subscription.');
+    } catch (error) {
+      showError(getPlanLimitMessage(error) ?? 'Failed to resume subscription.');
     }
   };
 
@@ -155,8 +156,8 @@ export function useSubscriptionsMutations({
 
       modals.onSelectForResume(null);
       showSuccess('Subscription resumed.');
-    } catch {
-      showError('Failed to resume subscription.');
+    } catch (error) {
+      showError(getPlanLimitMessage(error) ?? 'Failed to resume subscription.');
     }
   };
 

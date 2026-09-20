@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 
 import { CircleAlertIcon, DocumentTextIcon } from '../components/icons';
+import { UpgradeModal } from '../components/plan/UpgradeModal';
 import { ReportBackLink } from '../components/reports/ReportBackLink';
 import { CategoryTrendDetail } from '../components/transactions/CategoryTrendDetail';
 import { CategoryTrendsGrid } from '../components/transactions/CategoryTrendsGrid';
@@ -10,6 +11,7 @@ import {
   CategoryTrendsWindowPickerSkeleton,
 } from '../components/transactions/CategoryTrendsWindowPicker';
 import { PageLayout } from '../components/ui';
+import { usePlanGate } from '../hooks/plan/usePlanGate';
 import { useCategoryTrendsData } from '../hooks/transactions/useCategoryTrendsData';
 import { formatMonth } from '../utils/formatMonth';
 
@@ -57,6 +59,7 @@ export function CategoryTrends() {
     error,
     hasEnoughHistory,
     loading,
+    maxWindowMonths,
     onClearCategory,
     onSelectCategory,
     onWindowChange,
@@ -65,6 +68,8 @@ export function CategoryTrends() {
     trends,
     windowMonths,
   } = useCategoryTrendsData();
+
+  const { onCloseUpgrade, showUpgrade, upgradeMessage } = usePlanGate();
 
   const scope =
     currentMonth && previousMonth
@@ -88,8 +93,14 @@ export function CategoryTrends() {
 
         {!loading && !error && hasEnoughHistory && (
           <CategoryTrendsWindowPicker
+            maxMonths={maxWindowMonths}
             value={windowMonths}
             onChange={onWindowChange}
+            onLockedSelect={(months) =>
+              showUpgrade(
+                `Free covers the last ${maxWindowMonths} months of category trends. Upgrade to Pro to look back ${months} months.`
+              )
+            }
           />
         )}
       </div>
@@ -118,6 +129,12 @@ export function CategoryTrends() {
           )}
         </>
       )}
+
+      <UpgradeModal
+        description={upgradeMessage ?? ''}
+        isOpen={!!upgradeMessage}
+        onClose={onCloseUpgrade}
+      />
     </PageLayout>
   );
 }

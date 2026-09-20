@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeContract } from '../../test/fixtures/contracts';
+import { makeUser } from '../../test/fixtures/users';
 import { contractResolvers } from './resolvers';
 
 const USER_ID = 'user-1';
@@ -18,6 +19,9 @@ vi.mock('../../lib/prisma', () => ({
       update: vi.fn(),
       delete: vi.fn(),
     },
+    user: {
+      findUnique: vi.fn(),
+    },
   },
 }));
 
@@ -26,6 +30,9 @@ let prisma: typeof import('../../lib/prisma').default;
 beforeEach(async () => {
   vi.clearAllMocks();
   prisma = (await import('../../lib/prisma')).default;
+  vi.mocked(prisma.user.findUnique).mockResolvedValue(
+    makeUser({ plan: 'PRO' })
+  );
 });
 
 describe('contractResolvers', () => {

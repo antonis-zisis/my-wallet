@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 
 import { TrendingChartIcon } from '../components/icons';
+import { PlanUsageHint } from '../components/plan/PlanUsageHint';
 import { CreateReportModal } from '../components/reports/CreateReportModal';
 import { ReportList } from '../components/reports/ReportList';
 import {
@@ -40,6 +41,10 @@ export function Reports() {
     <>
       <PageLayout>
         <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+          <div className="mr-auto">
+            <PlanUsageHint limit="maxReports" />
+          </div>
+
           <Link
             to="/reports/trends"
             className="bg-bg-muted text-text-secondary inline-flex items-center gap-1.5 rounded px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-200 dark:hover:bg-gray-600"

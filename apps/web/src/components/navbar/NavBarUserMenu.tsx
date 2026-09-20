@@ -8,6 +8,7 @@ import { useUser } from '../../contexts/UserContext';
 import { HEALTH_QUERY } from '../../graphql/health';
 import { getAvatarData } from '../../utils/getAvatarData';
 import { LogOutIcon, SparklesIcon, UserIcon } from '../icons';
+import { PlanBadge } from '../plan/PlanBadge';
 import { Avatar, Dropdown } from '../ui';
 
 type NavBarUserMenuProps = {
@@ -66,6 +67,12 @@ export function NavBarUserMenu({ onOpenWhatsNew }: NavBarUserMenuProps) {
               <p className="text-text-secondary truncate text-xs">
                 {user.email}
               </p>
+
+              {user.plan && (
+                <div className="mt-1.5">
+                  <PlanBadge plan={user.plan} />
+                </div>
+              )}
             </div>
           ),
         },

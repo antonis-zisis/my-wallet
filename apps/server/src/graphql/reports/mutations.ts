@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql';
 
+import { assertPlanAllows, assertWithinPlanLimit } from '../../lib/plans';
 import prisma from '../../lib/prisma';
 import { parseInput } from '../../lib/validate';
 import {
@@ -15,6 +16,12 @@ export const reportMutations = {
     { input }: { input: unknown },
     { userId }: { userId: string }
   ) => {
+    await assertWithinPlanLimit({
+      userId,
+      limit: 'maxReports',
+      countCurrent: () => prisma.report.count({ where: { userId } }),
+    });
+
     const data = parseInput(ReportInput, input);
 
     return prisma.report.create({ data: { title: data.title, userId } });
@@ -142,6 +149,8 @@ export const reportMutations = {
         extensions: { code: 'FORBIDDEN' },
       });
     }
+
+    await assertPlanAllows({ userId, capability: 'canShareReports' });
 
     const data = parseInput(ShareReportInput, input);
     const targetUser = await prisma.user.findFirst({

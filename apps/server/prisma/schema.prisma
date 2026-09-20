@@ -19,6 +19,7 @@ model User {
   email        String
   fullName     String?       @map("full_name")
   currency     String        @default("EUR")
+  plan         String?
   lastSeenAt   DateTime?     @map("last_seen_at")
   onboardingCompletedAt DateTime? @map("onboarding_completed_at")
   reportShares ReportShare[]

@@ -1,9 +1,26 @@
 import { GraphQLError } from 'graphql';
 
+import { assertWithinPlanLimit } from '../../lib/plans';
 import prisma from '../../lib/prisma';
 import { parseInput } from '../../lib/validate';
 import { ResumeSubscriptionInput, SubscriptionInput } from './inputSchemas';
+import { buildSubscriptionsWhere } from './lib/buildSubscriptionsWhere';
 import { getNextRenewalDate } from './lib/getNextRenewalDate';
+
+async function assertActiveSubscriptionsWithinPlan(userId: string) {
+  return assertWithinPlanLimit({
+    userId,
+    limit: 'maxSubscriptions',
+    countCurrent: () =>
+      prisma.subscription.count({
+        where: buildSubscriptionsWhere({
+          userId,
+          active: true,
+          now: new Date(),
+        }),
+      }),
+  });
+}
 
 export const subscriptionMutationResolvers = {
   createSubscription: async (
@@ -11,6 +28,8 @@ export const subscriptionMutationResolvers = {
     { input }: { input: unknown },
     { userId }: { userId: string }
   ) => {
+    await assertActiveSubscriptionsWithinPlan(userId);
+
     const data = parseInput(SubscriptionInput, input);
 
     return prisma.subscription.create({
@@ -102,6 +121,8 @@ export const subscriptionMutationResolvers = {
         extensions: { code: 'NOT_FOUND' },
       });
     }
+
+    await assertActiveSubscriptionsWithinPlan(userId);
 
     const data = parseInput(ResumeSubscriptionInput, input);
 

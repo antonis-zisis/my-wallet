@@ -3,6 +3,7 @@ import { CreateContractModal } from '../components/contracts/CreateContractModal
 import { DeleteContractModal } from '../components/contracts/DeleteContractModal';
 import { EditContractModal } from '../components/contracts/EditContractModal';
 import { ExpiredContractsSection } from '../components/contracts/ExpiredContractsSection';
+import { PlanUsageHint } from '../components/plan/PlanUsageHint';
 import {
   Button,
   PageLayout,
@@ -68,9 +69,13 @@ export function Contracts() {
               Track your service contracts and when they expire.
             </p>
           </div>
-          <Button className="self-start" onClick={onOpenCreate}>
-            New Contract
-          </Button>
+          <div className="flex flex-col items-start gap-1 sm:items-end">
+            <Button className="self-start" onClick={onOpenCreate}>
+              New Contract
+            </Button>
+
+            <PlanUsageHint limit="maxContracts" />
+          </div>
         </div>
 
         {(loading ||

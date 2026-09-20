@@ -2,6 +2,7 @@ import type { GraphQLResolveInfo } from 'graphql';
 import { GraphQLError } from 'graphql';
 
 import { NetWorthEntry, NetWorthSnapshot } from '../../generated/prisma/client';
+import { assertWithinPlanLimit } from '../../lib/plans';
 import prisma from '../../lib/prisma';
 import { selectsItemField } from '../../lib/selectsItemField';
 import { clampPage, parseInput } from '../../lib/validate';
@@ -175,6 +176,13 @@ export const netWorthResolvers = {
       { input }: { input: unknown },
       { userId }: { userId: string }
     ) => {
+      await assertWithinPlanLimit({
+        userId,
+        limit: 'maxNetWorthSnapshots',
+        countCurrent: () =>
+          prisma.netWorthSnapshot.count({ where: { userId } }),
+      });
+
       const data = parseInput(NetWorthSnapshotInput, input);
 
       return prisma.netWorthSnapshot.create({

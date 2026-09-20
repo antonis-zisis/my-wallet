@@ -12,6 +12,7 @@ vi.mock('../../lib/prisma', () => ({
   default: {
     report: {
       findFirst: vi.fn(),
+      count: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
@@ -24,6 +25,7 @@ vi.mock('../../lib/prisma', () => ({
     },
     user: {
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
     },
   },
 }));
@@ -33,6 +35,9 @@ let prisma: typeof import('../../lib/prisma').default;
 beforeEach(async () => {
   vi.clearAllMocks();
   prisma = (await import('../../lib/prisma')).default;
+  vi.mocked(prisma.user.findUnique).mockResolvedValue(
+    makeUser({ plan: 'PRO' })
+  );
 });
 
 describe('reportMutations', () => {
@@ -51,6 +56,42 @@ describe('reportMutations', () => {
         data: { title: 'January Budget', userId: USER_ID },
       });
       expect(result).toEqual(report);
+    });
+
+    it('throws a plan-limit error when the Free report cap is reached', async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(
+        makeUser({ plan: 'FREE' })
+      );
+      vi.mocked(prisma.report.count).mockResolvedValue(3);
+
+      const mutation = reportMutations.createReport(
+        undefined as unknown,
+        { input: { title: 'January Budget' } },
+        CTX
+      );
+
+      await expect(mutation).rejects.toThrow(
+        'The Free plan is limited to 3 reports. Upgrade to Pro for unlimited reports.'
+      );
+      expect(prisma.report.create).not.toHaveBeenCalled();
+    });
+
+    it('counts only owned reports towards the cap', async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(
+        makeUser({ plan: 'FREE' })
+      );
+      vi.mocked(prisma.report.count).mockResolvedValue(2);
+      vi.mocked(prisma.report.create).mockResolvedValue(makeReport());
+
+      await reportMutations.createReport(
+        undefined as unknown,
+        { input: { title: 'January Budget' } },
+        CTX
+      );
+
+      expect(prisma.report.count).toHaveBeenCalledWith({
+        where: { userId: USER_ID },
+      });
     });
 
     it('throws BAD_USER_INPUT when title exceeds 255 characters', async () => {
@@ -283,6 +324,27 @@ describe('reportMutations', () => {
       email: 'Partner@Example.com',
       role: 'EDITOR',
     };
+
+    it('throws a plan-limit error when the plan cannot share reports', async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(
+        makeUser({ plan: 'FREE' })
+      );
+      vi.mocked(prisma.report.findFirst).mockResolvedValue({
+        ...makeReport(),
+        shares: [],
+      } as never);
+
+      const mutation = reportMutations.shareReport(
+        undefined as unknown,
+        { input: shareInput },
+        CTX
+      );
+
+      await expect(mutation).rejects.toThrow(
+        'Sharing reports is a Pro feature. Upgrade to share this report.'
+      );
+      expect(prisma.reportShare.create).not.toHaveBeenCalled();
+    });
 
     it('creates a share for a registered user', async () => {
       const report = makeReport();

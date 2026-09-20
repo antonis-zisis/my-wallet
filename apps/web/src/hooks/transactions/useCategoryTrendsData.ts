@@ -3,8 +3,10 @@ import { useMemo, useState } from 'react';
 
 import { GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH } from '../../graphql/transactions';
 import { ExpenseCategoryTotalsData } from '../../types/transaction';
+import { usePlan } from '../plan/usePlan';
 import { useLocalStorage } from '../useLocalStorage';
 import { buildCategoryTrends } from './selectors/buildCategoryTrends';
+import { clampWindowToPlan } from './selectors/clampWindowToPlan';
 
 export const WINDOW_OPTIONS = [3, 6, 9, 12] as const;
 
@@ -13,10 +15,12 @@ export type WindowOption = (typeof WINDOW_OPTIONS)[number];
 const MAX_WINDOW_MONTHS = 12;
 
 export function useCategoryTrendsData() {
+  const { trendMonthsLimit } = usePlan();
   const [windowMonths, setWindowMonths] = useLocalStorage<WindowOption>(
     'reports.categoryTrends.windowMonths',
     MAX_WINDOW_MONTHS
   );
+  const allowedWindowMonths = clampWindowToPlan(windowMonths, trendMonthsLimit);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -31,8 +35,13 @@ export function useCategoryTrendsData() {
   );
 
   const { hasEnoughHistory, months, previousMonth, trends } = useMemo(
-    () => buildCategoryTrends({ now: new Date(), totals, windowMonths }),
-    [totals, windowMonths]
+    () =>
+      buildCategoryTrends({
+        now: new Date(),
+        totals,
+        windowMonths: allowedWindowMonths,
+      }),
+    [allowedWindowMonths, totals]
   );
 
   return {
@@ -46,7 +55,8 @@ export function useCategoryTrendsData() {
     previousMonth,
     selectedTrend:
       trends.find((trend) => trend.category === selectedCategory) ?? null,
+    maxWindowMonths: trendMonthsLimit,
     trends,
-    windowMonths,
+    windowMonths: allowedWindowMonths,
   };
 }

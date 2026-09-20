@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router';
 
 import { App } from './App';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { RequirePlan } from './components/RequirePlan';
 import { CategoryTrends } from './pages/CategoryTrends';
 import { Contracts } from './pages/Contracts';
 import { ForgotPassword } from './pages/ForgotPassword';
@@ -14,6 +15,7 @@ import { Profile } from './pages/Profile';
 import { Report } from './pages/Report';
 import { Reports } from './pages/Reports';
 import { ResetPassword } from './pages/ResetPassword';
+import { SelectPlan } from './pages/SelectPlan';
 import { SignUp } from './pages/SignUp';
 import { Subscriptions } from './pages/Subscriptions';
 
@@ -38,19 +40,25 @@ export const router = createBrowserRouter([
     path: '/',
     element: <ProtectedRoute />,
     children: [
+      { path: 'select-plan', element: <SelectPlan /> },
       {
-        element: <App />,
+        element: <RequirePlan />,
         children: [
-          { index: true, element: <Home /> },
-          { path: 'reports', element: <Reports /> },
-          { path: 'reports/trends', element: <CategoryTrends /> },
-          { path: 'reports/:id', element: <Report /> },
-          { path: 'subscriptions', element: <Subscriptions /> },
-          { path: 'contracts', element: <Contracts /> },
-          { path: 'net-worth', element: <NetWorth /> },
-          { path: 'net-worth/:id', element: <NetWorthSnapshotPage /> },
-          { path: 'profile', element: <Profile /> },
-          { path: '*', element: <NotFound /> },
+          {
+            element: <App />,
+            children: [
+              { index: true, element: <Home /> },
+              { path: 'reports', element: <Reports /> },
+              { path: 'reports/trends', element: <CategoryTrends /> },
+              { path: 'reports/:id', element: <Report /> },
+              { path: 'subscriptions', element: <Subscriptions /> },
+              { path: 'contracts', element: <Contracts /> },
+              { path: 'net-worth', element: <NetWorth /> },
+              { path: 'net-worth/:id', element: <NetWorthSnapshotPage /> },
+              { path: 'profile', element: <Profile /> },
+              { path: '*', element: <NotFound /> },
+            ],
+          },
         ],
       },
     ],

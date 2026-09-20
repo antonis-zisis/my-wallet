@@ -10,6 +10,7 @@ import {
   ReportsData,
   ReportSortOption,
 } from '../../types/report';
+import { getPlanLimitMessage } from '../../utils/getPlanLimitMessage';
 import { useDebouncedValue } from '../useDebouncedValue';
 import { useLocalStorage } from '../useLocalStorage';
 
@@ -71,9 +72,9 @@ export function useReportsData() {
       if (created?.createReport.id) {
         navigate(`/reports/${created.createReport.id}`);
       }
-    } catch {
-      showError('Failed to create report.');
-      throw new Error('Failed to create report.');
+    } catch (error) {
+      showError(getPlanLimitMessage(error) ?? 'Failed to create report.');
+      throw new Error('Failed to create report.', { cause: error });
     }
   };
 

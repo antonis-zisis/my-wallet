@@ -2,6 +2,7 @@ import { type ChartView, NetWorthTrendChart } from '../components/charts';
 import { ChevronDownIcon, InfoIcon } from '../components/icons';
 import { NetWorthList } from '../components/netWorth/NetWorthList';
 import { NetWorthSnapshotModal } from '../components/netWorth/NetWorthSnapshotModal';
+import { PlanUsageHint } from '../components/plan/PlanUsageHint';
 import {
   Button,
   Card,
@@ -52,7 +53,11 @@ export function NetWorth() {
   return (
     <>
       <PageLayout>
-        <div className="mb-4 flex items-center justify-end">
+        <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+          <div className="mr-auto">
+            <PlanUsageHint limit="maxNetWorthSnapshots" />
+          </div>
+
           <Button onClick={onOpenCreate}>New Snapshot</Button>
         </div>
 

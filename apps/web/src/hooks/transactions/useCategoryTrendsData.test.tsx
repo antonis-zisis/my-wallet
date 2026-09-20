@@ -3,8 +3,19 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const planState = vi.hoisted(() => ({ user: null as unknown }));
+
+vi.mock('../../contexts/UserContext', () => ({
+  useUser: () => ({
+    user: planState.user,
+    loading: false,
+    updateUser: vi.fn(),
+  }),
+}));
+
 import { GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH } from '../../graphql/transactions';
 import { MockedProvider } from '../../test/apollo-test-utils';
+import { FREE_ENTITLEMENTS, makeUser } from '../../test/fixtures';
 import { useCategoryTrendsData } from './useCategoryTrendsData';
 
 const request = {
@@ -37,6 +48,7 @@ const renderTrends = (mocks: Array<MockLink.MockedResponse>) =>
 
 beforeEach(() => {
   localStorage.clear();
+  planState.user = makeUser();
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(new Date('2026-08-26T00:00:00.000Z'));
 });
@@ -85,6 +97,21 @@ describe('useCategoryTrendsData', () => {
 
     act(() => result.current.onClearCategory());
     expect(result.current.selectedTrend).toBeNull();
+  });
+
+  it('narrows the window to what the plan allows', async () => {
+    planState.user = makeUser({
+      plan: 'FREE',
+      entitlements: FREE_ENTITLEMENTS,
+    });
+
+    const { result } = renderTrends([success]);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.windowMonths).toBe(3);
+    expect(result.current.maxWindowMonths).toBe(3);
+    expect(result.current.trends[1].points).toHaveLength(3);
   });
 
   it('narrows the month axis when the window changes', async () => {

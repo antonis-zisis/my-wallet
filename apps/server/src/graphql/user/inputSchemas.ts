@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { CURRENCIES } from '../../lib/validate';
+import { CURRENCIES, PLANS } from '../../lib/validate';
 import { enumField } from '../../lib/validate/fields';
 
 export const UpdateUserInput = z.object({
@@ -13,3 +13,9 @@ export const UpdateUserInput = z.object({
 });
 
 export type UpdateUserInput = z.infer<typeof UpdateUserInput>;
+
+export const SelectPlanInput = z.object({
+  plan: enumField(PLANS, 'Plan'),
+});
+
+export type SelectPlanInput = z.infer<typeof SelectPlanInput>;

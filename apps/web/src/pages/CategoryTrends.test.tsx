@@ -12,10 +12,21 @@ import {
   vi,
 } from 'vitest';
 
+const planState = vi.hoisted(() => ({ user: null as unknown }));
+
+vi.mock('../contexts/UserContext', () => ({
+  useUser: () => ({
+    user: planState.user,
+    loading: false,
+    updateUser: vi.fn(),
+  }),
+}));
+
 import { PrivacyProvider } from '../contexts/PrivacyContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH } from '../graphql/transactions';
 import { MockedProvider } from '../test/apollo-test-utils';
+import { FREE_ENTITLEMENTS, makeUser } from '../test/fixtures';
 import { CategoryTrends } from './CategoryTrends';
 
 beforeAll(() => {
@@ -70,6 +81,7 @@ const renderPage = (mocks: Array<MockLink.MockedResponse>) =>
   );
 
 beforeEach(() => {
+  planState.user = makeUser();
   localStorage.clear();
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(new Date('2026-08-26T00:00:00.000Z'));
@@ -80,6 +92,30 @@ afterEach(() => {
 });
 
 describe('CategoryTrends', () => {
+  it('offers an upgrade when a locked window is picked on Free', async () => {
+    planState.user = makeUser({
+      plan: 'FREE',
+      entitlements: FREE_ENTITLEMENTS,
+    });
+    renderPage([success]);
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: '12 months (Pro)' })
+      ).toBeInTheDocument()
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: '12 months (Pro)' })
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Upgrade to Pro' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Free covers the last 3 months of category trends/)
+    ).toBeInTheDocument();
+  });
+
   it('always shows the heading and a way back to reports', () => {
     renderPage([success]);
 
