@@ -3,7 +3,7 @@ import type Stripe from 'stripe';
 import { env } from '../env';
 import { stripe } from '../stripe';
 import { handleStripeEvent } from './handleStripeEvent';
-import { recordStripeEvent } from './recordStripeEvent';
+import { forgetStripeEvent, recordStripeEvent } from './recordStripeEvent';
 
 type HandleStripeWebhookInput = {
   payload: Buffer | string;
@@ -48,7 +48,15 @@ export async function handleStripeWebhook({
     return { status: 200, body: { received: true, duplicate: true } };
   }
 
-  await handleStripeEvent(event);
+  try {
+    await handleStripeEvent(event);
+  } catch (error) {
+    // the id is already recorded, so Stripe's retry would be skipped as a
+    // duplicate and the event lost; drop it so the retry is processed
+    await forgetStripeEvent(event.id).catch(() => undefined);
+
+    throw error;
+  }
 
   return { status: 200, body: { received: true } };
 }

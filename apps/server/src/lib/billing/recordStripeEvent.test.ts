@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { recordStripeEvent } from './recordStripeEvent';
+import { forgetStripeEvent, recordStripeEvent } from './recordStripeEvent';
 
 vi.mock('../prisma', () => ({
-  default: { stripeEvent: { create: vi.fn() } },
+  default: { stripeEvent: { create: vi.fn(), deleteMany: vi.fn() } },
 }));
 
 let prisma: typeof import('../prisma').default;
@@ -40,5 +40,17 @@ describe('recordStripeEvent', () => {
     );
 
     await expect(recordStripeEvent(event)).rejects.toThrow('connection lost');
+  });
+});
+
+describe('forgetStripeEvent', () => {
+  it('removes the record so a retry is treated as new', async () => {
+    vi.mocked(prisma.stripeEvent.deleteMany).mockResolvedValue({ count: 1 });
+
+    await forgetStripeEvent('evt_1');
+
+    expect(prisma.stripeEvent.deleteMany).toHaveBeenCalledWith({
+      where: { id: 'evt_1' },
+    });
   });
 });

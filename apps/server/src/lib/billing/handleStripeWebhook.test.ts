@@ -22,7 +22,7 @@ vi.mock('../stripe', () => ({
 
 vi.mock('../prisma', () => ({
   default: {
-    stripeEvent: { create: vi.fn() },
+    stripeEvent: { create: vi.fn(), deleteMany: vi.fn() },
     user: { updateMany: vi.fn() },
   },
 }));
@@ -40,6 +40,7 @@ beforeEach(async () => {
     createdAt: new Date(),
   });
   vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 1 });
+  vi.mocked(prisma.stripeEvent.deleteMany).mockResolvedValue({ count: 1 });
 });
 
 const payload = Buffer.from('{}');
@@ -145,6 +146,35 @@ describe('handleStripeWebhook', () => {
     expect(prisma.user.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: { stripeCustomerId: 'cus_123' } })
     );
+  });
+
+  it('lets Stripe retry an event whose handling failed', async () => {
+    constructEvent.mockReturnValue(subscriptionEvent);
+    vi.mocked(prisma.user.updateMany).mockRejectedValue(
+      new Error('connection lost')
+    );
+
+    await expect(
+      handleStripeWebhook({ payload, signature: 'good' })
+    ).rejects.toThrow('connection lost');
+
+    expect(prisma.stripeEvent.deleteMany).toHaveBeenCalledWith({
+      where: { id: 'evt_1' },
+    });
+  });
+
+  it('still reports the original failure if forgetting the event fails', async () => {
+    constructEvent.mockReturnValue(subscriptionEvent);
+    vi.mocked(prisma.user.updateMany).mockRejectedValue(
+      new Error('connection lost')
+    );
+    vi.mocked(prisma.stripeEvent.deleteMany).mockRejectedValue(
+      new Error('also down')
+    );
+
+    await expect(
+      handleStripeWebhook({ payload, signature: 'good' })
+    ).rejects.toThrow('connection lost');
   });
 
   it('passes an unhandled event through without writing anything', async () => {

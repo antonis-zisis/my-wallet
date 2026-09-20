@@ -7,6 +7,10 @@ type RecordStripeEventInput = {
   type: string;
 };
 
+export async function forgetStripeEvent(id: string): Promise<void> {
+  await prisma.stripeEvent.deleteMany({ where: { id } });
+}
+
 export async function recordStripeEvent({
   id,
   type,
