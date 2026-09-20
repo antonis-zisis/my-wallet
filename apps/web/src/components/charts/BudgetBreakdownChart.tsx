@@ -13,15 +13,18 @@ type BudgetBreakdownChartProps = {
 };
 
 export const CATEGORY_TO_BUCKET: Record<string, string> = {
-  'Dining Out': 'Wants',
+  'Digital & Apps': 'Wants',
+  'Dining & Takeaway': 'Wants',
   Entertainment: 'Wants',
+  Gifts: 'Wants',
   Groceries: 'Needs',
   Health: 'Needs',
-  Insurance: 'Needs',
+  Household: 'Needs',
   Investment: 'Invest',
+  Kids: 'Needs',
   Loan: 'Needs',
   Other: 'Wants',
-  Rent: 'Needs',
+  'Personal Care': 'Wants',
   Shopping: 'Wants',
   Transport: 'Needs',
   Utilities: 'Needs',
@@ -47,15 +50,15 @@ export function BudgetBreakdownChart({
   const chartData = useMemo(() => {
     const buckets = new Map<string, number>();
 
-    for (const tx of transactions) {
-      if (tx.type !== 'EXPENSE') {
+    for (const transaction of transactions) {
+      if (transaction.type !== 'EXPENSE') {
         continue;
       }
 
-      const bucket = CATEGORY_TO_BUCKET[tx.category] ?? 'Wants';
+      const bucket = CATEGORY_TO_BUCKET[transaction.category] ?? 'Wants';
       const current = buckets.get(bucket) ?? 0;
 
-      buckets.set(bucket, current + tx.amount);
+      buckets.set(bucket, current + transaction.amount);
     }
 
     const bucketOrder = ['Needs', 'Wants', 'Invest'];

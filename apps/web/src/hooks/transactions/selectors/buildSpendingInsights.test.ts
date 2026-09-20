@@ -43,11 +43,11 @@ describe('buildSpendingInsights', () => {
     const result = buildSpendingInsights({
       now: NOW,
       totals: [
-        ...everyBaselineMonth('Rent', 800),
-        ...everyBaselineMonth('Dining Out', 180),
-        { category: 'Rent', month: '2026-08', total: 800 },
-        { category: 'Dining Out', month: '2026-08', total: 310 },
-        { category: 'Dining Out', month: '2026-09', total: 5000 },
+        ...everyBaselineMonth('Household', 800),
+        ...everyBaselineMonth('Dining & Takeaway', 180),
+        { category: 'Household', month: '2026-08', total: 800 },
+        { category: 'Dining & Takeaway', month: '2026-08', total: 310 },
+        { category: 'Dining & Takeaway', month: '2026-09', total: 5000 },
       ],
     });
 
@@ -56,7 +56,7 @@ describe('buildSpendingInsights', () => {
     expect(result.insights).toHaveLength(1);
     expect(result.insights[0]).toMatchObject({
       baselineAverage: 180,
-      category: 'Dining Out',
+      category: 'Dining & Takeaway',
       difference: 130,
       direction: 'INCREASE',
       total: 310,
@@ -68,15 +68,15 @@ describe('buildSpendingInsights', () => {
     const result = buildSpendingInsights({
       now: NOW,
       totals: [
-        ...everyBaselineMonth('Rent', 800),
-        ...everyBaselineMonth('Dining Out', 180),
-        { category: 'Rent', month: '2026-08', total: 800 },
-        { category: 'Dining Out', month: '2026-08', total: 60 },
+        ...everyBaselineMonth('Household', 800),
+        ...everyBaselineMonth('Dining & Takeaway', 180),
+        { category: 'Household', month: '2026-08', total: 800 },
+        { category: 'Dining & Takeaway', month: '2026-08', total: 60 },
       ],
     });
 
     expect(result.insights[0]).toMatchObject({
-      category: 'Dining Out',
+      category: 'Dining & Takeaway',
       difference: -120,
       direction: 'DECREASE',
       total: 60,
@@ -87,15 +87,15 @@ describe('buildSpendingInsights', () => {
     const result = buildSpendingInsights({
       now: NOW,
       totals: [
-        ...everyBaselineMonth('Rent', 800),
-        { category: 'Rent', month: '2026-08', total: 800 },
-        { category: 'Insurance', month: '2026-08', total: 300 },
+        ...everyBaselineMonth('Household', 800),
+        { category: 'Household', month: '2026-08', total: 800 },
+        { category: 'Kids', month: '2026-08', total: 300 },
       ],
     });
 
     expect(result.insights[0]).toMatchObject({
       baselineAverage: 0,
-      category: 'Insurance',
+      category: 'Kids',
       direction: 'INCREASE',
       percentageChange: null,
       total: 300,
@@ -106,9 +106,9 @@ describe('buildSpendingInsights', () => {
     const result = buildSpendingInsights({
       now: NOW,
       totals: [
-        ...everyBaselineMonth('Rent', 800),
+        ...everyBaselineMonth('Household', 800),
         ...everyBaselineMonth('Groceries', 400),
-        { category: 'Rent', month: '2026-08', total: 800 },
+        { category: 'Household', month: '2026-08', total: 800 },
         { category: 'Groceries', month: '2026-08', total: 500 },
       ],
     });
@@ -120,9 +120,9 @@ describe('buildSpendingInsights', () => {
     const result = buildSpendingInsights({
       now: NOW,
       totals: [
-        ...everyBaselineMonth('Rent', 800),
+        ...everyBaselineMonth('Household', 800),
         ...everyBaselineMonth('Coffee', 4),
-        { category: 'Rent', month: '2026-08', total: 800 },
+        { category: 'Household', month: '2026-08', total: 800 },
         { category: 'Coffee', month: '2026-08', total: 12 },
       ],
     });
@@ -134,21 +134,21 @@ describe('buildSpendingInsights', () => {
     const result = buildSpendingInsights({
       now: NOW,
       totals: [
-        ...everyBaselineMonth('Rent', 800),
-        ...everyBaselineMonth('Dining Out', 100),
+        ...everyBaselineMonth('Household', 800),
+        ...everyBaselineMonth('Dining & Takeaway', 100),
         ...everyBaselineMonth('Transport', 100),
         ...everyBaselineMonth('Shopping', 50),
-        { category: 'Rent', month: '2026-08', total: 1200 },
-        { category: 'Dining Out', month: '2026-08', total: 250 },
+        { category: 'Household', month: '2026-08', total: 1200 },
+        { category: 'Dining & Takeaway', month: '2026-08', total: 250 },
         { category: 'Transport', month: '2026-08', total: 300 },
         { category: 'Shopping', month: '2026-08', total: 130 },
       ],
     });
 
     expect(result.insights.map((insight) => insight.category)).toEqual([
-      'Rent',
+      'Household',
       'Transport',
-      'Dining Out',
+      'Dining & Takeaway',
     ]);
   });
 
@@ -156,7 +156,7 @@ describe('buildSpendingInsights', () => {
     const result = buildSpendingInsights({
       now: NOW,
       totals: [
-        ...everyBaselineMonth('Rent', 800),
+        ...everyBaselineMonth('Household', 800),
         { category: 'Groceries', month: '2026-08', total: 50 },
       ],
     });

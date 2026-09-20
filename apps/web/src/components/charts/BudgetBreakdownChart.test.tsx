@@ -66,11 +66,11 @@ describe('BudgetBreakdownChart', () => {
   it('maps Needs categories correctly', () => {
     const needsCategories = [
       'Groceries',
-      'Rent',
+      'Household',
+      'Kids',
       'Transport',
       'Utilities',
       'Health',
-      'Insurance',
       'Loan',
     ];
     for (const category of needsCategories) {
@@ -80,8 +80,11 @@ describe('BudgetBreakdownChart', () => {
 
   it('maps Wants categories correctly', () => {
     const wantsCategories = [
-      'Dining Out',
+      'Dining & Takeaway',
+      'Digital & Apps',
       'Entertainment',
+      'Gifts',
+      'Personal Care',
       'Shopping',
       'Other',
     ];

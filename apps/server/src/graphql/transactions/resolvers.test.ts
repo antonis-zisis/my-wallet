@@ -109,7 +109,7 @@ describe('transactionResolvers', () => {
       vi.mocked(prisma.transaction.findMany).mockResolvedValue([
         { amount: 40, category: 'Groceries', date: new Date('2026-08-02') },
         { amount: 12, category: 'Groceries', date: new Date('2026-08-19') },
-        { amount: 800, category: 'Rent', date: new Date('2026-07-01') },
+        { amount: 800, category: 'Household', date: new Date('2026-07-01') },
       ] as never);
 
       const result =
@@ -130,7 +130,7 @@ describe('transactionResolvers', () => {
       });
       expect(result).toEqual([
         { category: 'Groceries', month: '2026-08', total: 52 },
-        { category: 'Rent', month: '2026-07', total: 800 },
+        { category: 'Household', month: '2026-07', total: 800 },
       ]);
     });
 

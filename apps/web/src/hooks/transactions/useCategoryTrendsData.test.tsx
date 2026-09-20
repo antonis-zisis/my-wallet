@@ -19,8 +19,8 @@ const totals = [
     total: 380,
   })),
   { category: 'Groceries', month: '2026-08', total: 412 },
-  { category: 'Rent', month: '2026-07', total: 800 },
-  { category: 'Rent', month: '2026-08', total: 800 },
+  { category: 'Household', month: '2026-07', total: 800 },
+  { category: 'Household', month: '2026-08', total: 800 },
 ];
 
 const success: MockLink.MockedResponse = {
@@ -34,7 +34,7 @@ const withHistory: MockLink.MockedResponse = {
     data: {
       expenseCategoryTotalsByMonth: [
         ...['2026-02', '2026-03', '2026-04', '2026-05', '2026-06'].map(
-          (month) => ({ category: 'Dining Out', month, total: 180 })
+          (month) => ({ category: 'Dining & Takeaway', month, total: 180 })
         ),
         ...[
           '2026-02',
@@ -43,8 +43,8 @@ const withHistory: MockLink.MockedResponse = {
           '2026-05',
           '2026-06',
           '2026-07',
-        ].map((month) => ({ category: 'Rent', month, total: 800 })),
-        { category: 'Dining Out', month: '2026-07', total: 310 },
+        ].map((month) => ({ category: 'Household', month, total: 800 })),
+        { category: 'Dining & Takeaway', month: '2026-07', total: 310 },
       ],
     },
   },
@@ -89,7 +89,7 @@ describe('useCategoryTrendsData', () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.trends.map((trend) => trend.category)).toEqual([
-      'Rent',
+      'Household',
       'Groceries',
     ]);
     expect(result.current.trends[1].currentTotal).toBe(412);
@@ -130,7 +130,7 @@ describe('useCategoryTrendsData', () => {
     expect(result.current.insights).toHaveLength(1);
     expect(result.current.insights[0]).toMatchObject({
       baselineAverage: 180,
-      category: 'Dining Out',
+      category: 'Dining & Takeaway',
       direction: 'INCREASE',
       total: 310,
     });

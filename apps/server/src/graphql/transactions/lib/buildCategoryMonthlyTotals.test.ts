@@ -23,12 +23,12 @@ describe('buildCategoryMonthlyTotals', () => {
   it('keeps different categories in the same month separate', () => {
     const result = buildCategoryMonthlyTotals([
       { amount: 40, category: 'Groceries', date: new Date('2026-08-02') },
-      { amount: 800, category: 'Rent', date: new Date('2026-08-01') },
+      { amount: 800, category: 'Household', date: new Date('2026-08-01') },
     ]);
 
     expect(result).toEqual([
       { category: 'Groceries', month: '2026-08', total: 40 },
-      { category: 'Rent', month: '2026-08', total: 800 },
+      { category: 'Household', month: '2026-08', total: 800 },
     ]);
   });
 

@@ -32,16 +32,19 @@ export type ExpenseCategoryTotalsData = {
 };
 
 export const EXPENSE_CATEGORIES = [
-  'Rent',
+  'Household',
   'Utilities',
   'Groceries',
-  'Dining Out',
+  'Dining & Takeaway',
   'Transport',
   'Health',
+  'Personal Care',
+  'Kids',
   'Entertainment',
+  'Digital & Apps',
   'Shopping',
+  'Gifts',
   'Investment',
-  'Insurance',
   'Loan',
   'Other',
 ] as const;
