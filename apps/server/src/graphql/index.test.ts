@@ -1,6 +1,16 @@
 import { ApolloServer } from '@apollo/server';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+// importing the whole resolver map pulls in lib/env, which fails fast on a
+// machine with no .env — seed it before the import graph is evaluated
+vi.hoisted(() => {
+  process.env.PG_USER = 'user';
+  process.env.PG_PASSWORD = 'password';
+  process.env.PG_DATABASE = 'wallet';
+  process.env.SUPABASE_URL = 'https://example.supabase.co';
+  process.env.SUPABASE_SECRET_KEY = 'secret';
+});
+
 vi.mock('../lib/prisma', () => ({
   default: {
     user: { upsert: vi.fn() },
