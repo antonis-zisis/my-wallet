@@ -25,3 +25,5 @@ export const SHARE_ROLES = ['VIEWER', 'EDITOR'] as const;
 export const NET_WORTH_ENTRY_TYPES = ['ASSET', 'LIABILITY'] as const;
 
 export const CURRENCIES = ['EUR', 'USD', 'GBP'] as const;
+
+export const PLANS = ['FREE', 'PRO'] as const;

@@ -1,5 +1,6 @@
 import { SubscriptionCategoryBreakdownChart } from '../components/charts';
 import { InfoIcon } from '../components/icons';
+import { PlanUsageHint } from '../components/plan/PlanUsageHint';
 import { CancelSubscriptionModal } from '../components/subscriptions/CancelSubscriptionModal';
 import { CreateSubscriptionModal } from '../components/subscriptions/CreateSubscriptionModal';
 import { DeleteSubscriptionModal } from '../components/subscriptions/DeleteSubscriptionModal';
@@ -92,9 +93,13 @@ export function Subscriptions() {
             </h1>
             <p className="text-text-secondary mt-1 text-sm">{subtitle}</p>
           </div>
-          <Button className="self-start" onClick={onOpenCreate}>
-            New Subscription
-          </Button>
+          <div className="flex flex-col items-start gap-1 sm:items-end">
+            <Button className="self-start" onClick={onOpenCreate}>
+              New Subscription
+            </Button>
+
+            <PlanUsageHint limit="maxSubscriptions" />
+          </div>
         </div>
 
         {(activeLoading || (!activeError && activeTotalCount > 0)) && (

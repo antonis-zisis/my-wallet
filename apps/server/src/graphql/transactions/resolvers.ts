@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql';
 
+import { getEntitlementsForUser } from '../../lib/plans';
 import prisma from '../../lib/prisma';
 import { clampMonths, parseInput } from '../../lib/validate';
 import {
@@ -38,10 +39,16 @@ export const transactionResolvers = {
       { months = 12 }: { months?: number },
       { userId }: { userId: string }
     ) => {
+      const entitlements = await getEntitlementsForUser(userId);
+      const windowMonths = Math.min(
+        clampMonths(months),
+        entitlements.maxTrendMonths
+      );
+
       const transactions = await prisma.transaction.findMany({
         where: {
           type: 'EXPENSE',
-          date: { gte: startOfMonthWindow(new Date(), clampMonths(months)) },
+          date: { gte: startOfMonthWindow(new Date(), windowMonths) },
           report: reportAccessWhere(userId),
         },
         select: { amount: true, category: true, date: true },

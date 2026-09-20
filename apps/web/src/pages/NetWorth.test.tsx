@@ -5,6 +5,18 @@ import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+vi.mock('../contexts/UserContext', () => ({
+  useUser: () => ({ user: makeUser(), loading: false, updateUser: vi.fn() }),
+}));
+
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: () => ({
+    showError: vi.fn(),
+    showInfo: vi.fn(),
+    showSuccess: vi.fn(),
+  }),
+}));
+
 import { ThemeProvider } from '../contexts/ThemeContext';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
@@ -14,6 +26,7 @@ import {
 import { PAGE_SIZE, TREND_PAGE_SIZE } from '../hooks/netWorth/useNetWorthData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { makeNetWorthSnapshot } from '../test/fixtures/netWorth';
+import { makeUser } from '../test/fixtures/user';
 import { NetWorth } from './NetWorth';
 
 beforeAll(() => {

@@ -3,13 +3,16 @@ import { createContext, type ReactNode, useContext } from 'react';
 
 import { GET_ME, UPDATE_ME } from '../graphql/user';
 import { type Currency } from '../types/currency';
+import { type Plan, type PlanEntitlements } from '../types/plan';
 import { useAuth } from './AuthContext';
 
 export type User = {
   id: string;
   currency: string;
   email: string;
+  entitlements: PlanEntitlements;
   fullName: string | null;
+  plan: Plan | null;
   supabaseId: string;
 };
 

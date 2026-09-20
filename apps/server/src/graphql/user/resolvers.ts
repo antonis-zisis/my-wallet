@@ -1,21 +1,35 @@
 import { GraphQLError } from 'graphql';
 
+import { env } from '../../lib/env';
+import { entitlementsForPlan } from '../../lib/plans';
 import prisma from '../../lib/prisma';
-import { parseInput } from '../../lib/validate';
-import { UpdateUserInput } from './inputSchemas';
+import { parseInput, PLANS } from '../../lib/validate';
+import { SelectPlanInput, UpdateUserInput } from './inputSchemas';
 import { getOnboardingProgress } from './lib/getOnboardingProgress';
+import { getPlanUsage } from './lib/getPlanUsage';
 
 type UserParent = {
   fullName: string | null;
+  plan: string | null;
   supabaseId: string;
 };
 
 export const userResolvers = {
   User: {
+    entitlements: (parent: UserParent) => entitlementsForPlan(parent.plan),
     onboardingProgress: (parent: UserParent) => getOnboardingProgress(parent),
   },
 
   Query: {
+    plans: () =>
+      PLANS.map((plan) => ({ plan, entitlements: entitlementsForPlan(plan) })),
+
+    planUsage: (
+      _parent: unknown,
+      _args: unknown,
+      context: { userId: string }
+    ) => getPlanUsage(context.userId),
+
     me: async (
       _parent: unknown,
       _args: unknown,
@@ -58,6 +72,25 @@ export const userResolvers = {
           }),
           ...(data.currency !== undefined && { currency: data.currency }),
         },
+      });
+    },
+
+    selectPlan: async (
+      _parent: unknown,
+      { input }: { input: unknown },
+      context: { userId: string }
+    ) => {
+      const data = parseInput(SelectPlanInput, input);
+
+      if (data.plan === 'PRO' && !env.ENABLE_SELF_SERVE_PLAN_SWITCH) {
+        throw new GraphQLError('Pro is not available yet', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
+      return prisma.user.update({
+        where: { supabaseId: context.userId },
+        data: { plan: data.plan },
       });
     },
 

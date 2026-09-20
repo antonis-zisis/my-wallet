@@ -6,6 +6,7 @@ import {
   makeReportShare,
   makeTransaction,
 } from '../../test/fixtures/reports';
+import { makeUser } from '../../test/fixtures/users';
 import { reportAccessWhere } from '../reports/lib/reportAccess';
 import { transactionResolvers } from './resolvers';
 
@@ -33,6 +34,9 @@ vi.mock('../../lib/prisma', () => ({
       update: vi.fn(),
       delete: vi.fn(),
     },
+    user: {
+      findUnique: vi.fn(),
+    },
   },
 }));
 
@@ -41,6 +45,9 @@ let prisma: typeof import('../../lib/prisma').default;
 beforeEach(async () => {
   vi.clearAllMocks();
   prisma = (await import('../../lib/prisma')).default;
+  vi.mocked(prisma.user.findUnique).mockResolvedValue(
+    makeUser({ plan: 'PRO' })
+  );
 });
 
 describe('transactionResolvers', () => {
@@ -134,7 +141,7 @@ describe('transactionResolvers', () => {
       ]);
     });
 
-    it('clamps a months argument beyond the supported range', async () => {
+    it('clamps a months argument beyond what the plan allows', async () => {
       vi.mocked(prisma.transaction.findMany).mockResolvedValue([]);
 
       await transactionResolvers.Query.expenseCategoryTotalsByMonth(
@@ -146,7 +153,28 @@ describe('transactionResolvers', () => {
       expect(prisma.transaction.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            date: { gte: new Date('2024-09-01T00:00:00.000Z') },
+            date: { gte: new Date('2025-09-01T00:00:00.000Z') },
+          }),
+        })
+      );
+    });
+
+    it('narrows the window to three months on the Free plan', async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(
+        makeUser({ plan: 'FREE' })
+      );
+      vi.mocked(prisma.transaction.findMany).mockResolvedValue([]);
+
+      await transactionResolvers.Query.expenseCategoryTotalsByMonth(
+        undefined as unknown,
+        { months: 12 },
+        CTX
+      );
+
+      expect(prisma.transaction.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            date: { gte: new Date('2026-06-01T00:00:00.000Z') },
           }),
         })
       );

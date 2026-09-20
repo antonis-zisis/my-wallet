@@ -3,6 +3,7 @@ import {
   ExpenseBreakdownChart,
 } from '../components/charts';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { UpgradeModal } from '../components/plan/UpgradeModal';
 import { ReportBackLink } from '../components/reports/ReportBackLink';
 import { ReportChartSection } from '../components/reports/ReportChartSection';
 import { ReportHeader } from '../components/reports/ReportHeader';
@@ -12,6 +13,7 @@ import { ReportSummary } from '../components/reports/ReportSummary';
 import { ShareReportModal } from '../components/reports/ShareReportModal';
 import { TransactionTable } from '../components/reports/TransactionTable';
 import { PageLayout } from '../components/ui';
+import { usePlanGate } from '../hooks/plan/usePlanGate';
 import { useReportData } from '../hooks/reports/useReportData';
 
 export function Report() {
@@ -68,6 +70,8 @@ export function Report() {
     transactions,
   } = useReportData();
 
+  const { guardCapability, onCloseUpgrade, upgradeMessage } = usePlanGate();
+
   const canModify = !isLocked && myRole !== 'VIEWER';
 
   if (loading) {
@@ -101,9 +105,12 @@ export function Report() {
           updatedAt={report.updatedAt}
           onAddTransaction={onOpenAddTransactionModal}
           onDeleteReport={onOpenDeleteReportModal}
-          onExportCsv={onExportCsv}
+          onExportCsv={guardCapability('canExportCsv', onExportCsv)}
           onLockReport={onLockReport}
-          onOpenShareModal={onOpenShareModal}
+          onOpenShareModal={guardCapability(
+            'canShareReports',
+            onOpenShareModal
+          )}
           onSaveTitle={onSaveTitle}
           onUnlockReport={onUnlockReport}
         />
@@ -176,6 +183,12 @@ export function Report() {
         onShareReport={onShareReport}
         onUnshareMember={onUnshareMember}
         onUpdateMemberRole={onUpdateMemberRole}
+      />
+
+      <UpgradeModal
+        description={upgradeMessage ?? ''}
+        isOpen={!!upgradeMessage}
+        onClose={onCloseUpgrade}
       />
     </>
   );

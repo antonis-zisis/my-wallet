@@ -6,6 +6,7 @@ import {
   UserIcon,
   WalletIcon,
 } from '../components/icons';
+import { ProfilePlanCard } from '../components/plan/ProfilePlanCard';
 import {
   Avatar,
   Button,
@@ -142,6 +143,8 @@ export function Profile() {
           amounts.
         </p>
       </Card>
+
+      <ProfilePlanCard />
 
       <Card className="p-4 sm:p-6">
         <div className="border-border mb-5 flex items-center gap-3 border-b pb-4">

@@ -13,6 +13,10 @@ vi.mock('../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
+vi.mock('../contexts/UserContext', () => ({
+  useUser: () => ({ user: makeUser(), loading: false, updateUser: vi.fn() }),
+}));
+
 vi.mock('../contexts/ThemeContext', () => ({
   useTheme: () => ({ resolvedTheme: 'light' }),
 }));
@@ -30,6 +34,7 @@ import {
 import { PAGE_SIZE } from '../hooks/subscriptions/useSubscriptionsData';
 import { MockedProvider } from '../test/apollo-test-utils';
 import { makeSubscription } from '../test/fixtures/subscription';
+import { makeUser } from '../test/fixtures/user';
 import { Subscriptions } from './Subscriptions';
 
 beforeEach(() => {

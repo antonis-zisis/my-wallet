@@ -7,6 +7,7 @@ import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { HEALTH_QUERY } from '../graphql/health';
 import { MockedProvider } from '../test/apollo-test-utils';
+import { makeUser } from '../test/fixtures';
 import { NavBar } from './NavBar';
 
 const mockNavigate = vi.fn();
@@ -17,17 +18,7 @@ vi.mock('react-router', async () => {
 });
 
 vi.mock('../contexts/UserContext', () => ({
-  useUser: vi.fn().mockReturnValue({
-    user: {
-      id: '1',
-      email: 'test@example.com',
-      fullName: 'John Doe',
-      currency: 'EUR',
-      supabaseId: 'supabase-1',
-    },
-    loading: false,
-    updateUser: vi.fn(),
-  }),
+  useUser: vi.fn(),
 }));
 
 vi.mock('../contexts/ToastContext', () => ({
@@ -74,13 +65,12 @@ describe('NavBar', () => {
   beforeEach(() => {
     mockNavigate.mockReset();
     vi.mocked(useUser).mockReturnValue({
-      user: {
+      user: makeUser({
         id: '1',
         email: 'test@example.com',
         fullName: 'John Doe',
-        currency: 'EUR',
         supabaseId: 'supabase-1',
-      },
+      }),
       loading: false,
       updateUser: vi.fn(),
     });
@@ -123,13 +113,12 @@ describe('NavBar', () => {
 
   it('shows avatar with email initials when fullName is null', async () => {
     vi.mocked(useUser).mockReturnValue({
-      user: {
+      user: makeUser({
         id: '1',
         email: 'test@example.com',
         fullName: null,
-        currency: 'EUR',
         supabaseId: 'supabase-1',
-      },
+      }),
       loading: false,
       updateUser: vi.fn(),
     });
@@ -196,13 +185,12 @@ describe('NavBar', () => {
 
   it('shows only email in dropdown header when fullName is null', async () => {
     vi.mocked(useUser).mockReturnValue({
-      user: {
+      user: makeUser({
         id: '1',
         email: 'test@example.com',
         fullName: null,
-        currency: 'EUR',
         supabaseId: 'supabase-1',
-      },
+      }),
       loading: false,
       updateUser: vi.fn(),
     });

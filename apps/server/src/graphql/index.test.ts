@@ -1,6 +1,10 @@
 import { ApolloServer } from '@apollo/server';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('../lib/env', () => ({
+  env: { ENABLE_SELF_SERVE_PLAN_SWITCH: true },
+}));
+
 vi.mock('../lib/prisma', () => ({
   default: {
     user: { upsert: vi.fn() },
@@ -29,6 +33,27 @@ afterAll(async () => {
 });
 
 describe('merged GraphQL schema', () => {
+  it('resolves the entitlements of the signed-in user', async () => {
+    vi.mocked(prisma.user.upsert).mockResolvedValue(makeUser({ plan: 'FREE' }));
+
+    const response = await server.executeOperation(
+      { query: '{ me { plan entitlements { maxReports canShareReports } } }' },
+      { contextValue }
+    );
+
+    expect(response.body.kind).toBe('single');
+    expect(
+      response.body.kind === 'single' && response.body.singleResult
+    ).toMatchObject({
+      data: {
+        me: {
+          plan: 'FREE',
+          entitlements: { maxReports: 3, canShareReports: false },
+        },
+      },
+    });
+  });
+
   it('resolves the onboarding progress of the signed-in user', async () => {
     vi.mocked(prisma.user.upsert).mockResolvedValue(makeUser());
     vi.mocked(prisma.transaction.findFirst).mockResolvedValue(null);
@@ -48,11 +73,19 @@ describe('merged GraphQL schema', () => {
     });
   });
 
-  it('registers the computed fields every domain contributes', () => {
-    expect(resolvers.Report.members).toBeInstanceOf(Function);
-    expect(resolvers.Subscription.isActive).toBeInstanceOf(Function);
-    expect(resolvers.Contract.isExpired).toBeInstanceOf(Function);
-    expect(resolvers.NetWorthSnapshot.entries).toBeInstanceOf(Function);
-    expect(resolvers.User.onboardingProgress).toBeInstanceOf(Function);
+  it('resolves every plan for the picker', async () => {
+    const response = await server.executeOperation(
+      { query: '{ plans { plan entitlements { maxNetWorthSnapshots } } }' },
+      { contextValue }
+    );
+
+    expect(
+      response.body.kind === 'single' && response.body.singleResult.data
+    ).toEqual({
+      plans: [
+        { plan: 'FREE', entitlements: { maxNetWorthSnapshots: 1 } },
+        { plan: 'PRO', entitlements: { maxNetWorthSnapshots: null } },
+      ],
+    });
   });
 });

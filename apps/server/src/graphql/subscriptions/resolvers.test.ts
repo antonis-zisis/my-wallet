@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeSubscription } from '../../test/fixtures/subscriptions';
+import { makeUser } from '../../test/fixtures/users';
 import { subscriptionResolvers } from './resolvers';
 
 const USER_ID = 'user-1';
@@ -30,6 +31,9 @@ vi.mock('../../lib/prisma', () => ({
       update: vi.fn(),
       delete: vi.fn(),
     },
+    user: {
+      findUnique: vi.fn(),
+    },
   },
 }));
 
@@ -38,6 +42,9 @@ let prisma: typeof import('../../lib/prisma').default;
 beforeEach(async () => {
   vi.clearAllMocks();
   prisma = (await import('../../lib/prisma')).default;
+  vi.mocked(prisma.user.findUnique).mockResolvedValue(
+    makeUser({ plan: 'PRO' })
+  );
 });
 
 describe('subscriptionResolvers', () => {
@@ -496,6 +503,27 @@ describe('subscriptionResolvers', () => {
   });
 
   describe('Mutation.resumeSubscription', () => {
+    it('throws a plan-limit error when resuming would exceed the active cap', async () => {
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(
+        makeUser({ plan: 'FREE' })
+      );
+      vi.mocked(prisma.subscription.findFirst).mockResolvedValue(
+        makeSubscription({ isActive: false }) as never
+      );
+      vi.mocked(prisma.subscription.count).mockResolvedValue(3);
+
+      const mutation = subscriptionResolvers.Mutation.resumeSubscription(
+        undefined as unknown,
+        { input: { id: 'sub-1' } },
+        CTX
+      );
+
+      await expect(mutation).rejects.toThrow(
+        'The Free plan is limited to 3 active subscriptions.'
+      );
+      expect(prisma.subscription.update).not.toHaveBeenCalled();
+    });
+
     it('clears cancelledAt and endDate, sets isActive to true', async () => {
       const cancelledSubscription = {
         ...mockSubscription,

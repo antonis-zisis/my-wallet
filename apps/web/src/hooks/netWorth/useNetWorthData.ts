@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
 import { SnapshotFormValues } from '../../components/netWorth/NetWorthSnapshotModal';
+import { useToast } from '../../contexts/ToastContext';
 import {
   CREATE_NET_WORTH_SNAPSHOT,
   DELETE_NET_WORTH_SNAPSHOT,
@@ -16,6 +17,7 @@ import {
   NetWorthSnapshotsData,
   NetWorthSortOption,
 } from '../../types/netWorth';
+import { getPlanLimitMessage } from '../../utils/getPlanLimitMessage';
 import { useDebouncedValue } from '../useDebouncedValue';
 import { useLocalStorage } from '../useLocalStorage';
 
@@ -35,6 +37,8 @@ export function useNetWorthData() {
     'netWorth.sortOption',
     'DATE'
   );
+  const { showError } = useToast();
+
   const [modalState, setModalState] = useState<SnapshotModalState>({
     kind: 'closed',
   });
@@ -105,7 +109,14 @@ export function useNetWorthData() {
   const handleCloseModal = () => setModalState({ kind: 'closed' });
 
   const handleCreate = async (input: SnapshotFormValues) => {
-    await createSnapshot({ variables: { input } });
+    try {
+      await createSnapshot({ variables: { input } });
+    } catch (error) {
+      showError(getPlanLimitMessage(error) ?? 'Failed to create snapshot.');
+
+      return;
+    }
+
     setPage(1);
     handleCloseModal();
   };

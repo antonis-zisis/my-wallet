@@ -8,6 +8,7 @@ import {
   UPDATE_CONTRACT,
 } from '../../graphql/contracts';
 import { ContractSortField } from '../../types/contract';
+import { getPlanLimitMessage } from '../../utils/getPlanLimitMessage';
 import { useContractsModals } from './useContractsModals';
 
 export type ContractInput = {
@@ -73,8 +74,8 @@ export function useContractsMutations({
       onResetPage();
       modals.onCloseCreate();
       showSuccess('Contract created.');
-    } catch {
-      showError('Failed to create contract.');
+    } catch (error) {
+      showError(getPlanLimitMessage(error) ?? 'Failed to create contract.');
     }
   };
 

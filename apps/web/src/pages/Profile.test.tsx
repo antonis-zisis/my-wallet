@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MockedProvider } from '../test/apollo-test-utils';
@@ -38,7 +39,9 @@ vi.mock('../contexts/ToastContext', () => ({
 function renderProfile() {
   return render(
     <MockedProvider>
-      <Profile />
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>
     </MockedProvider>
   );
 }
