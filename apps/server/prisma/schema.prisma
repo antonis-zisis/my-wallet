@@ -14,16 +14,21 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  supabaseId   String        @unique @map("supabase_id")
-  email        String
-  fullName     String?       @map("full_name")
-  currency     String        @default("EUR")
-  lastSeenAt   DateTime?     @map("last_seen_at")
-  onboardingCompletedAt DateTime? @map("onboarding_completed_at")
-  reportShares ReportShare[]
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
+  id                    String             @id @default(uuid())
+  supabaseId            String             @unique @map("supabase_id")
+  email                 String
+  fullName              String?            @map("full_name")
+  currency              String             @default("EUR")
+  role                  String             @default("USER")
+  lastSeenAt            DateTime?          @map("last_seen_at")
+  onboardingCompletedAt DateTime?          @map("onboarding_completed_at")
+  contracts             Contract[]
+  netWorthSnapshots     NetWorthSnapshot[]
+  reports               Report[]
+  reportShares          ReportShare[]
+  subscriptions         Subscription[]
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
 
   @@map("users")
 }
@@ -33,11 +38,13 @@ model Report {
   title        String
   isLocked     Boolean       @default(false) @map("is_locked")
   userId       String        @map("user_id")
+  user         User          @relation(fields: [userId], references: [supabaseId], onDelete: Cascade)
   transactions Transaction[]
   shares       ReportShare[]
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 
+  @@index([userId])
   @@map("reports")
 }
 
@@ -76,10 +83,12 @@ model NetWorthSnapshot {
   title        String
   snapshotDate DateTime        @map("snapshot_date")
   userId       String          @map("user_id")
+  user         User            @relation(fields: [userId], references: [supabaseId], onDelete: Cascade)
   entries      NetWorthEntry[]
   createdAt    DateTime        @default(now()) @map("created_at")
   updatedAt    DateTime        @updatedAt @map("updated_at")
 
+  @@index([userId])
   @@map("net_worth_snapshots")
 }
 
@@ -113,9 +122,11 @@ model Subscription {
   paymentMethod String?   @map("payment_method")
   url           String?
   userId        String    @map("user_id")
+  user          User      @relation(fields: [userId], references: [supabaseId], onDelete: Cascade)
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
+  @@index([userId])
   @@map("subscriptions")
 }
 
@@ -128,8 +139,24 @@ model Contract {
   endDate   DateTime? @map("end_date")
   cost      Float?
   userId    String    @map("user_id")
+  user      User      @relation(fields: [userId], references: [supabaseId], onDelete: Cascade)
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
+  @@index([userId])
   @@map("contracts")
+}
+
+model AdminAuditLog {
+  id          String   @id @default(uuid())
+  actorId     String   @map("actor_id")
+  actorEmail  String   @map("actor_email")
+  action      String
+  targetId    String?  @map("target_id")
+  targetEmail String?  @map("target_email")
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("admin_audit_logs")
 }

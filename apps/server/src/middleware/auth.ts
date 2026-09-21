@@ -1,10 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
 import type { NextFunction, Request, Response } from 'express';
 
-import { env } from '../lib/env';
 import { touchLastSeen } from '../lib/lastSeen';
-
-const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SECRET_KEY);
+import { supabaseAdmin } from '../lib/supabase';
 
 export type AuthenticatedRequest = {
   userId?: string;

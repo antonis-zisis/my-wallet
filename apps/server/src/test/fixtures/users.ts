@@ -7,6 +7,7 @@ export function makeUser(overrides: Partial<User> = {}): User {
     email: 'owner@example.com',
     fullName: 'Report Owner',
     currency: 'EUR',
+    role: 'USER',
     lastSeenAt: null,
     onboardingCompletedAt: null,
     createdAt: new Date('2024-01-01T10:00:00Z'),

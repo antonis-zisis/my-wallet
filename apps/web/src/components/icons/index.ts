@@ -21,6 +21,7 @@ export { MonitorIcon } from './MonitorIcon';
 export { MoonIcon } from './MoonIcon';
 export { PencilIcon } from './PencilIcon';
 export { SearchIcon } from './SearchIcon';
+export { ShieldIcon } from './ShieldIcon';
 export { SparklesIcon } from './SparklesIcon';
 export { SunIcon } from './SunIcon';
 export { TrashIcon } from './TrashIcon';

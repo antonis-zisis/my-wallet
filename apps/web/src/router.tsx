@@ -1,7 +1,12 @@
 import { createBrowserRouter } from 'react-router';
 
 import { App } from './App';
+import { AdminLayout } from './components/admin/AdminLayout';
+import { AdminRoute } from './components/AdminRoute';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminInsights } from './pages/admin/AdminInsights';
+import { AdminUserDetail } from './pages/admin/AdminUserDetail';
+import { AdminUsers } from './pages/admin/AdminUsers';
 import { CategoryTrends } from './pages/CategoryTrends';
 import { Contracts } from './pages/Contracts';
 import { ForgotPassword } from './pages/ForgotPassword';
@@ -51,6 +56,20 @@ export const router = createBrowserRouter([
           { path: 'net-worth/:id', element: <NetWorthSnapshotPage /> },
           { path: 'profile', element: <Profile /> },
           { path: '*', element: <NotFound /> },
+        ],
+      },
+      {
+        path: 'admin',
+        element: <AdminRoute />,
+        children: [
+          {
+            element: <AdminLayout />,
+            children: [
+              { index: true, element: <AdminUsers /> },
+              { path: 'users/:supabaseId', element: <AdminUserDetail /> },
+              { path: 'insights', element: <AdminInsights /> },
+            ],
+          },
         ],
       },
     ],

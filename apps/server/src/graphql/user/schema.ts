@@ -5,6 +5,7 @@ export const userTypeDefs = `#graphql
     email: String!
     fullName: String
     currency: String!
+    role: String!
     onboardingCompletedAt: String
     onboardingProgress: OnboardingProgress!
     createdAt: String!
