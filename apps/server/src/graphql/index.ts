@@ -36,6 +36,9 @@ export const resolvers = {
   Contract: {
     ...contractResolvers.Contract,
   },
+  User: {
+    ...userResolvers.User,
+  },
   Query: {
     ...healthResolvers.Query,
     ...transactionResolvers.Query,
