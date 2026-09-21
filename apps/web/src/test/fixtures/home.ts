@@ -8,11 +8,13 @@ import {
   GET_REPORTS_SUMMARY,
 } from '../../graphql/reports';
 import { GET_SUBSCRIPTIONS } from '../../graphql/subscriptions';
+import { GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH } from '../../graphql/transactions';
 import { Contract } from '../../types/contract';
 import { NetWorthSnapshot } from '../../types/netWorth';
 import { OnboardingProgress } from '../../types/onboarding';
 import { Report } from '../../types/report';
 import { Subscription } from '../../types/subscription';
+import { CategoryMonthlyTotal } from '../../types/transaction';
 import { onboardingResponse } from './onboarding';
 
 export function reportsResponse(
@@ -97,12 +99,25 @@ export function contractsResponse(
   };
 }
 
+export function categoryTotalsResponse(
+  totals: Array<CategoryMonthlyTotal> = []
+): MockLink.MockedResponse {
+  return {
+    request: {
+      query: GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH,
+      variables: { months: 12 },
+    },
+    result: { data: { expenseCategoryTotalsByMonth: totals } },
+  };
+}
+
 type HomeMocksOverrides = {
   reports?: Array<Report>;
   summaryReports?: Array<Report>;
   snapshots?: Array<NetWorthSnapshot>;
   subscriptions?: Array<Subscription>;
   contracts?: Array<Contract>;
+  categoryTotals?: Array<CategoryMonthlyTotal>;
   reportDetails?: Array<{ id: string; report: Partial<Report> }>;
   onboardingCompletedAt?: string | null;
   onboardingProgress?: Partial<OnboardingProgress>;
@@ -121,6 +136,7 @@ export function homeMocks(
     netWorthSnapshotsResponse(overrides.snapshots),
     subscriptionsResponse(overrides.subscriptions),
     contractsResponse(overrides.contracts),
+    categoryTotalsResponse(overrides.categoryTotals),
     ...(overrides.reportDetails ?? []).map(({ id, report }) =>
       reportResponse(id, report)
     ),

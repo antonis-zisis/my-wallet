@@ -11,7 +11,7 @@ export const WINDOW_OPTIONS = [3, 6, 9, 12] as const;
 
 export type WindowOption = (typeof WINDOW_OPTIONS)[number];
 
-const MAX_WINDOW_MONTHS = 12;
+export const MAX_WINDOW_MONTHS = 12;
 
 export function useCategoryTrendsData() {
   const [windowMonths, setWindowMonths] = useLocalStorage<WindowOption>(

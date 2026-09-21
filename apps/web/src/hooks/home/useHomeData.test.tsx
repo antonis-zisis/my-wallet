@@ -1,7 +1,7 @@
 import { MockLink } from '@apollo/client/testing';
 import { renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MockedProvider } from '../../test/apollo-test-utils';
 import { homeMocks } from '../../test/fixtures/home';
@@ -129,5 +129,70 @@ describe('useHomeData', () => {
     expect(result.current.chartReports.map((report) => report.id)).toEqual([
       'r1',
     ]);
+  });
+  describe('spending insight', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date('2026-08-26T00:00:00.000Z'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('surfaces the category that moved most against its baseline', async () => {
+      const baselineMonths = [
+        '2026-01',
+        '2026-02',
+        '2026-03',
+        '2026-04',
+        '2026-05',
+        '2026-06',
+      ];
+
+      const { result } = renderWithMocks(
+        homeMocks({
+          categoryTotals: [
+            ...baselineMonths.map((month) => ({
+              category: 'Groceries',
+              month,
+              total: 100,
+            })),
+            ...baselineMonths.map((month) => ({
+              category: 'Transport',
+              month,
+              total: 50,
+            })),
+            { category: 'Groceries', month: '2026-07', total: 400 },
+            { category: 'Transport', month: '2026-07', total: 100 },
+          ],
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.spendingInsight).not.toBeNull();
+      });
+
+      expect(result.current.spendingInsight?.category).toBe('Groceries');
+      expect(result.current.spendingInsight?.difference).toBe(300);
+      expect(result.current.spendingInsightMonth).toBe('2026-07');
+      expect(result.current.spendingInsightBaselineMonths).toBe(6);
+    });
+
+    it('has no insight when there is not enough history', async () => {
+      const { result } = renderWithMocks(
+        homeMocks({
+          categoryTotals: [
+            { category: 'Groceries', month: '2026-07', total: 400 },
+          ],
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.reportsLoading).toBe(false);
+      });
+
+      expect(result.current.spendingInsight).toBeNull();
+    });
   });
 });

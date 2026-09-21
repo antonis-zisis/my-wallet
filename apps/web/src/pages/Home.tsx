@@ -3,6 +3,7 @@ import { ContractsExpiringSoonCard } from '../components/home/ContractsExpiringS
 import { IncomeExpensesSection } from '../components/home/IncomeExpensesSection';
 import { NetWorthSummaryCard } from '../components/home/NetWorthSummaryCard';
 import { ReportSummaryGrid } from '../components/home/ReportSummaryGrid';
+import { SpendingInsightCard } from '../components/home/SpendingInsightCard';
 import { SubscriptionsSection } from '../components/home/SubscriptionsSection';
 import { GettingStartedCard } from '../components/onboarding/GettingStartedCard';
 import { WelcomeModal } from '../components/onboarding/WelcomeModal';
@@ -27,6 +28,9 @@ export function Home() {
     previousSnapshot,
     recentSnapshots,
     reportsLoading,
+    spendingInsight,
+    spendingInsightBaselineMonths,
+    spendingInsightMonth,
     subscriptionsLoading,
     summaryLoading,
     totalReportsCount,
@@ -69,6 +73,14 @@ export function Home() {
             reportsLoading={reportsLoading}
             totalCount={totalReportsCount}
           />
+
+          {spendingInsight && spendingInsightMonth && (
+            <SpendingInsightCard
+              baselineMonths={spendingInsightBaselineMonths}
+              insight={spendingInsight}
+              month={spendingInsightMonth}
+            />
+          )}
 
           <ErrorBoundary compact>
             <IncomeExpensesSection

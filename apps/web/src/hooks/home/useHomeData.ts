@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client/react';
+import { useMemo } from 'react';
 
 import { GET_CONTRACTS } from '../../graphql/contracts';
 import { GET_NET_WORTH_SNAPSHOTS } from '../../graphql/netWorth';
@@ -8,11 +9,15 @@ import {
   GET_REPORTS_SUMMARY,
 } from '../../graphql/reports';
 import { GET_SUBSCRIPTIONS } from '../../graphql/subscriptions';
+import { GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH } from '../../graphql/transactions';
 import { ContractsData } from '../../types/contract';
 import { NetWorthSnapshotsData } from '../../types/netWorth';
 import { Report, ReportsData, ReportsSummaryData } from '../../types/report';
 import { SubscriptionsData } from '../../types/subscription';
+import { ExpenseCategoryTotalsData } from '../../types/transaction';
 import { computeExpiringSoon } from '../contracts/selectors/computeExpiringSoon';
+import { buildSpendingInsights } from '../transactions/selectors/buildSpendingInsights';
+import { MAX_WINDOW_MONTHS } from '../transactions/useCategoryTrendsData';
 
 export function useHomeData() {
   const { data: reportsData, loading: reportsLoading } =
@@ -36,6 +41,10 @@ export function useHomeData() {
         sortOrder: 'ASC',
       },
     });
+  const { data: categoryTotalsData } = useQuery<ExpenseCategoryTotalsData>(
+    GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH,
+    { variables: { months: MAX_WINDOW_MONTHS } }
+  );
 
   const nonEmptyReportItems = (reportsData?.reports.items ?? []).filter(
     (report) => (report.transactionCount ?? 0) > 0
@@ -63,6 +72,20 @@ export function useHomeData() {
     contractsData?.contracts.items ?? []
   );
 
+  const totals = useMemo(
+    () => categoryTotalsData?.expenseCategoryTotalsByMonth ?? [],
+    [categoryTotalsData]
+  );
+
+  const {
+    baselineMonthCount,
+    insights,
+    month: spendingInsightMonth,
+  } = useMemo(
+    () => buildSpendingInsights({ now: new Date(), totals }),
+    [totals]
+  );
+
   return {
     activeSubscriptions,
     contractsLoading,
@@ -81,6 +104,9 @@ export function useHomeData() {
     previousSnapshot: snapshotItems[1] ?? null,
     recentSnapshots,
     reportsLoading,
+    spendingInsight: insights[0] ?? null,
+    spendingInsightBaselineMonths: baselineMonthCount,
+    spendingInsightMonth,
     subscriptionsLoading,
     summaryLoading,
     totalReportsCount: reportsData?.reports.totalCount,
