@@ -1,9 +1,9 @@
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { ContractsExpiringSoonCard } from '../components/home/ContractsExpiringSoonCard';
 import { IncomeExpensesSection } from '../components/home/IncomeExpensesSection';
+import { MonthlyInsightsGrid } from '../components/home/MonthlyInsightsGrid';
 import { NetWorthSummaryCard } from '../components/home/NetWorthSummaryCard';
 import { ReportSummaryGrid } from '../components/home/ReportSummaryGrid';
-import { SpendingInsightCard } from '../components/home/SpendingInsightCard';
 import { SubscriptionsSection } from '../components/home/SubscriptionsSection';
 import { GettingStartedCard } from '../components/onboarding/GettingStartedCard';
 import { WelcomeModal } from '../components/onboarding/WelcomeModal';
@@ -21,6 +21,7 @@ export function Home() {
     currentReport,
     expiringContracts,
     hasContracts,
+    insightsLoading,
     lastSnapshot,
     netWorthLoading,
     previousLoading,
@@ -28,6 +29,8 @@ export function Home() {
     previousSnapshot,
     recentSnapshots,
     reportsLoading,
+    savingsRate,
+    savingsRateReportTitle,
     spendingInsight,
     spendingInsightBaselineMonths,
     spendingInsightMonth,
@@ -74,13 +77,14 @@ export function Home() {
             totalCount={totalReportsCount}
           />
 
-          {spendingInsight && spendingInsightMonth && (
-            <SpendingInsightCard
-              baselineMonths={spendingInsightBaselineMonths}
-              insight={spendingInsight}
-              month={spendingInsightMonth}
-            />
-          )}
+          <MonthlyInsightsGrid
+            baselineMonths={spendingInsightBaselineMonths}
+            insight={spendingInsight}
+            insightMonth={spendingInsightMonth}
+            loading={insightsLoading}
+            savingsRate={savingsRate}
+            savingsRateReportTitle={savingsRateReportTitle}
+          />
 
           <ErrorBoundary compact>
             <IncomeExpensesSection

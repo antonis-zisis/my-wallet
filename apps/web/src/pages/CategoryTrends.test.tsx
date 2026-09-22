@@ -169,7 +169,9 @@ describe('CategoryTrends', () => {
     renderPage([withHistory]);
 
     expect(
-      await screen.findByRole('heading', { name: /what changed in jul '26/i })
+      await screen.findByRole('heading', {
+        name: /biggest changes in jul '26/i,
+      })
     ).toBeInTheDocument();
     expect(
       screen.getByText('Against your previous 5 months')
@@ -187,7 +189,7 @@ describe('CategoryTrends', () => {
 
     await waitFor(() =>
       expect(
-        screen.queryByRole('heading', { name: /what changed in/i })
+        screen.queryByRole('heading', { name: /biggest changes in/i })
       ).not.toBeInTheDocument()
     );
   });

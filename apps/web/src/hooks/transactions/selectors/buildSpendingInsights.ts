@@ -37,26 +37,13 @@ function emptyInsights(
   return { baselineMonthCount, insights: [], month };
 }
 
-function earliestMonthOf(totals: Array<CategoryMonthlyTotal>): string | null {
-  return totals.reduce<string | null>(
-    (earliest, total) =>
-      earliest === null || total.month < earliest ? total.month : earliest,
-    null
-  );
-}
-
-function buildBaselineMonths(now: Date, earliestMonth: string): Array<string> {
+function buildCandidateMonths(now: Date): Array<string> {
   const months: Array<string> = [];
 
   for (let offset = BASELINE_MONTHS; offset >= 1; offset -= 1) {
-    const month = toMonthKey(
-      now.getUTCFullYear(),
-      now.getUTCMonth() - 1 - offset
+    months.push(
+      toMonthKey(now.getUTCFullYear(), now.getUTCMonth() - 1 - offset)
     );
-
-    if (month >= earliestMonth) {
-      months.push(month);
-    }
   }
 
   return months;
@@ -112,20 +99,10 @@ export function buildSpendingInsights({
   now,
   totals,
 }: BuildSpendingInsightsInput): SpendingInsightsView {
-  const earliestMonth = earliestMonthOf(totals);
-
-  if (earliestMonth === null) {
-    return emptyInsights(null, 0);
-  }
-
   const month = toMonthKey(now.getUTCFullYear(), now.getUTCMonth() - 1);
-  const baselineMonths = buildBaselineMonths(now, earliestMonth);
+  const candidateMonths = buildCandidateMonths(now);
+  const relevantMonths = new Set([month, ...candidateMonths]);
 
-  if (baselineMonths.length < MIN_BASELINE_MONTHS) {
-    return emptyInsights(null, baselineMonths.length);
-  }
-
-  const relevantMonths = new Set([month, ...baselineMonths]);
   const totalByCategoryMonth = new Map<string, number>();
   const totalByMonth = new Map<string, number>();
   const categories = new Set<string>();
@@ -146,6 +123,14 @@ export function buildSpendingInsights({
       (totalByMonth.get(entry.month) ?? 0) + entry.total
     );
     categories.add(entry.category);
+  }
+
+  const baselineMonths = candidateMonths.filter(
+    (candidate) => (totalByMonth.get(candidate) ?? 0) > 0
+  );
+
+  if (baselineMonths.length < MIN_BASELINE_MONTHS) {
+    return emptyInsights(null, baselineMonths.length);
   }
 
   const monthTotal = totalByMonth.get(month) ?? 0;

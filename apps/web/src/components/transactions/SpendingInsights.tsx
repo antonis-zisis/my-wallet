@@ -79,7 +79,7 @@ export function SpendingInsights({
 
         <div className="min-w-0">
           <h2 className="text-text-primary text-sm font-semibold">
-            What changed in {formatMonthWithYear(month)}
+            Biggest changes in {formatMonthWithYear(month)}
           </h2>
 
           <p className="text-text-tertiary text-xs">

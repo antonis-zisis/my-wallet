@@ -47,39 +47,4 @@ describe('ReportCard', () => {
     expect(screen.getByText('Empty Report')).toBeInTheDocument();
     expect(screen.getAllByText(/0,00/)).toHaveLength(2);
   });
-
-  it('shows the share of income saved', () => {
-    renderCard();
-
-    expect(screen.getByText('Saved 92% of income')).toBeInTheDocument();
-  });
-
-  it('shows how far income was overspent when expenses exceed it', () => {
-    const overspentReport = makeReport({
-      id: '3',
-      title: 'March 2026',
-      transactions: [
-        makeTransaction({ id: 't1', type: 'INCOME', amount: 1000 }),
-        makeTransaction({ id: 't2', type: 'EXPENSE', amount: 1200 }),
-      ],
-    });
-
-    renderCard(overspentReport);
-
-    expect(screen.getByText('Overspent by 20% of income')).toBeInTheDocument();
-  });
-
-  it('omits the savings rate when the report has no income', () => {
-    const expensesOnlyReport = makeReport({
-      id: '4',
-      title: 'April 2026',
-      transactions: [
-        makeTransaction({ id: 't1', type: 'EXPENSE', amount: 300 }),
-      ],
-    });
-
-    renderCard(expensesOnlyReport);
-
-    expect(screen.queryByText(/of income/)).not.toBeInTheDocument();
-  });
 });

@@ -15,6 +15,8 @@ import { NetWorthSnapshotsData } from '../../types/netWorth';
 import { Report, ReportsData, ReportsSummaryData } from '../../types/report';
 import { SubscriptionsData } from '../../types/subscription';
 import { ExpenseCategoryTotalsData } from '../../types/transaction';
+import { computeReportTotals } from '../../utils/computeReportTotals';
+import { computeSavingsRate } from '../../utils/computeSavingsRate';
 import { computeExpiringSoon } from '../contracts/selectors/computeExpiringSoon';
 import { buildSpendingInsights } from '../transactions/selectors/buildSpendingInsights';
 import { MAX_WINDOW_MONTHS } from '../transactions/useCategoryTrendsData';
@@ -41,10 +43,10 @@ export function useHomeData() {
         sortOrder: 'ASC',
       },
     });
-  const { data: categoryTotalsData } = useQuery<ExpenseCategoryTotalsData>(
-    GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH,
-    { variables: { months: MAX_WINDOW_MONTHS } }
-  );
+  const { data: categoryTotalsData, loading: categoryTotalsLoading } =
+    useQuery<ExpenseCategoryTotalsData>(GET_EXPENSE_CATEGORY_TOTALS_BY_MONTH, {
+      variables: { months: MAX_WINDOW_MONTHS },
+    });
 
   const nonEmptyReportItems = (reportsData?.reports.items ?? []).filter(
     (report) => (report.transactionCount ?? 0) > 0
@@ -61,9 +63,16 @@ export function useHomeData() {
   }>(GET_REPORT, { variables: { id: previousId }, skip: !previousId });
 
   const activeSubscriptions = subscriptionsData?.subscriptions.items ?? [];
-  const currentIncome = (currentData?.report.transactions ?? [])
-    .filter((transaction) => transaction.type === 'INCOME')
-    .reduce((sum, transaction) => sum + transaction.amount, 0);
+  const currentReport = currentData?.report;
+  const previousReport = previousData?.report;
+
+  const { totalIncome: currentIncome } = computeReportTotals(
+    currentReport?.transactions
+  );
+
+  const savingsRate = computeSavingsRate(
+    computeReportTotals(previousReport?.transactions)
+  );
 
   const snapshotItems = netWorthData?.netWorthSnapshots.items ?? [];
   const recentSnapshots = snapshotItems.slice(0, 6).reverse();
@@ -96,14 +105,20 @@ export function useHomeData() {
     ),
     currentIncome,
     currentLoading,
-    currentReport: currentData?.report,
+    currentReport,
+    insightsLoading:
+      categoryTotalsLoading ||
+      reportsLoading ||
+      (previousLoading && !previousReport),
     lastSnapshot: snapshotItems[0] ?? null,
     netWorthLoading,
     previousLoading,
-    previousReport: previousData?.report,
+    previousReport,
     previousSnapshot: snapshotItems[1] ?? null,
     recentSnapshots,
     reportsLoading,
+    savingsRate,
+    savingsRateReportTitle: previousReport?.title ?? null,
     spendingInsight: insights[0] ?? null,
     spendingInsightBaselineMonths: baselineMonthCount,
     spendingInsightMonth,

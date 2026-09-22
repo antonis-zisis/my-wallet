@@ -25,7 +25,7 @@ describe('buildSpendingInsights', () => {
     expect(result.month).toBeNull();
   });
 
-  it('returns nothing when there are fewer than three baseline months', () => {
+  it('returns nothing when fewer than three months had any spending', () => {
     const result = buildSpendingInsights({
       now: NOW,
       totals: [
@@ -163,5 +163,24 @@ describe('buildSpendingInsights', () => {
 
     expect(result.insights).toEqual([]);
     expect(result.month).toBe('2026-08');
+  });
+  it('averages over the months that had spending, not the empty ones', () => {
+    const result = buildSpendingInsights({
+      now: NOW,
+      totals: [
+        { category: 'Household', month: '2026-03', total: 300 },
+        { category: 'Household', month: '2026-04', total: 300 },
+        { category: 'Utilities', month: '2026-02', total: 120 },
+        { category: 'Household', month: '2026-08', total: 300 },
+        { category: 'Utilities', month: '2026-08', total: 360 },
+      ],
+    });
+
+    expect(result.baselineMonthCount).toBe(3);
+    expect(result.insights[0]).toMatchObject({
+      baselineAverage: 40,
+      category: 'Utilities',
+      difference: 320,
+    });
   });
 });

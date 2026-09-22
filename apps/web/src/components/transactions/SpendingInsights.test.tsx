@@ -29,7 +29,7 @@ describe('SpendingInsights', () => {
     renderInsights([makeInsight()]);
 
     expect(
-      screen.getByRole('heading', { name: /what changed in aug '26/i })
+      screen.getByRole('heading', { name: /biggest changes in aug '26/i })
     ).toBeInTheDocument();
     expect(
       screen.getByText('Against your previous 6 months')

@@ -35,15 +35,25 @@ describe('SpendingInsightCard', () => {
   it('names the month and the category that moved most', () => {
     renderCard();
 
-    expect(screen.getByText(/what changed in aug '26/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /biggest change in aug '26/i })
+    ).toBeInTheDocument();
     expect(screen.getByText('Dining & Takeaway')).toBeInTheDocument();
+  });
+
+  it('names the baseline the change is measured against', () => {
+    renderCard();
+
+    expect(
+      screen.getByText('Against your previous 6 months')
+    ).toBeInTheDocument();
   });
 
   it('describes a category that rose above its average', () => {
     renderCard();
 
     expect(screen.getByText(/130,00/)).toBeInTheDocument();
-    expect(screen.getByText('above your 6-month average')).toBeInTheDocument();
+    expect(screen.getByText('above average')).toBeInTheDocument();
   });
 
   it('describes a category that fell below its average', () => {
@@ -57,7 +67,7 @@ describe('SpendingInsightCard', () => {
     );
 
     expect(screen.getByText(/120,00/)).toBeInTheDocument();
-    expect(screen.getByText('below your 6-month average')).toBeInTheDocument();
+    expect(screen.getByText('below average')).toBeInTheDocument();
   });
 
   it('says a category is new when there is no baseline spending', () => {
@@ -71,9 +81,7 @@ describe('SpendingInsightCard', () => {
       })
     );
 
-    expect(
-      screen.getByText(/nothing spent here in the previous 6 months/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/nothing spent here before/)).toBeInTheDocument();
   });
 
   it('links through to the full category trends', () => {

@@ -29,7 +29,10 @@ const currentReport = makeReport({
 const previousReport = makeReport({
   id: 'r2',
   title: 'January 2026',
-  transactions: [],
+  transactions: [
+    makeTransaction({ id: 't4', type: 'INCOME', amount: 2000 }),
+    makeTransaction({ id: 't5', type: 'EXPENSE', amount: 500 }),
+  ],
 });
 
 const twoReportsList = [
@@ -130,6 +133,38 @@ describe('useHomeData', () => {
       'r1',
     ]);
   });
+  describe('savings rate', () => {
+    it('measures the previous report rather than the ongoing one', async () => {
+      const { result } = renderWithMocks(
+        homeMocks({
+          reports: twoReportsList,
+          reportDetails: [
+            { id: 'r1', report: currentReport },
+            { id: 'r2', report: previousReport },
+          ],
+        })
+      );
+
+      await waitFor(() => {
+        expect(result.current.previousReport).toBeDefined();
+      });
+
+      expect(result.current.savingsRate).toBe(75);
+      expect(result.current.savingsRateReportTitle).toBe('January 2026');
+    });
+
+    it('has no savings rate when there is no previous report', async () => {
+      const { result } = renderWithMocks(homeMocks());
+
+      await waitFor(() => {
+        expect(result.current.reportsLoading).toBe(false);
+      });
+
+      expect(result.current.savingsRate).toBeNull();
+      expect(result.current.savingsRateReportTitle).toBeNull();
+    });
+  });
+
   describe('spending insight', () => {
     beforeEach(() => {
       vi.useFakeTimers({ toFake: ['Date'] });
