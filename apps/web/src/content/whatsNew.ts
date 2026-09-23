@@ -14,6 +14,39 @@ export type WhatsNewRelease = {
 
 export const whatsNew: Array<WhatsNewRelease> = [
   {
+    version: '0.11.0',
+    date: '2026-09-23',
+    highlights: [
+      {
+        title: 'Choose your currency',
+        description:
+          'Pick euros, US dollars or pounds in your Profile, and every amount in the app shows in that currency. Only the symbol and formatting change - your numbers are never converted.',
+      },
+      {
+        title: 'A guided start',
+        description:
+          'New to My Wallet? A Getting started checklist on Home walks you through your first transaction, subscription, contract and net worth snapshot, and ticks off anything you have already done. You can replay the welcome tour any time from your Profile.',
+      },
+      {
+        title: "See what changed in last month's spending",
+        description:
+          'The Trends page now points out the categories where last month was noticeably higher or lower than usual, so the swings that matter stand out without you having to look for them.',
+      },
+      {
+        title: 'Expense categories that fit how you actually spend',
+        description:
+          'New categories for Personal Care, Kids, Gifts and Digital & Apps. Rent is now Household and also covers repairs and appliances, and Dining Out is now Dining & Takeaway. Existing transactions were renamed for you.',
+      },
+    ],
+    improvements: [
+      {
+        title: 'Smoother first steps',
+        description:
+          'Empty pages now show you how to add your first item, and a new report opens straight away so your first transaction is one click away.',
+      },
+    ],
+  },
+  {
     version: '0.10.0',
     date: '2026-09-17',
     highlights: [
