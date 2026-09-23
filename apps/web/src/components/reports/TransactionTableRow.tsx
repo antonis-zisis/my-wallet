@@ -66,9 +66,10 @@ export function TransactionTableRow({
         <MoneyAmount amount={transaction.amount} sign={isIncome ? '+' : '-'} />
       </td>
 
-      <td className="py-3 pl-2">
+      <td className="pl-2 align-middle">
         {!isLocked && (
           <Dropdown
+            className="relative flex"
             items={[
               { label: 'Edit', onClick: () => onEdit?.(transaction) },
               {
