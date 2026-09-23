@@ -38,7 +38,7 @@ export function AdminUsers() {
           <h1 className="text-text-primary text-2xl font-semibold">Users</h1>
           <p className="text-text-secondary mt-1 text-sm">
             {totalCount} registered {totalCount === 1 ? 'account' : 'accounts'}.
-            Account metadata only — no financial data is shown here.
+            Account metadata only - no financial data is shown here.
           </p>
         </div>
 
