@@ -1,23 +1,19 @@
 import { GraphQLError } from 'graphql';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { makeUser } from '../../test/fixtures/users';
 import { userResolvers } from './resolvers';
 
 const USER_ID = 'supabase-user-1';
 const EMAIL = 'test@example.com';
 const CTX = { userId: USER_ID, email: EMAIL };
 
-const mockUser = {
+const mockUser = makeUser({
   id: 'db-user-1',
   supabaseId: USER_ID,
   email: EMAIL,
   fullName: null,
-  currency: 'EUR',
-  onboardingCompletedAt: null,
-  lastSeenAt: null,
-  createdAt: new Date('2024-01-01T10:00:00Z'),
-  updatedAt: new Date('2024-01-01T10:00:00Z'),
-};
+});
 
 vi.mock('../../lib/prisma', () => ({
   default: {

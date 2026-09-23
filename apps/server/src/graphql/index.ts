@@ -1,3 +1,5 @@
+import { adminResolvers } from './admin/resolvers';
+import { adminTypeDefs } from './admin/schema';
 import { contractResolvers } from './contracts/resolvers';
 import { contractTypeDefs } from './contracts/schema';
 import { healthResolvers } from './health/resolvers';
@@ -21,6 +23,7 @@ export const typeDefs = [
   subscriptionTypeDefs,
   contractTypeDefs,
   userTypeDefs,
+  adminTypeDefs,
 ];
 
 export const resolvers = {
@@ -36,6 +39,12 @@ export const resolvers = {
   Contract: {
     ...contractResolvers.Contract,
   },
+  User: {
+    ...userResolvers.User,
+  },
+  AdminUser: {
+    ...adminResolvers.AdminUser,
+  },
   Query: {
     ...healthResolvers.Query,
     ...transactionResolvers.Query,
@@ -44,6 +53,7 @@ export const resolvers = {
     ...subscriptionResolvers.Query,
     ...contractResolvers.Query,
     ...userResolvers.Query,
+    ...adminResolvers.Query,
   },
   Mutation: {
     ...transactionResolvers.Mutation,
@@ -52,5 +62,6 @@ export const resolvers = {
     ...subscriptionResolvers.Mutation,
     ...contractResolvers.Mutation,
     ...userResolvers.Mutation,
+    ...adminResolvers.Mutation,
   },
 };

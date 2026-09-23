@@ -3,9 +3,7 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import type { Request, Response } from 'express';
 
 import { env } from '../lib/env';
-import prisma from '../lib/prisma';
-
-const ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
+import { countUsers } from '../lib/stats/countUsers';
 
 // active_users = users who made an authenticated request in the last 24 hours
 // registered_users = all rows in the users table
@@ -17,12 +15,7 @@ export async function statsHandler(req: Request, res: Response) {
   }
 
   try {
-    const [activeUsers, registeredUsers] = await Promise.all([
-      prisma.user.count({
-        where: { lastSeenAt: { gte: new Date(Date.now() - ACTIVE_WINDOW_MS) } },
-      }),
-      prisma.user.count(),
-    ]);
+    const { activeUsers, registeredUsers } = await countUsers();
 
     res.status(200).json({
       active_users: activeUsers,

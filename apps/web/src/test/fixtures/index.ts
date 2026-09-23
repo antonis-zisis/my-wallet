@@ -1,3 +1,9 @@
+export {
+  makeAdminInsights,
+  makeAdminOnboardingFunnel,
+  makeAdminUser,
+  makeAdminUserCounts,
+} from './admin';
 export { makeContract } from './contracts';
 export { makeNetWorthEntry, makeNetWorthSnapshot } from './netWorth';
 export { makeOnboardingProgress, onboardingResponse } from './onboarding';

@@ -6,8 +6,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useUser } from '../../contexts/UserContext';
 import { HEALTH_QUERY } from '../../graphql/health';
+import { SUPERADMIN_ROLE } from '../../types/admin';
 import { getAvatarData } from '../../utils/getAvatarData';
-import { LogOutIcon, SparklesIcon, UserIcon } from '../icons';
+import { LogOutIcon, ShieldIcon, SparklesIcon, UserIcon } from '../icons';
 import { Avatar, Dropdown } from '../ui';
 
 type NavBarUserMenuProps = {
@@ -69,6 +70,15 @@ export function NavBarUserMenu({ onOpenWhatsNew }: NavBarUserMenuProps) {
             </div>
           ),
         },
+        ...(user.role === SUPERADMIN_ROLE
+          ? [
+              {
+                icon: <ShieldIcon />,
+                label: 'Admin',
+                onClick: () => navigate('/admin'),
+              },
+            ]
+          : []),
         {
           icon: <UserIcon />,
           label: 'Profile',

@@ -10,6 +10,7 @@ export type User = {
   currency: string;
   email: string;
   fullName: string | null;
+  role: string;
   supabaseId: string;
 };
 
