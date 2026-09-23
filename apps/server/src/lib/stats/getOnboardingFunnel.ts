@@ -12,9 +12,6 @@ export type OnboardingFunnel = {
 
 type FunnelRow = Record<keyof OnboardingFunnel, number>;
 
-// One pass with FILTER rather than six counts. The transaction arm mirrors
-// getOnboardingProgress, which also credits transactions authored in a report
-// somebody else owns.
 export async function getOnboardingFunnel(): Promise<OnboardingFunnel> {
   const [row] = await prisma.$queryRaw<Array<FunnelRow>>`
     SELECT

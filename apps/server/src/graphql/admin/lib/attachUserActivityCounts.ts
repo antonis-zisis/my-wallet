@@ -9,9 +9,6 @@ export type UserActivityCounts = {
 
 type AggregateRow = { userId: string; count: number };
 
-// Transactions and shares hang off reports rather than off the user, so neither
-// count is reachable through Prisma's relation `_count`. Aggregating in SQL keeps
-// this to two bounded queries instead of loading every report row to count in JS.
 export async function attachUserActivityCounts<Item extends UserIdentity>(
   users: Array<Item>
 ): Promise<Array<Item & UserActivityCounts>> {

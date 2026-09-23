@@ -58,9 +58,6 @@ export async function deleteUserCascade({
     prisma.user.delete({ where: { supabaseId } }),
   ]);
 
-  // Leaving the auth account behind would let them sign back in and have the
-  // `me` upsert silently mint a fresh, empty record. The client both returns and
-  // throws its failures, so catch as well as check.
   const authError = await supabaseAdmin.auth.admin
     .deleteUser(supabaseId)
     .then(({ error }) => error)
