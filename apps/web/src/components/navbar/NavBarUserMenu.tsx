@@ -70,6 +70,15 @@ export function NavBarUserMenu({ onOpenWhatsNew }: NavBarUserMenuProps) {
             </div>
           ),
         },
+        ...(user.role === SUPERADMIN_ROLE
+          ? [
+              {
+                icon: <ShieldIcon />,
+                label: 'Admin',
+                onClick: () => navigate('/admin'),
+              },
+            ]
+          : []),
         {
           icon: <UserIcon />,
           label: 'Profile',
@@ -80,15 +89,6 @@ export function NavBarUserMenu({ onOpenWhatsNew }: NavBarUserMenuProps) {
           label: "What's New",
           onClick: onOpenWhatsNew,
         },
-        ...(user.role === SUPERADMIN_ROLE
-          ? [
-              {
-                icon: <ShieldIcon />,
-                label: 'Admin',
-                onClick: () => navigate('/admin'),
-              },
-            ]
-          : []),
         {
           icon: <LogOutIcon />,
           label: 'Log out',
