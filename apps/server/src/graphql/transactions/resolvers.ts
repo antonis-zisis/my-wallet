@@ -9,6 +9,7 @@ import {
 import { TransactionInput } from './inputSchemas';
 import { buildCategoryMonthlyTotals } from './lib/buildCategoryMonthlyTotals';
 import { startOfMonthWindow } from './lib/startOfMonthWindow';
+import { transactionOrderBy } from './lib/transactionOrderBy';
 
 const MAX_WINDOW_TRANSACTIONS = 10000;
 
@@ -21,7 +22,7 @@ export const transactionResolvers = {
     ) => {
       return prisma.transaction.findMany({
         where: { report: reportAccessWhere(userId) },
-        orderBy: { date: 'desc' },
+        orderBy: transactionOrderBy,
       });
     },
     transaction: async (

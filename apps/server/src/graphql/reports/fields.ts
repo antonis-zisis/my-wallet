@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql';
 
 import { Transaction } from '../../generated/prisma/client';
 import prisma from '../../lib/prisma';
+import { transactionOrderBy } from '../transactions/lib/transactionOrderBy';
 import { attachReportMembers } from './lib/attachReportMembers';
 import { ReportMemberRecord } from './lib/buildMembersByReport';
 
@@ -71,7 +72,7 @@ export const reportFields = {
 
     return prisma.transaction.findMany({
       where: { reportId: parent.id },
-      orderBy: { date: 'desc' },
+      orderBy: transactionOrderBy,
     });
   },
   members: (parent: ReportParent) => loadMembers(parent),
