@@ -27,6 +27,7 @@ export const CATEGORY_TO_BUCKET: Record<string, string> = {
   'Personal Care': 'Wants',
   Shopping: 'Wants',
   Transport: 'Needs',
+  Travel: 'Wants',
   Utilities: 'Needs',
 };
 

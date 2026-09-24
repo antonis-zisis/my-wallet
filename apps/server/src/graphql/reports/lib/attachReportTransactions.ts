@@ -1,5 +1,6 @@
 import { Transaction } from '../../../generated/prisma/client';
 import prisma from '../../../lib/prisma';
+import { transactionOrderBy } from '../../transactions/lib/transactionOrderBy';
 
 const MAX_PRELOADED_TRANSACTIONS = 5000;
 
@@ -16,7 +17,7 @@ export async function attachReportTransactions<
 
   const transactions = await prisma.transaction.findMany({
     where: { reportId: { in: reports.map((report) => report.id) } },
-    orderBy: { date: 'desc' },
+    orderBy: transactionOrderBy,
     take: MAX_PRELOADED_TRANSACTIONS,
   });
 

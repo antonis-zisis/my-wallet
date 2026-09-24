@@ -86,6 +86,7 @@ describe('BudgetBreakdownChart', () => {
       'Gifts',
       'Personal Care',
       'Shopping',
+      'Travel',
       'Other',
     ];
     for (const category of wantsCategories) {

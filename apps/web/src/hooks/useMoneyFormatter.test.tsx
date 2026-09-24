@@ -35,12 +35,12 @@ describe('useMoneyFormatter', () => {
 
     const { result } = renderHook(() => useMoneyFormatter());
 
-    expect(result.current(1234.5)).toBe('*** €');
+    expect(result.current(1234.5)).toBe('***\u00A0€');
   });
 
   it('passes through the sign', () => {
     const { result } = renderHook(() => useMoneyFormatter());
 
-    expect(result.current(1234.5, { sign: '+' })).toBe('+1.234,50 €');
+    expect(result.current(1234.5, { sign: '+' })).toBe('+1.234,50\u00A0€');
   });
 });

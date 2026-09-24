@@ -167,7 +167,7 @@ async function main() {
               type: 'EXPENSE',
               amount: 120,
               description: 'Flight booking',
-              category: 'Transport',
+              category: 'Travel',
               date: new Date('2026-02-20'),
             },
           ],

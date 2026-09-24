@@ -55,7 +55,7 @@ describe('reportFields', () => {
 
       expect(prisma.transaction.findMany).toHaveBeenCalledWith({
         where: { reportId: parent.id },
-        orderBy: { date: 'desc' },
+        orderBy: [{ date: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
       });
       expect(result).toEqual(transactions);
     });

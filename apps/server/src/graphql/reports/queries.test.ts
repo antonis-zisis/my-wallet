@@ -273,7 +273,11 @@ describe('reportQueries', () => {
 
       expect(prisma.report.findFirst).toHaveBeenCalledWith({
         where: { id: 'report-1', ...reportAccessWhere(USER_ID) },
-        include: { transactions: { orderBy: { date: 'desc' } } },
+        include: {
+          transactions: {
+            orderBy: [{ date: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
+          },
+        },
       });
       expect(result).toEqual(reportWithTransactions);
     });

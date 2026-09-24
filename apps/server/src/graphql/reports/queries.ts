@@ -3,6 +3,7 @@ import type { GraphQLResolveInfo } from 'graphql';
 import prisma from '../../lib/prisma';
 import { selectsItemField } from '../../lib/selectsItemField';
 import { clampPage } from '../../lib/validate';
+import { transactionOrderBy } from '../transactions/lib/transactionOrderBy';
 import { attachReportMembers } from './lib/attachReportMembers';
 import { attachReportTotals } from './lib/attachReportTotals';
 import { attachReportTransactions } from './lib/attachReportTransactions';
@@ -104,7 +105,7 @@ export const reportQueries = {
   ) => {
     return prisma.report.findFirst({
       where: { id, ...reportAccessWhere(userId) },
-      include: { transactions: { orderBy: { date: 'desc' } } },
+      include: { transactions: { orderBy: transactionOrderBy } },
     });
   },
 };

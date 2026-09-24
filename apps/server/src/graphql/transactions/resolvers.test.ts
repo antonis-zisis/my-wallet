@@ -58,7 +58,7 @@ describe('transactionResolvers', () => {
 
       expect(prisma.transaction.findMany).toHaveBeenCalledWith({
         where: { report: reportAccessWhere(USER_ID) },
-        orderBy: { date: 'desc' },
+        orderBy: [{ date: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
       });
       expect(result).toEqual([mockTransaction]);
     });

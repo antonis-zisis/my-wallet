@@ -37,6 +37,7 @@ export const EXPENSE_CATEGORIES = [
   'Groceries',
   'Dining & Takeaway',
   'Transport',
+  'Travel',
   'Health',
   'Personal Care',
   'Kids',

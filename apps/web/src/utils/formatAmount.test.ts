@@ -5,7 +5,7 @@ import { formatAmount } from './formatAmount';
 describe('formatAmount', () => {
   it('puts the euro symbol after the amount', () => {
     expect(formatAmount({ amount: 1234.5, currency: 'EUR' })).toBe(
-      '1.234,50 €'
+      '1.234,50\u00A0€'
     );
   });
 
@@ -18,7 +18,7 @@ describe('formatAmount', () => {
   });
 
   it('defaults to euro when no currency is given', () => {
-    expect(formatAmount({ amount: 10 })).toBe('10,00 €');
+    expect(formatAmount({ amount: 10 })).toBe('10,00\u00A0€');
   });
 
   it('keeps the sign outside the symbol', () => {
@@ -26,7 +26,7 @@ describe('formatAmount', () => {
       '-$10.00'
     );
     expect(formatAmount({ amount: 10, currency: 'EUR', sign: '+' })).toBe(
-      '+10,00 €'
+      '+10,00\u00A0€'
     );
   });
 
