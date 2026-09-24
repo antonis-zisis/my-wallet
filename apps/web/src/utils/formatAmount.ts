@@ -5,6 +5,8 @@ import {
 } from '../types/currency';
 import { formatMoneyOrMask } from './formatMoney';
 
+const NON_BREAKING_SPACE = '\u00A0';
+
 export type FormatAmountInput = {
   amount: number;
   currency?: Currency;
@@ -27,7 +29,7 @@ export function formatAmount({
   }
 
   const { isSpaced, symbol, symbolPosition } = CURRENCY_CONFIG[currency];
-  const separator = isSpaced ? ' ' : '';
+  const separator = isSpaced ? NON_BREAKING_SPACE : '';
 
   if (symbolPosition === 'prefix') {
     return `${sign}${symbol}${separator}${value}`;
