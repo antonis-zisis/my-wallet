@@ -13,6 +13,7 @@ export const EXPENSE_CATEGORY_COLORS: Record<string, string> = {
   'Personal Care': '#84cc16',
   Shopping: '#ec4899',
   Transport: '#0891b2',
+  Travel: '#a16207',
   Utilities: '#3b82f6',
 };
 
