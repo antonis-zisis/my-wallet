@@ -16,6 +16,8 @@ export const EnvSchema = z.object({
   SUPABASE_SECRET_KEY: z.string().min(1, 'SUPABASE_SECRET_KEY is required'),
   // bearer token for the stats endpoint; unset disables it
   STATS_TOKEN: z.string().optional(),
+  // shared with Netlify's signed /graphql proxy; unset means no request's client IP header is trusted
+  NETLIFY_PROXY_SECRET: z.string().min(32).optional(),
   // only needed for seeding, not required for normal operation
   SEED_USER_ID: z.string().optional(),
 });
