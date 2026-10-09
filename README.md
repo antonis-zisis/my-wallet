@@ -184,7 +184,7 @@ Environment files (`.env`) are encrypted using GPG for secure storage in the rep
 ### Required variables
 
 - **Server** (`apps/server/.env`): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `PG_*` database connection variables
-- **Web** (`apps/web/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`, `VITE_GRAPHQL_URL`
+- **Web** (`apps/web/.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`. `VITE_GRAPHQL_URL` is optional and defaults to `/graphql`; leave it unset in deployed builds so the app goes through the proxy
 
 ### Encrypt before committing (repo maintainer only)
 
@@ -207,6 +207,8 @@ Deployment is handled via GitHub Actions (`.github/workflows/deploy.yml`), trigg
 2. **Migrate** — run Prisma database migrations
 3. **Deploy server** — build Docker image and deploy to Google Cloud Run
 4. **Deploy web** — build and deploy to Netlify
+
+The web app calls the API at its own origin, `/graphql`, and Netlify proxies it to Cloud Run (`netlify.toml`). A request to a `*.run.app` URL is third-party, and iOS's _Limit IP Address Tracking_ routes those through Apple's relay, which for days failed every request from Safari and the installed app. The proxy signs each request with `NETLIFY_PROXY_SECRET`, held by both the Netlify site and the Cloud Run service, and the server only trusts Netlify's client-IP header for rate limiting when that signature checks out.
 
 ## Commit Convention
 

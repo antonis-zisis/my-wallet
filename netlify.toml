@@ -4,6 +4,15 @@
   publish = "dist"
   ignore = "[ $CONTEXT != 'deploy-preview' ] && exit 0 || exit 1"
 
+# signed so the server can trust the client IP header Netlify adds; NETLIFY_PROXY_SECRET must be set in the site's env with Runtime scope
+[[redirects]]
+  from = "/graphql"
+  # once the API has its own domain, point this at it rather than the Cloud Run URL
+  to = "https://my-wallet-backend-883133501816.europe-west1.run.app/graphql"
+  status = 200
+  force = true
+  signed = "NETLIFY_PROXY_SECRET"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

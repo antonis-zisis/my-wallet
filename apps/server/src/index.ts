@@ -2,18 +2,21 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
 import cors from 'cors';
 import express, { type Express } from 'express';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import helmet from 'helmet';
 
 import { resolvers, typeDefs } from './graphql/index';
 import { createDepthLimitRule } from './lib/depthLimitRule';
 import { env } from './lib/env';
+import { proxiedClientIp } from './lib/netlifyProxy';
 import { connectDatabase, disconnectDatabase } from './lib/prisma';
 import { type AuthenticatedRequest, authMiddleware } from './middleware/auth';
 import { healthHandler } from './routes/health';
 import { statsHandler } from './routes/stats';
 
 const app: Express = express();
+// Cloud Run's front end is the one proxy hop, so request.ip is the caller rather than Google's edge
+app.set('trust proxy', 1);
 const PORT = env.PORT;
 const isProduction = env.NODE_ENV === 'production';
 
@@ -22,6 +25,16 @@ const graphqlRateLimiter = rateLimit({
   limit: 200,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
+  keyGenerator: (request) =>
+    ipKeyGenerator(
+      proxiedClientIp({
+        headers: request.headers,
+        secret: env.NETLIFY_PROXY_SECRET,
+        nowSeconds: Math.floor(Date.now() / 1000),
+      }) ??
+        request.ip ??
+        ''
+    ),
 });
 
 async function startServer() {
