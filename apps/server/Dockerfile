@@ -17,24 +17,19 @@ COPY apps/server apps/server/
 
 RUN pnpm --filter my-wallet-server build
 
-# -- Production stage --
-FROM node:24-slim
+RUN pnpm --filter my-wallet-server deploy --prod --no-optional /deploy
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# -- Production stage --
+FROM node:24-alpine
 
 WORKDIR /app
 
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY apps/server/package.json apps/server/
-
-RUN pnpm install --frozen-lockfile --ignore-scripts --prod
-
-COPY --from=build /app/apps/server/dist apps/server/dist/
-COPY --from=build /app/apps/server/src/generated/prisma apps/server/src/generated/prisma/
-COPY --from=build /app/apps/server/prisma apps/server/prisma/
+COPY --from=build --chown=node:node /deploy/package.json ./
+COPY --from=build --chown=node:node /deploy/node_modules node_modules/
+COPY --from=build --chown=node:node /app/apps/server/dist dist/
 
 EXPOSE 4000
 
-CMD ["node", "apps/server/dist/index.js"]
+USER node
+
+CMD ["node", "dist/index.js"]
