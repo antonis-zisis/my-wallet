@@ -13,10 +13,21 @@ export function getNextRenewalDate(
 
   today.setHours(0, 0, 0, 0);
 
+  const startDay = new Date(parsed);
+
+  startDay.setHours(0, 0, 0, 0);
+
+  const startsToday = startDay.getTime() === today.getTime();
+  const earliestRenewal = new Date(today);
+
+  if (startsToday) {
+    earliestRenewal.setDate(today.getDate() + 1);
+  }
+
   const next = new Date(parsed);
 
   if (billingCycle === 'WEEKLY') {
-    while (next < today) {
+    while (next < earliestRenewal) {
       next.setDate(next.getDate() + 7);
     }
   } else {
@@ -30,7 +41,7 @@ export function getNextRenewalDate(
             : billingCycle === 'QUARTERLY'
               ? 3
               : 1;
-    while (next < today) {
+    while (next < earliestRenewal) {
       next.setMonth(next.getMonth() + increment);
     }
   }
