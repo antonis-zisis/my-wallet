@@ -1,4 +1,5 @@
 import { EXPIRING_SOON_DAYS } from '../../hooks/contracts/selectors/computeExpiringSoon';
+import { getContractDurationLabel } from '../../hooks/contracts/selectors/getContractDurationLabel';
 import { getDaysUntilExpiration } from '../../hooks/contracts/selectors/getDaysUntilExpiration';
 import { Contract } from '../../types/contract';
 import { formatDate } from '../../utils/formatDate';
@@ -63,6 +64,7 @@ export function ContractListRow({
   onDelete,
   onEdit,
 }: ContractListRowProps) {
+  const durationLabel = getContractDurationLabel(contract);
   const dropdownItems: Array<DropdownItem> = [
     { label: 'Edit', onClick: () => onEdit(contract) },
     {
@@ -80,6 +82,12 @@ export function ContractListRow({
             <span className="text-text-primary min-w-0 truncate font-medium">
               {contract.provider}
             </span>
+
+            {durationLabel && (
+              <Badge variant="default" size="sm">
+                {durationLabel}
+              </Badge>
+            )}
 
             <Badge variant="default" size="sm">
               {contract.category}
