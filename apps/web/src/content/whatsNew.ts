@@ -14,6 +14,34 @@ export type WhatsNewRelease = {
 
 export const whatsNew: Array<WhatsNewRelease> = [
   {
+    version: '0.12.0',
+    date: '2026-11-02',
+    highlights: [
+      {
+        title: 'See where your contract money goes',
+        description:
+          'A new Spending by category card on the Contracts page adds up the costs of your active contracts, and category badges now have their own colours, here and on Home.',
+      },
+      {
+        title: 'Contract length at a glance',
+        description:
+          'Contracts with a start and end date now show how long they were agreed for, such as 1 Year, 2 Years or 6 Months.',
+      },
+      {
+        title: 'Two-year subscriptions',
+        description:
+          'Subscriptions can now be billed every 2 years, with their monthly and yearly costs worked out for you.',
+      },
+    ],
+    improvements: [
+      {
+        title: 'More accurate renewal dates',
+        description:
+          'A subscription that starts today now shows its next renewal one billing cycle ahead, instead of saying it renews today.',
+      },
+    ],
+  },
+  {
     version: '0.11.0',
     date: '2026-09-23',
     highlights: [
