@@ -34,6 +34,15 @@ export const GET_CONTRACTS = gql`
   }
 `;
 
+export const GET_CONTRACT_CATEGORY_BREAKDOWN = gql`
+  query GetContractCategoryBreakdown {
+    contractCategoryBreakdown {
+      category
+      total
+    }
+  }
+`;
+
 export const CREATE_CONTRACT = gql`
   mutation CreateContract($input: CreateContractInput!) {
     createContract(input: $input) {

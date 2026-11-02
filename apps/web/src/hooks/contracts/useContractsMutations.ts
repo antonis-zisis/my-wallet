@@ -4,6 +4,7 @@ import { useToast } from '../../contexts/ToastContext';
 import {
   CREATE_CONTRACT,
   DELETE_CONTRACT,
+  GET_CONTRACT_CATEGORY_BREAKDOWN,
   GET_CONTRACTS,
   UPDATE_CONTRACT,
 } from '../../graphql/contracts';
@@ -45,25 +46,27 @@ export function useContractsMutations({
 }: UseContractsMutationsInput) {
   const { showError, showSuccess } = useToast();
 
-  const refetchBothLists = [
+  const refetchListsAndBreakdown = [
     { query: GET_CONTRACTS, variables },
     { query: GET_CONTRACTS, variables: expiredVariables },
+    { query: GET_CONTRACT_CATEGORY_BREAKDOWN },
   ];
 
   const [createContract] = useMutation(CREATE_CONTRACT, {
     refetchQueries: [
       { query: GET_CONTRACTS, variables: { ...variables, page: 1 } },
       { query: GET_CONTRACTS, variables: expiredVariables },
+      { query: GET_CONTRACT_CATEGORY_BREAKDOWN },
     ],
   });
 
   const [updateContract] = useMutation(UPDATE_CONTRACT, {
-    refetchQueries: refetchBothLists,
+    refetchQueries: refetchListsAndBreakdown,
   });
 
   const [deleteContract, { loading: isDeleting }] = useMutation(
     DELETE_CONTRACT,
-    { refetchQueries: refetchBothLists }
+    { refetchQueries: refetchListsAndBreakdown }
   );
 
   const handleCreate = async (input: ContractInput) => {

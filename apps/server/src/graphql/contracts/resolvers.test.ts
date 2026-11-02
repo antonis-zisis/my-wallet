@@ -14,6 +14,7 @@ vi.mock('../../lib/prisma', () => ({
       findMany: vi.fn(),
       findFirst: vi.fn(),
       count: vi.fn(),
+      groupBy: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
@@ -67,6 +68,46 @@ describe('contractResolvers', () => {
             userId: USER_ID,
             endDate: expect.objectContaining({ lt: expect.any(Date) }),
           }),
+        })
+      );
+    });
+  });
+
+  describe('Query.contractCategoryBreakdown', () => {
+    it('returns the cost total per category', async () => {
+      vi.mocked(prisma.contract.groupBy).mockResolvedValue([
+        { category: 'Internet', _sum: { cost: 45 } },
+        { category: 'Electricity', _sum: { cost: 20 } },
+      ] as never);
+
+      const result = await contractResolvers.Query.contractCategoryBreakdown(
+        undefined,
+        {},
+        CTX
+      );
+
+      expect(result).toEqual([
+        { category: 'Internet', total: 45 },
+        { category: 'Electricity', total: 20 },
+      ]);
+    });
+
+    it('only counts the context user’s active contracts that have a cost', async () => {
+      vi.mocked(prisma.contract.groupBy).mockResolvedValue([] as never);
+
+      await contractResolvers.Query.contractCategoryBreakdown(
+        undefined,
+        {},
+        CTX
+      );
+
+      expect(prisma.contract.groupBy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            userId: USER_ID,
+            OR: [{ endDate: null }, { endDate: { gte: expect.any(Date) } }],
+            cost: { gt: 0 },
+          },
         })
       );
     });

@@ -5,6 +5,7 @@ import { Contract } from '../../types/contract';
 import { formatDate } from '../../utils/formatDate';
 import { Badge, Dropdown, MoneyAmount } from '../ui';
 import { DropdownItem } from '../ui/Dropdown';
+import { ContractCategoryBadge } from './ContractCategoryBadge';
 
 type ContractListRowProps = {
   contract: Contract;
@@ -89,9 +90,7 @@ export function ContractListRow({
               </Badge>
             )}
 
-            <Badge variant="default" size="sm">
-              {contract.category}
-            </Badge>
+            <ContractCategoryBadge category={contract.category} />
 
             <ExpiryBadge contract={contract} />
           </div>

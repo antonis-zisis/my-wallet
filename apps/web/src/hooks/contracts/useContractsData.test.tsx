@@ -11,10 +11,14 @@ vi.mock('../../contexts/ToastContext', () => ({
   useToast: () => ({ showSuccess, showError, showInfo }),
 }));
 
-import { CREATE_CONTRACT, GET_CONTRACTS } from '../../graphql/contracts';
+import {
+  CREATE_CONTRACT,
+  GET_CONTRACT_CATEGORY_BREAKDOWN,
+  GET_CONTRACTS,
+} from '../../graphql/contracts';
 import { MockedProvider } from '../../test/apollo-test-utils';
 import { makeContract } from '../../test/fixtures/contracts';
-import { Contract } from '../../types/contract';
+import { Contract, ContractCategoryTotal } from '../../types/contract';
 import { PAGE_SIZE, useContractsData } from './useContractsData';
 
 beforeEach(() => {
@@ -72,10 +76,20 @@ const expiredMock = ({
   },
 });
 
+const breakdownMock = (
+  contractCategoryBreakdown: Array<ContractCategoryTotal> = []
+): MockLink.MockedResponse => ({
+  maxUsageCount: Number.POSITIVE_INFINITY,
+  request: { query: GET_CONTRACT_CATEGORY_BREAKDOWN },
+  result: { data: { contractCategoryBreakdown } },
+});
+
 const createWrapper =
   (mocks: Array<MockLink.MockedResponse>) =>
   ({ children }: { children: ReactNode }) => (
-    <MockedProvider mocks={mocks}>{children}</MockedProvider>
+    <MockedProvider mocks={[...mocks, breakdownMock()]}>
+      {children}
+    </MockedProvider>
   );
 
 describe('useContractsData', () => {
@@ -116,6 +130,27 @@ describe('useContractsData', () => {
     expect(result.current.items).toHaveLength(1);
     expect(result.current.items[0].provider).toBe('DEI');
     expect(result.current.totalCount).toBe(1);
+  });
+
+  it('returns the spending breakdown across all contracts', async () => {
+    const breakdown = [
+      { category: 'Internet', total: 45 },
+      { category: 'Electricity', total: 20 },
+    ];
+
+    const { result } = renderHook(() => useContractsData(), {
+      wrapper: createWrapper([
+        activeMock(),
+        expiredMock(),
+        breakdownMock(breakdown),
+      ]),
+    });
+
+    await waitFor(() =>
+      expect(result.current.categoryBreakdownLoading).toBe(false)
+    );
+
+    expect(result.current.categoryBreakdown).toEqual(breakdown);
   });
 
   describe('expired contracts', () => {
