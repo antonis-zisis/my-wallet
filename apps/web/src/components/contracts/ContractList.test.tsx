@@ -61,6 +61,36 @@ describe('ContractList', () => {
     expect(screen.getByText('MyHome Online')).toBeInTheDocument();
   });
 
+  it('shows the agreed duration when the contract has start and end dates', () => {
+    render(
+      <ContractList
+        {...defaultProps}
+        contracts={[
+          makeContract({
+            startDate: '2025-01-01T00:00:00Z',
+            endDate: '2027-01-01T00:00:00Z',
+          }),
+        ]}
+      />
+    );
+
+    expect(screen.getByText('2 Years')).toBeInTheDocument();
+  });
+
+  it('shows no duration for an open-ended contract', () => {
+    render(
+      <ContractList
+        {...defaultProps}
+        contracts={[
+          makeContract({ startDate: '2025-01-01T00:00:00Z', endDate: null }),
+        ]}
+      />
+    );
+
+    expect(screen.getByText('Open-ended')).toBeInTheDocument();
+    expect(screen.queryByText(/Years?$|Months?$/)).not.toBeInTheDocument();
+  });
+
   it('shows a custom empty message without the add prompt', () => {
     render(
       <ContractList
