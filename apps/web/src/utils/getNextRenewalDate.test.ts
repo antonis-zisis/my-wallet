@@ -36,10 +36,16 @@ describe('getNextRenewalDate', () => {
       expect(toDateString(result)).toBe('2026-05-01');
     });
 
-    it('returns today when start date matches today', () => {
+    it('returns next month when start date is today', () => {
       const result = getNextRenewalDate('2026-02-22T00:00:00.000Z', 'MONTHLY');
-      const today = new Date('2026-02-22');
-      expect(result.getTime()).toBeGreaterThanOrEqual(today.getTime());
+
+      expect(toDateString(result)).toBe('2026-03-22');
+    });
+
+    it('returns today when a later cycle of an older subscription lands on today', () => {
+      const result = getNextRenewalDate('2026-01-22T00:00:00.000Z', 'MONTHLY');
+
+      expect(toDateString(result)).toBe('2026-02-22');
     });
   });
 
@@ -65,12 +71,24 @@ describe('getNextRenewalDate', () => {
       const result = getNextRenewalDate('2023-03-01T00:00:00.000Z', 'BIENNIAL');
       expect(toDateString(result)).toBe('2027-03-01');
     });
+
+    it('returns two years ahead when start date is today', () => {
+      const result = getNextRenewalDate('2026-02-22T00:00:00.000Z', 'BIENNIAL');
+
+      expect(toDateString(result)).toBe('2028-02-22');
+    });
   });
 
   describe('weekly billing cycle', () => {
     it('returns the next weekly renewal from a past start date', () => {
       const result = getNextRenewalDate('2026-01-12T00:00:00.000Z', 'WEEKLY');
       expect(toDateString(result)).toBe('2026-02-23');
+    });
+
+    it('returns next week when start date is today', () => {
+      const result = getNextRenewalDate('2026-02-22T00:00:00.000Z', 'WEEKLY');
+
+      expect(toDateString(result)).toBe('2026-03-01');
     });
 
     it('advances only one week when the renewal was last week', () => {
