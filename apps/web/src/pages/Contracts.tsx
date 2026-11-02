@@ -1,14 +1,18 @@
+import { ContractCategoryBreakdownChart } from '../components/charts';
 import { ContractList } from '../components/contracts/ContractList';
 import { CreateContractModal } from '../components/contracts/CreateContractModal';
 import { DeleteContractModal } from '../components/contracts/DeleteContractModal';
 import { EditContractModal } from '../components/contracts/EditContractModal';
 import { ExpiredContractsSection } from '../components/contracts/ExpiredContractsSection';
+import { InfoIcon } from '../components/icons';
 import {
   Button,
+  Card,
   PageLayout,
   Pagination,
   SearchInput,
   Select,
+  Tooltip,
 } from '../components/ui';
 import {
   PAGE_SIZE,
@@ -19,6 +23,8 @@ import { CONTRACT_SORT_OPTIONS, ContractSortField } from '../types/contract';
 
 export function Contracts() {
   const {
+    categoryBreakdown,
+    categoryBreakdownLoading,
     contractToDelete,
     contractToEdit,
     error,
@@ -72,6 +78,21 @@ export function Contracts() {
             New Contract
           </Button>
         </div>
+
+        {(categoryBreakdownLoading || categoryBreakdown.length > 0) && (
+          <Card className="mb-6">
+            <p className="text-text-secondary mb-3 flex items-center gap-1 text-sm">
+              <span>Spending by category</span>
+              <Tooltip content="Adds up the cost entered on each active contract, as entered. Contracts with no cost and expired contracts are not counted.">
+                <InfoIcon className="text-text-tertiary h-3.5 w-3.5 shrink-0 cursor-pointer" />
+              </Tooltip>
+            </p>
+            <ContractCategoryBreakdownChart
+              breakdown={categoryBreakdown}
+              loading={categoryBreakdownLoading}
+            />
+          </Card>
+        )}
 
         {(loading ||
           (!error &&

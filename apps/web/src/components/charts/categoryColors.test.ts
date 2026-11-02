@@ -1,8 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
+import { CONTRACT_CATEGORIES } from '../../types/contract';
 import { EXPENSE_CATEGORIES } from '../../types/transaction';
 import { CATEGORY_TO_BUCKET } from './BudgetBreakdownChart';
-import { EXPENSE_CATEGORY_COLORS } from './categoryColors';
+import {
+  CONTRACT_CATEGORY_COLORS,
+  EXPENSE_CATEGORY_COLORS,
+} from './categoryColors';
+
+describe('CONTRACT_CATEGORY_COLORS', () => {
+  it('covers every contract category', () => {
+    const missing = CONTRACT_CATEGORIES.filter(
+      (category) => !(category in CONTRACT_CATEGORY_COLORS)
+    );
+
+    expect(missing).toEqual([]);
+  });
+
+  it('gives each category its own colour', () => {
+    const colors = Object.values(CONTRACT_CATEGORY_COLORS);
+
+    expect(new Set(colors).size).toBe(colors.length);
+  });
+});
 
 describe('EXPENSE_CATEGORY_COLORS', () => {
   it('covers every expense category', () => {

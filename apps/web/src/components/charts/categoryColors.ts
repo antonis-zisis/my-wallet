@@ -55,4 +55,16 @@ export const SUBSCRIPTION_CATEGORY_COLORS: Record<string, string> = {
   Utilities: '#0891b2',
 };
 
+export const CONTRACT_CATEGORY_COLORS: Record<string, string> = {
+  Electricity: '#f59e0b',
+  Gas: '#f97316',
+  Insurance: '#10b981',
+  Internet: '#3b82f6',
+  'Loan/Mortgage': '#dc2626',
+  Mobile: '#8b5cf6',
+  Other: '#64748b',
+  TV: '#ec4899',
+  Water: '#0891b2',
+};
+
 export const FALLBACK_CATEGORY_COLOR = '#9ca3af';

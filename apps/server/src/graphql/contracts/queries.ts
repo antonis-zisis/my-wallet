@@ -2,6 +2,8 @@ import prisma from '../../lib/prisma';
 import { clampPage } from '../../lib/validate';
 import { buildContractsWhere } from './lib/buildContractsWhere';
 
+const MAX_BREAKDOWN_CATEGORIES = 100;
+
 export type ContractsArgs = {
   expired?: boolean;
   page?: number;
@@ -47,5 +49,27 @@ export const contractQueryResolvers = {
     ]);
 
     return { items, totalCount };
+  },
+
+  contractCategoryBreakdown: async (
+    _parent: unknown,
+    _args: unknown,
+    { userId }: { userId: string }
+  ) => {
+    const grouped = await prisma.contract.groupBy({
+      by: ['category'],
+      where: {
+        ...buildContractsWhere({ expired: false, now: new Date(), userId }),
+        cost: { gt: 0 },
+      },
+      _sum: { cost: true },
+      orderBy: { _sum: { cost: 'desc' } },
+      take: MAX_BREAKDOWN_CATEGORIES,
+    });
+
+    return grouped.map((group) => ({
+      category: group.category,
+      total: group._sum.cost ?? 0,
+    }));
   },
 };

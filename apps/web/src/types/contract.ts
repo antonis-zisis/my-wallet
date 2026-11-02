@@ -49,3 +49,12 @@ export type ContractsData = {
     totalCount: number;
   };
 };
+
+export type ContractCategoryTotal = {
+  category: string;
+  total: number;
+};
+
+export type ContractCategoryBreakdownData = {
+  contractCategoryBreakdown: Array<ContractCategoryTotal>;
+};

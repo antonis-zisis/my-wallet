@@ -2,8 +2,9 @@ import { Link } from 'react-router';
 
 import { ExpiringContract } from '../../hooks/contracts/selectors/computeExpiringSoon';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { ContractCategoryBadge } from '../contracts/ContractCategoryBadge';
 import { ChevronDownIcon } from '../icons';
-import { Badge, Card, Skeleton } from '../ui';
+import { Card, Skeleton } from '../ui';
 
 type ContractsExpiringSoonCardProps = {
   hasContracts: boolean;
@@ -109,9 +110,7 @@ export function ContractsExpiringSoonCard({
                         <span className="text-text-primary truncate text-sm font-medium">
                           {contract.provider}
                         </span>
-                        <Badge variant="default" size="sm">
-                          {contract.category}
-                        </Badge>
+                        <ContractCategoryBadge category={contract.category} />
                       </div>
 
                       <span className="text-text-secondary shrink-0 text-xs">

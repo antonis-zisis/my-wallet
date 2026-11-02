@@ -17,6 +17,11 @@ export const contractTypeDefs = `#graphql
     totalCount: Int!
   }
 
+  type ContractCategoryTotal {
+    category: String!
+    total: Float!
+  }
+
   enum ContractSortField {
     END_DATE
     PROVIDER
@@ -43,6 +48,7 @@ export const contractTypeDefs = `#graphql
 
   extend type Query {
     contracts(page: Int, pageSize: Int, expired: Boolean, search: String, sortBy: ContractSortField, sortOrder: SortOrder): ContractsResult!
+    contractCategoryBreakdown: [ContractCategoryTotal!]!
   }
 
   extend type Mutation {

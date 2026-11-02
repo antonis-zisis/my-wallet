@@ -1,8 +1,15 @@
 import { useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
-import { GET_CONTRACTS } from '../../graphql/contracts';
-import { ContractsData, ContractSortField } from '../../types/contract';
+import {
+  GET_CONTRACT_CATEGORY_BREAKDOWN,
+  GET_CONTRACTS,
+} from '../../graphql/contracts';
+import {
+  ContractCategoryBreakdownData,
+  ContractsData,
+  ContractSortField,
+} from '../../types/contract';
 import { useDebouncedValue } from '../useDebouncedValue';
 import { useLocalStorage } from '../useLocalStorage';
 import { getDaysUntilExpiration } from './selectors/getDaysUntilExpiration';
@@ -60,6 +67,9 @@ export function useContractsData() {
     previousData: expiredPreviousData,
   } = useQuery<ContractsData>(GET_CONTRACTS, { variables: expiredVariables });
 
+  const { data: categoryBreakdownData, loading: categoryBreakdownFetching } =
+    useQuery<ContractCategoryBreakdownData>(GET_CONTRACT_CATEGORY_BREAKDOWN);
+
   const resolvedData = data ?? previousData;
   const resolvedExpiredData = expiredData ?? expiredPreviousData;
 
@@ -81,6 +91,9 @@ export function useContractsData() {
   const isSearching = !!activeSearch;
 
   return {
+    categoryBreakdown: categoryBreakdownData?.contractCategoryBreakdown ?? [],
+    categoryBreakdownLoading:
+      categoryBreakdownFetching && !categoryBreakdownData,
     contractToDelete: modals.contractToDelete,
     contractToEdit: modals.contractToEdit,
     error: !!error,
