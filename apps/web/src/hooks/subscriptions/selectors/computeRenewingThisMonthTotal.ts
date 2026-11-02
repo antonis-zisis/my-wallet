@@ -56,6 +56,11 @@ export function computeRenewingThisMonthTotal(
           return startMonth === currentMonth
             ? total + subscription.amount
             : total;
+        case 'BIENNIAL':
+          return startMonth === currentMonth &&
+            (now.getFullYear() - startDate.getFullYear()) % 2 === 0
+            ? total + subscription.amount
+            : total;
         default:
           return total;
       }

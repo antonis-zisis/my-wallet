@@ -4,6 +4,7 @@ export const BILLING_CYCLES = [
   'QUARTERLY',
   'BI_ANNUAL',
   'YEARLY',
+  'BIENNIAL',
 ] as const;
 
 export const SUBSCRIPTION_CATEGORIES = [

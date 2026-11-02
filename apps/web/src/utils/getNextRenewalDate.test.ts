@@ -60,6 +60,13 @@ describe('getNextRenewalDate', () => {
     });
   });
 
+  describe('two-year billing cycle', () => {
+    it('returns the next two-year renewal from a past start date', () => {
+      const result = getNextRenewalDate('2023-03-01T00:00:00.000Z', 'BIENNIAL');
+      expect(toDateString(result)).toBe('2027-03-01');
+    });
+  });
+
   describe('weekly billing cycle', () => {
     it('returns the next weekly renewal from a past start date', () => {
       const result = getNextRenewalDate('2026-01-12T00:00:00.000Z', 'WEEKLY');

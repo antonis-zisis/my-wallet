@@ -44,6 +44,30 @@ describe('computeRenewingThisMonthTotal', () => {
     expect(computeRenewingThisMonthTotal([onCycle])).toBe(120);
   });
 
+  it('counts a two-year subscription only in its anniversary month of a renewal year', () => {
+    const offYear = makeSubscription({
+      amount: 240,
+      billingCycle: 'BIENNIAL',
+      startDate: '2025-04-01T00:00:00.000Z',
+    });
+    const offMonth = makeSubscription({
+      id: '2',
+      amount: 240,
+      billingCycle: 'BIENNIAL',
+      startDate: '2024-03-01T00:00:00.000Z',
+    });
+    const onCycle = makeSubscription({
+      id: '3',
+      amount: 240,
+      billingCycle: 'BIENNIAL',
+      startDate: '2024-04-01T00:00:00.000Z',
+    });
+
+    expect(computeRenewingThisMonthTotal([offYear])).toBe(0);
+    expect(computeRenewingThisMonthTotal([offMonth])).toBe(0);
+    expect(computeRenewingThisMonthTotal([onCycle])).toBe(240);
+  });
+
   it('counts a quarterly subscription only when the month aligns', () => {
     const onCycle = makeSubscription({
       amount: 30,

@@ -41,4 +41,13 @@ describe('computeMonthlyCost', () => {
 
     expect(result).toBe(10);
   });
+
+  it('returns amount / 24 for two-year subscriptions', () => {
+    const result = computeMonthlyCost({
+      amount: 240,
+      billingCycle: 'BIENNIAL',
+    });
+
+    expect(result).toBe(10);
+  });
 });

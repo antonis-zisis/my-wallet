@@ -26,7 +26,7 @@ export const SUBSCRIPTION_SORT_OPTIONS: Array<{
 ];
 
 export type BillingCycle =
-  'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'BI_ANNUAL' | 'YEARLY';
+  'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'BI_ANNUAL' | 'YEARLY' | 'BIENNIAL';
 
 export const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
   WEEKLY: 'Weekly',
@@ -34,6 +34,7 @@ export const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
   QUARTERLY: 'Quarterly',
   BI_ANNUAL: 'Bi-annual',
   YEARLY: 'Yearly',
+  BIENNIAL: 'Every 2 years',
 };
 
 export const BILLING_CYCLE_OPTIONS: Array<{
