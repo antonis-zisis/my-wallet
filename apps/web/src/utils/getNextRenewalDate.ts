@@ -21,13 +21,15 @@ export function getNextRenewalDate(
     }
   } else {
     const increment =
-      billingCycle === 'YEARLY'
-        ? 12
-        : billingCycle === 'BI_ANNUAL'
-          ? 6
-          : billingCycle === 'QUARTERLY'
-            ? 3
-            : 1;
+      billingCycle === 'BIENNIAL'
+        ? 24
+        : billingCycle === 'YEARLY'
+          ? 12
+          : billingCycle === 'BI_ANNUAL'
+            ? 6
+            : billingCycle === 'QUARTERLY'
+              ? 3
+              : 1;
     while (next < today) {
       next.setMonth(next.getMonth() + increment);
     }

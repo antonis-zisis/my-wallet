@@ -32,6 +32,12 @@ describe('getNextRenewalDate', () => {
     expect(localParts(result)).toEqual({ year: 2027, month: 2, day: 1 });
   });
 
+  it('rolls a two-year subscription forward in 24-month increments', () => {
+    const result = getNextRenewalDate(new Date(2024, 2, 1), 'BIENNIAL');
+
+    expect(localParts(result)).toEqual({ year: 2028, month: 2, day: 1 });
+  });
+
   it('rolls a quarterly subscription forward in 3-month increments', () => {
     const result = getNextRenewalDate(new Date(2025, 0, 10), 'QUARTERLY');
 

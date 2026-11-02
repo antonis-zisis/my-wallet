@@ -13,6 +13,8 @@ export function computeMonthlyCost(subscription: MonthlyCostInput): number {
       return subscription.amount / 6;
     case 'YEARLY':
       return subscription.amount / 12;
+    case 'BIENNIAL':
+      return subscription.amount / 24;
     default:
       return subscription.amount;
   }

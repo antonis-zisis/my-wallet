@@ -45,5 +45,6 @@ describe('billingCycleLabel', () => {
     expect(billingCycleLabel('QUARTERLY')).toBe('Quarterly');
     expect(billingCycleLabel('BI_ANNUAL')).toBe('Bi-annual');
     expect(billingCycleLabel('YEARLY')).toBe('Yearly');
+    expect(billingCycleLabel('BIENNIAL')).toBe('Every 2 years');
   });
 });
